@@ -64,7 +64,7 @@ function Wordmark({ className = "" }: { className?: string }) {
       className={className}
       style={{ fontFamily: "var(--font-display)", fontSize: 24, letterSpacing: "-0.03em" }}
     >
-      Jobly
+      jobly
     </span>
   );
 }
