@@ -1,47 +1,28 @@
-// Wordmark-style source logos rendered as SVG text so we avoid brand image assets.
-
-import type { CSSProperties } from "react";
+// Brand logos rendered from uploaded SVG assets.
+import joobleUrl from "@/assets/logos/jooble.svg?url";
+import greenhouseUrl from "@/assets/logos/greenhouse.svg?url";
+import leverUrl from "@/assets/logos/lever.svg?url";
+import ashbyUrl from "@/assets/logos/ashby.svg?url";
+import usajobsUrl from "@/assets/logos/usajobs.svg?url";
 
 type LogoProps = { className?: string };
 
-const base: CSSProperties = { fontFamily: "var(--font-display)" };
-
 export function JoobleLogo({ className }: LogoProps) {
-  return (
-    <span className={className} style={{ ...base, color: "#0057FF", fontWeight: 600, fontSize: 22, letterSpacing: "-0.02em" }}>
-      jooble
-    </span>
-  );
+  return <img src={joobleUrl} alt="Jooble" className={className} style={{ height: 28 }} />;
 }
 
 export function GreenhouseLogo({ className }: LogoProps) {
-  return (
-    <span className={className} style={{ ...base, color: "#3AB37E", fontWeight: 600, fontSize: 20, letterSpacing: "-0.01em" }}>
-      greenhouse
-    </span>
-  );
+  return <img src={greenhouseUrl} alt="Greenhouse" className={className} style={{ height: 28 }} />;
 }
 
 export function LeverLogo({ className }: LogoProps) {
-  return (
-    <span className={className} style={{ ...base, color: "#67787C", fontWeight: 500, fontSize: 20, letterSpacing: "0.42em" }}>
-      LEVER
-    </span>
-  );
+  return <img src={leverUrl} alt="Lever" className={className} style={{ height: 28 }} />;
 }
 
 export function AshbyLogo({ className }: LogoProps) {
-  return (
-    <span className={className} style={{ ...base, color: "#3F1C86", fontWeight: 700, fontSize: 22, fontStyle: "italic", letterSpacing: "-0.02em" }}>
-      Ashby
-    </span>
-  );
+  return <img src={ashbyUrl} alt="Ashby" className={className} style={{ height: 28 }} />;
 }
 
 export function UsaJobsLogo({ className }: LogoProps) {
-  return (
-    <span className={className} style={{ ...base, color: "#D00D01", fontWeight: 700, fontSize: 20, letterSpacing: "0.02em" }}>
-      USAJOBS
-    </span>
-  );
+  return <img src={usajobsUrl} alt="USAJOBS" className={className} style={{ height: 24 }} />;
 }
