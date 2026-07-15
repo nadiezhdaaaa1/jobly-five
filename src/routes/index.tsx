@@ -139,7 +139,7 @@ function Header() {
               to="/quiz"
               className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
             >
-              Sign up
+              Get started
             </Link>
           </div>
         </div>
