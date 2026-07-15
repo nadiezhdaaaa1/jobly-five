@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu, X, Check, Minus, ChevronDown, Ghost, ListFilter, ClipboardList, Sparkle } from "lucide-react";
 
 import heroAsset from "../assets/hero.png.asset.json";
