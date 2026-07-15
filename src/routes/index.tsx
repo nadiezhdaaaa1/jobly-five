@@ -262,7 +262,7 @@ function Hero() {
             </a>
           </div>
         </div>
-        <div className="mt-8 md:mt-12">
+        <div className="mt-[72px] md:mt-[88px] lg:mt-0">
           <HeroCard />
         </div>
       </div>
