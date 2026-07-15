@@ -168,7 +168,7 @@ function useLiveNumber(target: number, durationMs = 1200) {
   const [n, setN] = useState(0);
   const currentRef = useRef(0);
   const animRef = useRef<number>(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+  const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     const deltas = [3, 3, -4, -1, 4];
