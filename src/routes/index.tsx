@@ -164,6 +164,41 @@ function useCounter(target: number, durationMs = 1200) {
   return n;
 }
 
+function useLiveNumber(target: number, durationMs = 1200) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const deltas = [3, 3, -4, -1, 4];
+    const start = performance.now();
+    let frame = 0;
+    let interval: ReturnType<typeof setInterval>;
+
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / durationMs);
+      setN(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        interval = setInterval(() => {
+          setN((prev) => {
+            let delta = deltas[Math.floor(Math.random() * deltas.length)];
+            // Keep the live number within a band around the target.
+            if (prev > target + 30) delta = -Math.abs(delta || 1);
+            if (prev < target - 30) delta = Math.abs(delta || 1);
+            return prev + delta;
+          });
+        }, 2500);
+      }
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearInterval(interval);
+    };
+  }, [target, durationMs]);
+  return n;
+}
+
 function Hero() {
   const count = useCounter(537055);
   return (
