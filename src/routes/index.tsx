@@ -80,20 +80,22 @@ function Header() {
   return (
     <header className="sticky top-0 z-[1100] border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 md:px-8">
-        <Link to="/" className="flex items-center">
-          <Wordmark />
-        </Link>
-        <nav className="hidden items-center gap-8 md:flex">
-          {nav.map((n) => (
-            <a
-              key={n.label}
-              href={n.href}
-              className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-            >
-              {n.label}
-            </a>
-          ))}
-        </nav>
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center">
+            <Wordmark />
+          </Link>
+          <nav className="hidden items-center gap-8 md:flex">
+            {nav.map((n) => (
+              <a
+                key={n.label}
+                href={n.href}
+                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+              >
+                {n.label}
+              </a>
+            ))}
+          </nav>
+        </div>
         <div className="hidden items-center gap-3 md:flex">
           <a
             href="#login"
@@ -105,7 +107,7 @@ function Header() {
             to="/quiz"
             className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
           >
-            Sign up
+            Get started
           </Link>
         </div>
         <button
@@ -137,7 +139,7 @@ function Header() {
               to="/quiz"
               className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
             >
-              Sign up
+              Get started
             </Link>
           </div>
         </div>
