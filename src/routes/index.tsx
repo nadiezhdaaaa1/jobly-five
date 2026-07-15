@@ -229,7 +229,7 @@ function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-accent)] opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-green)]" />
             </span>
-            Live · US tech openings across our sources ·{" "}
+            Live · US tech openings{"\u00a0\n"}
             <span className="text-[color:var(--color-foreground)] tabular-nums">
               {count.toLocaleString("en-US")}
             </span>
