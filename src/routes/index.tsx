@@ -262,7 +262,9 @@ function Hero() {
             </a>
           </div>
         </div>
-        <HeroCard />
+        <div className="mt-8 md:mt-12">
+          <HeroCard />
+        </div>
       </div>
     </section>
   );
