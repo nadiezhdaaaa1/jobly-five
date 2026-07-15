@@ -200,7 +200,7 @@ function useLiveNumber(target: number, durationMs = 1200) {
 }
 
 function Hero() {
-  const count = useCounter(537055);
+  const count = useLiveNumber(537055);
   return (
     <section className="border-b border-[color:var(--color-border)]">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center lg:gap-16">
