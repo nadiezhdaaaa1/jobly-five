@@ -271,37 +271,36 @@ function Hero() {
 function HeroCard() {
   return (
     <div className="relative">
-      <div className="relative overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-mint)]">
-        {/* Floating match reveal card */}
-        <div className="absolute left-4 top-6 z-0 w-[280px] rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:left-8 md:top-10 md:w-[320px]">
-          <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
-            <span className="inline-flex items-center gap-1.5">
-              <Sparkle size={12} className="text-[color:var(--color-green)]" />
-              Top match
-            </span>
-            <span>1 / 5</span>
+      <div className="h-[340px] overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[460px]" />
+      {/* Floating match reveal card */}
+      <div className="absolute left-5 top-5 z-0 w-[280px] rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:w-[320px]">
+        <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
+          <span className="inline-flex items-center gap-1.5">
+            <Sparkle size={12} className="text-[color:var(--color-green)]" />
+            Top match
+          </span>
+          <span>1 / 5</span>
+        </div>
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
+            <span style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>▲</span>
           </div>
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
-              <span style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>▲</span>
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Senior Data Analyst</p>
-              <p className="truncate text-xs text-[color:var(--color-text-muted)]">Alto · Remote · 1 hour ago</p>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
-            <ScoreRing value={95} label="Experience" size={64} />
-            <ScoreRing value={93} label="Skill" size={64} />
-            <ScoreRing value={96} label="Industry" size={64} />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold">Senior Data Analyst</p>
+            <p className="truncate text-xs text-[color:var(--color-text-muted)]">Alto · Remote · 1 hour ago</p>
           </div>
         </div>
-        <img
-          src={heroAsset.url}
-          alt="A person checking Jobly matches on their phone"
-          className="relative z-10 block h-[420px] w-full object-cover object-right md:h-[520px]"
-        />
+        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
+          <ScoreRing value={95} label="Experience" size={64} />
+          <ScoreRing value={93} label="Skill" size={64} />
+          <ScoreRing value={96} label="Industry" size={64} />
+        </div>
       </div>
+      <img
+        src={heroAsset.url}
+        alt="A person checking Jobly matches on their phone"
+        className="absolute bottom-0 right-0 z-10 h-[420px] w-full object-cover object-right md:h-[520px]"
+      />
     </div>
   );
 }
