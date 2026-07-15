@@ -23,7 +23,7 @@ function QuizStub() {
         </p>
         <Link
           to="/"
-          className="mt-6 inline-flex h-11 items-center rounded-lg border border-[color:var(--color-border)] px-5 text-sm hover:bg-[color:var(--color-surface-2)]"
+          className="mt-6 inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] px-5 text-sm hover:bg-[color:var(--color-surface-2)]"
         >
           Back home
         </Link>

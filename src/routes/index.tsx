@@ -103,7 +103,7 @@ function Header() {
           </a>
           <Link
             to="/quiz"
-            className="inline-flex h-10 items-center rounded-lg bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
           >
             Sign up
           </Link>
@@ -111,7 +111,7 @@ function Header() {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-[color:var(--color-border)] md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] md:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
@@ -135,7 +135,7 @@ function Header() {
             </a>
             <Link
               to="/quiz"
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-lg bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
+              className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
             >
               Sign up
             </Link>
@@ -194,13 +194,13 @@ function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               to="/quiz"
-              className="inline-flex h-12 items-center rounded-lg bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
+              className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
             >
               Get my matches
             </Link>
             <a
               href="#how-it-works"
-              className="inline-flex h-12 items-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-6 hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-12 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-6 hover:bg-[color:var(--color-surface-2)]"
             >
               How it works
             </a>
@@ -669,7 +669,7 @@ function Pricing() {
         <div className="mt-8 flex justify-center">
           <Link
             to="/quiz"
-            className="inline-flex h-12 items-center rounded-lg bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Start free trial
           </Link>
@@ -837,7 +837,7 @@ function FinalCTA() {
         <div className="mt-8 flex justify-center">
           <Link
             to="/quiz"
-            className="inline-flex h-12 items-center rounded-lg bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Get my matches
           </Link>
