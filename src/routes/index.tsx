@@ -216,13 +216,8 @@ function HeroCard() {
   return (
     <div className="relative">
       <div className="relative overflow-hidden rounded-3xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)]">
-        <img
-          src={heroAsset.url}
-          alt="A person checking Jobly matches on their phone"
-          className="block h-[420px] w-full object-cover object-right md:h-[520px]"
-        />
         {/* Floating match reveal card */}
-        <div className="absolute left-4 top-6 w-[280px] rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:left-8 md:top-10 md:w-[320px]">
+        <div className="absolute left-4 top-6 z-0 w-[280px] rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:left-8 md:top-10 md:w-[320px]">
           <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
             <span className="inline-flex items-center gap-1.5">
               <Sparkle size={12} className="text-[color:var(--color-green)]" />
@@ -245,6 +240,11 @@ function HeroCard() {
             <ScoreRing value={96} label="Industry" size={64} />
           </div>
         </div>
+        <img
+          src={heroAsset.url}
+          alt="A person checking Jobly matches on their phone"
+          className="relative z-10 block h-[420px] w-full object-cover object-right md:h-[520px]"
+        />
       </div>
     </div>
   );
