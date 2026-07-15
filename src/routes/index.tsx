@@ -299,7 +299,7 @@ function HeroCard() {
       <img
         src={heroAsset.url}
         alt="A person checking Jobly matches on their phone"
-        className="absolute bottom-0 right-0 z-10 h-[420px] w-full object-cover object-right md:h-[520px]"
+        className="absolute bottom-0 right-0 z-10 h-[420px] w-full rounded-[20px] object-cover object-right md:h-[520px]"
       />
     </div>
   );
