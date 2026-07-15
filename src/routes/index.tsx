@@ -225,7 +225,7 @@ function Hero() {
   return (
     <section className="border-b border-[color:var(--color-border)]">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center lg:gap-16">
-        <div className="mt-[-48px]">
+        <div className="lg:mt-[-48px]">
           <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-1.5 text-xs text-[color:var(--color-text-secondary)]">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-accent)] opacity-75" />
