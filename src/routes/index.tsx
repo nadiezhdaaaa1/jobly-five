@@ -62,7 +62,7 @@ function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span
       className={`text-green ${className}`}
-      style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 24, letterSpacing: "-0.03em" }}
+      style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 30, letterSpacing: "-0.03em" }}
     >
       jobly
     </span>
