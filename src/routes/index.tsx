@@ -166,36 +166,55 @@ function useCounter(target: number, durationMs = 1200) {
 
 function useLiveNumber(target: number, durationMs = 1200) {
   const [n, setN] = useState(0);
+  const currentRef = useRef(0);
+  const animRef = useRef<number>(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
   useEffect(() => {
     const deltas = [3, 3, -4, -1, 4];
     const start = performance.now();
-    let frame = 0;
-    let interval: ReturnType<typeof setInterval>;
 
-    const tick = (t: number) => {
+    const animate = (from: number, to: number, animDuration: number) => {
+      const animStart = performance.now();
+      const step = (t: number) => {
+        const p = Math.min(1, (t - animStart) / animDuration);
+        const value = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+        setN(value);
+        currentRef.current = value;
+        if (p < 1) {
+          animRef.current = requestAnimationFrame(step);
+        }
+      };
+      cancelAnimationFrame(animRef.current);
+      animRef.current = requestAnimationFrame(step);
+    };
+
+    const initialTick = (t: number) => {
       const p = Math.min(1, (t - start) / durationMs);
-      setN(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      const value = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      setN(value);
+      currentRef.current = value;
       if (p < 1) {
-        frame = requestAnimationFrame(tick);
+        animRef.current = requestAnimationFrame(initialTick);
       } else {
-        interval = setInterval(() => {
-          setN((prev) => {
-            let delta = deltas[Math.floor(Math.random() * deltas.length)];
-            // Keep the live number within a band around the target.
-            if (prev > target + 30) delta = -Math.abs(delta || 1);
-            if (prev < target - 30) delta = Math.abs(delta || 1);
-            return prev + delta;
-          });
+        intervalRef.current = setInterval(() => {
+          const prev = currentRef.current;
+          let delta = deltas[Math.floor(Math.random() * deltas.length)];
+          // Keep the live number within a band around the target.
+          if (prev > target + 30) delta = -Math.abs(delta || 1);
+          if (prev < target - 30) delta = Math.abs(delta || 1);
+          animate(prev, prev + delta, 800);
         }, 2500);
       }
     };
 
-    frame = requestAnimationFrame(tick);
+    animRef.current = requestAnimationFrame(initialTick);
     return () => {
-      cancelAnimationFrame(frame);
-      clearInterval(interval);
+      cancelAnimationFrame(animRef.current);
+      clearInterval(intervalRef.current);
     };
   }, [target, durationMs]);
+
   return n;
 }
 
