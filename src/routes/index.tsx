@@ -61,8 +61,8 @@ function Landing() {
 function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span
-      className={className}
-      style={{ fontFamily: "var(--font-display)", fontSize: 24, letterSpacing: "-0.03em" }}
+      className={`text-green ${className}`}
+      style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 24, letterSpacing: "-0.03em" }}
     >
       jobly
     </span>
