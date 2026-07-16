@@ -107,7 +107,7 @@ function QuizPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-      <header className="border-b border-[color:var(--color-border)]">
+      <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <Link
             to="/"
