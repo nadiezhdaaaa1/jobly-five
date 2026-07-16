@@ -476,8 +476,8 @@ function JobSearchBroken() {
             border: "1px solid var(--color-alt-light-mist)",
           }}
         >
-
           <div className="relative grid h-full gap-10 md:grid-cols-[45%_55%]">
+
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
                 The job search is broken
@@ -620,9 +620,9 @@ function ChipWall() {
             "linear-gradient(to right, var(--color-background) 0%, var(--color-background) 35%, transparent 100%)",
         }}
       />
-
       <div
         className="absolute top-1/2 flex flex-col gap-3"
+
 
         style={{
           right: "-10%",
