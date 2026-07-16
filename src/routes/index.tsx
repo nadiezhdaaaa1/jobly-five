@@ -709,7 +709,7 @@ function HowCard({
   return (
     <div
       className="@container grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px]"
-      style={{ border: "1px solid var(--color-alt-light-mist)", backgroundColor: "var(--color-surface-2)" }}
+      style={{ border: "1px solid var(--color-border)", backgroundColor: "var(--color-surface-2)" }}
     >
       <div className="pt-6 pr-6 pl-6 pb-0 md:pt-8 md:pr-8 md:pl-8">
         <div className="how-card-title-row">
