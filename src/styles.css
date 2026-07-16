@@ -37,6 +37,7 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-danger: var(--danger);
   --color-danger-subtle: var(--danger-subtle);
+  --color-alt-light-mist: var(--alt-light-mist);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
