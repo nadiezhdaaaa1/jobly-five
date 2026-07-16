@@ -164,9 +164,9 @@ function Header() {
                 {n.label}
               </a>
             ))}
-            <a href="#login" className="rounded-lg px-3 py-3 text-sm">
+            <Link to="/login" className="rounded-lg px-3 py-3 text-sm">
               Log in
-            </a>
+            </Link>
             <Link
               to="/quiz"
               className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
