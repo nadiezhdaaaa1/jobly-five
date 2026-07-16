@@ -926,7 +926,7 @@ function QualityOverQuantity() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex h-10 w-10 items-center justify-center rounded-[12px]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[4px]"
                   style={{ backgroundColor: "var(--color-green)" }}
                 >
                   <Check size={20} className="text-[color:var(--color-accent-hover)]" />
