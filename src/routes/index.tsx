@@ -472,11 +472,12 @@ function JobSearchBroken() {
         <div
           className="relative overflow-hidden rounded-[12px] p-8 md:p-14 md:min-h-[580px]"
           style={{
-            backgroundColor: "var(--color-surface-2)",
+            backgroundColor: "var(--color-background)",
             border: "1px solid var(--color-alt-light-mist)",
           }}
         >
           <div className="relative grid h-full gap-10 md:grid-cols-[45%_55%]">
+
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
                 The job search is broken
@@ -616,11 +617,12 @@ function ChipWall() {
         style={{
           width: "280px",
           background:
-            "linear-gradient(to right, var(--color-surface-2) 0%, var(--color-surface-2) 35%, transparent 100%)",
+            "linear-gradient(to right, var(--color-background) 0%, var(--color-background) 35%, transparent 100%)",
         }}
       />
       <div
         className="absolute top-1/2 flex flex-col gap-3"
+
 
         style={{
           right: "-10%",
