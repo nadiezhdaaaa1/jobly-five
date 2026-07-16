@@ -1152,7 +1152,7 @@ function FAQ() {
             return (
               <div
                 key={f.q}
-                className="overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
+                className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
               >
                 <button
                   type="button"
@@ -1176,11 +1176,6 @@ function FAQ() {
               </div>
             );
           })}
-        </div>
-        <div className="mt-6 text-center">
-          <a href="#faq" className="text-sm text-[color:var(--color-green)] hover:underline">
-            See all FAQ →
-          </a>
         </div>
       </div>
     </section>
