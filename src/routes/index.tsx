@@ -615,10 +615,12 @@ function ChipWall() {
       <div
         className="pointer-events-none absolute inset-y-0 left-0 z-10"
         style={{
-          width: "220px",
-          background: "linear-gradient(to right, var(--color-surface-2) 0%, transparent 100%)",
+          width: "280px",
+          background:
+            "linear-gradient(to right, var(--color-surface-2) 0%, var(--color-surface-2) 35%, transparent 100%)",
         }}
       />
+
 
       <div
 
