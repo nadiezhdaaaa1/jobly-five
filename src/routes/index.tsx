@@ -421,8 +421,8 @@ function OfficialApis() {
             <Logo key={i} />
           ))}
         </div>
-
         <div className="mt-[72px] flex flex-wrap gap-10 md:gap-20">
+
           <Counter label="Jobs analysed today" value={14230} />
           <Counter label="New in 24h" value={892} />
           <Counter label="Ghost jobs filtered" value={2100} />
