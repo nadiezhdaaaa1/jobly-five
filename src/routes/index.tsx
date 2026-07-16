@@ -389,7 +389,7 @@ function OfficialApis() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-wrap gap-14">
+        <div className="mt-10 flex flex-wrap gap-20">
           <Counter label="Jobs analysed today" value={14230} />
           <Counter label="New in 24h" value={892} />
           <Counter label="Ghost jobs filtered" value={2100} />
