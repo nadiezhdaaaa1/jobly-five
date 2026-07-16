@@ -37,6 +37,7 @@
   --color-warning-subtle: var(--warning-subtle);
   --color-danger: var(--danger);
   --color-danger-subtle: var(--danger-subtle);
+  --color-alt-light-mist: var(--alt-light-mist);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -79,6 +80,7 @@
   --bg: #F9FBFB;
   --surface-1: #FFFFFF;
   --surface-2: #F1F3F3;
+  --alt-light-mist: #E3E7E8;
   --border-role: #E3E7E8;
   --border-strong: #D0D6D8;
   --text: #090B0C;
@@ -141,6 +143,7 @@
   --bg: #090B0C;
   --surface-1: #22292B;
   --surface-2: #4B585B;
+  --alt-light-mist: #3A4446;
   --border-role: #4B585B;
   --border-strong: #67787C;
   --text: #F9FBFB;
