@@ -598,24 +598,25 @@ function ChipWall() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute hidden md:block"
+      className="pointer-events-none absolute z-0 hidden md:block"
       style={{
-        top: "-10%",
-        bottom: "-15%",
-        right: "-20%",
-        left: "38%",
+        top: "-34%",
+        right: "-28%",
+        bottom: "-34%",
+        width: "78%",
         maskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
+          "linear-gradient(to top right, rgba(0,0,0,1) 62%, rgba(0,0,0,0.35) 88%, rgba(0,0,0,0) 100%)",
         WebkitMaskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
+          "linear-gradient(to top right, rgba(0,0,0,1) 62%, rgba(0,0,0,0.35) 88%, rgba(0,0,0,0) 100%)",
       }}
     >
       <div
-        className="flex flex-col gap-3 absolute left-1/2 top-1/2"
+        className="absolute top-1/2 flex flex-col gap-3"
         style={{
-          transform: "translate(-50%, -50%) rotate(-32deg)",
+          right: "-10%",
+          transform: "translateY(-50%) rotate(-32deg)",
           transformOrigin: "center center",
-          width: "200%",
+          width: "max-content",
         }}
       >
         {chipRows.map((row, i) => (
