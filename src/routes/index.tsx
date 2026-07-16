@@ -388,7 +388,7 @@ function OfficialApis() {
         <p className="mt-3 text-[color:var(--color-text-secondary)]">
           Verified integrations with leading hiring platforms.
         </p>
-        <div className="mt-[72px] flex flex-wrap items-center gap-[120px]">
+        <div className="mt-[72px] flex flex-wrap items-center gap-[96px]">
           {[JoobleLogo, GreenhouseLogo, LeverLogo, AshbyLogo, UsaJobsLogo].map((Logo, i) => (
             <Logo key={i} />
           ))}
