@@ -340,13 +340,13 @@ function InboxToOffer() {
         <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
           From inbox to offer
         </h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
             <article
               key={t.name}
               className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
-              <img src={t.photo} alt={t.name} className="h-64 w-full object-cover" />
+              <img src={t.photo} alt={t.name} className="h-80 w-full object-cover" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-4">
                 <p className="text-sm">"{t.quote}"</p>
                 <p className="mt-3 text-xs opacity-80">
@@ -355,25 +355,9 @@ function InboxToOffer() {
               </div>
             </article>
           ))}
-          <aside className="flex flex-col justify-between gap-6 rounded-2xl bg-[color:var(--color-mint)] p-6 text-[color:var(--color-foreground)]">
-            <Stat top="12 days" bottom="Average time to offer" />
-            <Stat top="5" bottom="Scored matches in your inbox daily" />
-            <Stat top="5 hrs/week" bottom="Saved vs. manual board scrolling" />
-          </aside>
         </div>
       </div>
     </section>
-  );
-}
-
-function Stat({ top, bottom }: { top: string; bottom: string }) {
-  return (
-    <div>
-      <div className="text-2xl md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-        {top}
-      </div>
-      <div className="mt-1 text-sm text-[color:var(--color-text-secondary)]">{bottom}</div>
-    </div>
   );
 }
 
