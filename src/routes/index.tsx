@@ -350,7 +350,7 @@ function InboxToOffer() {
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="relative h-[560px] overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+              className="relative h-[560px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
               <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-8">
