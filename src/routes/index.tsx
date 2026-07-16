@@ -240,7 +240,7 @@ function Hero() {
             className="mt-6 text-[42px] leading-[1.05] md:text-[56px] lg:text-[64px]"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
           >
-            Relevant jobs, first
+            <span className="text-[color:var(--color-text-secondary)]">Relevant jobs, first</span>
             <br />
             <span>— scored to you</span>
           </h1>
