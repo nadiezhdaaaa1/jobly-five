@@ -8,21 +8,21 @@ import usajobsUrl from "@/assets/logos/usajobs.svg?url";
 type LogoProps = { className?: string };
 
 export function JoobleLogo({ className }: LogoProps) {
-  return <img src={joobleUrl} alt="Jooble" className={className} style={{ height: 34 }} />;
+  return <img src={joobleUrl} alt="Jooble" className={className} style={{ height: 37 }} />;
 }
 
 export function GreenhouseLogo({ className }: LogoProps) {
-  return <img src={greenhouseUrl} alt="Greenhouse" className={className} style={{ height: 34 }} />;
+  return <img src={greenhouseUrl} alt="Greenhouse" className={className} style={{ height: 37 }} />;
 }
 
 export function LeverLogo({ className }: LogoProps) {
-  return <img src={leverUrl} alt="Lever" className={className} style={{ height: 34 }} />;
+  return <img src={leverUrl} alt="Lever" className={className} style={{ height: 37 }} />;
 }
 
 export function AshbyLogo({ className }: LogoProps) {
-  return <img src={ashbyUrl} alt="Ashby" className={className} style={{ height: 34 }} />;
+  return <img src={ashbyUrl} alt="Ashby" className={className} style={{ height: 37 }} />;
 }
 
 export function UsaJobsLogo({ className }: LogoProps) {
-  return <img src={usajobsUrl} alt="USAJOBS" className={className} style={{ height: 29 }} />;
+  return <img src={usajobsUrl} alt="USAJOBS" className={className} style={{ height: 32 }} />;
 }
