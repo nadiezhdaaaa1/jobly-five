@@ -383,7 +383,7 @@ function OfficialApis() {
           {[JoobleLogo, GreenhouseLogo, LeverLogo, AshbyLogo, UsaJobsLogo].map((Logo, i) => (
             <div
               key={i}
-              className="flex h-20 items-center justify-center rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4"
+              className="flex h-20 items-center justify-center rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4"
             >
               <Logo />
             </div>
