@@ -389,7 +389,7 @@ function OfficialApis() {
             </div>
           ))}
         </div>
-        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+        <div className="mt-10 flex flex-wrap gap-14">
           <Counter label="Jobs analysed today" value={14230} />
           <Counter label="New in 24h" value={892} />
           <Counter label="Ghost jobs filtered" value={2100} />
@@ -402,14 +402,15 @@ function OfficialApis() {
 function Counter({ label, value }: { label: string; value: number }) {
   const n = useCounter(value);
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <h2 className="text-3xl md:text-4xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
         {n.toLocaleString("en-US")}
       </h2>
-      <div className="mt-1 text-base text-[color:var(--color-text-secondary)]">{label}</div>
+      <div className="text-base text-[color:var(--color-text-secondary)]">{label}</div>
     </div>
   );
 }
+
 
 
 
