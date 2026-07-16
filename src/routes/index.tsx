@@ -274,33 +274,35 @@ function HeroCard() {
   return (
     <div className="relative">
       <div className="h-[344px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
-      {/* Floating match reveal card */}
-      <div className="absolute left-5 top-5 z-0 w-[280px] rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:w-[320px]">
-        <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
-          <span className="inline-flex items-center gap-1.5">
-            <Sparkle size={12} className="text-[color:var(--color-green)]" />
-            Top match
-          </span>
-          <span>1 / 5</span>
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
-            <span style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>▲</span>
+      {/* Floating match reveal card + stack */}
+      <div className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]">
+        <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+          <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
+            <span className="inline-flex items-center gap-1.5">
+              <Sparkle size={12} className="text-[color:var(--color-green)]" />
+              Top match
+            </span>
+            <span>1 / 5</span>
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">Senior Data Analyst</p>
-            <p className="truncate text-xs text-[color:var(--color-text-muted)]">Alto · Remote · 1 hour ago</p>
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
+              <span style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>▲</span>
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">Senior Data Analyst</p>
+              <p className="truncate text-xs text-[color:var(--color-text-muted)]">Alto · Remote · 1 hour ago</p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
+            <ScoreRing value={95} label="Experience" size={64} />
+            <ScoreRing value={93} label="Skill" size={64} />
+            <ScoreRing value={96} label="Industry" size={64} />
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
-          <ScoreRing value={95} label="Experience" size={64} />
-          <ScoreRing value={93} label="Skill" size={64} />
-          <ScoreRing value={96} label="Industry" size={64} />
-        </div>
+        {/* Stacked cards behind the top match */}
+        <div className="absolute left-1/2 top-32 z-[-1] h-[140px] w-[250px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[290px]" />
+        <div className="absolute left-1/2 top-52 z-[-2] h-[100px] w-[230px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[270px]" />
       </div>
-      {/* Stacked cards behind the top match */}
-      <div className="absolute left-3 top-10 z-[-1] h-[200px] w-[280px] rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[320px]" />
-      <div className="absolute left-1 top-16 z-[-2] h-[200px] w-[280px] rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[320px]" />
       <img
         src={heroAsset.url}
         alt="A person checking Jobly matches on their phone"
