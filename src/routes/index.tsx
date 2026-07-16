@@ -350,12 +350,12 @@ function InboxToOffer() {
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+              className="relative h-[560px] overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
-              <img src={t.photo} alt={t.name} className="h-80 w-full object-cover" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-4">
-                <p className="text-sm">"{t.quote}"</p>
-                <p className="mt-3 text-xs opacity-80">
+              <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-8">
+                <h5 className="text-xl">"{t.quote}"</h5>
+                <p className="body-medium mt-3 opacity-80">
                   {t.name} · {t.role}
                 </p>
               </div>
