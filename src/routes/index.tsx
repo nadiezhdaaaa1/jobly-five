@@ -614,7 +614,7 @@ function ChipWall() {
         className="absolute top-1/2 flex flex-col gap-3"
         style={{
           right: "-10%",
-          transform: "translateX(64px) translateY(-50%) rotate(-32deg)",
+          transform: "translateX(120px) translateY(-50%) rotate(-32deg)",
           transformOrigin: "center center",
           width: "max-content",
         }}
