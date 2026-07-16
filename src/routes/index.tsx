@@ -517,16 +517,13 @@ function HowCard({
 }) {
   return (
     <div
-      className="grid h-full grid-rows-[auto_1fr] overflow-hidden rounded-[20px] bg-[color:var(--color-surface-1)]"
-      style={{ border: "0.5px solid var(--color-border)" }}
+      className="grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[12px]"
+      style={{ border: "0.5px solid var(--color-border)", backgroundColor: "var(--color-surface-2)" }}
     >
-      <div
-        className="p-6 md:min-h-[200px]"
-        style={{ backgroundColor: "var(--color-surface-2)" }}
-      >
+      <div className="pt-8 pr-8 pl-8 pb-0">
         <div className="flex items-center gap-3">
           <span
-            className="inline-flex items-center rounded-[8px] px-3 py-1 text-[13px] font-medium text-white"
+            className="inline-flex items-center rounded-[4px] px-3 py-1 text-[13px] font-medium text-white"
             style={{ backgroundColor: "var(--color-green)" }}
           >
             Step {step}
@@ -537,10 +534,7 @@ function HowCard({
         </div>
         <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">{body}</p>
       </div>
-      <div
-        className="relative bg-[color:var(--color-surface-1)]"
-        style={{ borderTop: "0.5px solid var(--color-border)" }}
-      >
+      <div className="relative self-end">
         {children}
       </div>
     </div>
