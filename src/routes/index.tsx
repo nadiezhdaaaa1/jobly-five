@@ -6,6 +6,9 @@ import heroAsset from "../assets/hero-2.png.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
 import t2Asset from "../assets/t2-3.png.asset.json";
 import t3Asset from "../assets/t3-2.png.asset.json";
+import how1Asset from "../assets/how_1.png.asset.json";
+import how2Asset from "../assets/how_2.png.asset.json";
+import how3Asset from "../assets/how_3.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
 import {
   AshbyLogo,
