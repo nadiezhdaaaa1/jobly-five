@@ -817,7 +817,7 @@ function FeatureCards() {
       <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
         <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
-            Match score & why it fits
+            Match score and why it fits
           </h3>
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
