@@ -224,7 +224,7 @@ function Hero() {
   const count = useLiveNumber(537055);
   return (
     <section className="border-b border-[color:var(--color-border)]">
-      <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center lg:gap-16">
+      <div className="mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
         <div className="lg:mt-[-88px]">
           <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-1.5 text-xs text-[color:var(--color-text-secondary)]">
             <span className="relative flex h-2 w-2">
@@ -262,7 +262,7 @@ function Hero() {
             </a>
           </div>
         </div>
-        <div className="mt-[72px] md:mt-[88px] lg:mt-0">
+        <div>
           <HeroCard />
         </div>
       </div>
