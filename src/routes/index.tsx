@@ -59,7 +59,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Stop scrolling LinkedIn and Indeed. Get five ranked, AI-scored tech jobs in your inbox daily.",
+          "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily — with an AI match score and why each fits.",
       },
     ],
   }),
