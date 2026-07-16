@@ -814,15 +814,17 @@ function InboxRow({
 function FeatureCards() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto grid max-w-[1200px] gap-4 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+      <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
+        <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score & why it fits
           </h3>
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
-          <div className="mt-6 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+          <div className="mt-6 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+
             <div className="flex items-center justify-between">
               <span className="text-sm">Senior Frontend Engineer</span>
               <span className="rounded-md bg-[color:var(--color-mint)] px-2 py-0.5 text-xs text-[color:var(--color-green)]">
@@ -837,7 +839,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
@@ -852,7 +854,8 @@ function FeatureCards() {
             ].map((c) => (
               <div
                 key={c.label}
-                className="rounded-xl border border-[color:var(--color-border)] p-3"
+                className="rounded-lg border border-[color:var(--color-border)] p-3"
+
                 style={{
                   backgroundColor:
                     c.tone === "mint"
