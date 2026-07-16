@@ -498,12 +498,8 @@ function JobSearchBroken() {
                 ))}
               </div>
             </div>
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-[-56px] left-[45%] z-[5] hidden md:block w-[1px]"
-              style={{ backgroundColor: "var(--color-alt-light-mist)" }}
-            />
             <div aria-hidden className="hidden md:block" />
+
           </div>
           <ChipWall />
         </div>
@@ -616,6 +612,13 @@ function ChipWall() {
       }}
     >
       <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10"
+        style={{
+          width: "180px",
+          background: "linear-gradient(to right, var(--color-surface-2) 0%, transparent 100%)",
+        }}
+      />
+      <div
         className="absolute top-1/2 flex flex-col gap-3"
         style={{
           right: "-10%",
@@ -624,6 +627,7 @@ function ChipWall() {
           width: "max-content",
         }}
       >
+
         {chipRows.map((row, i) => (
           <div
             key={i}
