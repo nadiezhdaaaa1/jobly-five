@@ -873,7 +873,14 @@ function FeatureCards() {
                 <div className="mt-3 space-y-1.5">
                   <div className="h-2 rounded bg-black/10" />
                   <div className="h-2 w-4/5 rounded bg-black/10" />
+                  <div className="h-2 w-3/4 rounded bg-black/10" />
+                  <div className="h-2 w-5/6 rounded bg-black/10" />
+                  <div className="h-2 w-2/3 rounded bg-black/10" />
+                  <div className="h-2 w-4/5 rounded bg-black/10" />
+                  <div className="h-2 w-3/5 rounded bg-black/10" />
+                  <div className="h-2 w-3/4 rounded bg-black/10" />
                 </div>
+
               </div>
             ))}
           </div>
