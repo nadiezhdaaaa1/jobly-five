@@ -980,7 +980,7 @@ function Pricing() {
         </div>
 
         {/* Desktop table */}
-        <div className="mt-10 hidden overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-background)] md:block">
+        <div className="mt-10 hidden overflow-hidden rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] md:block">
           <div className="grid grid-cols-3 border-b border-[color:var(--color-border)]">
             <div className="p-6" />
             <div className="border-l border-[color:var(--color-border)] p-6">
@@ -1024,7 +1024,7 @@ function Pricing() {
           />
         </div>
 
-        <div className="mt-6 rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-5 text-sm text-[color:var(--color-text-secondary)]">
+        <div className="mt-6 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-5 text-sm text-[color:var(--color-text-secondary)]">
           Billed $9.99/mo after your 3-day trial. Cancel in 2 steps. Pause for 6 months if you find a job.
         </div>
 
