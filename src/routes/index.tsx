@@ -940,8 +940,8 @@ function QualityOverQuantity() {
           <div className="text-sm font-medium uppercase tracking-widest text-[color:var(--color-text-muted)]">
             VS
           </div>
-          <div className="flex flex-col items-start">
-            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-1">
+          <div className="flex flex-col items-center">
+            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[2px]">
               {Array.from({ length: 100 }).map((_, i) => (
                 <div
                   key={i}
