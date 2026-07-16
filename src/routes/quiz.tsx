@@ -111,7 +111,7 @@ function QuizPage() {
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <Link
             to="/"
-            className="text-lg text-[color:var(--color-green)]"
+            className="text-[30px] font-bold text-[color:var(--color-green)]"
             style={{ fontFamily: "var(--font-logo)" }}
           >
             jobly
