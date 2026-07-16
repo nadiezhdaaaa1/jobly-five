@@ -300,8 +300,8 @@ function HeroCard() {
           </div>
         </div>
         {/* Stacked cards behind the top match */}
-        <div className="absolute left-1/2 top-24 z-[-1] h-[160px] w-[260px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[300px]" />
-        <div className="absolute left-1/2 top-40 z-[-2] h-[120px] w-[240px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[280px]" />
+        <div className="absolute left-1/2 top-32 z-[-1] h-[140px] w-[250px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[290px]" />
+        <div className="absolute left-1/2 top-52 z-[-2] h-[100px] w-[230px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[270px]" />
       </div>
       <img
         src={heroAsset.url}
