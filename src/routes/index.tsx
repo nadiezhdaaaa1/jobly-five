@@ -470,10 +470,10 @@ function JobSearchBroken() {
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <div
-          className="relative overflow-hidden rounded-[24px] p-8 md:p-14 md:min-h-[580px]"
+          className="relative overflow-hidden rounded-[12px] p-8 md:p-14 md:min-h-[580px]"
           style={{
             backgroundColor: "var(--color-surface-2)",
-            border: "0.5px solid var(--color-border)",
+            border: "1px solid var(--color-alt-light-mist)",
           }}
         >
           <div className="grid gap-10 md:grid-cols-[45%_55%]">
@@ -500,14 +500,6 @@ function JobSearchBroken() {
             </div>
             <div aria-hidden className="hidden md:block" />
           </div>
-          <div
-            className="pointer-events-none absolute inset-y-0 z-[5] hidden md:block"
-            style={{
-              left: "45%",
-              width: "120px",
-              background: "linear-gradient(to right, var(--color-surface-2) 0%, transparent 100%)",
-            }}
-          />
           <ChipWall />
         </div>
       </div>
