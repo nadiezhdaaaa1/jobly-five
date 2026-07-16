@@ -566,139 +566,19 @@ function QuizChip({ label }: { label: string }) {
 
 function QuizPreview() {
   return (
-    <div className="p-5">
-      <div className="grid grid-cols-2 gap-2">
-        <QuizChip label="Senior Product Designer" />
-        <QuizChip label="UX/UI Designer" />
-        <QuizChip label="New York City" />
-        <QuizChip label="Philadelphia" />
-      </div>
-      <div className="mt-5">
-        <div className="relative h-1.5 rounded-full" style={{ backgroundColor: "var(--color-surface-2)" }}>
-          <div
-            className="absolute h-1.5 rounded-full"
-            style={{ left: "20%", right: "35%", backgroundColor: "var(--color-green)" }}
-          />
-          <div
-            className="absolute -top-1.5 h-4 w-4 rounded-full border-2 border-white shadow"
-            style={{ left: "calc(20% - 8px)", backgroundColor: "var(--color-green)" }}
-          />
-          <div
-            className="absolute -top-1.5 h-4 w-4 rounded-full border-2 border-white shadow"
-            style={{ left: "calc(65% - 8px)", backgroundColor: "var(--color-green)" }}
-          />
-        </div>
-        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
-          <span>$60k</span>
-          <span>$100k</span>
-          <span>$140k</span>
-          <span>$180k</span>
-        </div>
-      </div>
-      <div className="mt-5 flex items-center justify-between">
-        <div className="text-[13px]">
-          <span className="text-[color:var(--color-text-secondary)]">Salary Range </span>
-          <span className="font-semibold text-[color:var(--color-foreground)]">$100k – $150k</span>
-        </div>
-        <button
-          type="button"
-          className="rounded-md px-4 py-2 text-[13px] font-medium"
-          style={{ backgroundColor: "var(--color-accent)", color: "var(--color-on-accent)" }}
-        >
-          Next
-        </button>
-      </div>
-    </div>
+    <img src={how1Asset.url} alt="Quiz preview" className="block w-full h-auto" />
   );
 }
 
 function MatchPreview() {
   return (
-    <div className="p-5">
-      <div className="flex items-start gap-3">
-        <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg"
-          style={{ backgroundColor: "var(--color-mint)" }}
-        >
-          <span style={{ color: "var(--color-green)", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18 }}>S</span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between">
-            <span
-              className="rounded-full px-2 py-0.5 text-[11px] font-medium"
-              style={{ backgroundColor: "var(--color-mint)", color: "var(--color-green)" }}
-            >
-              1 hour ago
-            </span>
-            <span className="text-[11px] text-[color:var(--color-text-muted)]">1/5</span>
-          </div>
-          <h4 className="mt-1 text-base font-semibold text-[color:var(--color-foreground)]">UX/UI Designer</h4>
-        </div>
-      </div>
-      <div className="mt-5 flex items-center justify-around">
-        <ScoreRing value={95} label="" size={64} strokeWidth={5} />
-        <ScoreRing value={93} label="" size={64} strokeWidth={5} />
-        <ScoreRing value={96} label="" size={64} strokeWidth={5} />
-      </div>
-    </div>
+    <img src={how2Asset.url} alt="Match preview" className="block w-full h-auto" />
   );
 }
 
 function InboxPreview() {
   return (
-    <div className="relative">
-      {/* toolbar */}
-      <div className="flex items-center gap-3 px-4 py-2.5" style={{ borderBottom: "0.5px solid var(--color-border)" }}>
-        <div className="flex items-center gap-1">
-          <span
-            className="inline-block h-3.5 w-3.5 rounded-sm"
-            style={{ border: "1px solid var(--color-border-strong)" }}
-          />
-          <ChevronDown className="h-3 w-3 text-[color:var(--color-text-muted)]" />
-        </div>
-        <svg className="h-3.5 w-3.5 text-[color:var(--color-text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-        </svg>
-        <div className="ml-1 flex flex-col gap-0.5">
-          <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
-          <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
-          <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
-        </div>
-      </div>
-      {/* Primary tab */}
-      <div className="relative px-4 pt-3">
-        <span className="text-[13px] font-medium" style={{ color: "#1a73e8" }}>
-          Primary
-        </span>
-        <div className="mt-2 h-[2px] w-16" style={{ backgroundColor: "#1a73e8" }} />
-      </div>
-      {/* rows */}
-      <div>
-        <InboxRow bold sender="Jobly daily digest" preview="" starred />
-        <InboxRow sender="Emily Johnson" preview="eDeliv…" />
-        <InboxRow sender="Michael Smith" preview="Hi, just…" />
-      </div>
-      {/* Gmail M badge - floats overlapping the top edge */}
-      <div className="absolute -top-6 right-4">
-        <span
-          className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-lg"
-          style={{ border: "0.5px solid var(--color-border)" }}
-        >
-          <svg viewBox="0 0 24 24" className="h-6 w-6" aria-hidden>
-            <path fill="#4285F4" d="M2 6.5v11A1.5 1.5 0 0 0 3.5 19H5V8.2l7 5.1 7-5.1V19h1.5A1.5 1.5 0 0 0 22 17.5v-11z" />
-            <path fill="#EA4335" d="M2 6.5 12 14 22 6.5A1.5 1.5 0 0 0 20.5 5h-17A1.5 1.5 0 0 0 2 6.5z" />
-            <path fill="#34A853" d="M5 19V8.2l7 5.1V19z" />
-            <path fill="#FBBC04" d="M19 19V8.2l-7 5.1V19z" />
-          </svg>
-          <span
-            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-            style={{ backgroundColor: "var(--color-green)" }}
-          >
-            5
-          </span>
-        </span>
-      </div>
-    </div>
+    <img src={how3Asset.url} alt="Inbox preview" className="block w-full h-auto" />
   );
 }
 
