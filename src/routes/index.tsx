@@ -389,7 +389,7 @@ function OfficialApis() {
             </div>
           ))}
         </div>
-        <div className="mt-10 grid gap-6 border-t border-[color:var(--color-border)] pt-6 sm:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
           <Counter label="Jobs analysed today" value={14230} />
           <Counter label="New in 24h" value={892} />
           <Counter label="Ghost jobs filtered" value={2100} />
@@ -403,13 +403,14 @@ function Counter({ label, value }: { label: string; value: number }) {
   const n = useCounter(value);
   return (
     <div>
-      <div className="text-3xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
+      <h3 className="text-2xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
         {n.toLocaleString("en-US")}
-      </div>
-      <div className="mt-1 text-sm text-[color:var(--color-text-secondary)]">{label}</div>
+      </h3>
+      <div className="mt-1 text-lg text-[color:var(--color-text-secondary)]">{label}</div>
     </div>
   );
 }
+
 
 /* -------------------------- Job search broken -------------------------- */
 
