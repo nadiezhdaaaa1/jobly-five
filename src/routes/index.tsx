@@ -403,13 +403,14 @@ function Counter({ label, value }: { label: string; value: number }) {
   const n = useCounter(value);
   return (
     <div>
-      <h3 className="text-2xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
+      <h2 className="text-3xl md:text-4xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
         {n.toLocaleString("en-US")}
-      </h3>
-      <div className="mt-1 text-lg text-[color:var(--color-text-secondary)]">{label}</div>
+      </h2>
+      <div className="mt-1 text-base text-[color:var(--color-text-secondary)]">{label}</div>
     </div>
   );
 }
+
 
 
 /* -------------------------- Job search broken -------------------------- */
