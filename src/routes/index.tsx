@@ -474,15 +474,10 @@ function JobSearchBroken() {
 /* ---------------------------- How it works ---------------------------- */
 
 function HowItWorks() {
-  const steps = [
-    { n: 1, title: "Profile quiz", body: "2-minute quiz about role, stack, level, location & salary." },
-    { n: 2, title: "AI matching", body: "We score every job against your profile — no black box." },
-    { n: 3, title: "Daily digest", body: "5 best-fit jobs in your inbox each morning." },
-  ];
   return (
     <section id="how-it-works" className="border-b border-[color:var(--color-border)]">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="max-w-2xl">
           <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
             How Jobly works
           </h2>
@@ -490,24 +485,272 @@ function HowItWorks() {
             We flipped the script. Instead of searching, you receive matching digests directly in your inbox.
           </p>
         </div>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {steps.map((s) => (
-            <div
-              key={s.n}
-              className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--color-accent)] text-[color:var(--color-on-accent)]" style={{ fontFamily: "var(--font-display)" }}>
-                {s.n}
-              </div>
-              <h3 className="mt-5 text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                {s.title}
-              </h3>
-              <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{s.body}</p>
-            </div>
-          ))}
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <HowCard step={1} title="Start with anything" body="2-minute quiz about role, stack, level, location and salary">
+            <QuizPreview />
+          </HowCard>
+          <HowCard step={2} title="AI matching" body="We score every job against your profile — no black box">
+            <MatchPreview />
+          </HowCard>
+          <HowCard step={3} title="Daily digest" body="5 best-fit jobs in your inbox each morning">
+            <InboxPreview />
+          </HowCard>
         </div>
       </div>
     </section>
+  );
+}
+
+function HowCard({
+  step,
+  title,
+  body,
+  children,
+}: {
+  step: number;
+  title: string;
+  body: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className="flex flex-col overflow-hidden rounded-[20px] bg-[color:var(--color-surface-2)]"
+      style={{ border: "0.5px solid var(--color-border)" }}
+    >
+      <div className="p-6">
+        <div className="flex items-center gap-3">
+          <span
+            className="inline-flex items-center rounded-md px-2.5 py-1 text-[13px] font-medium text-white"
+            style={{ backgroundColor: "var(--color-green)" }}
+          >
+            Step {step}
+          </span>
+          <h3 className="text-xl md:text-2xl" style={{ fontFamily: "var(--font-display)" }}>
+            {title}
+          </h3>
+        </div>
+        <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">{body}</p>
+      </div>
+      <div
+        className="relative mt-auto bg-[color:var(--color-surface-1)]"
+        style={{ borderTop: "0.5px solid var(--color-border)" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function QuizChip({ label }: { label: string }) {
+  return (
+    <div
+      className="flex items-center gap-2 rounded-lg bg-[color:var(--color-surface-1)] px-3 py-2"
+      style={{ border: "0.5px solid var(--color-border)" }}
+    >
+      <span
+        className="flex h-4 w-4 shrink-0 items-center justify-center rounded"
+        style={{ backgroundColor: "var(--color-green)" }}
+      >
+        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+      </span>
+      <span className="truncate text-[13px] text-[color:var(--color-foreground)]">{label}</span>
+    </div>
+  );
+}
+
+function QuizPreview() {
+  return (
+    <div className="p-5">
+      <div className="grid grid-cols-2 gap-2">
+        <QuizChip label="Senior Product Designer" />
+        <QuizChip label="UX/UI Designer" />
+        <QuizChip label="New York City" />
+        <QuizChip label="Philadelphia" />
+      </div>
+      <div className="mt-5">
+        <div className="relative h-1.5 rounded-full" style={{ backgroundColor: "var(--color-surface-2)" }}>
+          <div
+            className="absolute h-1.5 rounded-full"
+            style={{ left: "20%", right: "35%", backgroundColor: "var(--color-green)" }}
+          />
+          <div
+            className="absolute -top-1.5 h-4 w-4 rounded-full border-2 border-white shadow"
+            style={{ left: "calc(20% - 8px)", backgroundColor: "var(--color-green)" }}
+          />
+          <div
+            className="absolute -top-1.5 h-4 w-4 rounded-full border-2 border-white shadow"
+            style={{ left: "calc(65% - 8px)", backgroundColor: "var(--color-green)" }}
+          />
+        </div>
+        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
+          <span>$60k</span>
+          <span>$100k</span>
+          <span>$140k</span>
+          <span>$180k</span>
+        </div>
+      </div>
+      <div className="mt-5 flex items-center justify-between">
+        <div className="text-[13px]">
+          <span className="text-[color:var(--color-text-secondary)]">Salary Range </span>
+          <span className="font-semibold text-[color:var(--color-foreground)]">$100k – $150k</span>
+        </div>
+        <button
+          type="button"
+          className="rounded-md px-4 py-2 text-[13px] font-medium"
+          style={{ backgroundColor: "var(--color-accent)", color: "var(--color-on-accent)" }}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MatchPreview() {
+  return (
+    <div className="relative px-5 pt-5 pb-6">
+      {/* stacked cards behind */}
+      <div
+        aria-hidden
+        className="absolute left-8 right-2 top-3 h-[calc(100%-8px)] rounded-xl bg-[color:var(--color-surface-1)]"
+        style={{ border: "0.5px solid var(--color-border)", transform: "translateY(6px)" }}
+      />
+      <div
+        className="relative rounded-xl bg-[color:var(--color-surface-1)] p-4"
+        style={{ border: "0.5px solid var(--color-border)" }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+            style={{ backgroundColor: "var(--color-mint)" }}
+          >
+            <span style={{ color: "var(--color-green)", fontFamily: "var(--font-display)", fontWeight: 600 }}>S</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between">
+              <span
+                className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                style={{ backgroundColor: "var(--color-mint)", color: "var(--color-green)" }}
+              >
+                1 hour ago
+              </span>
+              <span className="text-[11px] text-[color:var(--color-text-muted)]">1/5</span>
+            </div>
+            <h4 className="mt-1 text-base font-semibold text-[color:var(--color-foreground)]">UX/UI Designer</h4>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center justify-around">
+          <ScoreRing value={95} label="" size={56} strokeWidth={5} />
+          <ScoreRing value={93} label="" size={56} strokeWidth={5} />
+          <ScoreRing value={96} label="" size={56} strokeWidth={5} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InboxPreview() {
+  return (
+    <div className="relative p-4">
+      <div
+        className="rounded-lg bg-[color:var(--color-surface-1)]"
+        style={{ border: "0.5px solid var(--color-border)" }}
+      >
+        {/* toolbar */}
+        <div className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: "0.5px solid var(--color-border)" }}>
+          <div className="flex items-center gap-1">
+            <span
+              className="inline-block h-3.5 w-3.5 rounded-sm"
+              style={{ border: "1px solid var(--color-border-strong)" }}
+            />
+            <ChevronDown className="h-3 w-3 text-[color:var(--color-text-muted)]" />
+          </div>
+          <svg className="h-3.5 w-3.5 text-[color:var(--color-text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </svg>
+          <div className="ml-1 flex gap-0.5">
+            <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
+            <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
+            <span className="h-1 w-1 rounded-full bg-[color:var(--color-text-muted)]" />
+          </div>
+        </div>
+        {/* Primary tab */}
+        <div className="relative px-3 pt-2">
+          <span className="text-[13px] font-medium" style={{ color: "#1a73e8" }}>
+            Primary
+          </span>
+          <div className="mt-2 h-[2px] w-14" style={{ backgroundColor: "#1a73e8" }} />
+        </div>
+        {/* rows */}
+        <div>
+          <InboxRow bold sender="Jobly daily digest" preview="" starred />
+          <InboxRow sender="Emily Johnson" preview="eDeliv…" />
+          <InboxRow sender="Michael Smith" preview="Hi, just…" />
+        </div>
+      </div>
+      {/* Gmail M badge */}
+      <div className="absolute right-3 top-2 flex items-center">
+        <span
+          className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-md"
+          style={{ border: "0.5px solid var(--color-border)" }}
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden>
+            <path fill="#4285F4" d="M2 6.5v11A1.5 1.5 0 0 0 3.5 19H5V8.2l7 5.1 7-5.1V19h1.5A1.5 1.5 0 0 0 22 17.5v-11z" />
+            <path fill="#EA4335" d="M2 6.5 12 14 22 6.5A1.5 1.5 0 0 0 20.5 5h-17A1.5 1.5 0 0 0 2 6.5z" />
+            <path fill="#34A853" d="M5 19V8.2l7 5.1V19z" />
+            <path fill="#FBBC04" d="M19 19V8.2l-7 5.1V19z" />
+          </svg>
+          <span
+            className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+            style={{ backgroundColor: "var(--color-green)" }}
+          >
+            5
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function InboxRow({
+  sender,
+  preview,
+  bold,
+  starred,
+}: {
+  sender: string;
+  preview: string;
+  bold?: boolean;
+  starred?: boolean;
+}) {
+  return (
+    <div
+      className="flex items-center gap-3 px-3 py-2"
+      style={{ borderTop: "0.5px solid var(--color-border)" }}
+    >
+      <span
+        className="inline-block h-3.5 w-3.5 shrink-0 rounded-sm"
+        style={{ border: "1px solid var(--color-border-strong)" }}
+      />
+      <svg
+        viewBox="0 0 24 24"
+        className="h-3.5 w-3.5 shrink-0"
+        fill={starred ? "#f5b400" : "none"}
+        stroke={starred ? "#f5b400" : "var(--color-text-muted)"}
+        strokeWidth="2"
+      >
+        <polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9" />
+      </svg>
+      <span
+        className={`min-w-0 truncate text-[12px] ${bold ? "font-semibold" : ""}`}
+        style={{ color: "var(--color-foreground)" }}
+      >
+        {sender}
+      </span>
+      {preview && (
+        <span className="ml-auto truncate text-[12px] text-[color:var(--color-text-muted)]">{preview}</span>
+      )}
+    </div>
   );
 }
 
