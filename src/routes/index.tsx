@@ -920,34 +920,38 @@ function QualityOverQuantity() {
             Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility.
           </p>
         </div>
-        <div className="mt-12 grid items-center gap-8 md:grid-cols-[auto_auto_1fr] md:justify-center">
-          <div>
+        <div className="mt-12 flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-center">
+          <div className="flex flex-col items-start">
             <div className="grid grid-cols-5 gap-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-10 w-10 rounded-md"
+                  className="flex h-10 w-10 items-center justify-center rounded-[12px]"
                   style={{ backgroundColor: "var(--color-green)" }}
-                />
+                >
+                  <Check size={20} className="text-[color:var(--color-accent-hover)]" />
+                </div>
               ))}
             </div>
-            <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">
-              <span className="text-[color:var(--color-foreground)]">5 matched</span> — focused, high likelihood
+            <p className="mt-3 text-sm font-semibold text-[color:var(--color-green)]">
+              5 matched (focused, high likelihood)
             </p>
           </div>
-          <div className="text-center text-sm text-[color:var(--color-text-muted)]">vs</div>
-          <div>
-            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-1">
+          <div className="text-sm font-medium uppercase tracking-widest text-[color:var(--color-text-muted)]">
+            VS
+          </div>
+          <div className="flex flex-col items-start">
+            <div className="grid grid-cols-10 gap-1">
               {Array.from({ length: 100 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-3 w-3 rounded-sm"
-                  style={{ backgroundColor: "var(--color-border)" }}
+                  className="h-3 w-3 rounded-[2px]"
+                  style={{ backgroundColor: "var(--color-alt-light-mist)" }}
                 />
               ))}
             </div>
             <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">
-              <span className="text-[color:var(--color-foreground)]">100 random</span> — low reply rate, exhausting
+              100 random (low reply rate, exhausting)
             </p>
           </div>
         </div>
