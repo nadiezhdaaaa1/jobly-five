@@ -831,7 +831,7 @@ function FeatureCards() {
               </span>
             </div>
             <div className="mt-4 space-y-3">
-              <ScoreBar label="React & TypeScript" value={96} />
+              <ScoreBar label="React and TypeScript" value={96} />
               <ScoreBar label="Remote / US" value={100} />
               <ScoreBar label="Salary band" value={88} />
               <ScoreBar label="Company size" value={82} />
