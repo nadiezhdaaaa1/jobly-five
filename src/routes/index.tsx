@@ -443,7 +443,7 @@ function JobSearchBroken() {
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-            The job search is broken
+            The regular job search is broken
           </h2>
           <p className="mt-3 text-[color:var(--color-text-secondary)]">
             Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
