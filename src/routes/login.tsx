@@ -47,10 +47,10 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-      <header className="border-b border-[color:var(--color-border)]">
+      <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-          <Link to="/" className="text-lg" style={{ fontFamily: "var(--font-display)" }}>
-            Jobly
+          <Link to="/" className="text-[30px] font-bold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-logo)" }}>
+            jobly
           </Link>
         </div>
       </header>
