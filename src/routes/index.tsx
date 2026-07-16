@@ -517,11 +517,11 @@ function HowCard({
 }) {
   return (
     <div
-      className="grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[12px]"
+      className="@container grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[12px]"
       style={{ border: "1px solid var(--color-alt-light-mist)", backgroundColor: "var(--color-surface-2)" }}
     >
-      <div className="pt-8 pr-8 pl-8 pb-0">
-        <div className="flex items-center gap-3">
+      <div className="pt-6 pr-6 pl-6 pb-0 md:pt-8 md:pr-8 md:pl-8">
+        <div className="how-card-title-row">
           <span
             className="inline-flex items-center rounded-[4px] px-3 py-1 text-[13px] font-medium text-white"
             style={{ backgroundColor: "var(--color-green)" }}
