@@ -921,7 +921,7 @@ function QualityOverQuantity() {
           </p>
         </div>
         <div className="mt-12 flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-center">
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-center">
             <div className="grid grid-cols-5 gap-2">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
