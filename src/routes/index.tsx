@@ -298,6 +298,9 @@ function HeroCard() {
           <ScoreRing value={96} label="Industry" size={64} />
         </div>
       </div>
+      {/* Stacked cards behind the top match */}
+      <div className="absolute left-3 top-10 z-[-1] h-[200px] w-[280px] rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[320px]" />
+      <div className="absolute left-1 top-14 z-[-2] h-[200px] w-[280px] rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[320px]" />
       <img
         src={heroAsset.url}
         alt="A person checking Jobly matches on their phone"
