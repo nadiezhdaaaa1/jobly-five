@@ -469,32 +469,145 @@ function JobSearchBroken() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-            The regular job search is broken
-          </h2>
-          <p className="mt-3 text-[color:var(--color-text-secondary)]">
-            Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
-          </p>
-        </div>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
-          {items.map((it) => (
-            <div
-              key={it.title}
-              className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[color:var(--color-surface-2)]">
-                <it.icon size={20} className="text-[color:var(--color-text-secondary)]" />
+        <div
+          className="relative overflow-hidden rounded-[24px] p-8 md:p-14 md:min-h-[580px]"
+          style={{
+            backgroundColor: "var(--color-surface-2)",
+            border: "0.5px solid var(--color-border)",
+          }}
+        >
+          <div className="grid gap-10 md:grid-cols-[45%_55%]">
+            <div className="relative z-10">
+              <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+                The job search is broken
+              </h2>
+              <p className="mt-3 text-[color:var(--color-text-secondary)]">
+                Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
+              </p>
+              <div className="mt-10 space-y-8">
+                {items.map((it) => (
+                  <div key={it.title}>
+                    <div className="flex items-center gap-3">
+                      <it.icon size={20} className="text-[color:var(--color-text-secondary)]" />
+                      <h3 className="text-lg md:text-xl" style={{ fontFamily: "var(--font-display)" }}>
+                        {it.title}
+                      </h3>
+                    </div>
+                    <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{it.body}</p>
+                  </div>
+                ))}
               </div>
-              <h3 className="mt-5 text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                {it.title}
-              </h3>
-              <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{it.body}</p>
             </div>
-          ))}
+            <div aria-hidden className="hidden md:block" />
+          </div>
+          <ChipWall />
         </div>
       </div>
     </section>
+  );
+}
+
+type ChipTag = "no match" | "ghost" | "irrelevant" | "outdated";
+type ChipDef = { title: string; icon: LucideIcon; tag?: ChipTag };
+
+const chipRows: ChipDef[][] = [
+  [
+    { title: "Frontend Engineer", icon: Code2 },
+    { title: "Growth Marketing", icon: TrendingUp },
+    { title: "Data Scientist", icon: BarChart3, tag: "no match" },
+    { title: "Engineering Manager", icon: Network },
+    { title: "CTO", icon: Crown },
+  ],
+  [
+    { title: "Scrum Master", icon: RefreshCw, tag: "outdated" },
+    { title: "Product Designer", icon: PenTool, tag: "irrelevant" },
+    { title: "Mobile Developer", icon: TabletSmartphone },
+    { title: "Technical Writer", icon: FileText, tag: "no match" },
+    { title: "Product Manager", icon: ClipboardList, tag: "irrelevant" },
+    { title: "Site Reliability Engineer", icon: ShieldCheck },
+  ],
+  [
+    { title: "QA Engineer", icon: Bug, tag: "no match" },
+    { title: "Senior Backend Engineer", icon: Server },
+    { title: "DevOps Engineer", icon: Terminal },
+    { title: "Solutions Architect", icon: Network, tag: "outdated" },
+    { title: "UX Researcher", icon: UserSearch, tag: "ghost" },
+    { title: "Android Developer", icon: Smartphone },
+  ],
+  [
+    { title: "UI Designer", icon: Palette },
+    { title: "Data Engineer", icon: Database, tag: "ghost" },
+    { title: "Backend Engineer", icon: Server },
+    { title: "iOS Developer", icon: Smartphone, tag: "outdated" },
+    { title: "Marketing Lead", icon: TrendingUp },
+  ],
+  [
+    { title: "Full Stack Engineer", icon: Code2, tag: "irrelevant" },
+    { title: "Machine Learning Engineer", icon: BarChart3 },
+    { title: "Support Engineer", icon: ShieldCheck, tag: "no match" },
+    { title: "Product Designer", icon: PenTool },
+    { title: "Platform Engineer", icon: Server, tag: "ghost" },
+  ],
+  [
+    { title: "Content Designer", icon: FileText },
+    { title: "Data Analyst", icon: BarChart3, tag: "outdated" },
+    { title: "SRE", icon: ShieldCheck },
+    { title: "Backend Developer", icon: Terminal, tag: "no match" },
+    { title: "Growth PM", icon: TrendingUp },
+  ],
+];
+
+function ChipWall() {
+  const tagColor = (t: ChipTag) =>
+    t === "no match" ? "#E17100" : "#D00D01";
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-y-[-15%] right-[-20%] hidden w-[85%] md:block"
+      style={{
+        maskImage:
+          "linear-gradient(to top right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 92%)",
+        WebkitMaskImage:
+          "linear-gradient(to top right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 92%)",
+      }}
+    >
+      <div
+        className="flex flex-col gap-3"
+        style={{
+          transform: "rotate(-32deg)",
+          transformOrigin: "center center",
+          width: "160%",
+          marginLeft: "-30%",
+          marginTop: "-8%",
+        }}
+      >
+        {chipRows.map((row, i) => (
+          <div
+            key={i}
+            className="flex gap-3"
+            style={{ marginLeft: `${(i % 2) * 40}px` }}
+          >
+            {row.map((chip, j) => (
+              <span
+                key={`${i}-${j}-${chip.title}`}
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-[10px] px-3 py-2 text-[13px]"
+                style={{
+                  backgroundColor: "var(--color-surface-1)",
+                  border: "0.5px solid var(--color-border)",
+                  color: "var(--color-foreground)",
+                }}
+              >
+                <chip.icon size={14} className="text-[color:var(--color-text-secondary)]" />
+                <span>{chip.title}</span>
+                {chip.tag ? (
+                  <span style={{ color: tagColor(chip.tag) }}>{chip.tag}</span>
+                ) : null}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
