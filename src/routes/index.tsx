@@ -337,12 +337,14 @@ function InboxToOffer() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="product">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-          From inbox to offer
-        </h2>
-        <div className="mt-2 text-right text-2xl md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-          <span className="text-[color:var(--color-foreground)]">12 days</span>{" "}
-          <span className="text-[color:var(--color-text-secondary)]">average time to offer</span>
+        <div className="flex flex-col gap-4 md:flex-row md:items-baseline md:justify-between">
+          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+            From inbox to offer
+          </h2>
+          <h4 className="text-xl md:text-2xl" style={{ fontFamily: "var(--font-display)" }}>
+            <span className="text-[color:var(--color-foreground)]">12 days</span>{" "}
+            <span className="text-[color:var(--color-text-secondary)]">average time to offer</span>
+          </h4>
         </div>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
