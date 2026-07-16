@@ -518,7 +518,7 @@ function HowCard({
   return (
     <div
       className="grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[12px]"
-      style={{ border: "0.5px solid var(--color-border)", backgroundColor: "var(--color-surface-2)" }}
+      style={{ border: "0.5px solid var(--color-alt-light-mist)", backgroundColor: "var(--color-surface-2)" }}
     >
       <div className="pt-8 pr-8 pl-8 pb-0">
         <div className="flex items-center gap-3">
