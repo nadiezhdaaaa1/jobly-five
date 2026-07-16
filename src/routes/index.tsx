@@ -512,6 +512,20 @@ type ChipDef = { title: string; icon: LucideIcon; tag?: ChipTag };
 
 const chipRows: ChipDef[][] = [
   [
+    { title: "iOS Engineer", icon: Smartphone },
+    { title: "Analytics Engineer", icon: BarChart3, tag: "no match" },
+    { title: "Head of Design", icon: PenTool },
+    { title: "VP Engineering", icon: Crown, tag: "outdated" },
+    { title: "SEO Specialist", icon: TrendingUp },
+  ],
+  [
+    { title: "Staff Engineer", icon: Code2 },
+    { title: "Copywriter", icon: FileText, tag: "irrelevant" },
+    { title: "Security Engineer", icon: ShieldCheck },
+    { title: "BI Analyst", icon: Database, tag: "ghost" },
+    { title: "Brand Designer", icon: Palette },
+  ],
+  [
     { title: "Frontend Engineer", icon: Code2 },
     { title: "Growth Marketing", icon: TrendingUp },
     { title: "Data Scientist", icon: BarChart3, tag: "no match" },
@@ -555,6 +569,27 @@ const chipRows: ChipDef[][] = [
     { title: "Backend Developer", icon: Terminal, tag: "no match" },
     { title: "Growth PM", icon: TrendingUp },
   ],
+  [
+    { title: "Cloud Engineer", icon: Server },
+    { title: "Motion Designer", icon: Palette, tag: "irrelevant" },
+    { title: "Recruiter", icon: UserSearch },
+    { title: "Sales Engineer", icon: TrendingUp, tag: "outdated" },
+    { title: "iOS Developer", icon: Smartphone },
+  ],
+  [
+    { title: "Firmware Engineer", icon: Terminal, tag: "no match" },
+    { title: "Community Manager", icon: RefreshCw },
+    { title: "Data PM", icon: ClipboardList, tag: "ghost" },
+    { title: "Web Designer", icon: PenTool },
+    { title: "IT Support", icon: ShieldCheck },
+  ],
+  [
+    { title: "Systems Engineer", icon: Network },
+    { title: "Illustrator", icon: PenTool, tag: "outdated" },
+    { title: "Producer", icon: ClipboardList },
+    { title: "Researcher", icon: UserSearch, tag: "irrelevant" },
+    { title: "PR Lead", icon: TrendingUp },
+  ],
 ];
 
 function ChipWall() {
@@ -563,22 +598,24 @@ function ChipWall() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-y-[-15%] right-[-20%] hidden w-[85%] md:block"
+      className="pointer-events-none absolute hidden md:block"
       style={{
+        top: "-10%",
+        bottom: "-15%",
+        right: "-20%",
+        left: "38%",
         maskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 92%)",
+          "linear-gradient(to top right, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
         WebkitMaskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 92%)",
+          "linear-gradient(to top right, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
       }}
     >
       <div
-        className="flex flex-col gap-3"
+        className="flex flex-col gap-3 absolute left-1/2 top-1/2"
         style={{
-          transform: "rotate(-32deg)",
+          transform: "translate(-50%, -50%) rotate(-32deg)",
           transformOrigin: "center center",
-          width: "160%",
-          marginLeft: "-30%",
-          marginTop: "-8%",
+          width: "200%",
         }}
       >
         {chipRows.map((row, i) => (
