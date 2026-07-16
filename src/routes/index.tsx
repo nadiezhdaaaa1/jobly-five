@@ -475,7 +475,7 @@ function JobSearchBroken() {
           className="relative overflow-hidden rounded-[12px] p-8 md:p-14 md:min-h-[580px]"
           style={{
             backgroundColor: "var(--color-background)",
-            border: "1px solid var(--color-alt-light-mist)",
+            border: "1px solid var(--color-border)",
           }}
         >
           <div className="relative grid h-full gap-10 md:grid-cols-[45%_55%]">
