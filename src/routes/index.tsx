@@ -416,11 +416,12 @@ function OfficialApis() {
         <p className="mt-3 text-[color:var(--color-text-secondary)]">
           Verified integrations with leading hiring platforms.
         </p>
-        <div className="mt-[72px] flex flex-wrap items-center gap-[76px]">
+        <div className="mt-[72px] flex flex-wrap items-center gap-10 md:gap-[76px]">
           {[JoobleLogo, GreenhouseLogo, LeverLogo, AshbyLogo, UsaJobsLogo].map((Logo, i) => (
             <Logo key={i} />
           ))}
         </div>
+
         <div className="mt-[72px] flex flex-wrap gap-20">
           <Counter label="Jobs analysed today" value={14230} />
           <Counter label="New in 24h" value={892} />
