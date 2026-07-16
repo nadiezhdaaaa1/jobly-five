@@ -881,7 +881,7 @@ function FinalCTA() {
   return (
     <section className="border-b border-[color:var(--color-green)] bg-[color:var(--color-green)]">
       <div className="mx-auto max-w-[820px] px-5 py-20 text-center md:px-8">
-        <h2 className="text-3xl text-[color:var(--color-mint)] md:text-5xl" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className="text-3xl text-white md:text-5xl" style={{ fontFamily: "var(--font-display)" }}>
           Ready to stop scrolling?
         </h2>
         <div className="mt-8 flex justify-center">
