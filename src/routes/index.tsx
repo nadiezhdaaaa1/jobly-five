@@ -4,7 +4,7 @@ import { Menu, X, Check, Minus, ChevronDown, Ghost, ListFilter, ClipboardList, S
 
 import heroAsset from "../assets/hero.png.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
-import t2Asset from "../assets/t2-2.png.asset.json";
+import t2Asset from "../assets/t2-3.png.asset.json";
 import t3Asset from "../assets/t3-2.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
 import {
