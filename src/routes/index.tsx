@@ -945,7 +945,7 @@ function QualityOverQuantity() {
               {Array.from({ length: 100 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-5 w-5 rounded-[2px]"
+                  className="h-3 w-3 rounded-[2px]"
                   style={{ backgroundColor: "var(--color-alt-light-mist)" }}
                 />
               ))}
