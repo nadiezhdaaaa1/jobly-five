@@ -499,10 +499,9 @@ function JobSearchBroken() {
               </div>
             </div>
             <div aria-hidden className="hidden md:block" />
-
           </div>
-
           <ChipWall />
+
         </div>
       </div>
     </section>
@@ -620,11 +619,9 @@ function ChipWall() {
             "linear-gradient(to right, var(--color-surface-2) 0%, var(--color-surface-2) 35%, transparent 100%)",
         }}
       />
-
-
       <div
-
         className="absolute top-1/2 flex flex-col gap-3"
+
         style={{
           right: "-10%",
           transform: "translateX(120px) translateY(-50%) rotate(-32deg)",
