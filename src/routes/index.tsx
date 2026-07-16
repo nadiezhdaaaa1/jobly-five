@@ -500,6 +500,14 @@ function JobSearchBroken() {
             </div>
             <div aria-hidden className="hidden md:block" />
           </div>
+          <div
+            className="pointer-events-none absolute inset-y-0 z-[5] hidden md:block"
+            style={{
+              left: "45%",
+              width: "1px",
+              backgroundColor: "var(--color-alt-light-mist)",
+            }}
+          />
           <ChipWall />
         </div>
       </div>
