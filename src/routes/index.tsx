@@ -276,7 +276,7 @@ function HeroCard() {
       <div className="h-[344px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
       {/* Floating match reveal card + stack */}
       <div className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]">
-        <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+        <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
           <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
             <span className="inline-flex items-center gap-1.5">
               <Sparkle size={12} className="text-[color:var(--color-green)]" />
