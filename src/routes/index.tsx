@@ -815,14 +815,14 @@ function FeatureCards() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
-          <div className="mt-6 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+          <div className="mt-6 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
             <div className="flex items-center justify-between">
 
               <span className="text-sm">Senior Frontend Engineer</span>
@@ -838,7 +838,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
@@ -853,7 +853,7 @@ function FeatureCards() {
             ].map((c) => (
               <div
                 key={c.label}
-                className={`rounded-lg p-3 ${c.tone === "accent" ? "" : "border border-[color:var(--color-border)]"}`}
+                className={`rounded-[6px] p-3 ${c.tone === "accent" ? "" : "border border-[color:var(--color-border)]"}`}
                 style={{
 
                   backgroundColor:
