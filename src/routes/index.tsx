@@ -76,6 +76,7 @@ function Header() {
   const [open, setOpen] = useState(false);
   const nav = [
     { label: "Product", href: "#product" },
+    { label: "How it works", href: "#how-it-works" },
     { label: "Pricing", href: "#pricing" },
     { label: "Blog", href: "#blog" },
     { label: "About", href: "#about" },
