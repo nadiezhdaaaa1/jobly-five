@@ -21,6 +21,8 @@
   --radius-button: 4px;
   --font-sans: "Stack Sans Text", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Stack Sans Headline", "Stack Sans Text", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: "Stack Sans Notch", "Stack Sans Headline", "Stack Sans Text", ui-sans-serif, system-ui, sans-serif;
+
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-border-strong: var(--border-strong);

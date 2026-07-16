@@ -109,9 +109,14 @@ function QuizPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="border-b border-[color:var(--color-border)]">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link to="/" className="text-lg" style={{ fontFamily: "var(--font-display)" }}>
+          <Link
+            to="/"
+            className="text-lg text-[color:var(--color-green)]"
+            style={{ fontFamily: "var(--font-logo)" }}
+          >
             Jobly
           </Link>
+
           <Link
             to="/login"
             className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[10px] px-2 py-1"
