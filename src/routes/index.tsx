@@ -1,6 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Menu, X, Check, Minus, ChevronDown, Ghost, ListFilter, ClipboardList, Sparkle } from "lucide-react";
+import {
+  Menu,
+  X,
+  Check,
+  Minus,
+  ChevronDown,
+  Ghost,
+  ListFilter,
+  ClipboardList,
+  Sparkle,
+  Bug,
+  Server,
+  Terminal,
+  Network,
+  UserSearch,
+  Smartphone,
+  RefreshCw,
+  PenTool,
+  Database,
+  Palette,
+  FileText,
+  TrendingUp,
+  BarChart3,
+  Code2,
+  Crown,
+  ShieldCheck,
+  TabletSmartphone,
+  type LucideIcon,
+} from "lucide-react";
 
 import heroAsset from "../assets/hero-2.png.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
