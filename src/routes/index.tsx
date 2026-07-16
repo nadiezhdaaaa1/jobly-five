@@ -476,7 +476,7 @@ function JobSearchBroken() {
             border: "1px solid var(--color-alt-light-mist)",
           }}
         >
-          <div className="grid gap-10 md:grid-cols-[45%_55%]">
+          <div className="relative grid h-full gap-10 md:grid-cols-[45%_55%]">
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
                 The job search is broken
@@ -498,16 +498,13 @@ function JobSearchBroken() {
                 ))}
               </div>
             </div>
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-[-56px] left-[45%] z-[5] hidden md:block w-[1px]"
+              style={{ backgroundColor: "var(--color-alt-light-mist)" }}
+            />
             <div aria-hidden className="hidden md:block" />
           </div>
-          <div
-            className="pointer-events-none absolute inset-y-0 z-[5] hidden md:block"
-            style={{
-              left: "45%",
-              width: "1px",
-              backgroundColor: "var(--color-alt-light-mist)",
-            }}
-          />
           <ChipWall />
         </div>
       </div>
