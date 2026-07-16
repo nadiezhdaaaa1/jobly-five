@@ -143,7 +143,7 @@ function MatchesPage() {
               type="button"
               onClick={handleGoogle}
               disabled={submitting}
-              className="inline-flex h-12 items-center justify-center gap-3 rounded-[10px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[15px] font-semibold transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              className="inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[15px] font-semibold transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
             >
               <GoogleIcon />
               Continue with Google
@@ -153,7 +153,7 @@ function MatchesPage() {
               <button
                 type="button"
                 onClick={() => setMode("email")}
-                className="inline-flex h-12 items-center justify-center rounded-[10px] px-5 text-[15px] font-semibold transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                className="inline-flex h-12 items-center justify-center rounded-button px-5 text-[15px] font-semibold transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Continue with email
               </button>
@@ -192,7 +192,7 @@ function MatchesPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-[10px] px-5 text-[15px] font-semibold transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 text-[15px] font-semibold transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
                 >
                   {submitting ? (
                     <>

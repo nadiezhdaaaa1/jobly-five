@@ -647,7 +647,7 @@ function EmailStep({
           type="submit"
           disabled={!valid || submitting}
           className={cn(
-            "mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-[10px] px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+            "mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
             "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
             "disabled:cursor-not-allowed disabled:opacity-50"
           )}
@@ -676,7 +676,7 @@ function ContinueRow({ disabled, onClick }: { disabled: boolean; onClick: () => 
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          "inline-flex h-12 w-full items-center justify-center rounded-[10px] px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          "inline-flex h-12 w-full items-center justify-center rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
           "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
           "disabled:cursor-not-allowed disabled:opacity-50"
         )}

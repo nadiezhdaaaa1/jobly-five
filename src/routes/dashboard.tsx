@@ -44,7 +44,7 @@ function DashboardPlaceholder() {
           </p>
           <Link
             to="/matches"
-            className="mt-5 inline-flex h-11 items-center justify-center rounded-[10px] px-5 text-sm font-semibold bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="mt-5 inline-flex h-11 items-center justify-center rounded-button px-5 text-sm font-semibold bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           >
             Preview your matches
           </Link>
