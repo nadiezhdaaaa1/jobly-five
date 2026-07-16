@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Menu, X, Check, Minus, ChevronDown, Ghost, ListFilter, ClipboardList, Sparkle } from "lucide-react";
 
-import heroAsset from "../assets/hero.png.asset.json";
+import heroAsset from "../assets/hero-2.png.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
 import t2Asset from "../assets/t2-3.png.asset.json";
 import t3Asset from "../assets/t3-2.png.asset.json";
