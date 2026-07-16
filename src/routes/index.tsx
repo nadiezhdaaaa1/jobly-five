@@ -838,7 +838,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
@@ -853,7 +853,7 @@ function FeatureCards() {
             ].map((c) => (
               <div
                 key={c.label}
-                className={`rounded-lg p-3 ${c.tone === "accent" ? "" : "border border-[color:var(--color-border)]"}`}
+                className={`rounded-[6px] p-3 ${c.tone === "accent" ? "" : "border border-[color:var(--color-border)]"}`}
                 style={{
 
                   backgroundColor:
