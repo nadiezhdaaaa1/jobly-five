@@ -114,7 +114,7 @@ function QuizPage() {
             className="text-lg text-[color:var(--color-green)]"
             style={{ fontFamily: "var(--font-logo)" }}
           >
-            Jobly
+            jobly
           </Link>
 
           <Link
