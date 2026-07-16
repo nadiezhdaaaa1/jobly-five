@@ -500,6 +500,14 @@ function JobSearchBroken() {
             </div>
             <div aria-hidden className="hidden md:block" />
           </div>
+          <div
+            className="pointer-events-none absolute inset-y-0 z-[5] hidden md:block"
+            style={{
+              left: "45%",
+              width: "120px",
+              background: "linear-gradient(to right, var(--color-surface-2) 0%, transparent 100%)",
+            }}
+          />
           <ChipWall />
         </div>
       </div>
@@ -614,7 +622,7 @@ function ChipWall() {
         className="absolute top-1/2 flex flex-col gap-3"
         style={{
           right: "-10%",
-          transform: "translateY(-50%) rotate(-32deg)",
+          transform: "translateX(64px) translateY(-50%) rotate(-32deg)",
           transformOrigin: "center center",
           width: "max-content",
         }}
