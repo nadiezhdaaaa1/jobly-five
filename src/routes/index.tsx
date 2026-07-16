@@ -273,7 +273,7 @@ function Hero() {
 function HeroCard() {
   return (
     <div className="relative">
-      <div className="h-[344px] overflow-hidden rounded border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
+      <div className="h-[344px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
       {/* Floating match reveal card */}
       <div className="absolute left-5 top-5 z-0 w-[280px] rounded border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:w-[320px]">
         <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
