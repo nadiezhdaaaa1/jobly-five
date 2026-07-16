@@ -365,7 +365,7 @@ function StackStep({
         Pick the tools you actually work with. Select at least one.
       </p>
 
-      <div className="mt-4 flex items-center gap-2 rounded-[10px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -516,7 +516,7 @@ function LocationStep({
           value={location}
           onChange={(e) => onChange({ location: e.target.value })}
           placeholder={remote ? "Optional if remote" : "e.g. Berlin, Germany"}
-          className="mt-1.5 h-11 w-full rounded-[10px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
         />
       </label>
 
@@ -630,7 +630,7 @@ function EmailStep({
             placeholder="you@company.com"
             aria-invalid={showError}
             className={cn(
-              "mt-1.5 h-12 w-full rounded-[10px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+              "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
               showError
                 ? "border-[color:var(--color-danger)]"
                 : "border-[color:var(--color-border)]"
