@@ -941,11 +941,11 @@ function QualityOverQuantity() {
             VS
           </div>
           <div className="flex flex-col items-start">
-            <div className="grid grid-cols-10 gap-1">
+            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-1">
               {Array.from({ length: 100 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-3 w-3 rounded-[2px]"
+                  className="h-2 w-2 rounded-[1px]"
                   style={{ backgroundColor: "var(--color-alt-light-mist)" }}
                 />
               ))}
