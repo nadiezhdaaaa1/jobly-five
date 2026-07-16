@@ -129,12 +129,12 @@ function Header() {
           </nav>
         </div>
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href="#login"
+          <Link
+            to="/login"
             className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
           >
             Log in
-          </a>
+          </Link>
           <Link
             to="/quiz"
             className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
@@ -164,9 +164,9 @@ function Header() {
                 {n.label}
               </a>
             ))}
-            <a href="#login" className="rounded-lg px-3 py-3 text-sm">
+            <Link to="/login" className="rounded-lg px-3 py-3 text-sm">
               Log in
-            </a>
+            </Link>
             <Link
               to="/quiz"
               className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
