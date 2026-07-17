@@ -426,7 +426,11 @@ function RoleStep({
                       ? "border-white bg-white"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
                   )}
-                />
+                >
+                  {selected && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
+                  )}
+                </span>
                 {r}
               </button>
             );
