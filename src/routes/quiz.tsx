@@ -66,13 +66,20 @@ function QuizPage() {
 
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
     setAnswers((a) => ({ ...a, ...patch }));
-    if (editing === nextFrom) {
-      setEditing(null);
-      return;
-    }
     const idx = STEP_ORDER.indexOf(nextFrom);
     const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
-    setCurrent(next);
+    if (editing === nextFrom) {
+      setEditing(null);
+    }
+    setCurrent((c) => {
+      const curIdx = STEP_ORDER.indexOf(c);
+      const nextIdx = STEP_ORDER.indexOf(next);
+      return nextIdx > curIdx ? next : c;
+    });
+    // If editing a prior step, jump to the step immediately after it.
+    if (editing === nextFrom) {
+      setCurrent(next);
+    }
   }
 
   async function handleSubmit(email: string) {
