@@ -274,7 +274,7 @@ function StepShell({
         >
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-primary)]" style={{ aspectRatio: "1 / 1" }}>
-              <Check className="h-4 w-4 text-white" />
+              <Check className="h-4 w-4 text-[color:var(--color-foreground)]" />
             </span>
             <div className="min-w-0">
               <div className="text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
