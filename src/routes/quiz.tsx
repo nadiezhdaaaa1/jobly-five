@@ -315,8 +315,8 @@ function StepShell({
 const SUMMARY_LABEL: Record<StepKey, string> = {
   role: "Role",
   stack: "Stack",
-  level: "Level",
-  loc: "Location & salary",
+  level: "Experience",
+  loc: "Location and salary",
   email: "Email",
 };
 
@@ -326,10 +326,16 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
       return a.role ?? "";
     case "stack":
       return (a.stack ?? []).join(", ");
-    case "level":
-      return a.level ?? "";
+    case "level": {
+      const parts: string[] = [];
+      if (a.level) parts.push(a.level);
+      if (a.years != null) parts.push(`${formatYears(a.years)}y`);
+      if (a.languages && a.languages.length > 0) parts.push(...a.languages);
+      return parts.join(" · ");
+    }
     case "loc": {
-      const where = a.remote ? "Remote" : a.location || "";
+      const locs = a.locations ?? [];
+      const where = locs.length > 0 ? locs.join(" · ") : a.remote ? "Remote" : "";
       const money =
         a.salaryMin != null && a.salaryMax != null
           ? `${formatMoney(a.salaryMin)}–${formatMoney(a.salaryMax)}`
@@ -339,6 +345,12 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "email":
       return a.email ?? "";
   }
+}
+
+function formatYears(n: number): string {
+  if (n <= 0) return "<1";
+  if (n >= 20) return "20+";
+  return String(n);
 }
 
 // ---------- Heading helper ----------
