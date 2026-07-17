@@ -4,6 +4,7 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -17,76 +18,6 @@ export const Route = createFileRoute("/quiz")({
 
 type StepKey = "role" | "stack" | "level" | "loc" | "email";
 const STEP_ORDER: StepKey[] = ["role", "stack", "level", "loc", "email"];
-
-const ROLES = [
-  "Frontend Engineer",
-  "Backend Engineer",
-  "Full Stack Engineer",
-  "Mobile Engineer",
-  "iOS Engineer",
-  "Android Engineer",
-  "Software Engineer",
-  "Staff Engineer",
-  "Engineering Manager",
-  "Tech Lead",
-  "DevOps Engineer",
-  "Site Reliability Engineer",
-  "Platform Engineer",
-  "Cloud Engineer",
-  "Security Engineer",
-  "QA Engineer",
-  "Test Automation Engineer",
-  "Data Engineer",
-  "Data Scientist",
-  "Data Analyst",
-  "Analytics Engineer",
-  "Machine Learning Engineer",
-  "AI Engineer",
-  "MLOps Engineer",
-  "Research Engineer",
-  "Product Manager",
-  "Technical Product Manager",
-  "Product Designer",
-  "UX Designer",
-  "UI Designer",
-  "UX Researcher",
-  "Design Engineer",
-  "Solutions Architect",
-  "Systems Architect",
-  "Database Administrator",
-  "Embedded Engineer",
-  "Firmware Engineer",
-  "Game Developer",
-  "Blockchain Engineer",
-  "Developer Advocate",
-  "Technical Writer",
-  "IT Support Engineer",
-];
-const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
-const STACK_OPTIONS = [
-  "React",
-  "Node",
-  "TypeScript",
-  "JavaScript",
-  "Python",
-  "Go",
-  "Rust",
-  "Java",
-  "Kotlin",
-  "Swift",
-  "SQL",
-  "PostgreSQL",
-  "GraphQL",
-  "AWS",
-  "GCP",
-  "Docker",
-  "Kubernetes",
-  "Figma",
-  "Next.js",
-  "Vue",
-  "Django",
-  "Rails",
-];
 
 function formatMoney(n: number) {
   return `$${Math.round(n / 1000)}k`;
@@ -193,12 +124,13 @@ function QuizPage() {
                 {key === "role" && (
                   <RoleStep
                     value={answers.role}
-                    onChange={(v) => setAnswers((a) => ({ ...a, role: v }))}
+                    onChange={(v) => setAnswers((a) => ({ ...a, role: v, stack: undefined }))}
                     onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
                   <StackStep
+                    role={answers.role}
                     value={answers.stack ?? []}
                     onChange={(stack) => setAnswers((a) => ({ ...a, stack }))}
                     onContinue={() => advance("stack", {})}
@@ -458,16 +390,19 @@ function RoleStep({
 // ---------- 2. Stack ----------
 
 function StackStep({
+  role,
   value,
   onChange,
   onContinue,
 }: {
+  role?: string;
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const filtered = STACK_OPTIONS.filter((s) =>
+  const options = role ? ROLE_STACKS[role] ?? COMMON_STACKS : COMMON_STACKS;
+  const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
   const toggle = (s: string) =>
