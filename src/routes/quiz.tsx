@@ -401,7 +401,7 @@ function RoleStep({
         )}
       </div>
 
-      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
+      <div className="mt-4 max-h-[184px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((r) => {
             const selected = value === r;
@@ -414,7 +414,7 @@ function RoleStep({
                 className={cn(
                   "inline-flex items-center rounded-[4px] border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)] font-semibold"
+                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] font-semibold"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                 )}
                 style={{ padding: "6px 10px 6px 8px", gap: 8 }}
@@ -423,14 +423,10 @@ function RoleStep({
                   className={cn(
                     "grid h-4 w-4 shrink-0 place-items-center rounded-full border-2",
                     selected
-                      ? "border-[color:var(--color-on-accent)] bg-[color:var(--color-on-accent)]"
+                      ? "border-white bg-white"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
                   )}
-                >
-                  {selected && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
-                  )}
-                </span>
+                />
                 {r}
               </button>
             );
