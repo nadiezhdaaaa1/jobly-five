@@ -590,7 +590,7 @@ function ExperienceStep({
 
       <div className="mt-6">
         <div className="flex items-baseline justify-between">
-          <span className="text-sm font-semibold">Years of experience</span>
+          <span className="text-sm font-light text-[#090B0C]">Years of experience</span>
           <span className="text-sm text-[color:var(--color-foreground)] font-semibold">
             {formatYears(years)} years
           </span>
