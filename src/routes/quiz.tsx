@@ -70,16 +70,10 @@ function QuizPage() {
     const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
     if (editing === nextFrom) {
       setEditing(null);
+      setCurrent((c) => (STEP_ORDER.indexOf(next) > STEP_ORDER.indexOf(c) ? next : c));
+      return;
     }
-    setCurrent((c) => {
-      const curIdx = STEP_ORDER.indexOf(c);
-      const nextIdx = STEP_ORDER.indexOf(next);
-      return nextIdx > curIdx ? next : c;
-    });
-    // If editing a prior step, jump to the step immediately after it.
-    if (editing === nextFrom) {
-      setCurrent(next);
-    }
+    setCurrent(next);
   }
 
   async function handleSubmit(email: string) {
