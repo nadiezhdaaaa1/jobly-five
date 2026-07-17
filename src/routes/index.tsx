@@ -283,7 +283,7 @@ const testimonials = [
 
 function InboxToOffer() {
   return (
-    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="product">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="offer">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <div className="flex flex-col gap-4 md:flex-row md:items-baseline md:justify-between">
           <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
@@ -380,7 +380,7 @@ function JobSearchBroken() {
     },
   ];
   return (
-    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="problem">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <div
           className="relative overflow-hidden rounded-[12px] p-8 md:p-14 md:min-h-[580px]"

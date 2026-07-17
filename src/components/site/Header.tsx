@@ -13,9 +13,17 @@ export function Wordmark({ className = "" }: { className?: string }) {
   );
 }
 
-const NAV = [
-  { label: "Blog", to: "/blog" as const },
-  { label: "Contact", to: "/contact" as const },
+type NavItem =
+  | { label: string; to: string; href?: never }
+  | { label: string; href: string; to?: never };
+
+const NAV: NavItem[] = [
+  { label: "Offer", href: "/#offer" },
+  { label: "Problem", href: "/#problem" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Blog", to: "/blog" },
+  { label: "Contact", to: "/contact" },
 ];
 
 export function Header() {
@@ -28,16 +36,26 @@ export function Header() {
             <Wordmark />
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-                activeProps={{ className: "text-sm text-[color:var(--color-foreground)]" }}
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) =>
+              n.to ? (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                  activeProps={{ className: "text-sm text-[color:var(--color-foreground)]" }}
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <a
+                  key={n.label}
+                  href={n.href}
+                  className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                >
+                  {n.label}
+                </a>
+              )
+            )}
           </nav>
         </div>
         <div className="hidden items-center gap-6 md:flex">
@@ -66,16 +84,27 @@ export function Header() {
       {open && (
         <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:hidden">
           <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) =>
+              n.to ? (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <a
+                  key={n.label}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  {n.label}
+                </a>
+              )
+            )}
             <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
               Log in
             </Link>
