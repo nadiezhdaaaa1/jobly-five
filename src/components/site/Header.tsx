@@ -58,7 +58,7 @@ export function Header() {
             )}
           </nav>
         </div>
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           <Link
             to="/login"
             className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
