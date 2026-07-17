@@ -562,14 +562,14 @@ function ExperienceStep({
               type="button"
               onClick={() => onChange({ level: l })}
               className={cn(
-                "relative flex min-h-[72px] items-center justify-between overflow-hidden rounded-[4px] border pl-4 pr-0 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "relative flex h-[56px] items-center overflow-hidden rounded-[4px] border pl-4 pr-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
                   ? "border-[#00F1A9] bg-[#00F1A9]"
                   : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              <span className="flex items-center gap-2 text-[18px] font-semibold leading-6 text-[#090B0C]">
+              <span className="flex items-center gap-2 text-[16px] font-normal leading-[1.40] text-[#090B0C]">
                 {selected && (
                   <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
@@ -581,7 +581,7 @@ function ExperienceStep({
                 src={LEVEL_IMAGES[l]}
                 alt=""
                 aria-hidden="true"
-                className="ml-auto h-full w-auto self-stretch object-contain object-right"
+                className="absolute right-0 top-0 h-full w-auto object-contain object-right"
               />
             </button>
           );
