@@ -285,7 +285,7 @@ function StepShell({
               </div>
             </div>
           </div>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[color:var(--color-text-secondary)] group-hover:bg-[color:var(--color-surface-2)]">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] text-[color:var(--color-text-secondary)] group-hover:bg-[color:var(--color-surface-2)]">
             <Pencil className="h-4 w-4" />
           </span>
         </button>
