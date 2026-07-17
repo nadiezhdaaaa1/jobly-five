@@ -595,19 +595,25 @@ function ExperienceStep({
             {formatYears(years)} years
           </span>
         </div>
-        <input
-          type="range"
-          min={0}
-          max={20}
-          step={1}
-          value={years}
-          onChange={(e) => onChange({ years: Number(e.target.value) })}
-          aria-label="Years of experience"
-          className="jobly-single-range mt-3 h-2 w-full appearance-none rounded-full"
-          style={{
-            background: `linear-gradient(to right, var(--color-green) 0%, var(--color-green) ${(years / 20) * 100}%, var(--color-surface-2) ${(years / 20) * 100}%, var(--color-surface-2) 100%)`,
-          }}
-        />
+        <div className="relative mt-4 h-8">
+          {/* Track */}
+          <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+          {/* Selected range */}
+          <div
+            className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
+            style={{ left: "0%", right: `${100 - (years / 20) * 100}%` }}
+          />
+          <input
+            type="range"
+            min={0}
+            max={20}
+            step={1}
+            value={years}
+            onChange={(e) => onChange({ years: Number(e.target.value) })}
+            aria-label="Years of experience"
+            className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
+          />
+        </div>
         <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
           {ticks.map((t) => (
             <span key={t}>{t === 0 ? "<1" : t === 20 ? "20+" : t}</span>
