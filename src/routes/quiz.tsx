@@ -52,15 +52,15 @@ function QuizPage() {
     email: !!answers.email,
   };
 
-  // Derive the current step from completion, unless the user is actively editing
-  const derivedCurrent: StepKey = useMemo(() => {
-    for (const k of STEP_ORDER) if (!completed[k]) return k;
-    return "email";
-  }, [completed]);
-
+  // On hydration, resume at the first incomplete step (for returning users).
+  // After that, only Continue advances the current step — selections alone must not collapse it.
   useEffect(() => {
-    if (!editing) setCurrent(derivedCurrent);
-  }, [derivedCurrent, editing]);
+    if (!hydrated) return;
+    let next: StepKey = "email";
+    for (const k of STEP_ORDER) if (!completed[k]) { next = k; break; }
+    setCurrent(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   const activeStep = editing ?? current;
 
@@ -68,8 +68,11 @@ function QuizPage() {
     setAnswers((a) => ({ ...a, ...patch }));
     if (editing === nextFrom) {
       setEditing(null);
+      return;
     }
-    // Focus/scroll handled by step effect
+    const idx = STEP_ORDER.indexOf(nextFrom);
+    const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
+    setCurrent(next);
   }
 
   async function handleSubmit(email: string) {
