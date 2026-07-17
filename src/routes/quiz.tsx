@@ -154,7 +154,9 @@ function QuizPage() {
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
             const isVisible =
-              completed[key] || key === activeStep || (key === "stack" && stackInvalid);
+              completed[key] ||
+              key === activeStep ||
+              (key === "stack" && (stackInvalid || stackEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             return (
@@ -163,7 +165,7 @@ function QuizPage() {
                 stepKey={key}
                 expanded={isExpanded}
                 answers={answers}
-                invalid={key === "stack" && stackInvalid && !isExpanded}
+                invalid={key === "stack" && (stackInvalid || stackEmptied) && !isExpanded}
                 onEdit={() => openEdit(key)}
               >
                 {key === "role" && (
