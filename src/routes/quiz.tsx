@@ -18,7 +18,50 @@ export const Route = createFileRoute("/quiz")({
 type StepKey = "role" | "stack" | "level" | "loc" | "email";
 const STEP_ORDER: StepKey[] = ["role", "stack", "level", "loc", "email"];
 
-const ROLES = ["Software Engineer", "Product Manager", "Designer", "Data", "Other"];
+const ROLES = [
+  "Frontend Engineer",
+  "Backend Engineer",
+  "Full Stack Engineer",
+  "Mobile Engineer",
+  "iOS Engineer",
+  "Android Engineer",
+  "Software Engineer",
+  "Staff Engineer",
+  "Engineering Manager",
+  "Tech Lead",
+  "DevOps Engineer",
+  "Site Reliability Engineer",
+  "Platform Engineer",
+  "Cloud Engineer",
+  "Security Engineer",
+  "QA Engineer",
+  "Test Automation Engineer",
+  "Data Engineer",
+  "Data Scientist",
+  "Data Analyst",
+  "Analytics Engineer",
+  "Machine Learning Engineer",
+  "AI Engineer",
+  "MLOps Engineer",
+  "Research Engineer",
+  "Product Manager",
+  "Technical Product Manager",
+  "Product Designer",
+  "UX Designer",
+  "UI Designer",
+  "UX Researcher",
+  "Design Engineer",
+  "Solutions Architect",
+  "Systems Architect",
+  "Database Administrator",
+  "Embedded Engineer",
+  "Firmware Engineer",
+  "Game Developer",
+  "Blockchain Engineer",
+  "Developer Advocate",
+  "Technical Writer",
+  "IT Support Engineer",
+];
 const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
 const STACK_OPTIONS = [
   "React",
@@ -305,11 +348,39 @@ function StepHeading({ children }: { children: React.ReactNode }) {
 // ---------- 1. Role ----------
 
 function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) => void }) {
+  const [query, setQuery] = useState("");
+  const filtered = ROLES.filter((r) =>
+    r.toLowerCase().includes(query.trim().toLowerCase())
+  );
   return (
     <div>
       <StepHeading>What's your role?</StepHeading>
-      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {ROLES.map((r) => {
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+        Search and pick the role that fits you best.
+      </p>
+
+      <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+        <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search roles"
+          className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className="text-[color:var(--color-text-muted)]"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {filtered.map((r) => {
           const selected = value === r;
           return (
             <button
@@ -317,22 +388,21 @@ function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) =
               type="button"
               onClick={() => onSelect(r)}
               className={cn(
-                "flex min-h-[56px] items-center justify-between rounded-[14px] border px-4 py-3 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)]"
+                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)] text-[color:var(--color-green)] font-semibold"
                   : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              <span className="font-semibold">{r}</span>
-              {selected && (
-                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--color-green)]">
-                  <Check className="h-3.5 w-3.5" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
-                </span>
-              )}
+              {selected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+              {r}
             </button>
           );
         })}
+        {filtered.length === 0 && (
+          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+        )}
       </div>
     </div>
   );
