@@ -35,7 +35,7 @@ export function Header() {
           <Link to="/" className="flex items-center">
             <Wordmark />
           </Link>
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-6 lg:flex">
             {NAV.map((n) =>
               n.to ? (
                 <Link
@@ -58,7 +58,7 @@ export function Header() {
             )}
           </nav>
         </div>
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           <Link
             to="/login"
             className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
@@ -75,14 +75,14 @@ export function Header() {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
         </button>
       </div>
       {open && (
-        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:hidden">
+        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] lg:hidden">
           <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
             {NAV.map((n) =>
               n.to ? (
