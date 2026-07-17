@@ -410,7 +410,7 @@ function RoleStep({
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <span>{r}</span>
-                  <span className="text-xs font-light text-[#4B585B]">{ROLE_GROUP_MAP[r]}</span>
+                  <span className="text-xs font-light text-[#67787C]">{ROLE_GROUP_MAP[r]}</span>
                 </span>
               </button>
             );
@@ -544,7 +544,7 @@ function StackStep({
                 <span className="inline-flex items-center gap-1">
                   <span>{s}</span>
                   {tag && (
-                    <span className="text-xs font-light text-[#4B585B]">{tag}</span>
+                    <span className="text-xs font-light text-[#67787C]">{tag}</span>
                   )}
                 </span>
               </button>
