@@ -1,75 +1,54 @@
+Implement role-specific stack options in the quiz so step 2 shows tools relevant to the role chosen in step 1.
 
-# Plan — Rework the "Let's set up your matches" quiz
+1. Create a role-to-stacks map
+   - Add a `ROLE_STACKS` mapping in `src/routes/quiz.tsx` (or extract into a shared `src/lib/quiz-data.ts` if the matches page will later reuse it).
+   - Each role gets a curated list of relevant technologies.
+   - Roles that don't fit a specific stack (e.g., Engineering Manager, Technical Writer) fall back to a `COMMON_STACKS` list.
+   - Add any missing technologies needed for the mappings (e.g., React Native, Flutter, SwiftUI, Terraform, Tableau, Lovable, Jira, Confluence, Unity, Unreal, Solidity, etc.).
 
-All edits are in `src/routes/quiz.tsx` (with a tiny type addition in `src/lib/quiz-store.ts`). Header, page title/subtitle, tokens, and `StepShell` collapsed-summary layout stay as-is. No new dependencies.
+2. Pass the selected role into `StackStep`
+   - Change `StackStep` props to include `role: string | undefined`.
+   - In `QuizPage`, pass `answers.role` when rendering the stack step.
 
-## Global behavior
+3. Filter the stack list by role
+   - Replace the global `STACK_OPTIONS` filter with `ROLE_STACKS[role] ?? COMMON_STACKS`.
+   - Keep the existing search and multi-select behavior unchanged.
+   - If the user hasn't selected a role yet, show `COMMON_STACKS` as a safe default.
 
-- Remove auto-advance everywhere. Every step gets a single `Continue` button (email step keeps its "Get my matches" primary).
-- Add a shared `ContinueRow` used by Role, Stack, Experience, Location:
-  - Disabled state: `bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed`.
-  - Enabled state: `bg-[color:var(--color-green)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]`.
-  - Full-width, height 48px, 4px radius, same focus ring as other buttons.
-- `advance(step, patch)` merges the patch, clears `editing`, and lets `derivedCurrent` recompute so the next incomplete step opens. Editing via pencil re-expands in place without wiping later answers.
+4. Reset the stack when the role changes
+   - In `QuizPage`, when `answers.role` changes, clear `answers.stack` to prevent leftover technologies from a different role.
 
-## Step 1 — Role (full-row scroll list)
+5. Verify and preview
+   - Run a type check.
+   - Walk through the quiz in the preview to confirm each role shows the expected stacks.
 
-- Keep search input.
-- Replace chip grid with a bordered, internally scrollable container: `rounded-[4px] border ... max-h-[320px] overflow-y-auto divide-y divide-[color:var(--color-border)]`.
-- Each row: full-width button, left radio circle + label. Selected row: green filled radio dot, subtle mint background, semibold text. Single-select.
-- Filter rows by search query. Empty-state "No matches." row.
-- `Continue` disabled until `answers.role` set. Click writes role and advances.
-- Summary label `ROLE`, value = role name.
+Proposed mapping (confirm or send edits):
 
-## Step 2 — Stack (full-row scroll checklist, role-independent)
+- Frontend Engineer: React, Next.js, Vue, Angular, Svelte, TypeScript, JavaScript, HTML/CSS, Tailwind CSS, Webpack, Vite, Figma, Storybook, Jest, Cypress
+- Backend Engineer: Node.js, Python, Go, Java, Ruby, C#, PostgreSQL, MongoDB, Redis, GraphQL, REST API, AWS, GCP, Docker, Kubernetes, Kafka
+- Full Stack Engineer: React, Next.js, Node.js, TypeScript, JavaScript, Python, PostgreSQL, MongoDB, GraphQL, AWS, Docker, Kubernetes, Redis
+- Mobile Engineer: React Native, Flutter, Swift, Kotlin, Java, iOS, Android, Firebase
+- iOS Engineer: Swift, Objective-C, SwiftUI, UIKit, Xcode, Core Data, Combine, Firebase
+- Android Engineer: Kotlin, Java, Android Jetpack, Compose, Firebase, Room, Gradle
+- Software Engineer: React, Node.js, TypeScript, Python, Go, PostgreSQL, AWS, Docker, Kubernetes, Git
+- Staff Engineer: React, Node.js, TypeScript, Python, Go, Java, PostgreSQL, AWS, GCP, Docker, Kubernetes, Kafka, Terraform
+- Engineering Manager: Jira, Confluence, Notion, GitHub, Figma, Lovable, Google Analytics, Amplitude, Slack
+- Tech Lead: React, Node.js, TypeScript, Python, PostgreSQL, AWS, Docker, Kubernetes, GitHub, Figma, Lovable
+- DevOps Engineer / Site Reliability Engineer / Platform Engineer / Cloud Engineer: AWS, GCP, Azure, Docker, Kubernetes, Terraform, Ansible, Jenkins, GitHub Actions, CI/CD, Linux, Python, Go, Bash, Prometheus, Grafana
+- Security Engineer: Python, Go, Kali Linux, Wireshark, Burp Suite, OWASP, SIEM, AWS, Docker, HashiCorp Vault
+- QA Engineer / Test Automation Engineer: Selenium, Cypress, Playwright, Jest, Postman, GitHub Actions, CI/CD, Python, JavaScript, TypeScript
+- Data Engineer / Data Scientist / Data Analyst / Analytics Engineer: Python, SQL, PostgreSQL, MySQL, Snowflake, BigQuery, Apache Spark, Kafka, Airflow, dbt, AWS, GCP, Docker, Tableau, Power BI, Excel, Pandas
+- Machine Learning Engineer / AI Engineer / MLOps Engineer / Research Engineer: Python, TensorFlow, PyTorch, Scikit-learn, Keras, Jupyter, Pandas, NumPy, SQL, PostgreSQL, AWS, GCP, Docker, Kubernetes, MLflow, LangChain
+- Product Manager / Technical Product Manager: Jira, Confluence, Notion, Airtable, Figma, Lovable, Miro, Google Analytics, Amplitude, Mixpanel, Excel
+- Product Designer / UX Designer / UI Designer / Design Engineer: Figma, Lovable, Sketch, Adobe XD, Webflow, Framer, Miro, Notion, InVision, Principle, After Effects
+- UX Researcher: Miro, Notion, Figma, Lovable, UserTesting, Hotjar, Google Analytics, Excel
+- Solutions Architect / Systems Architect: AWS, GCP, Azure, Kubernetes, Docker, Terraform, Kafka, PostgreSQL, Redis, GraphQL, REST API, Python, Go
+- Database Administrator: PostgreSQL, MySQL, SQL Server, Oracle, MongoDB, Redis, AWS RDS, GCP Cloud SQL, Terraform, Linux, Python
+- Embedded Engineer / Firmware Engineer: C, C++, Rust, MicroPython, Arduino, Raspberry Pi, RTOS, FPGA, Verilog, KiCad, MATLAB
+- Game Developer: Unity, Unreal Engine, C#, C++, Blender, Godot, OpenGL, DirectX, Maya, 3ds Max
+- Blockchain Engineer: Solidity, Rust, Go, Ethereum, Web3.js, Hardhat, Truffle, Smart Contracts, IPFS, Node.js, Python
+- Developer Advocate: GitHub, Markdown, Notion, Figma, Lovable, OBS, YouTube, Discord, Slack
+- Technical Writer: Markdown, Notion, Confluence, GitHub, Figma, Lovable, Google Docs, Swagger, YAML
+- IT Support Engineer: Windows, macOS, Linux, Active Directory, Okta, ServiceNow, Jira, Slack, Microsoft 365, Google Workspace, Bash, PowerShell
 
-- Keep search input.
-- Selected chips row above the container (removable, `×` clears from selection).
-- Container: bordered, scrollable (same styles as Role). Rows show a square checkbox + label; multi-select toggle. Shows the full `STACK_OPTIONS` list regardless of role — drop the role-derived pool idea from the earlier plan.
-- Filter by search. `Continue` enabled once `value.length > 0`.
-- Summary label `STACK`, value = selection in order joined by `, `.
-
-## Step 3 — Experience (replaces Level)
-
-- Extend `QuizAnswers` in `src/lib/quiz-store.ts`:
-  ```ts
-  years?: number;      // 0 = "<1", 20 = "20+"
-  languages?: string[];
-  ```
-- Heading: "What's your experience?"
-- 2×2 grid of Level cards (Junior/Mid/Senior/Lead). Each card: label left, small cube illustration right (inline SVG placeholder using tokens — no new assets). Selected card: solid green fill, checkbox mark left of label, dark text.
-- "Years of experience" — single-range `<input type="range" min={0} max={20}>`. Right-aligned live readout: `<1 years`, `N years`, or `20+ years`. Tick row: `<1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20+` styled as muted labels beneath the track.
-- "Spoken languages" — text input (`placeholder="e.g. English"`). Enter/comma adds a trimmed, deduped chip; Backspace on empty removes last chip. Chips shown below input with `×`.
-- `Continue` enabled once a level is selected (years defaults to 0 = "<1"; languages optional per new spec — spec says "enabled once a level is chosen").
-- Summary label `EXPERIENCE`, value = `{Level} · {years}y · {langs joined by " · "}` (skip empty parts). Years formatted as `<1y` at 0, `20+y` at 20.
-
-## Step 4 — Location & salary (multi-select locations)
-
-- "Open to remote" toggle row unchanged.
-- Replace single `location` input with a multi-select:
-  - Text input, placeholder `e.g. New York City, USA`.
-  - Enter or comma commits trimmed, deduped chip; Backspace on empty removes last.
-  - Chips row below input with `×` remove buttons, 4px radius, surface-1 background, border token.
-  - Stored in `answers.locations: string[]` (add to `QuizAnswers`); stop reading/writing the old `location` field from this step.
-- Salary range: keep dual-handle slider (already dual). Tick labels: `$60k, $100k, $140k, $180k, $220k`. Right-aligned readout `$100k – $160k`.
-- `canContinue = (remote || locations.length > 0) && salaryMin < salaryMax`.
-- Summary label `LOCATION AND SALARY`, value = locations joined by ` · ` (or `Remote` when remote and no locations) + ` · $100k–$160k`.
-- Update `completed.loc` to require `remote || (locations && locations.length > 0)`.
-
-## Step 5 — Email (unchanged behavior)
-
-- Keep heading, subtitle, email input, "Get my matches" button with the same disabled→enabled mint/emerald states used by `ContinueRow`. No content changes.
-
-## Summary labels
-
-Update `SUMMARY_LABEL`:
-```
-role: "Role", stack: "Stack", level: "Experience",
-loc: "Location and salary", email: "Email"
-```
-Update `summaryValue()` for `level` and `loc` per above.
-
-## Verification
-
-- `bunx tsgo --noEmit`.
-- Playwright at 1280×1800: walk role → stack → experience → location → email; screenshot each expanded step and the final all-collapsed state; verify Continue disabled/enabled transitions and that pencil re-expands a step without discarding later answers.
+Fallback `COMMON_STACKS` (for any role not listed): React, Node.js, TypeScript, JavaScript, Python, SQL, PostgreSQL, AWS, Docker, Figma, Git
