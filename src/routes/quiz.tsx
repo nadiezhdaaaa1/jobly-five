@@ -326,7 +326,7 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "role":
       return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
     case "stack":
-      return (a.stack ?? []).join(", ");
+      return a.stack && a.stack.length > 0 ? a.stack.join(", ") : "-";
     case "level": {
       const parts: string[] = [];
       if (a.level) parts.push(a.level);
