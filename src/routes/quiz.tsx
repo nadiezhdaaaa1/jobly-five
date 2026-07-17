@@ -505,17 +505,17 @@ function StackStep({
 
 // ---------- 3. Experience ----------
 
-function CubeIcon({ selected }: { selected: boolean }) {
-  const fill = selected ? "var(--color-on-accent)" : "var(--color-green)";
-  const stroke = selected ? "var(--color-on-accent)" : "var(--color-border-strong)";
-  return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-      <path d="M20 4 L34 12 L34 28 L20 36 L6 28 L6 12 Z" stroke={stroke} strokeWidth="1.5" fill="none" opacity="0.5" />
-      <path d="M20 4 L20 20 L6 12 Z" fill={fill} opacity="0.85" />
-      <path d="M20 20 L34 12 L34 28 L20 36 Z" fill={fill} opacity="0.35" />
-    </svg>
-  );
-}
+import junImg from "@/assets/Jun.png.asset.json";
+import midImg from "@/assets/Mid.png.asset.json";
+import senImg from "@/assets/Sen.png.asset.json";
+import leaImg from "@/assets/Lea.png.asset.json";
+
+const LEVEL_IMAGES: Record<string, string> = {
+  Junior: junImg.url,
+  Mid: midImg.url,
+  Senior: senImg.url,
+  Lead: leaImg.url,
+};
 
 function ExperienceStep({
   answers,
@@ -562,22 +562,27 @@ function ExperienceStep({
               type="button"
               onClick={() => onChange({ level: l })}
               className={cn(
-                "flex min-h-[72px] items-center justify-between rounded-[4px] border px-4 py-3 text-left text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "relative flex min-h-[72px] items-center justify-between overflow-hidden rounded-[4px] border pl-4 pr-0 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)]"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-[18px] font-semibold leading-6 text-[#090B0C]">
                 {selected && (
-                  <span className="grid h-5 w-5 place-items-center rounded-[4px] border-2 border-[color:var(--color-on-accent)]">
-                    <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                  <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                    <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   </span>
                 )}
                 {l}
               </span>
-              <CubeIcon selected={selected} />
+              <img
+                src={LEVEL_IMAGES[l]}
+                alt=""
+                aria-hidden="true"
+                className="ml-auto h-full w-auto self-stretch object-contain object-right"
+              />
             </button>
           );
         })}
