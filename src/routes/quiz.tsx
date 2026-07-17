@@ -562,22 +562,27 @@ function ExperienceStep({
               type="button"
               onClick={() => onChange({ level: l })}
               className={cn(
-                "flex min-h-[72px] items-center justify-between rounded-[4px] border px-4 py-3 text-left text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "relative flex min-h-[72px] items-center justify-between overflow-hidden rounded-[4px] border pl-4 pr-0 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)]"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-[18px] font-semibold leading-6 text-[#090B0C]">
                 {selected && (
-                  <span className="grid h-5 w-5 place-items-center rounded-[4px] border-2 border-[color:var(--color-on-accent)]">
-                    <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                  <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                    <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   </span>
                 )}
                 {l}
               </span>
-              <CubeIcon selected={selected} />
+              <img
+                src={LEVEL_IMAGES[l]}
+                alt=""
+                aria-hidden="true"
+                className="ml-auto h-full w-auto self-stretch object-contain object-right"
+              />
             </button>
           );
         })}
