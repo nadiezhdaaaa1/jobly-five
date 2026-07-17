@@ -65,7 +65,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "table":
             return (
-              <div key={i} className="mt-8 overflow-x-auto rounded-2xl border border-[color:var(--color-border)]">
+              <div key={i} className="mt-8 overflow-x-auto rounded-lg border border-[color:var(--color-border)]">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-[color:var(--color-surface-2)]">
                     <tr>
