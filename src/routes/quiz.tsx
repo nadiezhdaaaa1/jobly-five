@@ -4,7 +4,16 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS, SPOKEN_LANGUAGES } from "@/lib/quiz-data";
+import {
+  ROLES,
+  ROLE_STACKS,
+  ROLE_GROUP_MAP,
+  STACK_TAGS,
+  COMMON_STACKS,
+  LEVELS,
+  USA_LOCATIONS,
+  SPOKEN_LANGUAGES,
+} from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -42,7 +51,7 @@ function QuizPage() {
 
   // Determine which steps are visible: all completed + first pending (= current or editing)
   const completed: Record<StepKey, boolean> = {
-    role: !!answers.role,
+    role: (answers.roles?.length ?? 0) > 0,
     stack: !!(answers.stack && answers.stack.length > 0),
     level: !!answers.level,
     loc:
@@ -127,14 +136,14 @@ function QuizPage() {
               >
                 {key === "role" && (
                   <RoleStep
-                    value={answers.role}
-                    onChange={(v) => setAnswers((a) => ({ ...a, role: v, stack: undefined }))}
+                    value={answers.roles ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0], stack: undefined }))}
                     onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
                   <StackStep
-                    role={answers.role}
+                    roles={answers.roles ?? (answers.role ? [answers.role] : [])}
                     value={answers.stack ?? []}
                     onChange={(stack) => setAnswers((a) => ({ ...a, stack }))}
                     onContinue={() => advance("stack", {})}
