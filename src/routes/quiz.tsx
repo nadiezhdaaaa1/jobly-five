@@ -920,7 +920,7 @@ function EmailStep({
         className="mt-5"
       >
         <label className="block">
-          <span className="text-sm font-semibold">Email</span>
+          <span className="text-sm font-light text-[#090B0C]">Email</span>
           <input
             type="email"
             value={email}
