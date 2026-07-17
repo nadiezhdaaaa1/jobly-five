@@ -116,7 +116,7 @@ function Header() {
           <Link to="/" className="flex items-center">
             <Wordmark />
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {nav.map((n) => (
               <a
                 key={n.label}
