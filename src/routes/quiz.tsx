@@ -117,7 +117,7 @@ function QuizPage() {
     loc:
       answers.salaryMin != null &&
       answers.salaryMax != null &&
-      (answers.remote || !!answers.location),
+      (answers.remote || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
   };
 
@@ -193,7 +193,8 @@ function QuizPage() {
                 {key === "role" && (
                   <RoleStep
                     value={answers.role}
-                    onSelect={(v) => advance("role", { role: v })}
+                    onChange={(v) => setAnswers((a) => ({ ...a, role: v }))}
+                    onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
@@ -204,9 +205,10 @@ function QuizPage() {
                   />
                 )}
                 {key === "level" && (
-                  <LevelStep
-                    value={answers.level}
-                    onSelect={(v) => advance("level", { level: v })}
+                  <ExperienceStep
+                    answers={answers}
+                    onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
+                    onContinue={() => advance("level", {})}
                   />
                 )}
                 {key === "loc" && (
