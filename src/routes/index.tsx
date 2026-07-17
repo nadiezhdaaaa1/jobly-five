@@ -733,7 +733,7 @@ function FeatureCards() {
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
-          <div className="mt-6 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+          <div className="mt-6 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
             <div className="flex items-center justify-between">
 
               <span className="text-sm">Senior Frontend Engineer</span>
