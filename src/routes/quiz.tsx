@@ -670,20 +670,26 @@ function ExperienceStep({
       </div>
 
       <style>{`
-        .jobly-single-range::-webkit-slider-thumb {
+        .jobly-range { pointer-events: none; }
+        .jobly-range::-webkit-slider-thumb {
+          pointer-events: auto;
           -webkit-appearance: none;
-          height: 20px; width: 20px; border-radius: 9999px;
-          background: var(--color-green);
-          border: 3px solid var(--color-surface-1);
+          height: 22px; width: 22px; border-radius: 9999px;
+          background: var(--color-surface-1);
+          border: 2px solid var(--color-green);
           box-shadow: 0 0 0 1px var(--color-green);
           cursor: pointer;
         }
-        .jobly-single-range::-moz-range-thumb {
-          height: 20px; width: 20px; border-radius: 9999px;
-          background: var(--color-green);
-          border: 3px solid var(--color-surface-1);
-          box-shadow: 0 0 0 1px var(--color-green);
+        .jobly-range::-moz-range-thumb {
+          pointer-events: auto;
+          height: 22px; width: 22px; border-radius: 9999px;
+          background: var(--color-surface-1);
+          border: 2px solid var(--color-green);
           cursor: pointer;
+        }
+        .jobly-range:focus-visible::-webkit-slider-thumb {
+          outline: 2px solid var(--color-ring);
+          outline-offset: 2px;
         }
       `}</style>
 
