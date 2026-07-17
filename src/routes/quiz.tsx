@@ -66,12 +66,13 @@ function QuizPage() {
 
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
     setAnswers((a) => ({ ...a, ...patch }));
-    if (editing === nextFrom) {
-      setEditing(null);
-      return;
-    }
     const idx = STEP_ORDER.indexOf(nextFrom);
     const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
+    if (editing === nextFrom) {
+      setEditing(null);
+      setCurrent(next);
+      return;
+    }
     setCurrent(next);
   }
 
