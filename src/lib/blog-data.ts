@@ -42,19 +42,18 @@ export type BlogPost = {
   body: ContentBlock[];
 };
 
-// Articles are ordered newest-first below and reference covers[9]..covers[0].
-// Map so image 01 goes to the newest article, image 10 to the oldest.
+// Image number matches the article number from the source docs (01 = Ghost Jobs … 10 = Auto-Apply).
 const covers = [
-  blog10.url,
-  blog09.url,
-  blog08.url,
-  blog07.url,
-  blog06.url,
-  blog05.url,
-  blog04.url,
-  blog03.url,
-  blog02.url,
   blog01.url,
+  blog02.url,
+  blog03.url,
+  blog04.url,
+  blog05.url,
+  blog06.url,
+  blog07.url,
+  blog08.url,
+  blog09.url,
+  blog10.url,
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
