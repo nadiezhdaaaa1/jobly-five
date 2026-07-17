@@ -124,12 +124,13 @@ function QuizPage() {
                 {key === "role" && (
                   <RoleStep
                     value={answers.role}
-                    onChange={(v) => setAnswers((a) => ({ ...a, role: v }))}
+                    onChange={(v) => setAnswers((a) => ({ ...a, role: v, stack: undefined }))}
                     onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
                   <StackStep
+                    role={answers.role}
                     value={answers.stack ?? []}
                     onChange={(stack) => setAnswers((a) => ({ ...a, stack }))}
                     onContinue={() => advance("stack", {})}
