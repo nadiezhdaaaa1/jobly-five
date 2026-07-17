@@ -971,7 +971,7 @@ function EmailStep({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => setTouched(true)}
-            placeholder="you@company.com"
+            placeholder="Enter your email"
             aria-invalid={showError}
             className={cn(
               "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
@@ -992,8 +992,9 @@ function EmailStep({
           disabled={!valid || submitting}
           className={cn(
             "mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-            "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
-            "disabled:cursor-not-allowed disabled:opacity-50"
+            !valid || submitting
+              ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
+              : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           )}
         >
           {submitting ? (
@@ -1021,8 +1022,9 @@ function ContinueRow({ disabled, onClick }: { disabled: boolean; onClick: () => 
         onClick={onClick}
         className={cn(
           "inline-flex h-12 w-full items-center justify-center rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-          "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
-          "disabled:cursor-not-allowed disabled:opacity-50"
+          disabled
+            ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
+            : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
         )}
       >
         Continue
