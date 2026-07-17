@@ -45,6 +45,8 @@ import {
   LeverLogo,
   UsaJobsLogo,
 } from "../components/landing/logos";
+import { Header } from "../components/site/Header";
+import { Footer } from "../components/site/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
