@@ -534,14 +534,14 @@ function StackStep({
               >
                 <span
                   className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border",
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
                     selected
-                      ? "border-white bg-white"
+                      ? "border-[#0E735A] bg-[#0E735A]"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
                   )}
                 >
                   {selected && (
-                    <Check className="h-3 w-3 text-[color:var(--color-green)]" strokeWidth={3} />
+                    <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   )}
                 </span>
                 {s}
