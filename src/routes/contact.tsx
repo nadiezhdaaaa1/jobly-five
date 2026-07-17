@@ -88,7 +88,7 @@ function ContactPage() {
         </header>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="rounded-3xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+          <section className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
             {status === "success" ? (
               <div className="py-6">
                 <h2 className="text-2xl">Thanks, we got your message.</h2>
@@ -188,7 +188,7 @@ function ContactPage() {
             )}
           </section>
 
-          <aside className="rounded-3xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+          <aside className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
             <h2 className="text-lg">Before you write</h2>
             <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
               A few things people often ask — you might find your answer faster here.
