@@ -141,7 +141,7 @@ function ArticlePage() {
           </header>
 
           <div className="mx-auto max-w-[820px] px-5 md:px-8">
-            <div className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+            <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
               <img src={post.coverImage} alt={post.coverAlt} className="h-auto w-full" />
             </div>
           </div>
