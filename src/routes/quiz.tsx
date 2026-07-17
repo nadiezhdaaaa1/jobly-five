@@ -745,7 +745,6 @@ function LocationStep({
       onChange({ locations: [...locations, loc] });
     }
     setLocInput("");
-    setFocused(false);
   };
 
   const setMin = (v: number) => {
@@ -797,8 +796,14 @@ function LocationStep({
             onChange={(e) => {
               const v = e.target.value;
               if (v.endsWith(",")) {
-                setLocInput(v);
-                commitLoc();
+                const raw = v.replace(/,+$/, "").trim();
+                if (
+                  raw &&
+                  !locations.some((l) => l.toLowerCase() === raw.toLowerCase())
+                ) {
+                  onChange({ locations: [...locations, raw] });
+                }
+                setLocInput("");
               } else {
                 setLocInput(v);
               }
