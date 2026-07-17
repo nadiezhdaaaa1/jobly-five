@@ -595,19 +595,25 @@ function ExperienceStep({
             {formatYears(years)} years
           </span>
         </div>
-        <input
-          type="range"
-          min={0}
-          max={20}
-          step={1}
-          value={years}
-          onChange={(e) => onChange({ years: Number(e.target.value) })}
-          aria-label="Years of experience"
-          className="jobly-single-range mt-3 h-2 w-full appearance-none rounded-full"
-          style={{
-            background: `linear-gradient(to right, var(--color-green) 0%, var(--color-green) ${(years / 20) * 100}%, var(--color-surface-2) ${(years / 20) * 100}%, var(--color-surface-2) 100%)`,
-          }}
-        />
+        <div className="relative mt-4 h-8">
+          {/* Track */}
+          <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+          {/* Selected range */}
+          <div
+            className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
+            style={{ left: "0%", right: `${100 - (years / 20) * 100}%` }}
+          />
+          <input
+            type="range"
+            min={0}
+            max={20}
+            step={1}
+            value={years}
+            onChange={(e) => onChange({ years: Number(e.target.value) })}
+            aria-label="Years of experience"
+            className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
+          />
+        </div>
         <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
           {ticks.map((t) => (
             <span key={t}>{t === 0 ? "<1" : t === 20 ? "20+" : t}</span>
@@ -664,20 +670,26 @@ function ExperienceStep({
       </div>
 
       <style>{`
-        .jobly-single-range::-webkit-slider-thumb {
+        .jobly-range { pointer-events: none; }
+        .jobly-range::-webkit-slider-thumb {
+          pointer-events: auto;
           -webkit-appearance: none;
-          height: 20px; width: 20px; border-radius: 9999px;
-          background: var(--color-green);
-          border: 3px solid var(--color-surface-1);
+          height: 22px; width: 22px; border-radius: 9999px;
+          background: var(--color-surface-1);
+          border: 2px solid var(--color-green);
           box-shadow: 0 0 0 1px var(--color-green);
           cursor: pointer;
         }
-        .jobly-single-range::-moz-range-thumb {
-          height: 20px; width: 20px; border-radius: 9999px;
-          background: var(--color-green);
-          border: 3px solid var(--color-surface-1);
-          box-shadow: 0 0 0 1px var(--color-green);
+        .jobly-range::-moz-range-thumb {
+          pointer-events: auto;
+          height: 22px; width: 22px; border-radius: 9999px;
+          background: var(--color-surface-1);
+          border: 2px solid var(--color-green);
           cursor: pointer;
+        }
+        .jobly-range:focus-visible::-webkit-slider-thumb {
+          outline: 2px solid var(--color-ring);
+          outline-offset: 2px;
         }
       `}</style>
 
