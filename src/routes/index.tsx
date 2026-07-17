@@ -45,6 +45,8 @@ import {
   LeverLogo,
   UsaJobsLogo,
 } from "../components/landing/logos";
+import { Header } from "../components/site/Header";
+import { Footer } from "../components/site/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -89,96 +91,7 @@ function Landing() {
 
 /* ------------------------------ Header ------------------------------ */
 
-function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <span
-      className={`text-green ${className}`}
-      style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em" }}
-    >
-      jobly
-    </span>
-  );
-}
 
-function Header() {
-  const [open, setOpen] = useState(false);
-  const nav = [
-    { label: "Product", href: "#product" },
-    { label: "How it works", href: "#how-it-works" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Blog", href: "#blog" },
-    { label: "About", href: "#about" },
-  ];
-  return (
-    <header className="sticky top-0 z-[1100] border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 md:px-8">
-        <div className="flex items-center gap-10">
-          <Link to="/" className="flex items-center">
-            <Wordmark />
-          </Link>
-          <nav className="hidden items-center gap-6 md:flex">
-            {nav.map((n) => (
-              <a
-                key={n.label}
-                href={n.href}
-                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-              >
-                {n.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-        <div className="hidden items-center gap-6 md:flex">
-          <Link
-            to="/login"
-            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/quiz"
-            className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
-          >
-            Get started
-          </Link>
-        </div>
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] md:hidden"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      </div>
-      {open && (
-        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:hidden">
-          <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
-            {nav.map((n) => (
-              <a
-                key={n.label}
-                href={n.href}
-                className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                onClick={() => setOpen(false)}
-              >
-                {n.label}
-              </a>
-            ))}
-            <Link to="/login" className="rounded-lg px-3 py-3 text-sm">
-              Log in
-            </Link>
-            <Link
-              to="/quiz"
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      )}
-    </header>
-  );
-}
 
 /* ------------------------------- Hero ------------------------------- */
 
@@ -1207,45 +1120,3 @@ function FinalCTA() {
   );
 }
 
-/* ------------------------------- Footer ------------------------------- */
-
-function Footer() {
-  const cols: { title: string; items: string[] }[] = [
-    { title: "Product", items: ["Features", "Pricing", "Integrations", "Roadmap"] },
-    { title: "Company", items: ["About Us", "Careers", "Blog", "Press"] },
-    { title: "Resources", items: ["Docs", "Candidate Guide", "FAQ", "Contact"] },
-    { title: "Legal", items: ["Privacy Policy", "Terms of Service", "Information Security"] },
-  ];
-  return (
-    <footer className="bg-[color:var(--color-background)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-14 md:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]">
-          <div>
-            <Wordmark />
-            <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
-              Email-first job discovery platform for tech candidates.
-            </p>
-          </div>
-          {cols.map((c) => (
-            <div key={c.title}>
-              <div className="text-sm font-semibold">{c.title}</div>
-              <ul className="mt-3 space-y-2 text-sm text-[color:var(--color-text-secondary)]">
-                {c.items.map((i) => (
-                  <li key={i}>
-                    <a href="#" className="hover:text-[color:var(--color-foreground)]">
-                      {i}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-6 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
-          <span>© 2025 Jobly. All rights reserved.</span>
-          <span>You can adjust or turn off daily match frequencies anytime via your settings link.</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
