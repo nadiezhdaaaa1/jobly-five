@@ -408,7 +408,7 @@ function RoleStep({
                 >
                   {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                 </span>
-                <span className="flex flex-col items-start leading-tight">
+                <span className="inline-flex items-center gap-1">
                   <span>{r}</span>
                   <span className="text-xs font-light text-[#4B585B]">{ROLE_GROUP_MAP[r]}</span>
                 </span>
@@ -541,7 +541,7 @@ function StackStep({
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   )}
                 </span>
-                <span className="flex flex-col items-start leading-tight">
+                <span className="inline-flex items-center gap-1">
                   <span>{s}</span>
                   {tag && (
                     <span className="text-xs font-light text-[#4B585B]">{tag}</span>
