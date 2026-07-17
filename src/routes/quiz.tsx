@@ -624,11 +624,14 @@ function ExperienceStep({
         </div>
         <div className="relative mt-4 h-8">
           {/* Track */}
-          <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+          <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
           {/* Selected range */}
           <div
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
-            style={{ left: "0%", right: `${100 - (years / 20) * 100}%` }}
+            style={{
+              left: "11px",
+              right: `calc(11px + (100% - 22px) * ${1 - years / 20})`,
+            }}
           />
           <input
             type="range"
@@ -967,11 +970,14 @@ function LocationStep({
         </div>
         <div className="relative mt-4 h-8">
           {/* Track */}
-          <div className="absolute left-0 right-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+          <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
           {/* Selected range */}
           <div
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
-            style={{ left: `${pct(minVal)}%`, right: `${100 - pct(maxVal)}%` }}
+            style={{
+              left: `calc(11px + (100% - 22px) * ${pct(minVal) / 100})`,
+              right: `calc(11px + (100% - 22px) * ${1 - pct(maxVal) / 100})`,
+            }}
           />
           {/* Inputs stacked */}
           <input
