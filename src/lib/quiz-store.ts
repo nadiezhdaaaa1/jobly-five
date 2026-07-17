@@ -5,8 +5,11 @@ export type QuizAnswers = {
   role?: string;
   stack?: string[];
   level?: string;
+  years?: number;
+  languages?: string[];
   remote?: boolean;
   location?: string;
+  locations?: string[];
   salaryMin?: number;
   salaryMax?: number;
   email?: string;

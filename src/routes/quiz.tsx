@@ -117,7 +117,7 @@ function QuizPage() {
     loc:
       answers.salaryMin != null &&
       answers.salaryMax != null &&
-      (answers.remote || !!answers.location),
+      (answers.remote || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
   };
 
@@ -193,7 +193,8 @@ function QuizPage() {
                 {key === "role" && (
                   <RoleStep
                     value={answers.role}
-                    onSelect={(v) => advance("role", { role: v })}
+                    onChange={(v) => setAnswers((a) => ({ ...a, role: v }))}
+                    onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
@@ -204,9 +205,10 @@ function QuizPage() {
                   />
                 )}
                 {key === "level" && (
-                  <LevelStep
-                    value={answers.level}
-                    onSelect={(v) => advance("level", { level: v })}
+                  <ExperienceStep
+                    answers={answers}
+                    onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
+                    onContinue={() => advance("level", {})}
                   />
                 )}
                 {key === "loc" && (
@@ -313,8 +315,8 @@ function StepShell({
 const SUMMARY_LABEL: Record<StepKey, string> = {
   role: "Role",
   stack: "Stack",
-  level: "Level",
-  loc: "Location & salary",
+  level: "Experience",
+  loc: "Location and salary",
   email: "Email",
 };
 
@@ -324,10 +326,16 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
       return a.role ?? "";
     case "stack":
       return (a.stack ?? []).join(", ");
-    case "level":
-      return a.level ?? "";
+    case "level": {
+      const parts: string[] = [];
+      if (a.level) parts.push(a.level);
+      if (a.years != null) parts.push(`${formatYears(a.years)}y`);
+      if (a.languages && a.languages.length > 0) parts.push(...a.languages);
+      return parts.join(" · ");
+    }
     case "loc": {
-      const where = a.remote ? "Remote" : a.location || "";
+      const locs = a.locations ?? [];
+      const where = locs.length > 0 ? locs.join(" · ") : a.remote ? "Remote" : "";
       const money =
         a.salaryMin != null && a.salaryMax != null
           ? `${formatMoney(a.salaryMin)}–${formatMoney(a.salaryMax)}`
@@ -339,6 +347,12 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
   }
 }
 
+function formatYears(n: number): string {
+  if (n <= 0) return "<1";
+  if (n >= 20) return "20+";
+  return String(n);
+}
+
 // ---------- Heading helper ----------
 
 function StepHeading({ children }: { children: React.ReactNode }) {
@@ -347,7 +361,15 @@ function StepHeading({ children }: { children: React.ReactNode }) {
 
 // ---------- 1. Role ----------
 
-function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) => void }) {
+function RoleStep({
+  value,
+  onChange,
+  onContinue,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  onContinue: () => void;
+}) {
   const [query, setQuery] = useState("");
   const filtered = ROLES.filter((r) =>
     r.toLowerCase().includes(query.trim().toLowerCase())
@@ -379,31 +401,44 @@ function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) =
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
         {filtered.map((r) => {
           const selected = value === r;
           return (
             <button
               key={r}
               type="button"
-              onClick={() => onSelect(r)}
+              onClick={() => onChange(r)}
               className={cn(
-                "inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)] text-[color:var(--color-green)] font-semibold"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
+                  : "hover:bg-[color:var(--color-surface-2)]"
               )}
               aria-pressed={selected}
             >
-              {selected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+              <span
+                className={cn(
+                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border-2",
+                  selected
+                    ? "border-[color:var(--color-green)]"
+                    : "border-[color:var(--color-border-strong)]"
+                )}
+              >
+                {selected && (
+                  <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--color-green)]" />
+                )}
+              </span>
               {r}
             </button>
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
       </div>
+
+      <ContinueRow disabled={!value} onClick={onContinue} />
     </div>
   );
 }
@@ -455,7 +490,28 @@ function StackStep({
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      {value.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {value.map((s) => (
+            <span
+              key={s}
+              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+            >
+              {s}
+              <button
+                type="button"
+                onClick={() => toggle(s)}
+                aria-label={`Remove ${s}`}
+                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
         {filtered.map((s) => {
           const selected = value.includes(s);
           return (
@@ -464,20 +520,31 @@ function StackStep({
               type="button"
               onClick={() => toggle(s)}
               className={cn(
-                "inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)] text-[color:var(--color-green)] font-semibold"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
+                  : "hover:bg-[color:var(--color-surface-2)]"
               )}
               aria-pressed={selected}
             >
-              {selected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+              <span
+                className={cn(
+                  "grid h-5 w-5 shrink-0 place-items-center rounded-[4px] border-2",
+                  selected
+                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)]"
+                    : "border-[color:var(--color-border-strong)]"
+                )}
+              >
+                {selected && (
+                  <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                )}
+              </span>
               {s}
             </button>
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
       </div>
 
@@ -486,33 +553,180 @@ function StackStep({
   );
 }
 
-// ---------- 3. Level ----------
+// ---------- 3. Experience ----------
 
-function LevelStep({ value, onSelect }: { value?: string; onSelect: (v: string) => void }) {
+function CubeIcon({ selected }: { selected: boolean }) {
+  const fill = selected ? "var(--color-on-accent)" : "var(--color-green)";
+  const stroke = selected ? "var(--color-on-accent)" : "var(--color-border-strong)";
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <path d="M20 4 L34 12 L34 28 L20 36 L6 28 L6 12 Z" stroke={stroke} strokeWidth="1.5" fill="none" opacity="0.5" />
+      <path d="M20 4 L20 20 L6 12 Z" fill={fill} opacity="0.85" />
+      <path d="M20 20 L34 12 L34 28 L20 36 Z" fill={fill} opacity="0.35" />
+    </svg>
+  );
+}
+
+function ExperienceStep({
+  answers,
+  onChange,
+  onContinue,
+}: {
+  answers: QuizAnswers;
+  onChange: (p: Partial<QuizAnswers>) => void;
+  onContinue: () => void;
+}) {
+  const level = answers.level;
+  const years = answers.years ?? 0;
+  const languages = answers.languages ?? [];
+  const [langInput, setLangInput] = useState("");
+
+  const commitLang = () => {
+    const v = langInput.trim().replace(/,+$/, "").trim();
+    if (!v) return;
+    if (languages.some((l) => l.toLowerCase() === v.toLowerCase())) {
+      setLangInput("");
+      return;
+    }
+    onChange({ languages: [...languages, v] });
+    setLangInput("");
+  };
+
+  const removeLang = (l: string) =>
+    onChange({ languages: languages.filter((x) => x !== l) });
+
+  const canContinue = !!level;
+
+  const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+
   return (
     <div>
-      <StepHeading>What's your level?</StepHeading>
+      <StepHeading>What's your experience?</StepHeading>
+
       <div className="mt-5 grid grid-cols-2 gap-3">
         {LEVELS.map((l) => {
-          const selected = value === l;
+          const selected = level === l;
           return (
             <button
               key={l}
               type="button"
-              onClick={() => onSelect(l)}
+              onClick={() => onChange({ level: l })}
               className={cn(
-                "flex min-h-[56px] items-center justify-center rounded-[14px] border px-4 py-3 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex min-h-[72px] items-center justify-between rounded-[4px] border px-4 py-3 text-left text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)]"
+                  ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)]"
                   : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              {l}
+              <span className="flex items-center gap-2">
+                {selected && (
+                  <span className="grid h-5 w-5 place-items-center rounded-[4px] border-2 border-[color:var(--color-on-accent)]">
+                    <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                  </span>
+                )}
+                {l}
+              </span>
+              <CubeIcon selected={selected} />
             </button>
           );
         })}
       </div>
+
+      <div className="mt-6">
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-semibold">Years of experience</span>
+          <span className="text-sm text-[color:var(--color-foreground)] font-semibold">
+            {formatYears(years)} years
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={20}
+          step={1}
+          value={years}
+          onChange={(e) => onChange({ years: Number(e.target.value) })}
+          aria-label="Years of experience"
+          className="jobly-single-range mt-3 h-2 w-full appearance-none rounded-full"
+          style={{
+            background: `linear-gradient(to right, var(--color-green) 0%, var(--color-green) ${(years / 20) * 100}%, var(--color-surface-2) ${(years / 20) * 100}%, var(--color-surface-2) 100%)`,
+          }}
+        />
+        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
+          {ticks.map((t) => (
+            <span key={t}>{t === 0 ? "<1" : t === 20 ? "20+" : t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <label className="block">
+          <span className="text-sm font-semibold">Spoken languages</span>
+          <input
+            value={langInput}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v.endsWith(",")) {
+                setLangInput(v);
+                commitLang();
+              } else {
+                setLangInput(v);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLang();
+              } else if (e.key === "Backspace" && langInput === "" && languages.length > 0) {
+                onChange({ languages: languages.slice(0, -1) });
+              }
+            }}
+            placeholder="e.g. English"
+            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          />
+        </label>
+        {languages.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {languages.map((l) => (
+              <span
+                key={l}
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+              >
+                {l}
+                <button
+                  type="button"
+                  onClick={() => removeLang(l)}
+                  aria-label={`Remove ${l}`}
+                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        .jobly-single-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          height: 20px; width: 20px; border-radius: 9999px;
+          background: var(--color-green);
+          border: 3px solid var(--color-surface-1);
+          box-shadow: 0 0 0 1px var(--color-green);
+          cursor: pointer;
+        }
+        .jobly-single-range::-moz-range-thumb {
+          height: 20px; width: 20px; border-radius: 9999px;
+          background: var(--color-green);
+          border: 3px solid var(--color-surface-1);
+          box-shadow: 0 0 0 1px var(--color-green);
+          cursor: pointer;
+        }
+      `}</style>
+
+      <ContinueRow disabled={!canContinue} onClick={onContinue} />
     </div>
   );
 }
@@ -533,11 +747,26 @@ function LocationStep({
   onContinue: () => void;
 }) {
   const remote = answers.remote ?? false;
-  const location = answers.location ?? "";
+  const locations = answers.locations ?? [];
+  const [locInput, setLocInput] = useState("");
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
 
-  const canContinue = (remote || location.trim().length > 0) && minVal < maxVal;
+  const canContinue = (remote || locations.length > 0) && minVal < maxVal;
+
+  const commitLoc = () => {
+    const v = locInput.trim().replace(/,+$/, "").trim();
+    if (!v) return;
+    if (locations.some((l) => l.toLowerCase() === v.toLowerCase())) {
+      setLocInput("");
+      return;
+    }
+    onChange({ locations: [...locations, v] });
+    setLocInput("");
+  };
+
+  const removeLoc = (l: string) =>
+    onChange({ locations: locations.filter((x) => x !== l) });
 
   const setMin = (v: number) => {
     const nv = Math.min(v, maxVal - SAL_STEP);
@@ -580,15 +809,53 @@ function LocationStep({
         </button>
       </div>
 
-      <label className="mt-4 block">
-        <span className="text-sm font-semibold">Preferred location</span>
-        <input
-          value={location}
-          onChange={(e) => onChange({ location: e.target.value })}
-          placeholder={remote ? "Optional if remote" : "e.g. Berlin, Germany"}
-          className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-        />
-      </label>
+      <div className="mt-4">
+        <label className="block">
+          <span className="text-sm font-semibold">Preferred locations</span>
+          <input
+            value={locInput}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v.endsWith(",")) {
+                setLocInput(v);
+                commitLoc();
+              } else {
+                setLocInput(v);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLoc();
+              } else if (e.key === "Backspace" && locInput === "" && locations.length > 0) {
+                onChange({ locations: locations.slice(0, -1) });
+              }
+            }}
+            placeholder="e.g. New York City, USA"
+            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          />
+        </label>
+        {locations.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {locations.map((l) => (
+              <span
+                key={l}
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+              >
+                {l}
+                <button
+                  type="button"
+                  onClick={() => removeLoc(l)}
+                  aria-label={`Remove ${l}`}
+                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="mt-5">
         <div className="flex items-baseline justify-between">
@@ -626,6 +893,13 @@ function LocationStep({
             aria-label="Maximum salary"
             className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
           />
+        </div>
+        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
+          <span>$60k</span>
+          <span>$100k</span>
+          <span>$140k</span>
+          <span>$180k</span>
+          <span>$220k</span>
         </div>
       </div>
 
@@ -697,7 +971,7 @@ function EmailStep({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={() => setTouched(true)}
-            placeholder="you@company.com"
+            placeholder="Enter your email"
             aria-invalid={showError}
             className={cn(
               "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
@@ -718,8 +992,9 @@ function EmailStep({
           disabled={!valid || submitting}
           className={cn(
             "mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-            "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
-            "disabled:cursor-not-allowed disabled:opacity-50"
+            !valid || submitting
+              ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
+              : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           )}
         >
           {submitting ? (
@@ -747,8 +1022,9 @@ function ContinueRow({ disabled, onClick }: { disabled: boolean; onClick: () => 
         onClick={onClick}
         className={cn(
           "inline-flex h-12 w-full items-center justify-center rounded-button px-5 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-          "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]",
-          "disabled:cursor-not-allowed disabled:opacity-50"
+          disabled
+            ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
+            : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
         )}
       >
         Continue
