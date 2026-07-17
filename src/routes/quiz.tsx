@@ -767,8 +767,8 @@ function LocationStep({
       </div>
 
       <div className="mt-4">
-        <label className="block">
-          <span className="text-sm font-light text-[#090B0C]">Preferred locations</span>
+        <label className="block text-sm font-light text-[#090B0C]">Preferred locations</label>
+        <div className="relative mt-1.5">
           <input
             value={locInput}
             onChange={(e) => {
@@ -783,15 +783,47 @@ function LocationStep({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                commitLoc();
+                if (focused && filteredSuggestions.length > 0) {
+                  addSuggestion(filteredSuggestions[highlighted]);
+                } else {
+                  commitLoc();
+                }
+              } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setHighlighted((i) => Math.min(i + 1, filteredSuggestions.length - 1));
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setHighlighted((i) => Math.max(i - 1, 0));
               } else if (e.key === "Backspace" && locInput === "" && locations.length > 0) {
                 onChange({ locations: locations.slice(0, -1) });
               }
             }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             placeholder="e.g. New York City, USA"
-            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           />
-        </label>
+          {focused && locInput.trim() && filteredSuggestions.length > 0 && (
+            <ul
+              className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] py-1 shadow-sm"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {filteredSuggestions.map((loc, idx) => (
+                <li
+                  key={loc}
+                  onMouseDown={() => addSuggestion(loc)}
+                  onMouseEnter={() => setHighlighted(idx)}
+                  className={cn(
+                    "cursor-pointer px-3 py-2 text-sm transition-colors",
+                    idx === highlighted ? "bg-[color:var(--color-surface-2)]" : "hover:bg-[color:var(--color-surface-2)]"
+                  )}
+                >
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         {locations.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
             {locations.map((l) => (
