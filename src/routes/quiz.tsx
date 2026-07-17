@@ -764,7 +764,7 @@ function LocationStep({
 
       <div className="mt-5 flex items-center justify-between rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3">
         <div>
-          <div className="text-[15px] font-semibold">Open to remote</div>
+          <div className="text-base font-light leading-relaxed text-[#090B0C]">Open to remote</div>
           <div className="text-sm text-[color:var(--color-text-secondary)]">
             Include fully remote roles
           </div>
