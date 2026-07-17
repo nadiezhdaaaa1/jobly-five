@@ -401,6 +401,15 @@ function RoleStep({
         )}
       </div>
 
+      {value && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="inline-flex items-center rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm">
+            <span className="text-[color:var(--color-text-muted)]">Selected role</span>
+            <span className="ml-1 text-[color:var(--color-foreground)]">{value}</span>
+          </span>
+        </div>
+      )}
+
       <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((r) => {
