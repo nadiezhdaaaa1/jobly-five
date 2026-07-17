@@ -2,7 +2,8 @@
 // No backend yet; this survives client-side navigation and refresh.
 
 export type QuizAnswers = {
-  role?: string;
+  role?: string; // legacy, kept for backward-compat with earlier stored answers
+  roles?: string[];
   stack?: string[];
   level?: string;
   years?: number;
