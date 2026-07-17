@@ -74,7 +74,7 @@ export function LegalLayout({ doc }: { doc: LegalDoc }) {
         </article>
 
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+          <div className="rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
             <div className="text-xs uppercase tracking-wide text-[color:var(--color-text-muted)]">Other policies</div>
             <ul className="mt-3 space-y-2 text-sm">
               {others.map((o) => (
