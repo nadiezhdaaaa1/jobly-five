@@ -295,7 +295,7 @@ function StepShell({
 
   return (
     <li ref={ref} className="jobly-step-reveal">
-      <div className="rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-6">
+      <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-6">
         {children}
       </div>
       <style>{`
