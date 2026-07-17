@@ -749,7 +749,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
