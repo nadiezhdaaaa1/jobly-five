@@ -82,7 +82,7 @@ export function Header() {
         </button>
       </div>
       {open && (
-        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:hidden">
+        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] lg:hidden">
           <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
             {NAV.map((n) =>
               n.to ? (
