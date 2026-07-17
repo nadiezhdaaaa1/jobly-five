@@ -268,7 +268,7 @@ const SUMMARY_LABEL: Record<StepKey, string> = {
 function summaryValue(key: StepKey, a: QuizAnswers): string {
   switch (key) {
     case "role":
-      return a.role ?? "";
+      return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
     case "stack":
       return (a.stack ?? []).join(", ");
     case "level": {
@@ -311,19 +311,27 @@ function RoleStep({
   onChange,
   onContinue,
 }: {
-  value?: string;
-  onChange: (v: string) => void;
+  value: string[];
+  onChange: (v: string[]) => void;
   onContinue: () => void;
 }) {
   const [query, setQuery] = useState("");
   const filtered = ROLES.filter((r) =>
     r.toLowerCase().includes(query.trim().toLowerCase())
   );
+  const MAX = 3;
+  const toggle = (r: string) => {
+    if (value.includes(r)) {
+      onChange(value.filter((x) => x !== r));
+    } else if (value.length < MAX) {
+      onChange([...value, r]);
+    }
+  };
   return (
     <div>
       <StepHeading>What's your role?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Search and pick the role that fits you best.
+        Pick up to {MAX} roles that fit you best.
       </p>
 
       <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
@@ -346,27 +354,44 @@ function RoleStep({
         )}
       </div>
 
-      {value && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm">
-            <span className="text-[color:var(--color-text-muted)]">Selected role</span>
-            <span className="ml-1 text-[color:var(--color-foreground)]">{value}</span>
-          </span>
+      <div className="mt-2 flex items-start justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          {value.map((r) => (
+            <span
+              key={r}
+              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+            >
+              {r}
+              <button
+                type="button"
+                onClick={() => toggle(r)}
+                aria-label={`Remove ${r}`}
+                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))}
         </div>
-      )}
+        <span className="shrink-0 pt-1 text-xs text-[#4B585B]">
+          {value.length}/{MAX}
+        </span>
+      </div>
 
-      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-3">
+      <div className="mt-3 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((r) => {
-            const selected = value === r;
+            const selected = value.includes(r);
+            const atMax = !selected && value.length >= MAX;
             return (
               <button
                 key={r}
                 type="button"
-                onClick={() => onChange(r)}
+                onClick={() => toggle(r)}
+                disabled={atMax}
                 aria-pressed={selected}
                 className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
                   selected
                     ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
@@ -375,17 +400,18 @@ function RoleStep({
               >
                 <span
                   className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
                     selected
-                      ? "border-white bg-white"
+                      ? "border-[#0E735A] bg-[#0E735A]"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
                   )}
                 >
-                  {selected && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
-                  )}
+                  {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                 </span>
-                {r}
+                <span className="flex flex-col items-start leading-tight">
+                  <span>{r}</span>
+                  <span className="text-xs font-light text-[#4B585B]">{ROLE_GROUP_MAP[r]}</span>
+                </span>
               </button>
             );
           })}
@@ -395,7 +421,7 @@ function RoleStep({
         </div>
       </div>
 
-      <ContinueRow disabled={!value} onClick={onContinue} />
+      <ContinueRow disabled={value.length === 0} onClick={onContinue} />
     </div>
   );
 }
@@ -403,18 +429,31 @@ function RoleStep({
 // ---------- 2. Stack ----------
 
 function StackStep({
-  role,
+  roles,
   value,
   onChange,
   onContinue,
 }: {
-  role?: string;
+  roles: string[];
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const options = role ? ROLE_STACKS[role] ?? COMMON_STACKS : COMMON_STACKS;
+  const options = useMemo(() => {
+    if (!roles || roles.length === 0) return COMMON_STACKS;
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const r of roles) {
+      for (const name of ROLE_STACKS[r] ?? []) {
+        if (!seen.has(name)) {
+          seen.add(name);
+          out.push(name);
+        }
+      }
+    }
+    return out;
+  }, [roles]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
@@ -471,10 +510,11 @@ function StackStep({
         </div>
       )}
 
-      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-3">
+      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
             const selected = value.includes(s);
+            const tag = STACK_TAGS[s];
             return (
               <button
                 key={s}
@@ -501,7 +541,12 @@ function StackStep({
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   )}
                 </span>
-                {s}
+                <span className="flex flex-col items-start leading-tight">
+                  <span>{s}</span>
+                  {tag && (
+                    <span className="text-xs font-light text-[#4B585B]">{tag}</span>
+                  )}
+                </span>
               </button>
             );
           })}
