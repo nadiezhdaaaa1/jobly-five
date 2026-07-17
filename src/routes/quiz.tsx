@@ -74,6 +74,9 @@ function QuizPage() {
     (answers.stack?.length ?? 0) > 0 &&
     (rolesList.length === 0 ||
       (answers.stack ?? []).some((s) => !stackOptionsForRoles.has(s)));
+  // Stack was previously completed but role changes wiped all valid items.
+  const stackEmptied =
+    answers.stack !== undefined && answers.stack.length === 0;
 
   // On hydration, resume at the first incomplete step (for returning users).
   // After that, only Continue advances the current step — selections alone must not collapse it.
@@ -166,7 +169,17 @@ function QuizPage() {
                 {key === "role" && (
                   <RoleStep
                     value={answers.roles ?? []}
-                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0] }))}
+                    onChange={(v) =>
+                      setAnswers((a) => {
+                        const nextOpts = new Set<string>();
+                        for (const r of v) for (const n of ROLE_STACKS[r] ?? []) nextOpts.add(n);
+                        const prunedStack =
+                          a.stack !== undefined
+                            ? a.stack.filter((s) => nextOpts.has(s))
+                            : a.stack;
+                        return { ...a, roles: v, role: v[0], stack: prunedStack };
+                      })
+                    }
                     onContinue={() => advance("role", {})}
                   />
                 )}
