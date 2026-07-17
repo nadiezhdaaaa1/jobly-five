@@ -61,6 +61,20 @@ function QuizPage() {
     email: !!answers.email,
   };
 
+  // Compute the stack options available for currently selected roles, and
+  // detect when a previously-completed stack no longer matches those options.
+  const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
+  const stackOptionsForRoles = useMemo(() => {
+    if (rolesList.length === 0) return new Set<string>();
+    const s = new Set<string>();
+    for (const r of rolesList) for (const name of ROLE_STACKS[r] ?? []) s.add(name);
+    return s;
+  }, [rolesList]);
+  const stackInvalid =
+    (answers.stack?.length ?? 0) > 0 &&
+    (rolesList.length === 0 ||
+      (answers.stack ?? []).some((s) => !stackOptionsForRoles.has(s)));
+
   // On hydration, resume at the first incomplete step (for returning users).
   // After that, only Continue advances the current step — selections alone must not collapse it.
   useEffect(() => {
@@ -83,6 +97,19 @@ function QuizPage() {
       return;
     }
     setCurrent(next);
+  }
+
+  function openEdit(key: StepKey) {
+    // When re-opening the Stack step in an invalid state, prune items that
+    // are no longer valid for the current role selection so the user can
+    // pick from the fresh option list.
+    if (key === "stack" && stackInvalid) {
+      setAnswers((a) => ({
+        ...a,
+        stack: (a.stack ?? []).filter((s) => stackOptionsForRoles.has(s)),
+      }));
+    }
+    setEditing(key);
   }
 
   async function handleSubmit(email: string) {
@@ -123,7 +150,8 @@ function QuizPage() {
 
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
-            const isVisible = completed[key] || key === activeStep;
+            const isVisible =
+              completed[key] || key === activeStep || (key === "stack" && stackInvalid);
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             return (
@@ -132,12 +160,13 @@ function QuizPage() {
                 stepKey={key}
                 expanded={isExpanded}
                 answers={answers}
-                onEdit={() => setEditing(key)}
+                invalid={key === "stack" && stackInvalid && !isExpanded}
+                onEdit={() => openEdit(key)}
               >
                 {key === "role" && (
                   <RoleStep
                     value={answers.roles ?? []}
-                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0], stack: undefined }))}
+                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0] }))}
                     onContinue={() => advance("role", {})}
                   />
                 )}
