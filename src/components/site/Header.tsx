@@ -36,16 +36,26 @@ export function Header() {
             <Wordmark />
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-                activeProps={{ className: "text-sm text-[color:var(--color-foreground)]" }}
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) =>
+              n.to ? (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                  activeProps={{ className: "text-sm text-[color:var(--color-foreground)]" }}
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <a
+                  key={n.label}
+                  href={n.href}
+                  className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                >
+                  {n.label}
+                </a>
+              )
+            )}
           </nav>
         </div>
         <div className="hidden items-center gap-6 md:flex">
