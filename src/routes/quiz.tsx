@@ -747,11 +747,26 @@ function LocationStep({
   onContinue: () => void;
 }) {
   const remote = answers.remote ?? false;
-  const location = answers.location ?? "";
+  const locations = answers.locations ?? [];
+  const [locInput, setLocInput] = useState("");
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
 
-  const canContinue = (remote || location.trim().length > 0) && minVal < maxVal;
+  const canContinue = (remote || locations.length > 0) && minVal < maxVal;
+
+  const commitLoc = () => {
+    const v = locInput.trim().replace(/,+$/, "").trim();
+    if (!v) return;
+    if (locations.some((l) => l.toLowerCase() === v.toLowerCase())) {
+      setLocInput("");
+      return;
+    }
+    onChange({ locations: [...locations, v] });
+    setLocInput("");
+  };
+
+  const removeLoc = (l: string) =>
+    onChange({ locations: locations.filter((x) => x !== l) });
 
   const setMin = (v: number) => {
     const nv = Math.min(v, maxVal - SAL_STEP);
@@ -794,15 +809,53 @@ function LocationStep({
         </button>
       </div>
 
-      <label className="mt-4 block">
-        <span className="text-sm font-semibold">Preferred location</span>
-        <input
-          value={location}
-          onChange={(e) => onChange({ location: e.target.value })}
-          placeholder={remote ? "Optional if remote" : "e.g. Berlin, Germany"}
-          className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-        />
-      </label>
+      <div className="mt-4">
+        <label className="block">
+          <span className="text-sm font-semibold">Preferred locations</span>
+          <input
+            value={locInput}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v.endsWith(",")) {
+                setLocInput(v);
+                commitLoc();
+              } else {
+                setLocInput(v);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLoc();
+              } else if (e.key === "Backspace" && locInput === "" && locations.length > 0) {
+                onChange({ locations: locations.slice(0, -1) });
+              }
+            }}
+            placeholder="e.g. New York City, USA"
+            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          />
+        </label>
+        {locations.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {locations.map((l) => (
+              <span
+                key={l}
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+              >
+                {l}
+                <button
+                  type="button"
+                  onClick={() => removeLoc(l)}
+                  aria-label={`Remove ${l}`}
+                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="mt-5">
         <div className="flex items-baseline justify-between">
