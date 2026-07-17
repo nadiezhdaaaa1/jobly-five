@@ -815,7 +815,7 @@ function LocationStep({
       <div className="mt-5">
         <div className="flex items-baseline justify-between">
           <span className="text-sm font-light text-[#090B0C]">Salary range</span>
-          <span className="text-sm text-[color:var(--color-green)] font-semibold">
+          <span className="text-base font-light leading-relaxed text-[#090B0C]">
             {formatMoney(minVal)} – {formatMoney(maxVal)}
           </span>
         </div>
