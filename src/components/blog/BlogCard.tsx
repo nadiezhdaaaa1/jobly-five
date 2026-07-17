@@ -7,7 +7,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
     <Link
       to="/blog/$slug"
       params={{ slug: post.slug }}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+      className="group flex flex-col overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
     >
       <div className="aspect-[16/9] w-full overflow-hidden bg-[color:var(--color-surface-2)]">
         <img
