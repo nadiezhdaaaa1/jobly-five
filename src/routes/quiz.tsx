@@ -988,7 +988,7 @@ function LocationStep({
             className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
           />
         </div>
-        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
+        <div className="mt-2 flex justify-between px-[11px] text-[11px] text-[color:var(--color-text-muted)]">
           <span>$60k</span>
           <span>$100k</span>
           <span>$140k</span>
