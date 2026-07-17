@@ -4,7 +4,7 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS } from "@/lib/quiz-data";
+import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS, SPOKEN_LANGUAGES } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -533,6 +533,8 @@ function ExperienceStep({
   const years = answers.years ?? 0;
   const languages = answers.languages ?? [];
   const [langInput, setLangInput] = useState("");
+  const [langFocused, setLangFocused] = useState(false);
+  const [langHighlighted, setLangHighlighted] = useState(0);
 
   const commitLang = () => {
     const v = langInput.trim().replace(/,+$/, "").trim();
@@ -547,6 +549,28 @@ function ExperienceStep({
 
   const removeLang = (l: string) =>
     onChange({ languages: languages.filter((x) => x !== l) });
+
+  const langQuery = langInput.trim().toLowerCase();
+  const filteredLangs = useMemo(
+    () =>
+      langQuery
+        ? SPOKEN_LANGUAGES.filter(
+            (lang) =>
+              lang.toLowerCase().includes(langQuery) &&
+              !languages.some((l) => l.toLowerCase() === lang.toLowerCase())
+          ).slice(0, 7)
+        : [],
+    [langQuery, languages]
+  );
+
+  useEffect(() => setLangHighlighted(0), [filteredLangs.length]);
+
+  const addLangSuggestion = (lang: string) => {
+    if (!languages.some((l) => l.toLowerCase() === lang.toLowerCase())) {
+      onChange({ languages: [...languages, lang] });
+    }
+    setLangInput("");
+  };
 
   const canContinue = !!level;
 
