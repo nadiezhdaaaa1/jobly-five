@@ -414,7 +414,7 @@ function RoleStep({
                 className={cn(
                   "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] font-semibold"
+                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                 )}
                 style={{ padding: "6px 10px 6px 8px", gap: 8 }}
