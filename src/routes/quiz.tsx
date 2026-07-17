@@ -641,9 +641,16 @@ function ExperienceStep({
             className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
           />
         </div>
-        <div className="mt-2 flex justify-between px-[11px] text-[11px] text-[color:var(--color-text-muted)]">
+        <div className="relative mt-2 h-4 text-[11px] text-[color:var(--color-text-muted)]">
           {ticks.map((t) => (
-            <span key={t}>{t === 0 ? "<1" : t === 20 ? "20+" : t}</span>
+            <span
+              key={t}
+              data-exp-tick
+              className="absolute top-0 -translate-x-1/2 whitespace-nowrap"
+              style={{ left: `calc(11px + (100% - 22px) * ${t / 20})` }}
+            >
+              {t === 0 ? "<1" : t === 20 ? "20+" : t}
+            </span>
           ))}
         </div>
       </div>
@@ -988,12 +995,16 @@ function LocationStep({
             className="jobly-range absolute inset-0 w-full appearance-none bg-transparent"
           />
         </div>
-        <div className="mt-2 flex justify-between px-[11px] text-[11px] text-[color:var(--color-text-muted)]">
-          <span>$60k</span>
-          <span>$100k</span>
-          <span>$140k</span>
-          <span>$180k</span>
-          <span>$220k</span>
+        <div className="relative mt-2 h-4 text-[11px] text-[color:var(--color-text-muted)]">
+          {[60, 100, 140, 180, 220].map((tick) => (
+            <span
+              key={tick}
+              className="absolute top-0 -translate-x-1/2 whitespace-nowrap"
+              style={{ left: `calc(11px + (100% - 22px) * ${(tick - 60) / 160})` }}
+            >
+              ${tick}k
+            </span>
+          ))}
         </div>
       </div>
 
