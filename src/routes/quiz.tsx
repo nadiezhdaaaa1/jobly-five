@@ -4,7 +4,7 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS } from "@/lib/quiz-data";
+import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS, SPOKEN_LANGUAGES } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -533,6 +533,8 @@ function ExperienceStep({
   const years = answers.years ?? 0;
   const languages = answers.languages ?? [];
   const [langInput, setLangInput] = useState("");
+  const [langFocused, setLangFocused] = useState(false);
+  const [langHighlighted, setLangHighlighted] = useState(0);
 
   const commitLang = () => {
     const v = langInput.trim().replace(/,+$/, "").trim();
@@ -547,6 +549,28 @@ function ExperienceStep({
 
   const removeLang = (l: string) =>
     onChange({ languages: languages.filter((x) => x !== l) });
+
+  const langQuery = langInput.trim().toLowerCase();
+  const filteredLangs = useMemo(
+    () =>
+      langQuery
+        ? SPOKEN_LANGUAGES.filter(
+            (lang) =>
+              lang.toLowerCase().includes(langQuery) &&
+              !languages.some((l) => l.toLowerCase() === lang.toLowerCase())
+          ).slice(0, 7)
+        : [],
+    [langQuery, languages]
+  );
+
+  useEffect(() => setLangHighlighted(0), [filteredLangs.length]);
+
+  const addLangSuggestion = (lang: string) => {
+    if (!languages.some((l) => l.toLowerCase() === lang.toLowerCase())) {
+      onChange({ languages: [...languages, lang] });
+    }
+    setLangInput("");
+  };
 
   const canContinue = !!level;
 
@@ -625,15 +649,21 @@ function ExperienceStep({
       </div>
 
       <div className="mt-6">
-        <label className="block">
-          <span className="text-sm font-light text-[#090B0C]">Spoken languages</span>
+        <label className="block text-sm font-light text-[#090B0C]">Spoken languages</label>
+        <div className="relative mt-1.5">
           <input
             value={langInput}
             onChange={(e) => {
               const v = e.target.value;
               if (v.endsWith(",")) {
-                setLangInput(v);
-                commitLang();
+                const raw = v.replace(/,+$/, "").trim();
+                if (
+                  raw &&
+                  !languages.some((l) => l.toLowerCase() === raw.toLowerCase())
+                ) {
+                  onChange({ languages: [...languages, raw] });
+                }
+                setLangInput("");
               } else {
                 setLangInput(v);
               }
@@ -641,15 +671,47 @@ function ExperienceStep({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                commitLang();
+                if (langFocused && filteredLangs.length > 0) {
+                  addLangSuggestion(filteredLangs[langHighlighted]);
+                } else {
+                  commitLang();
+                }
+              } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setLangHighlighted((i) => Math.min(i + 1, filteredLangs.length - 1));
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setLangHighlighted((i) => Math.max(i - 1, 0));
               } else if (e.key === "Backspace" && langInput === "" && languages.length > 0) {
                 onChange({ languages: languages.slice(0, -1) });
               }
             }}
+            onFocus={() => setLangFocused(true)}
+            onBlur={() => setLangFocused(false)}
             placeholder="e.g. English"
-            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           />
-        </label>
+          {langFocused && langInput.trim() && filteredLangs.length > 0 && (
+            <ul
+              className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] py-1 shadow-sm"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {filteredLangs.map((lang, idx) => (
+                <li
+                  key={lang}
+                  onMouseDown={() => addLangSuggestion(lang)}
+                  onMouseEnter={() => setLangHighlighted(idx)}
+                  className={cn(
+                    "cursor-pointer px-3 py-2 text-sm transition-colors",
+                    idx === langHighlighted ? "bg-[color:var(--color-surface-2)]" : "hover:bg-[color:var(--color-surface-2)]"
+                  )}
+                >
+                  {lang}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         {languages.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
             {languages.map((l) => (
