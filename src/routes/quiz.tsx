@@ -553,33 +553,180 @@ function StackStep({
   );
 }
 
-// ---------- 3. Level ----------
+// ---------- 3. Experience ----------
 
-function LevelStep({ value, onSelect }: { value?: string; onSelect: (v: string) => void }) {
+function CubeIcon({ selected }: { selected: boolean }) {
+  const fill = selected ? "var(--color-on-accent)" : "var(--color-green)";
+  const stroke = selected ? "var(--color-on-accent)" : "var(--color-border-strong)";
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <path d="M20 4 L34 12 L34 28 L20 36 L6 28 L6 12 Z" stroke={stroke} strokeWidth="1.5" fill="none" opacity="0.5" />
+      <path d="M20 4 L20 20 L6 12 Z" fill={fill} opacity="0.85" />
+      <path d="M20 20 L34 12 L34 28 L20 36 Z" fill={fill} opacity="0.35" />
+    </svg>
+  );
+}
+
+function ExperienceStep({
+  answers,
+  onChange,
+  onContinue,
+}: {
+  answers: QuizAnswers;
+  onChange: (p: Partial<QuizAnswers>) => void;
+  onContinue: () => void;
+}) {
+  const level = answers.level;
+  const years = answers.years ?? 0;
+  const languages = answers.languages ?? [];
+  const [langInput, setLangInput] = useState("");
+
+  const commitLang = () => {
+    const v = langInput.trim().replace(/,+$/, "").trim();
+    if (!v) return;
+    if (languages.some((l) => l.toLowerCase() === v.toLowerCase())) {
+      setLangInput("");
+      return;
+    }
+    onChange({ languages: [...languages, v] });
+    setLangInput("");
+  };
+
+  const removeLang = (l: string) =>
+    onChange({ languages: languages.filter((x) => x !== l) });
+
+  const canContinue = !!level;
+
+  const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+
   return (
     <div>
-      <StepHeading>What's your level?</StepHeading>
+      <StepHeading>What's your experience?</StepHeading>
+
       <div className="mt-5 grid grid-cols-2 gap-3">
         {LEVELS.map((l) => {
-          const selected = value === l;
+          const selected = level === l;
           return (
             <button
               key={l}
               type="button"
-              onClick={() => onSelect(l)}
+              onClick={() => onChange({ level: l })}
               className={cn(
-                "flex min-h-[56px] items-center justify-center rounded-[14px] border px-4 py-3 text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex min-h-[72px] items-center justify-between rounded-[4px] border px-4 py-3 text-left text-[15px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)]"
+                  ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)]"
                   : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
             >
-              {l}
+              <span className="flex items-center gap-2">
+                {selected && (
+                  <span className="grid h-5 w-5 place-items-center rounded-[4px] border-2 border-[color:var(--color-on-accent)]">
+                    <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                  </span>
+                )}
+                {l}
+              </span>
+              <CubeIcon selected={selected} />
             </button>
           );
         })}
       </div>
+
+      <div className="mt-6">
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-semibold">Years of experience</span>
+          <span className="text-sm text-[color:var(--color-foreground)] font-semibold">
+            {formatYears(years)} years
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={20}
+          step={1}
+          value={years}
+          onChange={(e) => onChange({ years: Number(e.target.value) })}
+          aria-label="Years of experience"
+          className="jobly-single-range mt-3 h-2 w-full appearance-none rounded-full"
+          style={{
+            background: `linear-gradient(to right, var(--color-green) 0%, var(--color-green) ${(years / 20) * 100}%, var(--color-surface-2) ${(years / 20) * 100}%, var(--color-surface-2) 100%)`,
+          }}
+        />
+        <div className="mt-2 flex justify-between text-[11px] text-[color:var(--color-text-muted)]">
+          {ticks.map((t) => (
+            <span key={t}>{t === 0 ? "<1" : t === 20 ? "20+" : t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <label className="block">
+          <span className="text-sm font-semibold">Spoken languages</span>
+          <input
+            value={langInput}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v.endsWith(",")) {
+                setLangInput(v);
+                commitLang();
+              } else {
+                setLangInput(v);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLang();
+              } else if (e.key === "Backspace" && langInput === "" && languages.length > 0) {
+                onChange({ languages: languages.slice(0, -1) });
+              }
+            }}
+            placeholder="e.g. English"
+            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          />
+        </label>
+        {languages.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {languages.map((l) => (
+              <span
+                key={l}
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+              >
+                {l}
+                <button
+                  type="button"
+                  onClick={() => removeLang(l)}
+                  aria-label={`Remove ${l}`}
+                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        .jobly-single-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          height: 20px; width: 20px; border-radius: 9999px;
+          background: var(--color-green);
+          border: 3px solid var(--color-surface-1);
+          box-shadow: 0 0 0 1px var(--color-green);
+          cursor: pointer;
+        }
+        .jobly-single-range::-moz-range-thumb {
+          height: 20px; width: 20px; border-radius: 9999px;
+          background: var(--color-green);
+          border: 3px solid var(--color-surface-1);
+          box-shadow: 0 0 0 1px var(--color-green);
+          cursor: pointer;
+        }
+      `}</style>
+
+      <ContinueRow disabled={!canContinue} onClick={onContinue} />
     </div>
   );
 }
