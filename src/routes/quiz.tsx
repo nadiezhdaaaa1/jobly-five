@@ -466,7 +466,7 @@ function StackStep({
     <div>
       <StepHeading>What's your stack?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Pick the tools you actually work with. Select at least one.
+        Pick the tools and the methods you actually work with. Select at least one.
       </p>
 
       <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
