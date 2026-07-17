@@ -280,7 +280,7 @@ function StepShell({
               <div className="text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
                 {SUMMARY_LABEL[stepKey]}
               </div>
-              <div className="truncate text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
+              <div className="truncate text-sm font-light leading-5 text-[color:var(--color-foreground)]">
                 {summaryValue(stepKey, answers)}
               </div>
             </div>
