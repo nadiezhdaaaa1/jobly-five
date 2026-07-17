@@ -1,13 +1,13 @@
-import heroAsset from "../assets/hero-2.png.asset.json";
-import how1 from "../assets/how_1.png.asset.json";
-import how2 from "../assets/how_2.png.asset.json";
-import how3 from "../assets/how_3.png.asset.json";
-import t1 from "../assets/t1.png.asset.json";
-import t2 from "../assets/t2.png.asset.json";
-import t3 from "../assets/t3.png.asset.json";
-import t12 from "../assets/t1-2.png.asset.json";
-import t22 from "../assets/t2-3.png.asset.json";
-import t32 from "../assets/t3-2.png.asset.json";
+import blog01 from "../assets/blog-01.jpg.asset.json";
+import blog02 from "../assets/blog-02.jpg.asset.json";
+import blog03 from "../assets/blog-03.jpg.asset.json";
+import blog04 from "../assets/blog-04.jpg.asset.json";
+import blog05 from "../assets/blog-05.jpg.asset.json";
+import blog06 from "../assets/blog-06.jpg.asset.json";
+import blog07 from "../assets/blog-07.jpg.asset.json";
+import blog08 from "../assets/blog-08.jpg.asset.json";
+import blog09 from "../assets/blog-09.jpg.asset.json";
+import blog10 from "../assets/blog-10.jpg.asset.json";
 
 export const BLOG_CATEGORIES = [
   "Job market data",
@@ -42,7 +42,20 @@ export type BlogPost = {
   body: ContentBlock[];
 };
 
-const covers = [heroAsset.url, how1.url, how2.url, how3.url, t1.url, t2.url, t3.url, t12.url, t22.url, t32.url];
+// Articles are ordered newest-first below and reference covers[9]..covers[0].
+// Map so image 01 goes to the newest article, image 10 to the oldest.
+const covers = [
+  blog10.url,
+  blog09.url,
+  blog08.url,
+  blog07.url,
+  blog06.url,
+  blog05.url,
+  blog04.url,
+  blog03.url,
+  blog02.url,
+  blog01.url,
+];
 
 export const BLOG_POSTS: BlogPost[] = [
   {
