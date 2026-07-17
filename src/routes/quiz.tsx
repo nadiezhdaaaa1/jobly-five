@@ -269,23 +269,23 @@ function StepShell({
         <button
           type="button"
           onClick={onEdit}
-          className="group flex w-full items-center justify-between gap-3 rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
+          className="group flex w-full items-center justify-between gap-3 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
           aria-label={`Edit ${SUMMARY_LABEL[stepKey]}`}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[color:var(--color-green)]">
-              <Check className="h-3.5 w-3.5" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-primary)]" style={{ aspectRatio: "1 / 1" }}>
+              <Check className="h-4 w-4 text-white" />
             </span>
             <div className="min-w-0">
-              <div className="text-xs uppercase tracking-wide text-[color:var(--color-text-muted)]">
+              <div className="text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
                 {SUMMARY_LABEL[stepKey]}
               </div>
-              <div className="truncate text-sm font-semibold text-[color:var(--color-foreground)]">
+              <div className="truncate text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
                 {summaryValue(stepKey, answers)}
               </div>
             </div>
           </div>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-[color:var(--color-border)] text-[color:var(--color-text-secondary)] group-hover:border-[color:var(--color-border-strong)]">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[color:var(--color-text-secondary)] group-hover:bg-[color:var(--color-surface-2)]">
             <Pencil className="h-4 w-4" />
           </span>
         </button>
