@@ -215,12 +215,14 @@ function StepShell({
   expanded,
   answers,
   onEdit,
+  invalid = false,
   children,
 }: {
   stepKey: StepKey;
   expanded: boolean;
   answers: QuizAnswers;
   onEdit: () => void;
+  invalid?: boolean;
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLLIElement>(null);
@@ -247,8 +249,18 @@ function StepShell({
           aria-label={`Edit ${SUMMARY_LABEL[stepKey]}`}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-primary)]" style={{ aspectRatio: "1 / 1" }}>
-              <Check className="h-4 w-4 text-[color:var(--color-foreground)]" />
+            <span
+              className={cn(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px]",
+                invalid ? "bg-[#D0D6D8]" : "bg-[color:var(--color-primary)]"
+              )}
+              style={{ aspectRatio: "1 / 1" }}
+            >
+              {invalid ? (
+                <X className="h-4 w-4 text-[color:var(--color-foreground)]" />
+              ) : (
+                <Check className="h-4 w-4 text-[color:var(--color-foreground)]" />
+              )}
             </span>
             <div className="min-w-0">
               <div className="text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
