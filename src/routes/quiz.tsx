@@ -389,16 +389,19 @@ function RoleStep({
 // ---------- 2. Stack ----------
 
 function StackStep({
+  role,
   value,
   onChange,
   onContinue,
 }: {
+  role?: string;
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const filtered = STACK_OPTIONS.filter((s) =>
+  const options = role ? ROLE_STACKS[role] ?? COMMON_STACKS : COMMON_STACKS;
+  const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
   const toggle = (s: string) =>
