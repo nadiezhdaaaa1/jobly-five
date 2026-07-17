@@ -401,41 +401,44 @@ function RoleStep({
         )}
       </div>
 
-      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
-        {filtered.map((r) => {
-          const selected = value === r;
-          return (
-            <button
-              key={r}
-              type="button"
-              onClick={() => onChange(r)}
-              className={cn(
-                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
-                selected
-                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
-                  : "hover:bg-[color:var(--color-surface-2)]"
-              )}
-              aria-pressed={selected}
-            >
-              <span
+      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
+        <div className="flex flex-wrap gap-2">
+          {filtered.map((r) => {
+            const selected = value === r;
+            return (
+              <button
+                key={r}
+                type="button"
+                onClick={() => onChange(r)}
+                aria-pressed={selected}
                 className={cn(
-                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border-2",
+                  "inline-flex items-center rounded-[4px] border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-green)]"
-                    : "border-[color:var(--color-border-strong)]"
+                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-[color:var(--color-on-accent)] font-semibold"
+                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                 )}
+                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
               >
-                {selected && (
-                  <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--color-green)]" />
-                )}
-              </span>
-              {r}
-            </button>
-          );
-        })}
-        {filtered.length === 0 && (
-          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
-        )}
+                <span
+                  className={cn(
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border-2",
+                    selected
+                      ? "border-[color:var(--color-on-accent)] bg-[color:var(--color-on-accent)]"
+                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                  )}
+                >
+                  {selected && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
+                  )}
+                </span>
+                {r}
+              </button>
+            );
+          })}
+          {filtered.length === 0 && (
+            <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          )}
+        </div>
       </div>
 
       <ContinueRow disabled={!value} onClick={onContinue} />
