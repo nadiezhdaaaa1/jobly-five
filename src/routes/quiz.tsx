@@ -74,6 +74,9 @@ function QuizPage() {
     (answers.stack?.length ?? 0) > 0 &&
     (rolesList.length === 0 ||
       (answers.stack ?? []).some((s) => !stackOptionsForRoles.has(s)));
+  // Stack was previously completed but role changes wiped all valid items.
+  const stackEmptied =
+    answers.stack !== undefined && answers.stack.length === 0;
 
   // On hydration, resume at the first incomplete step (for returning users).
   // After that, only Continue advances the current step — selections alone must not collapse it.
@@ -151,7 +154,9 @@ function QuizPage() {
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
             const isVisible =
-              completed[key] || key === activeStep || (key === "stack" && stackInvalid);
+              completed[key] ||
+              key === activeStep ||
+              (key === "stack" && (stackInvalid || stackEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             return (
@@ -160,13 +165,23 @@ function QuizPage() {
                 stepKey={key}
                 expanded={isExpanded}
                 answers={answers}
-                invalid={key === "stack" && stackInvalid && !isExpanded}
+                invalid={key === "stack" && (stackInvalid || stackEmptied) && !isExpanded}
                 onEdit={() => openEdit(key)}
               >
                 {key === "role" && (
                   <RoleStep
                     value={answers.roles ?? []}
-                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0] }))}
+                    onChange={(v) =>
+                      setAnswers((a) => {
+                        const nextOpts = new Set<string>();
+                        for (const r of v) for (const n of ROLE_STACKS[r] ?? []) nextOpts.add(n);
+                        const prunedStack =
+                          a.stack !== undefined
+                            ? a.stack.filter((s) => nextOpts.has(s))
+                            : a.stack;
+                        return { ...a, roles: v, role: v[0], stack: prunedStack };
+                      })
+                    }
                     onContinue={() => advance("role", {})}
                   />
                 )}
@@ -311,7 +326,7 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "role":
       return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
     case "stack":
-      return (a.stack ?? []).join(", ");
+      return a.stack && a.stack.length > 0 ? a.stack.join(", ") : "-";
     case "level": {
       const parts: string[] = [];
       if (a.level) parts.push(a.level);
