@@ -4,6 +4,7 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
