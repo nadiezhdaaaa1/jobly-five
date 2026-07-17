@@ -61,6 +61,20 @@ function QuizPage() {
     email: !!answers.email,
   };
 
+  // Compute the stack options available for currently selected roles, and
+  // detect when a previously-completed stack no longer matches those options.
+  const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
+  const stackOptionsForRoles = useMemo(() => {
+    if (rolesList.length === 0) return new Set<string>();
+    const s = new Set<string>();
+    for (const r of rolesList) for (const name of ROLE_STACKS[r] ?? []) s.add(name);
+    return s;
+  }, [rolesList]);
+  const stackInvalid =
+    (answers.stack?.length ?? 0) > 0 &&
+    (rolesList.length === 0 ||
+      (answers.stack ?? []).some((s) => !stackOptionsForRoles.has(s)));
+
   // On hydration, resume at the first incomplete step (for returning users).
   // After that, only Continue advances the current step — selections alone must not collapse it.
   useEffect(() => {
@@ -83,6 +97,19 @@ function QuizPage() {
       return;
     }
     setCurrent(next);
+  }
+
+  function openEdit(key: StepKey) {
+    // When re-opening the Stack step in an invalid state, prune items that
+    // are no longer valid for the current role selection so the user can
+    // pick from the fresh option list.
+    if (key === "stack" && stackInvalid) {
+      setAnswers((a) => ({
+        ...a,
+        stack: (a.stack ?? []).filter((s) => stackOptionsForRoles.has(s)),
+      }));
+    }
+    setEditing(key);
   }
 
   async function handleSubmit(email: string) {
@@ -123,7 +150,8 @@ function QuizPage() {
 
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
-            const isVisible = completed[key] || key === activeStep;
+            const isVisible =
+              completed[key] || key === activeStep || (key === "stack" && stackInvalid);
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             return (
@@ -132,12 +160,13 @@ function QuizPage() {
                 stepKey={key}
                 expanded={isExpanded}
                 answers={answers}
-                onEdit={() => setEditing(key)}
+                invalid={key === "stack" && stackInvalid && !isExpanded}
+                onEdit={() => openEdit(key)}
               >
                 {key === "role" && (
                   <RoleStep
                     value={answers.roles ?? []}
-                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0], stack: undefined }))}
+                    onChange={(v) => setAnswers((a) => ({ ...a, roles: v, role: v[0] }))}
                     onContinue={() => advance("role", {})}
                   />
                 )}
@@ -186,12 +215,14 @@ function StepShell({
   expanded,
   answers,
   onEdit,
+  invalid = false,
   children,
 }: {
   stepKey: StepKey;
   expanded: boolean;
   answers: QuizAnswers;
   onEdit: () => void;
+  invalid?: boolean;
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLLIElement>(null);
@@ -218,8 +249,18 @@ function StepShell({
           aria-label={`Edit ${SUMMARY_LABEL[stepKey]}`}
         >
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-primary)]" style={{ aspectRatio: "1 / 1" }}>
-              <Check className="h-4 w-4 text-[color:var(--color-foreground)]" />
+            <span
+              className={cn(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px]",
+                invalid ? "bg-[#D0D6D8]" : "bg-[color:var(--color-primary)]"
+              )}
+              style={{ aspectRatio: "1 / 1" }}
+            >
+              {invalid ? (
+                <X className="h-4 w-4 text-[color:var(--color-foreground)]" />
+              ) : (
+                <Check className="h-4 w-4 text-[color:var(--color-foreground)]" />
+              )}
             </span>
             <div className="min-w-0">
               <div className="text-sm font-light leading-5 text-[color:var(--color-text-muted)]">
