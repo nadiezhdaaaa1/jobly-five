@@ -569,7 +569,7 @@ function ExperienceStep({
               )}
               aria-pressed={selected}
             >
-              <span className="flex items-center gap-2 text-[16px] font-normal leading-[1.40] text-[#090B0C]">
+              <span className="flex items-center gap-2 text-[16px] font-light leading-[1.60] text-[#090B0C]">
                 {selected && (
                   <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
