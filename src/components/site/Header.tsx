@@ -75,7 +75,7 @@ export function Header() {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] md:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-[color:var(--color-border)] lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
