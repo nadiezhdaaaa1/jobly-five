@@ -704,6 +704,8 @@ function LocationStep({
   const remote = answers.remote ?? false;
   const locations = answers.locations ?? [];
   const [locInput, setLocInput] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
 
