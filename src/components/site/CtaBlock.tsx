@@ -11,7 +11,7 @@ export function CtaBlock({
 }) {
   return (
     <section className="mx-auto max-w-[1200px] px-5 py-16 md:px-8">
-      <div className="rounded-3xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 md:p-12">
+      <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 md:p-12">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-2xl md:text-3xl">{title}</h2>
           <p className="mt-3 text-[color:var(--color-text-secondary)]">{subtitle}</p>
