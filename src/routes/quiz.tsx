@@ -412,7 +412,7 @@ function RoleStep({
                 onClick={() => onChange(r)}
                 aria-pressed={selected}
                 className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
                     ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)] text-[color:var(--color-primary-foreground)] font-semibold"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
@@ -421,7 +421,7 @@ function RoleStep({
               >
                 <span
                   className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border-2",
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
                     selected
                       ? "border-white bg-white"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
