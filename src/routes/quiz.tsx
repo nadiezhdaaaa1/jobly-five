@@ -505,17 +505,17 @@ function StackStep({
 
 // ---------- 3. Experience ----------
 
-function CubeIcon({ selected }: { selected: boolean }) {
-  const fill = selected ? "var(--color-on-accent)" : "var(--color-green)";
-  const stroke = selected ? "var(--color-on-accent)" : "var(--color-border-strong)";
-  return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-      <path d="M20 4 L34 12 L34 28 L20 36 L6 28 L6 12 Z" stroke={stroke} strokeWidth="1.5" fill="none" opacity="0.5" />
-      <path d="M20 4 L20 20 L6 12 Z" fill={fill} opacity="0.85" />
-      <path d="M20 20 L34 12 L34 28 L20 36 Z" fill={fill} opacity="0.35" />
-    </svg>
-  );
-}
+import junImg from "@/assets/Jun.png.asset.json";
+import midImg from "@/assets/Mid.png.asset.json";
+import senImg from "@/assets/Sen.png.asset.json";
+import leaImg from "@/assets/Lea.png.asset.json";
+
+const LEVEL_IMAGES: Record<string, string> = {
+  Junior: junImg.url,
+  Mid: midImg.url,
+  Senior: senImg.url,
+  Lead: leaImg.url,
+};
 
 function ExperienceStep({
   answers,
