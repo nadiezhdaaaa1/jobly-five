@@ -514,41 +514,44 @@ function StackStep({
         </div>
       )}
 
-      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
-        {filtered.map((s) => {
-          const selected = value.includes(s);
-          return (
-            <button
-              key={s}
-              type="button"
-              onClick={() => toggle(s)}
-              className={cn(
-                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
-                selected
-                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
-                  : "hover:bg-[color:var(--color-surface-2)]"
-              )}
-              aria-pressed={selected}
-            >
-              <span
+      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-3">
+        <div className="flex flex-wrap gap-2">
+          {filtered.map((s) => {
+            const selected = value.includes(s);
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => toggle(s)}
+                aria-pressed={selected}
                 className={cn(
-                  "grid h-5 w-5 shrink-0 place-items-center rounded-[4px] border-2",
+                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)]"
-                    : "border-[color:var(--color-border-strong)]"
+                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                 )}
+                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
               >
-                {selected && (
-                  <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
-                )}
-              </span>
-              {s}
-            </button>
-          );
-        })}
-        {filtered.length === 0 && (
-          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
-        )}
+                <span
+                  className={cn(
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border",
+                    selected
+                      ? "border-white bg-white"
+                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                  )}
+                >
+                  {selected && (
+                    <Check className="h-3 w-3 text-[color:var(--color-green)]" strokeWidth={3} />
+                  )}
+                </span>
+                {s}
+              </button>
+            );
+          })}
+          {filtered.length === 0 && (
+            <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          )}
+        </div>
       </div>
 
       <ContinueRow disabled={!canContinue} onClick={onContinue} />
