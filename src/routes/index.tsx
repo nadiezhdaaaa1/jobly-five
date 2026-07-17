@@ -91,16 +91,6 @@ function Landing() {
 
 /* ------------------------------ Header ------------------------------ */
 
-function Wordmark({ className = "" }: { className?: string }) {
-  return (
-    <span
-      className={`text-green ${className}`}
-      style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em" }}
-    >
-      jobly
-    </span>
-  );
-}
 
 
 /* ------------------------------- Hero ------------------------------- */
@@ -1130,45 +1120,3 @@ function FinalCTA() {
   );
 }
 
-/* ------------------------------- Footer ------------------------------- */
-
-function Footer() {
-  const cols: { title: string; items: string[] }[] = [
-    { title: "Product", items: ["Features", "Pricing", "Integrations", "Roadmap"] },
-    { title: "Company", items: ["About Us", "Careers", "Blog", "Press"] },
-    { title: "Resources", items: ["Docs", "Candidate Guide", "FAQ", "Contact"] },
-    { title: "Legal", items: ["Privacy Policy", "Terms of Service", "Information Security"] },
-  ];
-  return (
-    <footer className="bg-[color:var(--color-background)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-14 md:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(4,1fr)]">
-          <div>
-            <Wordmark />
-            <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
-              Email-first job discovery platform for tech candidates.
-            </p>
-          </div>
-          {cols.map((c) => (
-            <div key={c.title}>
-              <div className="text-sm font-semibold">{c.title}</div>
-              <ul className="mt-3 space-y-2 text-sm text-[color:var(--color-text-secondary)]">
-                {c.items.map((i) => (
-                  <li key={i}>
-                    <a href="#" className="hover:text-[color:var(--color-foreground)]">
-                      {i}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-6 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
-          <span>© 2025 Jobly. All rights reserved.</span>
-          <span>You can adjust or turn off daily match frequencies anytime via your settings link.</span>
-        </div>
-      </div>
-    </footer>
-  );
-}
