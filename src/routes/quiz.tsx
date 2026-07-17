@@ -490,7 +490,28 @@ function StackStep({
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      {value.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {value.map((s) => (
+            <span
+              key={s}
+              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+            >
+              {s}
+              <button
+                type="button"
+                onClick={() => toggle(s)}
+                aria-label={`Remove ${s}`}
+                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
         {filtered.map((s) => {
           const selected = value.includes(s);
           return (
@@ -499,20 +520,31 @@ function StackStep({
               type="button"
               onClick={() => toggle(s)}
               className={cn(
-                "inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)] text-[color:var(--color-green)] font-semibold"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
+                  : "hover:bg-[color:var(--color-surface-2)]"
               )}
               aria-pressed={selected}
             >
-              {selected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+              <span
+                className={cn(
+                  "grid h-5 w-5 shrink-0 place-items-center rounded-[4px] border-2",
+                  selected
+                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)]"
+                    : "border-[color:var(--color-border-strong)]"
+                )}
+              >
+                {selected && (
+                  <Check className="h-3 w-3" style={{ color: "var(--color-on-accent)" }} strokeWidth={3} />
+                )}
+              </span>
               {s}
             </button>
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
       </div>
 
