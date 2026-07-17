@@ -617,7 +617,7 @@ function ExperienceStep({
 
       <div className="mt-6">
         <label className="block">
-          <span className="text-sm font-semibold">Spoken languages</span>
+          <span className="text-sm font-light text-[#090B0C]">Spoken languages</span>
           <input
             value={langInput}
             onChange={(e) => {
@@ -766,7 +766,7 @@ function LocationStep({
 
       <div className="mt-4">
         <label className="block">
-          <span className="text-sm font-semibold">Preferred locations</span>
+          <span className="text-sm font-light text-[#090B0C]">Preferred locations</span>
           <input
             value={locInput}
             onChange={(e) => {
@@ -814,7 +814,7 @@ function LocationStep({
 
       <div className="mt-5">
         <div className="flex items-baseline justify-between">
-          <span className="text-sm font-semibold">Salary range</span>
+          <span className="text-sm font-light text-[#090B0C]">Salary range</span>
           <span className="text-sm text-[color:var(--color-green)] font-semibold">
             {formatMoney(minVal)} – {formatMoney(maxVal)}
           </span>
