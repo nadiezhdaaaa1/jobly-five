@@ -4,7 +4,7 @@ import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS } from "@/lib/quiz-data";
+import { ROLES, ROLE_STACKS, COMMON_STACKS, LEVELS, USA_LOCATIONS } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -704,6 +704,8 @@ function LocationStep({
   const remote = answers.remote ?? false;
   const locations = answers.locations ?? [];
   const [locInput, setLocInput] = useState("");
+  const [focused, setFocused] = useState(false);
+  const [highlighted, setHighlighted] = useState(0);
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
 
@@ -722,6 +724,29 @@ function LocationStep({
 
   const removeLoc = (l: string) =>
     onChange({ locations: locations.filter((x) => x !== l) });
+
+  const locQuery = locInput.trim().toLowerCase();
+  const filteredSuggestions = useMemo(
+    () =>
+      locQuery
+        ? USA_LOCATIONS.filter(
+            (loc) =>
+              loc.toLowerCase().includes(locQuery) &&
+              !locations.some((l) => l.toLowerCase() === loc.toLowerCase())
+          ).slice(0, 7)
+        : [],
+    [locQuery, locations]
+  );
+
+  useEffect(() => setHighlighted(0), [filteredSuggestions.length]);
+
+  const addSuggestion = (loc: string) => {
+    if (!locations.some((l) => l.toLowerCase() === loc.toLowerCase())) {
+      onChange({ locations: [...locations, loc] });
+    }
+    setLocInput("");
+    setFocused(false);
+  };
 
   const setMin = (v: number) => {
     const nv = Math.min(v, maxVal - SAL_STEP);
@@ -765,8 +790,8 @@ function LocationStep({
       </div>
 
       <div className="mt-4">
-        <label className="block">
-          <span className="text-sm font-light text-[#090B0C]">Preferred locations</span>
+        <label className="block text-sm font-light text-[#090B0C]">Preferred locations</label>
+        <div className="relative mt-1.5">
           <input
             value={locInput}
             onChange={(e) => {
@@ -781,15 +806,47 @@ function LocationStep({
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                commitLoc();
+                if (focused && filteredSuggestions.length > 0) {
+                  addSuggestion(filteredSuggestions[highlighted]);
+                } else {
+                  commitLoc();
+                }
+              } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setHighlighted((i) => Math.min(i + 1, filteredSuggestions.length - 1));
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setHighlighted((i) => Math.max(i - 1, 0));
               } else if (e.key === "Backspace" && locInput === "" && locations.length > 0) {
                 onChange({ locations: locations.slice(0, -1) });
               }
             }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             placeholder="e.g. New York City, USA"
-            className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           />
-        </label>
+          {focused && locInput.trim() && filteredSuggestions.length > 0 && (
+            <ul
+              className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] py-1 shadow-sm"
+              onMouseDown={(e) => e.preventDefault()}
+            >
+              {filteredSuggestions.map((loc, idx) => (
+                <li
+                  key={loc}
+                  onMouseDown={() => addSuggestion(loc)}
+                  onMouseEnter={() => setHighlighted(idx)}
+                  className={cn(
+                    "cursor-pointer px-3 py-2 text-sm transition-colors",
+                    idx === highlighted ? "bg-[color:var(--color-surface-2)]" : "hover:bg-[color:var(--color-surface-2)]"
+                  )}
+                >
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         {locations.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">
             {locations.map((l) => (
