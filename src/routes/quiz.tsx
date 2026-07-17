@@ -725,6 +725,29 @@ function LocationStep({
   const removeLoc = (l: string) =>
     onChange({ locations: locations.filter((x) => x !== l) });
 
+  const locQuery = locInput.trim().toLowerCase();
+  const filteredSuggestions = useMemo(
+    () =>
+      locQuery
+        ? USA_LOCATIONS.filter(
+            (loc) =>
+              loc.toLowerCase().includes(locQuery) &&
+              !locations.some((l) => l.toLowerCase() === loc.toLowerCase())
+          ).slice(0, 7)
+        : [],
+    [locQuery, locations]
+  );
+
+  useEffect(() => setHighlighted(0), [filteredSuggestions.length]);
+
+  const addSuggestion = (loc: string) => {
+    if (!locations.some((l) => l.toLowerCase() === loc.toLowerCase())) {
+      onChange({ locations: [...locations, loc] });
+    }
+    setLocInput("");
+    setFocused(false);
+  };
+
   const setMin = (v: number) => {
     const nv = Math.min(v, maxVal - SAL_STEP);
     onChange({ salaryMin: nv, salaryMax: maxVal });
