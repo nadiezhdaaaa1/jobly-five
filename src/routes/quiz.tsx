@@ -70,7 +70,7 @@ function QuizPage() {
     const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
     if (editing === nextFrom) {
       setEditing(null);
-      setCurrent((c) => (STEP_ORDER.indexOf(next) > STEP_ORDER.indexOf(c) ? next : c));
+      setCurrent(next);
       return;
     }
     setCurrent(next);
