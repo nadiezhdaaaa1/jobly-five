@@ -45,6 +45,29 @@ export const ROLES = [
 
 export const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
 
+export const SPOKEN_LANGUAGES = [
+  "English",
+  "Spanish",
+  "Chinese",
+  "Tagalog",
+  "Vietnamese",
+  "Arabic",
+  "French",
+  "Korean",
+  "Portuguese",
+  "Haitian Creole",
+  "Hindi",
+  "German",
+  "Dutch",
+  "Polish",
+  "Italian",
+  "Urdu",
+  "Persian",
+  "Japanese",
+  "Gujarati",
+  "Bengali",
+];
+
 export const COMMON_STACKS = [
   "React",
   "Node.js",
