@@ -13,9 +13,17 @@ export function Wordmark({ className = "" }: { className?: string }) {
   );
 }
 
-const NAV = [
-  { label: "Blog", to: "/blog" as const },
-  { label: "Contact", to: "/contact" as const },
+type NavItem =
+  | { label: string; to: string; href?: never }
+  | { label: string; href: string; to?: never };
+
+const NAV: NavItem[] = [
+  { label: "Offer", href: "/#offer" },
+  { label: "Problem", href: "/#problem" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "Blog", to: "/blog" },
+  { label: "Contact", to: "/contact" },
 ];
 
 export function Header() {
