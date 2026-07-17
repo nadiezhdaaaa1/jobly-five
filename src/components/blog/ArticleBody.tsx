@@ -94,7 +94,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             return (
               <aside
                 key={i}
-                className="mt-8 rounded-2xl bg-[color:var(--color-mint)] p-5 text-[color:var(--color-green)]"
+                className="mt-8 rounded-lg bg-[color:var(--color-mint)] p-5 text-[color:var(--color-green)]"
               >
                 {b.title && <div className="text-sm font-semibold">{b.title}</div>}
                 <p className="mt-1 leading-7">{b.text}</p>
