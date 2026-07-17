@@ -272,9 +272,7 @@ function Hero() {
             className="mt-6 text-[42px] leading-[1.05] md:text-[56px] lg:text-[64px]"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
           >
-            Relevant jobs, first
-            <br />
-            <span>— scored to you</span>
+            Relevant jobs, first — scored to you
           </h1>
           <p className="mt-5 max-w-xl text-lg font-light text-[color:var(--color-text-secondary)]">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily.
