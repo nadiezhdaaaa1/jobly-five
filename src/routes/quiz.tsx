@@ -745,7 +745,6 @@ function LocationStep({
       onChange({ locations: [...locations, loc] });
     }
     setLocInput("");
-    setFocused(false);
   };
 
   const setMin = (v: number) => {
