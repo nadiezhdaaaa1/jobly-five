@@ -361,7 +361,15 @@ function StepHeading({ children }: { children: React.ReactNode }) {
 
 // ---------- 1. Role ----------
 
-function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) => void }) {
+function RoleStep({
+  value,
+  onChange,
+  onContinue,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  onContinue: () => void;
+}) {
   const [query, setQuery] = useState("");
   const filtered = ROLES.filter((r) =>
     r.toLowerCase().includes(query.trim().toLowerCase())
@@ -393,31 +401,44 @@ function RoleStep({ value, onSelect }: { value?: string; onSelect: (v: string) =
         )}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-4 max-h-[320px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] divide-y divide-[color:var(--color-border)]">
         {filtered.map((r) => {
           const selected = value === r;
           return (
             <button
               key={r}
               type="button"
-              onClick={() => onSelect(r)}
+              onClick={() => onChange(r)}
               className={cn(
-                "inline-flex min-h-[36px] items-center gap-1.5 rounded-full border px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:bg-[color:var(--color-surface-2)]",
                 selected
-                  ? "border-[color:var(--color-green)] bg-[color:var(--color-success-subtle)] text-[color:var(--color-green)] font-semibold"
-                  : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  ? "bg-[color:var(--color-success-subtle)] font-semibold text-[color:var(--color-foreground)]"
+                  : "hover:bg-[color:var(--color-surface-2)]"
               )}
               aria-pressed={selected}
             >
-              {selected && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
+              <span
+                className={cn(
+                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border-2",
+                  selected
+                    ? "border-[color:var(--color-green)]"
+                    : "border-[color:var(--color-border-strong)]"
+                )}
+              >
+                {selected && (
+                  <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--color-green)]" />
+                )}
+              </span>
               {r}
             </button>
           );
         })}
         {filtered.length === 0 && (
-          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+          <p className="px-4 py-3 text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
       </div>
+
+      <ContinueRow disabled={!value} onClick={onContinue} />
     </div>
   );
 }
