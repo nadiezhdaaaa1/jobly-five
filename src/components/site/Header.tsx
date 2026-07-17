@@ -84,16 +84,27 @@ export function Header() {
       {open && (
         <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:hidden">
           <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
-            {NAV.map((n) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                {n.label}
-              </Link>
-            ))}
+            {NAV.map((n) =>
+              n.to ? (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  {n.label}
+                </Link>
+              ) : (
+                <a
+                  key={n.label}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  {n.label}
+                </a>
+              )
+            )}
             <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
               Log in
             </Link>
