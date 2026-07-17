@@ -43,7 +43,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
           case "image":
             return (
               <figure key={i} className="mt-8">
-                <div className="overflow-hidden rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+                <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
                   <img src={b.src} alt={b.alt} className="h-auto w-full" loading="lazy" />
                 </div>
                 {b.caption && (
