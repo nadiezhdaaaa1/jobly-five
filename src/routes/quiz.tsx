@@ -401,7 +401,7 @@ function RoleStep({
         )}
       </div>
 
-      <div className="mt-4 max-h-[184px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
+      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((r) => {
             const selected = value === r;
