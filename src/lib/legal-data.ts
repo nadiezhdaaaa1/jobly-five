@@ -228,7 +228,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "disclaimer",
     title: "Service Disclaimer",
     lastUpdated: "2026-07-20",
-    intro: "This Disclaimer applies to the Jobly service offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)."
+    intro: "This Disclaimer applies to the Jobly service offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569).",
     body: [
     { type: "h2", text: "1. Informational purposes only" },
     { type: "p", text: "Jobly surfaces job listings and generates match scores, rankings, filters (including ghost-job/scam filtering), and career-related suggestions (collectively, \"Outputs\"). All Outputs are for general informational purposes only and are automated estimates. They are not recommendations, guarantees, or professional, career, legal, or financial advice." },
