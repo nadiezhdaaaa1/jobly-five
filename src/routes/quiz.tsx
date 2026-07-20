@@ -828,17 +828,6 @@ function ExperienceStep({
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 
-  const toggleExtra = (lang: string) => {
-    if (lang === primary) return;
-    if (extras.some((e) => e.lang === lang)) {
-      onChange({ additionalLanguages: extras.filter((e) => e.lang !== lang) });
-    } else {
-      onChange({
-        additionalLanguages: [...extras, { lang, level: "B2" as ProficiencyLevel }],
-      });
-    }
-  };
-
   const setExtraLevel = (lang: string, lvl: ProficiencyLevel) => {
     onChange({
       additionalLanguages: extras.map((e) => (e.lang === lang ? { ...e, level: lvl } : e)),
@@ -968,63 +957,44 @@ function ExperienceStep({
 
       <div className="mt-5">
         <label className="block text-sm font-light text-[#090B0C]">
-          Additional languages <span className="text-[color:var(--color-text-muted)]">(optional)</span>
+          Additional language
         </label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {POPULAR_LANGUAGES.filter((l) => l !== primary).map((lang) => {
-            const entry = extras.find((e) => e.lang === lang);
-            const selected = !!entry;
-            return (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => toggleExtra(lang)}
-                aria-pressed={selected}
-                className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-                  selected
-                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
-                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
-                )}
-                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
-              >
-                <span
-                  className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
-                    selected
-                      ? "border-[#0E735A] bg-[#0E735A]"
-                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
-                  )}
-                >
-                  {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
-                </span>
-                <span>{lang}</span>
-              </button>
-            );
-          })}
-        </div>
-        {extras.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {extras.map((e) => (
-              <div
-                key={e.lang}
-                className="flex items-center justify-between gap-3 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2"
-              >
-                <span className="text-sm text-[#090B0C]">{e.lang}</span>
-                <select
-                  value={e.level}
-                  onChange={(ev) => setExtraLevel(e.lang, ev.target.value as ProficiencyLevel)}
-                  className="h-8 rounded-[4px] border border-[color:var(--color-border)] bg-white px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-                  aria-label={`${e.lang} proficiency`}
-                >
-                  {PROFICIENCY_LEVELS.map((lvl) => (
-                    <option key={lvl} value={lvl}>{lvl}</option>
-                  ))}
-                </select>
-              </div>
+        <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+          <select
+            value={extras[0]?.lang ?? ""}
+            onChange={(ev) => {
+              const lang = ev.target.value;
+              if (!lang) {
+                onChange({ additionalLanguages: [] });
+                return;
+              }
+              onChange({
+                additionalLanguages: [{ lang, level: "B2" as ProficiencyLevel }],
+              });
+            }}
+            className="h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            aria-label="Select an additional language"
+          >
+            <option value="">Select a language</option>
+            {POPULAR_LANGUAGES.filter((l) => l !== primary).map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
             ))}
-          </div>
-        )}
+          </select>
+          {extras[0] && (
+            <select
+              value={extras[0].level}
+              onChange={(ev) =>
+                setExtraLevel(extras[0].lang, ev.target.value as ProficiencyLevel)
+              }
+              className="h-10 w-full sm:w-auto rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+              aria-label={`${extras[0].lang} proficiency`}
+            >
+              {PROFICIENCY_LEVELS.map((lvl) => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
 
       <style>{`
