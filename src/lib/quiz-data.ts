@@ -10,49 +10,17 @@ export const LEVEL_DEFAULT_YEARS: Record<string, number> = {
 // ---- Field taxonomy (gates role + skills) ----
 export const FIELDS = [
   "Engineering",
+  "Data & AI / ML",
+  "Infrastructure, DevOps & Cloud",
+  "Security",
+  "QA & Testing",
   "Product",
   "Design",
-  "Data",
-  "Sales",
-  "Marketing",
-  "Management",
-  "C-level",
-  "Other",
+  "Engineering Leadership & Architecture",
+  "Program, Project & Technical-Adjacent",
+  "Emerging / Specialized",
 ] as const;
 export type Field = (typeof FIELDS)[number];
-
-// Custom roles that don't have RAW entries.
-const SALES_ROLES = [
-  "SDR / BDR",
-  "Account Executive",
-  "Account Manager",
-  "Sales Manager",
-  "Sales Director",
-  "VP Sales",
-  "Customer Success Manager",
-];
-const MARKETING_ROLES = [
-  "Growth Marketer",
-  "Content Marketer",
-  "Product Marketer",
-  "SEO Specialist",
-  "Performance Marketer",
-  "Brand Marketer",
-  "Marketing Manager",
-  "Head of Marketing",
-];
-const CLEVEL_ROLES = [
-  "CEO",
-  "CTO",
-  "CPO",
-  "COO",
-  "CFO",
-  "CMO",
-  "CRO",
-  "VP Engineering",
-  "VP Product",
-  "VP Design",
-];
 
 export const SPOKEN_LANGUAGES = [
   "English","Spanish","Chinese","Tagalog","Vietnamese","Arabic","French","Korean","Portuguese",
@@ -70,15 +38,15 @@ export type StackTag =
 
 export type RoleGroup =
   | "Engineering"
-  | "Data & AI"
-  | "Infrastructure"
+  | "Data & AI / ML"
+  | "Infrastructure, DevOps & Cloud"
   | "Security"
-  | "QA"
+  | "QA & Testing"
   | "Product"
   | "Design"
-  | "Leadership"
-  | "Program"
-  | "Specialized";
+  | "Engineering Leadership & Architecture"
+  | "Program, Project & Technical-Adjacent"
+  | "Emerging / Specialized";
 
 // Raw role -> tagged stack. Source: docs/jobly-roles-and-stacks.md
 const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string[]>>> = {
@@ -173,7 +141,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
   },
   // ---- Data & AI ----
   "Data Analyst": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["SQL", "Python", "R"],
     Framework: ["pandas"],
     Database: ["PostgreSQL", "Snowflake", "BigQuery"],
@@ -181,7 +149,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["A/B Testing", "Data Visualization"],
   },
   "Data Scientist": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "R", "SQL"],
     Framework: ["pandas", "NumPy", "scikit-learn", "XGBoost", "statsmodels"],
     Database: ["Snowflake", "BigQuery", "PostgreSQL"],
@@ -190,7 +158,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Statistical Modeling", "A/B Testing"],
   },
   "Data Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "SQL", "Scala", "Java"],
     Framework: ["Apache Spark", "Airflow", "dbt", "Kafka", "Flink"],
     Database: ["Snowflake", "BigQuery", "Redshift", "PostgreSQL"],
@@ -198,7 +166,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Platform: ["Databricks", "AWS", "GCP", "Azure"],
   },
   "Analytics Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["SQL", "Python"],
     Framework: ["dbt"],
     Database: ["Snowflake", "BigQuery", "Redshift"],
@@ -206,14 +174,14 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Data Modeling"],
   },
   "Machine Learning Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "C++", "Go"],
     Framework: ["PyTorch", "TensorFlow", "scikit-learn", "Hugging Face", "Ray"],
     Tool: ["MLflow", "Docker", "Kubernetes", "Git", "ONNX"],
     Platform: ["SageMaker", "Vertex AI", "AWS", "GCP"],
   },
   "AI / LLM Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "TypeScript"],
     Framework: ["PyTorch", "Hugging Face", "LangChain", "LangGraph", "LlamaIndex", "FastAPI"],
     Database: ["pgvector", "Pinecone", "Weaviate", "Chroma"],
@@ -222,7 +190,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Prompt Engineering", "RAG", "Evals", "Agents"],
   },
   "ML / AI Research Scientist": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python"],
     Framework: ["PyTorch", "JAX", "TensorFlow"],
     Tool: ["CUDA", "Weights & Biases", "Git"],
@@ -230,7 +198,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Deep Learning", "Experimentation"],
   },
   "MLOps Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "Go", "Bash"],
     Framework: ["MLflow", "Kubeflow", "BentoML", "Ray"],
     Tool: ["Docker", "Kubernetes", "Terraform", "Git"],
@@ -238,7 +206,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["CI/CD", "Model Monitoring"],
   },
   "Computer Vision Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python", "C++"],
     Framework: ["OpenCV", "PyTorch", "TensorFlow", "YOLO"],
     Tool: ["CUDA", "Git"],
@@ -246,7 +214,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Deep Learning"],
   },
   "NLP Engineer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["Python"],
     Framework: ["Hugging Face", "spaCy", "NLTK", "PyTorch"],
     Database: ["pgvector", "Pinecone"],
@@ -254,14 +222,14 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["RAG", "Text Processing"],
   },
   "BI Developer": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["SQL", "DAX"],
     Database: ["SQL Server", "Snowflake", "BigQuery"],
     Tool: ["Power BI", "Tableau", "Looker"],
     Method: ["Data Modeling", "Dashboarding"],
   },
   "Data Architect": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["SQL", "Python"],
     Framework: ["Apache Spark", "dbt"],
     Database: ["Snowflake", "BigQuery", "PostgreSQL", "Redshift"],
@@ -270,7 +238,7 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["Data Modeling", "Schema Design"],
   },
   "Database Administrator": {
-    group: "Data & AI",
+    group: "Data & AI / ML",
     Language: ["SQL", "PL/SQL", "Bash"],
     Database: ["PostgreSQL", "MySQL", "Oracle", "SQL Server", "MongoDB"],
     Tool: ["Git", "Backup/Replication tooling"],
@@ -278,48 +246,48 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
   },
   // ---- Infrastructure ----
   "DevOps Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Bash", "Python", "Go", "YAML"],
     Tool: ["Docker", "Kubernetes", "Terraform", "Ansible", "Jenkins", "GitHub Actions", "GitLab CI", "ArgoCD", "Helm", "Git"],
     Platform: ["AWS", "GCP", "Azure"],
     Method: ["CI/CD", "Infrastructure as Code"],
   },
   "Site Reliability Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Go", "Python", "Bash"],
     Tool: ["Kubernetes", "Prometheus", "Grafana", "Terraform", "PagerDuty", "OpenTelemetry", "Git"],
     Platform: ["AWS", "GCP", "Azure"],
     Method: ["Observability", "Incident Response"],
   },
   "Platform Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Go", "Python", "TypeScript"],
     Tool: ["Kubernetes", "Terraform", "Backstage", "Crossplane", "ArgoCD", "Helm", "Git"],
     Platform: ["AWS", "GCP"],
     Method: ["Infrastructure as Code", "Developer Experience"],
   },
   "Cloud Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Python", "Go", "Bash"],
     Tool: ["Terraform", "CloudFormation", "Pulumi", "Kubernetes", "Git"],
     Platform: ["AWS", "Azure", "GCP"],
     Method: ["Infrastructure as Code", "System Design"],
   },
   "Infrastructure Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Python", "Go", "Bash"],
     Tool: ["Terraform", "Ansible", "Packer", "Docker", "Kubernetes", "Git"],
     Platform: ["AWS", "GCP", "Azure", "VMware"],
     Method: ["Infrastructure as Code"],
   },
   "Network Engineer": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Python", "Bash"],
     Tool: ["Cisco IOS", "Juniper", "Wireshark", "SD-WAN"],
     Method: ["BGP/OSPF", "VPN", "Network Design"],
   },
   "Systems Administrator": {
-    group: "Infrastructure",
+    group: "Infrastructure, DevOps & Cloud",
     Language: ["Bash", "PowerShell", "Python"],
     Tool: ["Linux", "Windows Server", "Active Directory", "Ansible", "Nagios"],
     Platform: ["On-prem", "Hybrid cloud"],
@@ -370,19 +338,19 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
   },
   // ---- QA ----
   "QA Engineer": {
-    group: "QA",
+    group: "QA & Testing",
     Tool: ["TestRail", "Jira", "Zephyr", "Postman"],
     Method: ["Test Case Design", "Regression Testing", "Exploratory Testing"],
   },
   "QA Automation Engineer": {
-    group: "QA",
+    group: "QA & Testing",
     Language: ["JavaScript", "TypeScript", "Python", "Java"],
     Framework: ["Selenium", "Playwright", "Cypress", "Appium", "pytest"],
     Tool: ["GitHub Actions", "Jenkins", "Git"],
     Method: ["Test Automation"],
   },
   "SDET": {
-    group: "QA",
+    group: "QA & Testing",
     Language: ["Java", "Python", "TypeScript", "C#"],
     Framework: ["Selenium", "Playwright", "REST Assured", "JUnit", "k6", "Gatling"],
     Tool: ["GitHub Actions", "Jenkins", "Git"],
@@ -482,26 +450,26 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
   },
   // ---- Leadership ----
   "Tech Lead": {
-    group: "Leadership",
+    group: "Engineering Leadership & Architecture",
     Language: ["TypeScript", "Python", "Go"],
     Framework: ["React", "Node.js"],
     Tool: ["Git", "Jira"],
     Method: ["System Design", "Code Review", "Mentoring"],
   },
   "Staff Engineer": {
-    group: "Leadership",
+    group: "Engineering Leadership & Architecture",
     Language: ["Go", "Python", "Java"],
     Tool: ["Git", "Docker", "Kubernetes"],
     Platform: ["AWS", "GCP", "Azure"],
     Method: ["Architecture", "Technical Strategy", "System Design"],
   },
   "Engineering Manager": {
-    group: "Leadership",
+    group: "Engineering Leadership & Architecture",
     Tool: ["Jira", "Linear", "GitHub"],
     Method: ["People Management", "Delivery", "Hiring", "Agile/Scrum"],
   },
   "Solutions Architect": {
-    group: "Leadership",
+    group: "Engineering Leadership & Architecture",
     Language: ["Java", "C#", "Python", "Go"],
     Framework: ["Spring Boot", ".NET", "Microservices"],
     Tool: ["Terraform", "Lucidchart", "Git"],
@@ -509,75 +477,75 @@ const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string
     Method: ["System Design", "API Design", "Event-Driven Architecture"],
   },
   "Director of Engineering": {
-    group: "Leadership",
+    group: "Engineering Leadership & Architecture",
     Tool: ["Jira", "Linear"],
     Method: ["Org Design", "Technical Strategy", "Budgeting", "Hiring"],
   },
   // ---- Program ----
   "Technical Program Manager": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Tool: ["Jira", "Confluence", "Smartsheet"],
     Method: ["Cross-team Delivery", "Risk Management", "Roadmapping"],
   },
   "Project Manager": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Tool: ["Jira", "Asana", "MS Project", "Monday"],
     Method: ["Agile/Waterfall", "Scope/Timeline/Budget"],
   },
   "Scrum Master": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Tool: ["Jira", "Azure DevOps", "Miro"],
     Method: ["Scrum", "Kanban", "SAFe", "Facilitation"],
   },
   "Solutions Engineer": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Language: ["SQL", "Python", "JavaScript"],
     Tool: ["Postman", "Demo environments", "Git"],
     Method: ["Pre-sales", "Technical Demos", "Integrations"],
   },
   "Developer Advocate": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Language: ["JavaScript", "Python", "Go"],
     Tool: ["GitHub", "Docs platforms", "Git"],
     Method: ["Content", "SDK/Sample Code", "Community"],
   },
   "Technical Writer": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Language: ["Markdown"],
     Framework: ["Docusaurus"],
     Tool: ["Git", "Confluence", "OpenAPI/Swagger"],
     Method: ["API Docs", "Guides", "Tutorials"],
   },
   "Business Analyst": {
-    group: "Program",
+    group: "Program, Project & Technical-Adjacent",
     Language: ["SQL"],
     Tool: ["Excel", "Jira", "Visio", "BPMN tooling"],
     Method: ["Requirements Gathering", "Process Mapping"],
   },
   // ---- Specialized ----
   "Blockchain Developer": {
-    group: "Specialized",
+    group: "Emerging / Specialized",
     Language: ["Solidity", "Rust", "TypeScript", "Go"],
     Framework: ["Hardhat", "Foundry", "ethers.js", "Anchor"],
     Tool: ["Git", "MetaMask"],
     Platform: ["Ethereum", "Solana", "Layer 2s"],
   },
   "AR/VR Engineer": {
-    group: "Specialized",
+    group: "Emerging / Specialized",
     Language: ["C#", "C++"],
     Framework: ["Unity", "Unreal Engine", "ARKit", "ARCore", "OpenXR"],
     Tool: ["Git", "Blender"],
     Platform: ["Meta Quest", "Apple Vision Pro"],
   },
   "Robotics Engineer": {
-    group: "Specialized",
+    group: "Emerging / Specialized",
     Language: ["C++", "Python"],
     Framework: ["ROS/ROS2", "OpenCV"],
     Tool: ["Gazebo", "MoveIt", "Git"],
     Platform: ["Embedded controllers"],
   },
   "Data Governance Engineer": {
-    group: "Specialized",
+    group: "Emerging / Specialized",
     Language: ["SQL", "Python"],
     Framework: ["Great Expectations", "dbt"],
     Tool: ["Collibra", "Alation", "Git"],
@@ -651,26 +619,16 @@ const rolesByGroup = (g: RoleGroup) =>
   Object.entries(RAW).filter(([, v]) => v.group === g).map(([r]) => r);
 
 export const FIELD_ROLES: Record<Field, string[]> = {
-  Engineering: [
-    ...rolesByGroup("Engineering"),
-    ...rolesByGroup("Infrastructure"),
-    "Staff Engineer",
-    "Tech Lead",
-    "Engineering Manager",
-    "Solutions Architect",
-    "Director of Engineering",
-  ],
-  Product: [...rolesByGroup("Product"), "Product Owner"],
+  Engineering: rolesByGroup("Engineering"),
+  "Data & AI / ML": rolesByGroup("Data & AI / ML"),
+  "Infrastructure, DevOps & Cloud": rolesByGroup("Infrastructure, DevOps & Cloud"),
+  Security: rolesByGroup("Security"),
+  "QA & Testing": rolesByGroup("QA & Testing"),
+  Product: rolesByGroup("Product"),
   Design: rolesByGroup("Design"),
-  Data: rolesByGroup("Data & AI"),
-  Sales: SALES_ROLES,
-  Marketing: MARKETING_ROLES,
-  Management: [
-    ...rolesByGroup("Leadership"),
-    ...rolesByGroup("Program"),
-  ],
-  "C-level": CLEVEL_ROLES,
-  Other: Object.keys(RAW),
+  "Engineering Leadership & Architecture": rolesByGroup("Engineering Leadership & Architecture"),
+  "Program, Project & Technical-Adjacent": rolesByGroup("Program, Project & Technical-Adjacent"),
+  "Emerging / Specialized": rolesByGroup("Emerging / Specialized"),
 };
 // dedupe
 for (const k of Object.keys(FIELD_ROLES) as Field[]) {
@@ -680,7 +638,6 @@ for (const k of Object.keys(FIELD_ROLES) as Field[]) {
 export const ROLE_FIELD_MAP: Record<string, Field> = (() => {
   const map: Record<string, Field> = {};
   for (const f of FIELDS) {
-    if (f === "Other") continue;
     for (const r of FIELD_ROLES[f]) if (!(r in map)) map[r] = f;
   }
   return map;
@@ -705,36 +662,9 @@ export const SOFT_SKILLS = [
 ];
 
 // ---- Field-level fallbacks for roles not in RAW ----
-export const FIELD_FALLBACK_HARD: Partial<Record<Field, string[]>> = {
-  Sales: [
-    "Prospecting","Discovery","Cold Outreach","Negotiation","Pipeline Management",
-    "Forecasting","Account Planning","Solution Selling","MEDDIC","SPIN",
-  ],
-  Marketing: [
-    "SEO","SEM","Content Strategy","Copywriting","Brand Positioning","GTM Strategy",
-    "Lifecycle Marketing","Email Marketing","Paid Acquisition","A/B Testing","Analytics",
-  ],
-  "C-level": [
-    "Strategy","Fundraising","Board Management","P&L Ownership","M&A",
-    "Org Design","Vision Setting","OKRs",
-  ],
-  Management: [
-    "People Management","Delivery","Hiring","Performance Management","Roadmapping","OKRs",
-  ],
-};
+export const FIELD_FALLBACK_HARD: Partial<Record<Field, string[]>> = {};
 
-export const FIELD_FALLBACK_TOOLS: Partial<Record<Field, string[]>> = {
-  Sales: [
-    "Salesforce","HubSpot","Outreach","Salesloft","Gong","Apollo","LinkedIn Sales Navigator",
-    "ZoomInfo","Clari",
-  ],
-  Marketing: [
-    "HubSpot","Marketo","Google Analytics","Google Ads","Meta Ads","Ahrefs","Semrush",
-    "Mailchimp","Braze","Segment","Amplitude","Mixpanel","Notion","Figma",
-  ],
-  "C-level": ["Notion","Google Workspace","Slack","Linear","Jira","Looker","Amplitude"],
-  Management: ["Jira","Linear","Notion","Confluence","GitHub","Slack"],
-};
+export const FIELD_FALLBACK_TOOLS: Partial<Record<Field, string[]>> = {};
 
 // Split canonical stack items into hard vs tool buckets.
 const HARD_TAGS: StackTag[] = ["Language", "Framework", "Database", "Method"];
@@ -811,4 +741,8 @@ export const POPULAR_LANGUAGES = [
 export const PROFICIENCY_LEVELS = ["A1","A2","B1","B2","C1","C2","Native"] as const;
 
 // Fields where relocation / travel questions are relevant.
-export const RELO_TRAVEL_FIELDS: Field[] = ["Management", "Sales", "C-level"];
+export const RELO_TRAVEL_FIELDS: Field[] = [
+  "Engineering Leadership & Architecture",
+  "Program, Project & Technical-Adjacent",
+  "Product",
+];
