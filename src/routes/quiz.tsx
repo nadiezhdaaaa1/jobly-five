@@ -918,7 +918,7 @@ function ExperienceStep({
                 additionalLanguages: extras.filter((e) => e.lang !== lang),
               });
             }}
-            className="h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select primary language"
           >
             {POPULAR_LANGUAGES.map((lang) => (
