@@ -908,43 +908,23 @@ function ExperienceStep({
 
       <div className="mt-6">
         <label className="block text-sm font-light text-[#090B0C]">Primary language</label>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {POPULAR_LANGUAGES.map((lang) => {
-            const selected = primary === lang;
-            return (
-              <button
-                key={lang}
-                type="button"
-                onClick={() => {
-                  // Remove from additional if it was there.
-                  onChange({
-                    primaryLanguage: lang,
-                    additionalLanguages: extras.filter((e) => e.lang !== lang),
-                  });
-                }}
-                aria-pressed={selected}
-                className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-                  selected
-                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
-                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
-                )}
-                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
-              >
-                <span
-                  className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
-                    selected
-                      ? "border-white bg-white"
-                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
-                  )}
-                >
-                  {selected && <span className="h-2 w-2 rounded-full bg-[#0E735A]" />}
-                </span>
-                <span>{lang}</span>
-              </button>
-            );
-          })}
+        <div className="mt-2">
+          <select
+            value={primary}
+            onChange={(ev) => {
+              const lang = ev.target.value;
+              onChange({
+                primaryLanguage: lang,
+                additionalLanguages: extras.filter((e) => e.lang !== lang),
+              });
+            }}
+            className="h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            aria-label="Select primary language"
+          >
+            {POPULAR_LANGUAGES.map((lang) => (
+              <option key={lang} value={lang}>{lang}</option>
+            ))}
+          </select>
         </div>
       </div>
 
