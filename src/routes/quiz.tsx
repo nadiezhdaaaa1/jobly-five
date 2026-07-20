@@ -455,26 +455,43 @@ function FieldStep({
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         This narrows the roles and skills we'll ask about next.
       </p>
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {FIELDS.map((f) => {
-          const selected = value === f;
-          return (
-            <button
-              key={f}
-              type="button"
-              onClick={() => onChange(f)}
-              aria-pressed={selected}
-              className={cn(
-                "flex h-[56px] items-center justify-center rounded-[4px] border px-4 text-[16px] font-light leading-[1.6] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-                selected
-                  ? "border-[#00F1A9] bg-[#00F1A9]"
-                  : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
-              )}
-            >
-              {f}
-            </button>
-          );
-        })}
+      <div className="mt-4 rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+        <div className="flex flex-wrap gap-2">
+          {FIELDS.map((f) => {
+            const selected = value === f;
+            return (
+              <button
+                key={f}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => onChange(f)}
+                className={cn(
+                  "inline-flex items-center rounded-[4px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  selected
+                    ? "border-[#00F1A9] bg-[#00F1A9]"
+                    : "border-[color:var(--color-border)] bg-white hover:border-[color:var(--color-border-strong)]"
+                )}
+                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+              >
+                <span
+                  className={cn(
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
+                    selected
+                      ? "border-white bg-white"
+                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                  )}
+                  style={selected ? { borderWidth: 1 } : undefined}
+                >
+                  {selected && (
+                    <span className="h-2 w-2 rounded-full bg-[#0E735A]" />
+                  )}
+                </span>
+                <span>{f}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
       <ContinueRow disabled={!value} onClick={onContinue} />
     </div>
