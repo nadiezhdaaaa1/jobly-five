@@ -103,8 +103,12 @@ function QuizPage() {
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
   const toolsInvalid =
     toolsSel.length > 0 && toolsSel.some((s) => !toolsPoolSet.has(s));
+  const toolsEmptied =
+    answers.tools !== undefined && answers.tools.length === 0;
   const softInvalid =
     softSel.length > 0 && softSel.some((s) => !softPoolSet.has(s));
+  const softEmptied =
+    answers.softSkills !== undefined && answers.softSkills.length === 0;
 
   // Role step shows collapsed-with-X when field change wiped the roles.
   const roleEmptied =
