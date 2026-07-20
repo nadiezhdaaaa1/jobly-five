@@ -2,7 +2,8 @@ export type LegalBlock =
   | { type: "h2"; text: string }
   | { type: "h3"; text: string }
   | { type: "p"; text: string }
-  | { type: "ul"; items: string[] };
+  | { type: "ul"; items: string[] }
+  | { type: "table"; headers: string[]; rows: string[][] };
 
 export type LegalDoc = {
   slug: "terms" | "privacy" | "billing" | "refund" | "cookies" | "email" | "disclaimer";
@@ -177,30 +178,15 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     { type: "p", text: "Analytics / performance — help us understand usage and improve matching and UX." },
     { type: "p", text: "Marketing / attribution — measure campaigns and attribute signups/installs." },
     { type: "h2", text: "3. Cookies and tools we use" },
-    { type: "p", text: "Tool / provider" },
-    { type: "p", text: "Category" },
-    { type: "p", text: "Purpose" },
-    { type: "p", text: "Supabase (auth/session)" },
-    { type: "p", text: "Strictly necessary" },
-    { type: "p", text: "Keep you logged in and secure your session." },
-    { type: "p", text: "Stripe" },
-    { type: "p", text: "Strictly necessary" },
-    { type: "p", text: "Process payments and prevent fraud." },
-    { type: "p", text: "Google Analytics 4" },
-    { type: "p", text: "Analytics" },
-    { type: "p", text: "Measure traffic, conversions, and feature usage." },
-    { type: "p", text: "Amplitude" },
-    { type: "p", text: "Analytics" },
-    { type: "p", text: "Product analytics: funnels, retention, events." },
-    { type: "p", text: "Microsoft Clarity" },
-    { type: "p", text: "Analytics" },
-    { type: "p", text: "Session recordings and heatmaps to improve UX." },
-    { type: "p", text: "AppsFlyer" },
-    { type: "p", text: "Marketing / attribution" },
-    { type: "p", text: "Attribute campaigns and measure signups/installs." },
-    { type: "p", text: "Ad platforms (e.g., Google)" },
-    { type: "p", text: "Marketing / attribution" },
-    { type: "p", text: "Campaign measurement and, where enabled, advertising." },
+    { type: "table", headers: ["Tool / provider", "Category", "Purpose"], rows: [
+      ["Supabase (auth/session)", "Strictly necessary", "Keep you logged in and secure your session."],
+      ["Stripe", "Strictly necessary", "Process payments and prevent fraud."],
+      ["Google Analytics 4", "Analytics", "Measure traffic, conversions, and feature usage."],
+      ["Amplitude", "Analytics", "Product analytics: funnels, retention, events."],
+      ["Microsoft Clarity", "Analytics", "Session recordings and heatmaps to improve UX."],
+      ["AppsFlyer", "Marketing / attribution", "Attribute campaigns and measure signups/installs."],
+      ["Ad platforms (e.g., Google)", "Marketing / attribution", "Campaign measurement and, where enabled, advertising."],
+    ] },
     { type: "p", text: "The exact cookies, durations, and providers are finalized after a technical cookie audit and reflected in the consent tool." },
     { type: "h2", text: "4. Consent" },
     { type: "p", text: "Where required (e.g., for EEA/UK visitors), we request your consent before setting non-essential cookies through a cookie banner, and you can accept, reject, or customize your choices. Strictly necessary cookies are set without consent because the Service cannot function without them. In the US, you can exercise opt-out rights for \"sale\"/\"sharing\" and targeted advertising as described in our Privacy Policy (including recognized opt-out preference signals where applicable)." },

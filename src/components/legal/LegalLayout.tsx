@@ -60,14 +60,42 @@ export function LegalLayout({ doc }: { doc: LegalDoc }) {
                   </p>
                 );
               }
+              if (b.type === "ul") {
+                return (
+                  <ul key={i} className="mt-4 list-disc space-y-2 pl-6">
+                    {b.items.map((it, j) => (
+                      <li key={j} className="leading-7">
+                        {it}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
               return (
-                <ul key={i} className="mt-4 list-disc space-y-2 pl-6">
-                  {b.items.map((it, j) => (
-                    <li key={j} className="leading-7">
-                      {it}
-                    </li>
-                  ))}
-                </ul>
+                <div key={i} className="mt-6 overflow-x-auto rounded-lg border border-[color:var(--color-border)]">
+                  <table className="w-full border-collapse text-sm">
+                    <thead className="bg-[color:var(--color-surface-1)]">
+                      <tr>
+                        {b.headers.map((h, j) => (
+                          <th key={j} className="border-b border-[color:var(--color-border)] px-4 py-3 text-left font-medium text-[color:var(--color-foreground)]">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {b.rows.map((row, r) => (
+                        <tr key={r} className="border-b border-[color:var(--color-border)] last:border-0">
+                          {row.map((cell, c) => (
+                            <td key={c} className="px-4 py-3 align-top leading-6 text-[color:var(--color-text-secondary)]">
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               );
             })}
           </div>
