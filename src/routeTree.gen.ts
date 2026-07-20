@@ -19,6 +19,7 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRefundRouteImport } from './routes/legal.refund'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalEmailRouteImport } from './routes/legal.email'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
@@ -74,6 +75,11 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   path: '/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalEmailRoute = LegalEmailRouteImport.update({
+  id: '/legal/email',
+  path: '/legal/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalDisclaimerRoute = LegalDisclaimerRouteImport.update({
   id: '/legal/disclaimer',
   path: '/legal/disclaimer',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -206,6 +218,7 @@ export interface RootRouteChildren {
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
+  LegalEmailRoute: typeof LegalEmailRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
@@ -284,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/email': {
+      id: '/legal/email'
+      path: '/legal/email'
+      fullPath: '/legal/email'
+      preLoaderRoute: typeof LegalEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/disclaimer': {
       id: '/legal/disclaimer'
       path: '/legal/disclaimer'
@@ -326,6 +346,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
+  LegalEmailRoute: LegalEmailRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
