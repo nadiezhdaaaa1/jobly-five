@@ -7,7 +7,7 @@ export const LEVEL_DEFAULT_YEARS: Record<string, number> = {
   Lead: 12,
 };
 
-// ---- Field taxonomy (gates role + skills) ----
+// ---- Field taxonomy ----
 export const FIELDS = [
   "Engineering",
   "Data & AI / ML",
@@ -22,539 +22,501 @@ export const FIELDS = [
 ] as const;
 export type Field = (typeof FIELDS)[number];
 
-export const SPOKEN_LANGUAGES = [
-  "English","Spanish","Chinese","Tagalog","Vietnamese","Arabic","French","Korean","Portuguese",
-  "Haitian Creole","Hindi","German","Dutch","Polish","Italian","Urdu","Persian","Japanese",
-  "Gujarati","Bengali",
+export type RoleGroup = Field;
+
+// Canonical soft-skill vocabulary — every role picks from this list only.
+export const SOFT_SKILLS_VOCAB = [
+  "Communication","Written Communication","Collaboration","Cross-functional Collaboration",
+  "Problem Solving","Analytical Thinking","Critical Thinking","Attention to Detail",
+  "Time Management","Prioritization","Adaptability","Ownership","Curiosity","Creativity",
+  "Empathy","Mentoring","Leadership","People Management","Stakeholder Management",
+  "Negotiation","Presentation","Storytelling","Facilitation","Decision Making",
+  "Strategic Thinking","Business Acumen","Customer Focus","Conflict Resolution",
+  "Working Under Pressure",
 ];
 
-export type StackTag =
-  | "Language"
-  | "Framework"
-  | "Database"
-  | "Tool"
-  | "Platform"
-  | "Method";
+// Kept for legacy imports; equals the canonical vocab.
+export const SOFT_SKILLS = SOFT_SKILLS_VOCAB;
 
-export type RoleGroup =
-  | "Engineering"
-  | "Data & AI / ML"
-  | "Infrastructure, DevOps & Cloud"
-  | "Security"
-  | "QA & Testing"
-  | "Product"
-  | "Design"
-  | "Engineering Leadership & Architecture"
-  | "Program, Project & Technical-Adjacent"
-  | "Emerging / Specialized";
+// ---- Roles ----
+type RoleDef = {
+  group: RoleGroup;
+  soft: string[];
+  hard: string[];
+  tools: string[];
+};
 
-// Raw role -> tagged stack. Source: docs/jobly-roles-and-stacks.md
-const RAW: Record<string, { group: RoleGroup } & Partial<Record<StackTag, string[]>>> = {
-  // ---- Engineering ----
+const RAW: Record<string, RoleDef> = {
+  // 1. Engineering
   "Frontend Engineer": {
     group: "Engineering",
-    Language: ["JavaScript", "TypeScript", "HTML/CSS"],
-    Framework: ["React", "Next.js", "Vue", "Angular", "Svelte", "Tailwind CSS", "Redux"],
-    Tool: ["Git", "Vite", "Webpack", "Storybook", "Figma", "Playwright", "Cypress"],
-    Platform: ["Vercel", "Netlify", "Cloudflare"],
+    soft: ["Attention to Detail","Collaboration","Communication","Empathy","Problem Solving"],
+    hard: ["JavaScript","TypeScript","HTML/CSS","React","Next.js","Vue","Angular","Svelte","Tailwind CSS","Redux"],
+    tools: ["Git","Vite","Webpack","Storybook","Figma","Playwright","Cypress","Vercel","Netlify","Cloudflare"],
   },
   "Backend Engineer": {
     group: "Engineering",
-    Language: ["Python", "Java", "Go", "C#", "Ruby", "PHP", "TypeScript", "Rust"],
-    Framework: ["Node.js", "Express", "NestJS", "Django", "FastAPI", "Flask", "Spring Boot", ".NET", "Rails", "Laravel", "GraphQL"],
-    Database: ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
-    Tool: ["Git", "Docker", "Kafka", "RabbitMQ"],
-    Platform: ["AWS", "GCP", "Azure"],
+    soft: ["Problem Solving","Analytical Thinking","Collaboration","Ownership","Communication"],
+    hard: ["Python","Java","Go","C#","Ruby","PHP","TypeScript","Rust","Node.js","Express","NestJS","Django","FastAPI","Flask","Spring Boot",".NET","Rails","Laravel","GraphQL","PostgreSQL","MySQL","MongoDB","Redis"],
+    tools: ["Git","Docker","Kafka","RabbitMQ","AWS","GCP","Azure"],
   },
   "Full-Stack Engineer": {
     group: "Engineering",
-    Language: ["TypeScript", "JavaScript", "Python", "Go", "Ruby", "HTML/CSS"],
-    Framework: ["React", "Next.js", "Node.js", "Express", "NestJS", "Django", "Rails", "GraphQL", "Tailwind CSS"],
-    Database: ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
-    Tool: ["Git", "Docker", "Prisma"],
-    Platform: ["Vercel", "Supabase", "Firebase", "AWS"],
+    soft: ["Adaptability","Problem Solving","Prioritization","Communication","Ownership"],
+    hard: ["TypeScript","JavaScript","Python","Go","Ruby","HTML/CSS","React","Next.js","Node.js","Express","NestJS","Django","Rails","GraphQL","Tailwind CSS","PostgreSQL","MySQL","MongoDB","Redis"],
+    tools: ["Git","Docker","Prisma","Vercel","Supabase","Firebase","AWS"],
   },
-  "Software Engineer": {
+  "Software Engineer (General)": {
     group: "Engineering",
-    Language: ["Python", "Java", "C++", "C#", "Go", "JavaScript", "TypeScript", "SQL"],
-    Framework: ["Spring Boot", ".NET", "Django", "React", "Node.js"],
-    Database: ["PostgreSQL", "MySQL"],
-    Tool: ["Git", "Docker", "Kubernetes"],
-    Platform: ["AWS", "GCP", "Azure"],
+    soft: ["Problem Solving","Analytical Thinking","Collaboration","Communication","Adaptability"],
+    hard: ["Python","Java","C++","C#","Go","JavaScript","TypeScript","SQL","Spring Boot",".NET","Django","React","Node.js","PostgreSQL","MySQL"],
+    tools: ["Git","Docker","Kubernetes","AWS","GCP","Azure"],
   },
-  "iOS Engineer": {
+  "Mobile Engineer — iOS": {
     group: "Engineering",
-    Language: ["Swift", "Objective-C"],
-    Framework: ["SwiftUI", "UIKit", "Combine"],
-    Tool: ["Xcode", "Swift Package Manager", "CocoaPods", "Git"],
-    Platform: ["App Store", "TestFlight", "Firebase"],
+    soft: ["Attention to Detail","Problem Solving","Empathy","Collaboration","Ownership"],
+    hard: ["Swift","Objective-C","SwiftUI","UIKit","Combine"],
+    tools: ["Xcode","Swift Package Manager","CocoaPods","Git","App Store","TestFlight","Firebase"],
   },
-  "Android Engineer": {
+  "Mobile Engineer — Android": {
     group: "Engineering",
-    Language: ["Kotlin", "Java"],
-    Framework: ["Jetpack Compose", "Coroutines", "Retrofit", "Room"],
-    Tool: ["Android Studio", "Gradle", "Dagger/Hilt", "Git"],
-    Platform: ["Google Play", "Firebase"],
+    soft: ["Attention to Detail","Problem Solving","Collaboration","Adaptability","Ownership"],
+    hard: ["Kotlin","Java","Jetpack Compose","Coroutines","Retrofit","Room"],
+    tools: ["Android Studio","Gradle","Dagger/Hilt","Git","Google Play","Firebase"],
   },
-  "Mobile Engineer (Cross-platform)": {
+  "Mobile Engineer — Cross-platform": {
     group: "Engineering",
-    Language: ["Dart", "TypeScript", "JavaScript", "C#"],
-    Framework: ["Flutter", "React Native", "Expo", ".NET MAUI", "Ionic"],
-    Tool: ["Git", "Xcode", "Android Studio"],
-    Platform: ["App Store", "Google Play", "Firebase", "RevenueCat"],
+    soft: ["Adaptability","Problem Solving","Prioritization","Communication","Collaboration"],
+    hard: ["Dart","TypeScript","JavaScript","C#","Flutter","React Native","Expo",".NET MAUI","Ionic"],
+    tools: ["Git","Xcode","Android Studio","App Store","Google Play","Firebase","RevenueCat"],
   },
   "Web Developer": {
     group: "Engineering",
-    Language: ["HTML/CSS", "JavaScript", "PHP", "TypeScript"],
-    Framework: ["WordPress", "React", "Vue", "Tailwind CSS", "Bootstrap", "jQuery"],
-    Tool: ["Git", "Webflow", "Shopify"],
-    Platform: ["Netlify", "Vercel"],
+    soft: ["Customer Focus","Communication","Attention to Detail","Adaptability","Time Management"],
+    hard: ["HTML/CSS","JavaScript","PHP","TypeScript","WordPress","React","Vue","Tailwind CSS","Bootstrap","jQuery"],
+    tools: ["Git","Webflow","Shopify","Netlify","Vercel"],
   },
   "Game Developer": {
     group: "Engineering",
-    Language: ["C++", "C#", "Lua", "Python"],
-    Framework: ["Unity", "Unreal Engine", "Godot"],
-    Tool: ["Blender", "Git", "DirectX", "OpenGL", "Vulkan"],
-    Platform: ["Steam"],
+    soft: ["Creativity","Problem Solving","Collaboration","Attention to Detail","Working Under Pressure"],
+    hard: ["C++","C#","Lua","Python","Unity","Unreal Engine","Godot"],
+    tools: ["Blender","Git","DirectX","OpenGL","Vulkan","Steam"],
   },
   "Embedded / Firmware Engineer": {
     group: "Engineering",
-    Language: ["C", "C++", "Rust", "Assembly"],
-    Framework: ["FreeRTOS", "Zephyr"],
-    Tool: ["STM32", "ESP32", "JTAG", "I2C/SPI/UART", "Git"],
-    Platform: ["Linux (embedded)", "Yocto"],
+    soft: ["Attention to Detail","Analytical Thinking","Problem Solving","Critical Thinking","Ownership"],
+    hard: ["C","C++","Rust","Assembly","FreeRTOS","Zephyr"],
+    tools: ["STM32","ESP32","JTAG","I2C/SPI/UART","Git","Linux (embedded)","Yocto"],
   },
   "Systems / Low-level Engineer": {
     group: "Engineering",
-    Language: ["C", "C++", "Rust", "Go", "Assembly"],
-    Framework: ["POSIX", "eBPF"],
-    Tool: ["LLVM", "gdb", "perf", "Git"],
-    Platform: ["Linux", "Unix"],
+    soft: ["Analytical Thinking","Attention to Detail","Problem Solving","Critical Thinking","Curiosity"],
+    hard: ["C","C++","Rust","Go","Assembly","POSIX","eBPF"],
+    tools: ["LLVM","gdb","perf","Git","Linux","Unix"],
   },
-  "Desktop / Enterprise Developer": {
+  "Desktop / Enterprise Application Developer": {
     group: "Engineering",
-    Language: ["C#", "Java", "C++", "JavaScript", "TypeScript"],
-    Framework: [".NET", "WPF", "Electron", "Qt", "Spring Boot"],
-    Database: ["SQL Server", "PostgreSQL", "Oracle"],
-    Tool: ["Git", "Visual Studio"],
-    Platform: ["Windows", "Azure"],
+    soft: ["Problem Solving","Communication","Attention to Detail","Stakeholder Management","Collaboration"],
+    hard: ["C#","Java","C++","JavaScript","TypeScript",".NET","WPF","Electron","Qt","Spring Boot","SQL Server","PostgreSQL","Oracle"],
+    tools: ["Git","Visual Studio","Windows","Azure"],
   },
-  // ---- Data & AI ----
+
+  // 2. Data & AI / ML
   "Data Analyst": {
     group: "Data & AI / ML",
-    Language: ["SQL", "Python", "R"],
-    Framework: ["pandas"],
-    Database: ["PostgreSQL", "Snowflake", "BigQuery"],
-    Tool: ["Excel", "Tableau", "Power BI", "Looker", "dbt"],
-    Method: ["A/B Testing", "Data Visualization"],
+    soft: ["Analytical Thinking","Communication","Storytelling","Attention to Detail","Curiosity","Business Acumen"],
+    hard: ["SQL","Python","R","pandas","A/B Testing","Data Visualization","PostgreSQL","Snowflake","BigQuery"],
+    tools: ["Excel","Tableau","Power BI","Looker","dbt"],
   },
   "Data Scientist": {
     group: "Data & AI / ML",
-    Language: ["Python", "R", "SQL"],
-    Framework: ["pandas", "NumPy", "scikit-learn", "XGBoost", "statsmodels"],
-    Database: ["Snowflake", "BigQuery", "PostgreSQL"],
-    Tool: ["Jupyter", "Matplotlib", "Git"],
-    Platform: ["Databricks", "SageMaker"],
-    Method: ["Statistical Modeling", "A/B Testing"],
+    soft: ["Analytical Thinking","Curiosity","Communication","Storytelling","Critical Thinking","Problem Solving"],
+    hard: ["Python","R","SQL","pandas","NumPy","scikit-learn","XGBoost","statsmodels","Statistical Modeling","A/B Testing","Snowflake","BigQuery","PostgreSQL"],
+    tools: ["Jupyter","Matplotlib","Git","Databricks","SageMaker"],
   },
   "Data Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python", "SQL", "Scala", "Java"],
-    Framework: ["Apache Spark", "Airflow", "dbt", "Kafka", "Flink"],
-    Database: ["Snowflake", "BigQuery", "Redshift", "PostgreSQL"],
-    Tool: ["Git", "Docker"],
-    Platform: ["Databricks", "AWS", "GCP", "Azure"],
+    soft: ["Problem Solving","Attention to Detail","Ownership","Collaboration","Analytical Thinking"],
+    hard: ["Python","SQL","Scala","Java","Apache Spark","Airflow","dbt","Kafka","Flink","Snowflake","BigQuery","Redshift","PostgreSQL"],
+    tools: ["Git","Docker","Databricks","AWS","GCP","Azure"],
   },
   "Analytics Engineer": {
     group: "Data & AI / ML",
-    Language: ["SQL", "Python"],
-    Framework: ["dbt"],
-    Database: ["Snowflake", "BigQuery", "Redshift"],
-    Tool: ["Looker", "Fivetran", "Airbyte", "Dagster", "Git"],
-    Method: ["Data Modeling"],
+    soft: ["Analytical Thinking","Attention to Detail","Communication","Collaboration","Prioritization"],
+    hard: ["SQL","Python","dbt","Data Modeling","Snowflake","BigQuery","Redshift"],
+    tools: ["Looker","Fivetran","Airbyte","Dagster","Git"],
   },
   "Machine Learning Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python", "C++", "Go"],
-    Framework: ["PyTorch", "TensorFlow", "scikit-learn", "Hugging Face", "Ray"],
-    Tool: ["MLflow", "Docker", "Kubernetes", "Git", "ONNX"],
-    Platform: ["SageMaker", "Vertex AI", "AWS", "GCP"],
+    soft: ["Problem Solving","Analytical Thinking","Curiosity","Collaboration","Ownership"],
+    hard: ["Python","C++","Go","PyTorch","TensorFlow","scikit-learn","Hugging Face","Ray"],
+    tools: ["MLflow","Docker","Kubernetes","Git","ONNX","SageMaker","Vertex AI","AWS","GCP"],
   },
   "AI / LLM Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python", "TypeScript"],
-    Framework: ["PyTorch", "Hugging Face", "LangChain", "LangGraph", "LlamaIndex", "FastAPI"],
-    Database: ["pgvector", "Pinecone", "Weaviate", "Chroma"],
-    Tool: ["OpenAI API", "Anthropic API", "LangSmith", "vLLM", "Docker", "Git", "MCP"],
-    Platform: ["AWS", "GCP", "Modal", "Replicate"],
-    Method: ["Prompt Engineering", "RAG", "Evals", "Agents"],
+    soft: ["Curiosity","Adaptability","Problem Solving","Critical Thinking","Communication"],
+    hard: ["Python","TypeScript","PyTorch","Hugging Face","LangChain","LangGraph","LlamaIndex","FastAPI","Prompt Engineering","RAG","Evals","Agents","pgvector","Pinecone","Weaviate","Chroma"],
+    tools: ["OpenAI API","Anthropic API","LangSmith","vLLM","Docker","Git","MCP","AWS","GCP","Modal","Replicate"],
   },
   "ML / AI Research Scientist": {
     group: "Data & AI / ML",
-    Language: ["Python"],
-    Framework: ["PyTorch", "JAX", "TensorFlow"],
-    Tool: ["CUDA", "Weights & Biases", "Git"],
-    Platform: ["GPU/TPU clusters", "HPC"],
-    Method: ["Deep Learning", "Experimentation"],
+    soft: ["Curiosity","Analytical Thinking","Critical Thinking","Written Communication","Collaboration"],
+    hard: ["Python","PyTorch","JAX","TensorFlow","Deep Learning","Experimentation"],
+    tools: ["CUDA","Weights & Biases","Git","GPU/TPU clusters","HPC"],
   },
   "MLOps Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python", "Go", "Bash"],
-    Framework: ["MLflow", "Kubeflow", "BentoML", "Ray"],
-    Tool: ["Docker", "Kubernetes", "Terraform", "Git"],
-    Platform: ["SageMaker", "Vertex AI", "AWS", "GCP"],
-    Method: ["CI/CD", "Model Monitoring"],
+    soft: ["Ownership","Problem Solving","Collaboration","Attention to Detail","Communication"],
+    hard: ["Python","Go","Bash","MLflow","Kubeflow","BentoML","Ray","CI/CD","Model Monitoring"],
+    tools: ["Docker","Kubernetes","Terraform","Git","SageMaker","Vertex AI","AWS","GCP"],
   },
   "Computer Vision Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python", "C++"],
-    Framework: ["OpenCV", "PyTorch", "TensorFlow", "YOLO"],
-    Tool: ["CUDA", "Git"],
-    Platform: ["GPU servers", "Edge devices"],
-    Method: ["Deep Learning"],
+    soft: ["Analytical Thinking","Problem Solving","Curiosity","Attention to Detail","Collaboration"],
+    hard: ["Python","C++","OpenCV","PyTorch","TensorFlow","YOLO","Deep Learning"],
+    tools: ["CUDA","Git","GPU servers","Edge devices"],
   },
   "NLP Engineer": {
     group: "Data & AI / ML",
-    Language: ["Python"],
-    Framework: ["Hugging Face", "spaCy", "NLTK", "PyTorch"],
-    Database: ["pgvector", "Pinecone"],
-    Tool: ["Git", "Docker"],
-    Method: ["RAG", "Text Processing"],
+    soft: ["Curiosity","Analytical Thinking","Problem Solving","Attention to Detail","Communication"],
+    hard: ["Python","Hugging Face","spaCy","NLTK","PyTorch","RAG","Text Processing","pgvector","Pinecone"],
+    tools: ["Git","Docker"],
   },
-  "BI Developer": {
+  "BI Developer / Analyst": {
     group: "Data & AI / ML",
-    Language: ["SQL", "DAX"],
-    Database: ["SQL Server", "Snowflake", "BigQuery"],
-    Tool: ["Power BI", "Tableau", "Looker"],
-    Method: ["Data Modeling", "Dashboarding"],
+    soft: ["Analytical Thinking","Communication","Storytelling","Attention to Detail","Business Acumen"],
+    hard: ["SQL","DAX","Data Modeling","Dashboarding","SQL Server","Snowflake","BigQuery"],
+    tools: ["Power BI","Tableau","Looker"],
   },
   "Data Architect": {
     group: "Data & AI / ML",
-    Language: ["SQL", "Python"],
-    Framework: ["Apache Spark", "dbt"],
-    Database: ["Snowflake", "BigQuery", "PostgreSQL", "Redshift"],
-    Tool: ["Git", "Data catalogs"],
-    Platform: ["AWS", "GCP", "Azure", "Databricks"],
-    Method: ["Data Modeling", "Schema Design"],
+    soft: ["Strategic Thinking","Communication","Stakeholder Management","Analytical Thinking","Decision Making"],
+    hard: ["SQL","Python","Apache Spark","dbt","Data Modeling","Schema Design","Snowflake","BigQuery","PostgreSQL","Redshift"],
+    tools: ["Git","Data catalogs","AWS","GCP","Azure","Databricks"],
   },
-  "Database Administrator": {
+  "Database Administrator (DBA)": {
     group: "Data & AI / ML",
-    Language: ["SQL", "PL/SQL", "Bash"],
-    Database: ["PostgreSQL", "MySQL", "Oracle", "SQL Server", "MongoDB"],
-    Tool: ["Git", "Backup/Replication tooling"],
-    Platform: ["AWS RDS", "Cloud SQL"],
+    soft: ["Attention to Detail","Ownership","Problem Solving","Working Under Pressure","Communication"],
+    hard: ["SQL","PL/SQL","Bash","PostgreSQL","MySQL","Oracle","SQL Server","MongoDB"],
+    tools: ["Git","Backup/Replication tooling","AWS RDS","Cloud SQL"],
   },
-  // ---- Infrastructure ----
+
+  // 3. Infrastructure, DevOps & Cloud
   "DevOps Engineer": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Bash", "Python", "Go", "YAML"],
-    Tool: ["Docker", "Kubernetes", "Terraform", "Ansible", "Jenkins", "GitHub Actions", "GitLab CI", "ArgoCD", "Helm", "Git"],
-    Platform: ["AWS", "GCP", "Azure"],
-    Method: ["CI/CD", "Infrastructure as Code"],
+    soft: ["Collaboration","Ownership","Problem Solving","Communication","Adaptability"],
+    hard: ["Bash","Python","Go","YAML","CI/CD","Infrastructure as Code"],
+    tools: ["Docker","Kubernetes","Terraform","Ansible","Jenkins","GitHub Actions","GitLab CI","ArgoCD","Helm","Git","AWS","GCP","Azure"],
   },
-  "Site Reliability Engineer": {
+  "Site Reliability Engineer (SRE)": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Go", "Python", "Bash"],
-    Tool: ["Kubernetes", "Prometheus", "Grafana", "Terraform", "PagerDuty", "OpenTelemetry", "Git"],
-    Platform: ["AWS", "GCP", "Azure"],
-    Method: ["Observability", "Incident Response"],
+    soft: ["Working Under Pressure","Problem Solving","Ownership","Communication","Analytical Thinking"],
+    hard: ["Go","Python","Bash","Observability","Incident Response"],
+    tools: ["Kubernetes","Prometheus","Grafana","Terraform","PagerDuty","OpenTelemetry","Git","AWS","GCP","Azure"],
   },
   "Platform Engineer": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Go", "Python", "TypeScript"],
-    Tool: ["Kubernetes", "Terraform", "Backstage", "Crossplane", "ArgoCD", "Helm", "Git"],
-    Platform: ["AWS", "GCP"],
-    Method: ["Infrastructure as Code", "Developer Experience"],
+    soft: ["Empathy","Collaboration","Communication","Problem Solving","Strategic Thinking"],
+    hard: ["Go","Python","TypeScript","Infrastructure as Code","Developer Experience"],
+    tools: ["Kubernetes","Terraform","Backstage","Crossplane","ArgoCD","Helm","Git","AWS","GCP"],
   },
-  "Cloud Engineer": {
+  "Cloud Engineer / Architect": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Python", "Go", "Bash"],
-    Tool: ["Terraform", "CloudFormation", "Pulumi", "Kubernetes", "Git"],
-    Platform: ["AWS", "Azure", "GCP"],
-    Method: ["Infrastructure as Code", "System Design"],
+    soft: ["Strategic Thinking","Communication","Decision Making","Stakeholder Management","Problem Solving"],
+    hard: ["Python","Go","Bash","Infrastructure as Code","System Design"],
+    tools: ["Terraform","CloudFormation","Pulumi","Kubernetes","Git","AWS","Azure","GCP"],
   },
   "Infrastructure Engineer": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Python", "Go", "Bash"],
-    Tool: ["Terraform", "Ansible", "Packer", "Docker", "Kubernetes", "Git"],
-    Platform: ["AWS", "GCP", "Azure", "VMware"],
-    Method: ["Infrastructure as Code"],
+    soft: ["Ownership","Problem Solving","Attention to Detail","Collaboration","Adaptability"],
+    hard: ["Python","Go","Bash","Infrastructure as Code"],
+    tools: ["Terraform","Ansible","Packer","Docker","Kubernetes","Git","AWS","GCP","Azure","VMware"],
   },
   "Network Engineer": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Python", "Bash"],
-    Tool: ["Cisco IOS", "Juniper", "Wireshark", "SD-WAN"],
-    Method: ["BGP/OSPF", "VPN", "Network Design"],
+    soft: ["Analytical Thinking","Problem Solving","Attention to Detail","Working Under Pressure","Communication"],
+    hard: ["Python","Bash","BGP/OSPF","VPN","Network Design"],
+    tools: ["Cisco IOS","Juniper","Wireshark","SD-WAN"],
   },
   "Systems Administrator": {
     group: "Infrastructure, DevOps & Cloud",
-    Language: ["Bash", "PowerShell", "Python"],
-    Tool: ["Linux", "Windows Server", "Active Directory", "Ansible", "Nagios"],
-    Platform: ["On-prem", "Hybrid cloud"],
+    soft: ["Problem Solving","Time Management","Communication","Customer Focus","Ownership"],
+    hard: ["Bash","PowerShell","Python"],
+    tools: ["Linux","Windows Server","Active Directory","Ansible","Nagios","On-prem","Hybrid cloud"],
   },
-  // ---- Security ----
+
+  // 4. Security
   "Security Engineer": {
     group: "Security",
-    Language: ["Python", "Go", "Bash"],
-    Tool: ["Burp Suite", "Nmap", "Metasploit", "SIEM", "Terraform", "Git"],
-    Platform: ["AWS", "GCP", "Azure"],
-    Method: ["Threat Modeling", "Vulnerability Management"],
+    soft: ["Critical Thinking","Attention to Detail","Communication","Problem Solving","Ownership"],
+    hard: ["Python","Go","Bash","Threat Modeling","Vulnerability Management"],
+    tools: ["Burp Suite","Nmap","Metasploit","SIEM","Terraform","Git","AWS","GCP","Azure"],
   },
-  "AppSec Engineer": {
+  "Application Security (AppSec) Engineer": {
     group: "Security",
-    Language: ["Python", "JavaScript", "Java"],
-    Tool: ["Snyk", "Semgrep", "Checkmarx", "Burp Suite", "OWASP ZAP", "Git"],
-    Method: ["SAST/DAST", "Threat Modeling", "Secure Code Review"],
+    soft: ["Attention to Detail","Communication","Collaboration","Critical Thinking","Empathy"],
+    hard: ["Python","JavaScript","Java","SAST/DAST","Threat Modeling","Secure Code Review"],
+    tools: ["Snyk","Semgrep","Checkmarx","Burp Suite","OWASP ZAP","Git"],
   },
   "Cloud Security Engineer": {
     group: "Security",
-    Language: ["Python", "Go"],
-    Tool: ["Wiz", "Prisma Cloud", "AWS GuardDuty", "Terraform", "Git"],
-    Platform: ["AWS", "Azure", "GCP"],
-    Method: ["IAM", "Zero Trust", "Posture Management"],
+    soft: ["Analytical Thinking","Attention to Detail","Communication","Ownership","Problem Solving"],
+    hard: ["Python","Go","IAM","Zero Trust","Posture Management"],
+    tools: ["Wiz","Prisma Cloud","AWS GuardDuty","Terraform","Git","AWS","Azure","GCP"],
   },
-  "Penetration Tester": {
+  "Penetration Tester / Red Team": {
     group: "Security",
-    Language: ["Python", "Bash", "PowerShell"],
-    Tool: ["Metasploit", "Burp Suite", "Nmap", "Kali Linux", "Cobalt Strike", "Wireshark"],
-    Method: ["Penetration Testing", "OSINT", "Exploit Development"],
+    soft: ["Curiosity","Creativity","Critical Thinking","Written Communication","Ownership"],
+    hard: ["Python","Bash","PowerShell","Penetration Testing","OSINT","Exploit Development"],
+    tools: ["Metasploit","Burp Suite","Nmap","Kali Linux","Cobalt Strike","Wireshark"],
   },
-  "SOC Analyst": {
+  "Security / SOC Analyst": {
     group: "Security",
-    Language: ["SQL", "Python"],
-    Tool: ["Splunk", "Microsoft Sentinel", "CrowdStrike", "QRadar", "Wireshark"],
-    Method: ["Incident Response", "Threat Hunting", "MITRE ATT&CK"],
+    soft: ["Working Under Pressure","Attention to Detail","Analytical Thinking","Communication","Decision Making"],
+    hard: ["SQL","Python","Incident Response","Threat Hunting","MITRE ATT&CK"],
+    tools: ["Splunk","Microsoft Sentinel","CrowdStrike","QRadar","Wireshark"],
   },
-  "GRC Analyst": {
+  "GRC / Security Compliance": {
     group: "Security",
-    Tool: ["Vanta", "Drata", "Jira"],
-    Method: ["SOC 2", "ISO 27001", "NIST", "GDPR", "HIPAA", "Risk Assessment", "Audit"],
+    soft: ["Attention to Detail","Written Communication","Stakeholder Management","Facilitation","Critical Thinking"],
+    hard: ["SOC 2","ISO 27001","NIST","GDPR","HIPAA","Risk Assessment","Audit"],
+    tools: ["Vanta","Drata","Jira"],
   },
-  "Incident Response Analyst": {
+  "Incident Response / Threat Intelligence": {
     group: "Security",
-    Language: ["Python", "Bash"],
-    Tool: ["Splunk", "CrowdStrike", "Microsoft Sentinel", "EDR/XDR"],
-    Method: ["Incident Response", "Threat Hunting", "Forensics", "MITRE ATT&CK"],
+    soft: ["Working Under Pressure","Analytical Thinking","Decision Making","Communication","Attention to Detail"],
+    hard: ["Python","Bash","Incident Response","Threat Hunting","Forensics","MITRE ATT&CK"],
+    tools: ["Splunk","CrowdStrike","Microsoft Sentinel","EDR/XDR"],
   },
-  // ---- QA ----
-  "QA Engineer": {
+
+  // 5. QA & Testing
+  "QA Engineer (Manual)": {
     group: "QA & Testing",
-    Tool: ["TestRail", "Jira", "Zephyr", "Postman"],
-    Method: ["Test Case Design", "Regression Testing", "Exploratory Testing"],
+    soft: ["Attention to Detail","Critical Thinking","Communication","Curiosity","Empathy"],
+    hard: ["Test Case Design","Regression Testing","Exploratory Testing"],
+    tools: ["TestRail","Jira","Zephyr","Postman"],
   },
   "QA Automation Engineer": {
     group: "QA & Testing",
-    Language: ["JavaScript", "TypeScript", "Python", "Java"],
-    Framework: ["Selenium", "Playwright", "Cypress", "Appium", "pytest"],
-    Tool: ["GitHub Actions", "Jenkins", "Git"],
-    Method: ["Test Automation"],
+    soft: ["Attention to Detail","Problem Solving","Collaboration","Ownership","Communication"],
+    hard: ["JavaScript","TypeScript","Python","Java","Selenium","Playwright","Cypress","Appium","pytest","Test Automation"],
+    tools: ["GitHub Actions","Jenkins","Git"],
   },
   "SDET": {
     group: "QA & Testing",
-    Language: ["Java", "Python", "TypeScript", "C#"],
-    Framework: ["Selenium", "Playwright", "REST Assured", "JUnit", "k6", "Gatling"],
-    Tool: ["GitHub Actions", "Jenkins", "Git"],
-    Method: ["Test Automation", "Performance Testing"],
+    soft: ["Problem Solving","Attention to Detail","Analytical Thinking","Collaboration","Ownership"],
+    hard: ["Java","Python","TypeScript","C#","Selenium","Playwright","REST Assured","JUnit","k6","Gatling","Test Automation","Performance Testing"],
+    tools: ["GitHub Actions","Jenkins","Git"],
   },
-  // ---- Product ----
+
+  // 6. Product
   "Product Manager": {
     group: "Product",
-    Tool: ["Jira", "Linear", "Amplitude", "Mixpanel", "Figma", "Notion", "Productboard"],
-    Method: ["Roadmapping", "Discovery", "A/B Testing", "Prioritization (RICE)", "User Research"],
+    soft: ["Stakeholder Management","Communication","Prioritization","Empathy","Decision Making","Strategic Thinking"],
+    hard: ["Roadmapping","Discovery","A/B Testing","Prioritization (RICE)","User Research"],
+    tools: ["Jira","Linear","Amplitude","Mixpanel","Figma","Notion","Productboard"],
   },
   "Technical Product Manager": {
     group: "Product",
-    Language: ["SQL"],
-    Tool: ["Jira", "Postman", "Amplitude", "Figma"],
-    Method: ["API/Platform Strategy", "Technical PRDs", "System Design Literacy"],
+    soft: ["Communication","Analytical Thinking","Stakeholder Management","Decision Making","Collaboration"],
+    hard: ["SQL","API/Platform Strategy","Technical PRDs","System Design Literacy"],
+    tools: ["Jira","Postman","Amplitude","Figma"],
   },
   "Growth Product Manager": {
     group: "Product",
-    Language: ["SQL"],
-    Tool: ["Amplitude", "Mixpanel", "Optimizely", "Braze"],
-    Method: ["Funnel Optimization", "Experimentation", "Retention/Activation Loops"],
+    soft: ["Analytical Thinking","Creativity","Prioritization","Business Acumen","Adaptability"],
+    hard: ["SQL","Funnel Optimization","Experimentation","Retention/Activation Loops"],
+    tools: ["Amplitude","Mixpanel","Optimizely","Braze"],
   },
-  "AI Product Manager": {
+  "AI / ML Product Manager": {
     group: "Product",
-    Tool: ["Amplitude", "LLM APIs", "Jupyter", "Notion"],
-    Method: ["Eval Design", "Model UX", "AI Literacy", "Roadmapping"],
+    soft: ["Curiosity","Critical Thinking","Communication","Adaptability","Strategic Thinking"],
+    hard: ["Eval Design","Model UX","AI Literacy","Roadmapping"],
+    tools: ["Amplitude","LLM APIs","Jupyter","Notion"],
   },
   "Data Product Manager": {
     group: "Product",
-    Language: ["SQL"],
-    Tool: ["Amplitude", "Looker", "Jira"],
-    Method: ["Data Strategy", "Metrics Design", "Experimentation"],
+    soft: ["Analytical Thinking","Communication","Stakeholder Management","Prioritization","Business Acumen"],
+    hard: ["SQL","Data Strategy","Metrics Design","Experimentation"],
+    tools: ["Amplitude","Looker","Jira"],
   },
   "Product Owner": {
     group: "Product",
-    Tool: ["Jira", "Azure DevOps", "Confluence"],
-    Method: ["Backlog Management", "Scrum", "User Stories"],
+    soft: ["Prioritization","Communication","Facilitation","Stakeholder Management","Decision Making"],
+    hard: ["Backlog Management","Scrum","User Stories"],
+    tools: ["Jira","Azure DevOps","Confluence"],
   },
   "Product Marketing Manager": {
     group: "Product",
-    Tool: ["HubSpot", "Amplitude", "Notion", "Figma"],
-    Method: ["Positioning", "GTM Strategy", "Messaging", "Competitive Analysis"],
+    soft: ["Storytelling","Communication","Creativity","Cross-functional Collaboration","Business Acumen"],
+    hard: ["Positioning","GTM Strategy","Messaging","Competitive Analysis"],
+    tools: ["HubSpot","Amplitude","Notion","Figma"],
   },
-  // ---- Design ----
+
+  // 7. Design
   "Product Designer": {
     group: "Design",
-    Tool: ["Figma", "FigJam", "Framer", "Notion"],
-    Method: ["End-to-end UX/UI", "Prototyping", "Design Systems", "User Research"],
+    soft: ["Empathy","Communication","Collaboration","Creativity","Critical Thinking"],
+    hard: ["End-to-end UX/UI","Prototyping","Design Systems","User Research"],
+    tools: ["Figma","FigJam","Framer","Notion"],
   },
   "UX Designer": {
     group: "Design",
-    Tool: ["Figma", "Sketch", "Adobe XD", "Maze"],
-    Method: ["Wireframing", "User Flows", "Information Architecture", "Usability Testing"],
+    soft: ["Empathy","Analytical Thinking","Communication","Curiosity","Collaboration"],
+    hard: ["Wireframing","User Flows","Information Architecture","Usability Testing"],
+    tools: ["Figma","Sketch","Adobe XD","Maze"],
   },
   "UI Designer": {
     group: "Design",
-    Tool: ["Figma", "Sketch", "Adobe XD", "Photoshop", "Illustrator"],
-    Method: ["Visual Design", "Component Libraries", "Responsive Layout"],
+    soft: ["Attention to Detail","Creativity","Empathy","Collaboration","Adaptability"],
+    hard: ["Visual Design","Component Libraries","Responsive Layout"],
+    tools: ["Figma","Sketch","Adobe XD","Photoshop","Illustrator"],
   },
   "UX Researcher": {
     group: "Design",
-    Tool: ["Maze", "UserTesting", "Dovetail", "Optimal Workshop", "Lookback"],
-    Method: ["User Interviews", "Usability Testing", "Surveys", "Research Synthesis"],
+    soft: ["Empathy","Curiosity","Critical Thinking","Communication","Storytelling","Facilitation"],
+    hard: ["User Interviews","Usability Testing","Surveys","Research Synthesis"],
+    tools: ["Maze","UserTesting","Dovetail","Optimal Workshop","Lookback"],
   },
   "Interaction Designer": {
     group: "Design",
-    Tool: ["Figma", "Framer", "Principle", "ProtoPie"],
-    Method: ["Micro-interactions", "Prototyping", "Motion"],
+    soft: ["Creativity","Attention to Detail","Empathy","Collaboration","Curiosity"],
+    hard: ["Micro-interactions","Prototyping","Motion"],
+    tools: ["Figma","Framer","Principle","ProtoPie"],
   },
   "Design Systems Designer": {
     group: "Design",
-    Tool: ["Figma", "Storybook", "Zeroheight"],
-    Method: ["Design Tokens", "Component Governance", "Documentation"],
+    soft: ["Attention to Detail","Written Communication","Cross-functional Collaboration","Facilitation","Ownership"],
+    hard: ["Design Tokens","Component Governance","Documentation"],
+    tools: ["Figma","Storybook","Zeroheight"],
   },
-  "Design Engineer": {
+  "UX Engineer / Design Engineer": {
     group: "Design",
-    Language: ["JavaScript", "TypeScript", "HTML/CSS"],
-    Framework: ["React", "Tailwind CSS"],
-    Tool: ["Figma", "Storybook", "Git"],
-    Method: ["Prototyping", "Design Systems"],
+    soft: ["Cross-functional Collaboration","Attention to Detail","Empathy","Adaptability","Communication"],
+    hard: ["JavaScript","TypeScript","HTML/CSS","React","Tailwind CSS","Prototyping","Design Systems"],
+    tools: ["Figma","Storybook","Git"],
   },
-  "Content Designer": {
+  "Content Designer / UX Writer": {
     group: "Design",
-    Tool: ["Figma", "Notion", "Ditto"],
-    Method: ["UX Writing", "Content Strategy", "Microcopy"],
+    soft: ["Written Communication","Empathy","Attention to Detail","Collaboration","Critical Thinking"],
+    hard: ["UX Writing","Content Strategy","Microcopy"],
+    tools: ["Figma","Notion","Ditto"],
   },
-  "Visual Designer": {
+  "Visual / Graphic Designer": {
     group: "Design",
-    Tool: ["Adobe Photoshop", "Illustrator", "InDesign", "Figma"],
-    Method: ["Branding", "Layout", "Marketing Assets"],
+    soft: ["Creativity","Attention to Detail","Time Management","Communication","Adaptability"],
+    hard: ["Branding","Layout","Marketing Assets"],
+    tools: ["Adobe Photoshop","Illustrator","InDesign","Figma"],
   },
   "Motion Designer": {
     group: "Design",
-    Tool: ["After Effects", "Lottie", "Figma", "Rive", "Cinema 4D"],
-    Method: ["Animation", "Micro-interactions"],
+    soft: ["Creativity","Attention to Detail","Time Management","Collaboration","Adaptability"],
+    hard: ["Animation","Micro-interactions"],
+    tools: ["After Effects","Lottie","Figma","Rive","Cinema 4D"],
   },
-  // ---- Leadership ----
+
+  // 8. Engineering Leadership & Architecture
   "Tech Lead": {
     group: "Engineering Leadership & Architecture",
-    Language: ["TypeScript", "Python", "Go"],
-    Framework: ["React", "Node.js"],
-    Tool: ["Git", "Jira"],
-    Method: ["System Design", "Code Review", "Mentoring"],
+    soft: ["Mentoring","Communication","Decision Making","Conflict Resolution","Prioritization"],
+    hard: ["TypeScript","Python","Go","React","Node.js","System Design","Code Review","Mentoring"],
+    tools: ["Git","Jira"],
   },
-  "Staff Engineer": {
+  "Staff / Principal Engineer": {
     group: "Engineering Leadership & Architecture",
-    Language: ["Go", "Python", "Java"],
-    Tool: ["Git", "Docker", "Kubernetes"],
-    Platform: ["AWS", "GCP", "Azure"],
-    Method: ["Architecture", "Technical Strategy", "System Design"],
+    soft: ["Strategic Thinking","Communication","Mentoring","Decision Making","Stakeholder Management"],
+    hard: ["Go","Python","Java","Architecture","Technical Strategy","System Design"],
+    tools: ["Git","Docker","Kubernetes","AWS","GCP","Azure"],
   },
   "Engineering Manager": {
     group: "Engineering Leadership & Architecture",
-    Tool: ["Jira", "Linear", "GitHub"],
-    Method: ["People Management", "Delivery", "Hiring", "Agile/Scrum"],
+    soft: ["People Management","Communication","Empathy","Conflict Resolution","Prioritization","Decision Making"],
+    hard: ["Delivery","Hiring","Agile/Scrum"],
+    tools: ["Jira","Linear","GitHub"],
   },
-  "Solutions Architect": {
+  "Software / Solutions Architect": {
     group: "Engineering Leadership & Architecture",
-    Language: ["Java", "C#", "Python", "Go"],
-    Framework: ["Spring Boot", ".NET", "Microservices"],
-    Tool: ["Terraform", "Lucidchart", "Git"],
-    Platform: ["AWS", "GCP", "Azure"],
-    Method: ["System Design", "API Design", "Event-Driven Architecture"],
+    soft: ["Strategic Thinking","Communication","Stakeholder Management","Decision Making","Presentation"],
+    hard: ["Java","C#","Python","Go","Spring Boot",".NET","Microservices","System Design","API Design","Event-Driven Architecture"],
+    tools: ["Terraform","Lucidchart","Git","AWS","GCP","Azure"],
   },
-  "Director of Engineering": {
+  "Director / VP Engineering / CTO": {
     group: "Engineering Leadership & Architecture",
-    Tool: ["Jira", "Linear"],
-    Method: ["Org Design", "Technical Strategy", "Budgeting", "Hiring"],
+    soft: ["Leadership","Strategic Thinking","People Management","Business Acumen","Communication","Negotiation"],
+    hard: ["Org Design","Technical Strategy","Budgeting","Hiring"],
+    tools: ["Jira","Linear"],
   },
-  // ---- Program ----
-  "Technical Program Manager": {
+
+  // 9. Program, Project & Technical-Adjacent
+  "Technical Program Manager (TPM)": {
     group: "Program, Project & Technical-Adjacent",
-    Tool: ["Jira", "Confluence", "Smartsheet"],
-    Method: ["Cross-team Delivery", "Risk Management", "Roadmapping"],
+    soft: ["Cross-functional Collaboration","Stakeholder Management","Communication","Prioritization","Working Under Pressure"],
+    hard: ["Cross-team Delivery","Risk Management","Roadmapping"],
+    tools: ["Jira","Confluence","Smartsheet"],
   },
-  "Project Manager": {
+  "Project Manager (Tech)": {
     group: "Program, Project & Technical-Adjacent",
-    Tool: ["Jira", "Asana", "MS Project", "Monday"],
-    Method: ["Agile/Waterfall", "Scope/Timeline/Budget"],
+    soft: ["Time Management","Communication","Stakeholder Management","Negotiation","Problem Solving"],
+    hard: ["Agile/Waterfall","Scope/Timeline/Budget"],
+    tools: ["Jira","Asana","MS Project","Monday"],
   },
-  "Scrum Master": {
+  "Scrum Master / Agile Coach": {
     group: "Program, Project & Technical-Adjacent",
-    Tool: ["Jira", "Azure DevOps", "Miro"],
-    Method: ["Scrum", "Kanban", "SAFe", "Facilitation"],
+    soft: ["Facilitation","Empathy","Conflict Resolution","Communication","Mentoring"],
+    hard: ["Scrum","Kanban","SAFe","Facilitation"],
+    tools: ["Jira","Azure DevOps","Miro"],
   },
-  "Solutions Engineer": {
+  "Solutions Engineer / Sales Engineer": {
     group: "Program, Project & Technical-Adjacent",
-    Language: ["SQL", "Python", "JavaScript"],
-    Tool: ["Postman", "Demo environments", "Git"],
-    Method: ["Pre-sales", "Technical Demos", "Integrations"],
+    soft: ["Presentation","Communication","Customer Focus","Adaptability","Negotiation"],
+    hard: ["SQL","Python","JavaScript","Pre-sales","Technical Demos","Integrations"],
+    tools: ["Postman","Demo environments","Git"],
   },
-  "Developer Advocate": {
+  "Developer Advocate (DevRel)": {
     group: "Program, Project & Technical-Adjacent",
-    Language: ["JavaScript", "Python", "Go"],
-    Tool: ["GitHub", "Docs platforms", "Git"],
-    Method: ["Content", "SDK/Sample Code", "Community"],
+    soft: ["Storytelling","Communication","Empathy","Creativity","Presentation"],
+    hard: ["JavaScript","Python","Go","Content","SDK/Sample Code","Community"],
+    tools: ["GitHub","Docs platforms","Git"],
   },
   "Technical Writer": {
     group: "Program, Project & Technical-Adjacent",
-    Language: ["Markdown"],
-    Framework: ["Docusaurus"],
-    Tool: ["Git", "Confluence", "OpenAPI/Swagger"],
-    Method: ["API Docs", "Guides", "Tutorials"],
+    soft: ["Written Communication","Attention to Detail","Curiosity","Empathy","Collaboration"],
+    hard: ["Markdown","Docusaurus","API Docs","Guides","Tutorials"],
+    tools: ["Git","Confluence","OpenAPI/Swagger"],
   },
-  "Business Analyst": {
+  "Business / Systems Analyst": {
     group: "Program, Project & Technical-Adjacent",
-    Language: ["SQL"],
-    Tool: ["Excel", "Jira", "Visio", "BPMN tooling"],
-    Method: ["Requirements Gathering", "Process Mapping"],
+    soft: ["Analytical Thinking","Communication","Stakeholder Management","Attention to Detail","Facilitation"],
+    hard: ["SQL","Requirements Gathering","Process Mapping"],
+    tools: ["Excel","Jira","Visio","BPMN tooling"],
   },
-  // ---- Specialized ----
-  "Blockchain Developer": {
+
+  // 10. Emerging / Specialized
+  "Blockchain / Web3 Developer": {
     group: "Emerging / Specialized",
-    Language: ["Solidity", "Rust", "TypeScript", "Go"],
-    Framework: ["Hardhat", "Foundry", "ethers.js", "Anchor"],
-    Tool: ["Git", "MetaMask"],
-    Platform: ["Ethereum", "Solana", "Layer 2s"],
+    soft: ["Curiosity","Attention to Detail","Problem Solving","Adaptability","Critical Thinking"],
+    hard: ["Solidity","Rust","TypeScript","Go","Hardhat","Foundry","ethers.js","Anchor"],
+    tools: ["Git","MetaMask","Ethereum","Solana","Layer 2s"],
   },
-  "AR/VR Engineer": {
+  "AR / VR / XR Engineer": {
     group: "Emerging / Specialized",
-    Language: ["C#", "C++"],
-    Framework: ["Unity", "Unreal Engine", "ARKit", "ARCore", "OpenXR"],
-    Tool: ["Git", "Blender"],
-    Platform: ["Meta Quest", "Apple Vision Pro"],
+    soft: ["Creativity","Problem Solving","Curiosity","Collaboration","Adaptability"],
+    hard: ["C#","C++","Unity","Unreal Engine","ARKit","ARCore","OpenXR"],
+    tools: ["Git","Blender","Meta Quest","Apple Vision Pro"],
   },
   "Robotics Engineer": {
     group: "Emerging / Specialized",
-    Language: ["C++", "Python"],
-    Framework: ["ROS/ROS2", "OpenCV"],
-    Tool: ["Gazebo", "MoveIt", "Git"],
-    Platform: ["Embedded controllers"],
+    soft: ["Problem Solving","Analytical Thinking","Attention to Detail","Collaboration","Curiosity"],
+    hard: ["C++","Python","ROS/ROS2","OpenCV"],
+    tools: ["Gazebo","MoveIt","Git","Embedded controllers"],
   },
-  "Data Governance Engineer": {
+  "Data Governance / Data Quality Engineer": {
     group: "Emerging / Specialized",
-    Language: ["SQL", "Python"],
-    Framework: ["Great Expectations", "dbt"],
-    Tool: ["Collibra", "Alation", "Git"],
-    Platform: ["Snowflake", "Data catalogs"],
-    Method: ["Data Quality", "Lineage", "Governance"],
+    soft: ["Attention to Detail","Stakeholder Management","Written Communication","Critical Thinking","Facilitation"],
+    hard: ["SQL","Python","Great Expectations","dbt","Data Quality","Lineage","Governance"],
+    tools: ["Collibra","Alation","Git","Snowflake","Data catalogs"],
   },
 };
-
-const TAG_ORDER: StackTag[] = ["Language", "Framework", "Database", "Tool", "Platform", "Method"];
 
 export const ROLES: string[] = Object.keys(RAW);
 
@@ -562,57 +524,17 @@ export const ROLE_GROUP_MAP: Record<string, RoleGroup> = Object.fromEntries(
   Object.entries(RAW).map(([r, v]) => [r, v.group])
 );
 
-// role -> ordered stack names (deduped)
+// role -> full skill list (hard + tools + soft), deduped, for legacy consumers
 export const ROLE_STACKS: Record<string, string[]> = Object.fromEntries(
   Object.entries(RAW).map(([role, v]) => {
     const seen = new Set<string>();
     const out: string[] = [];
-    for (const tag of TAG_ORDER) {
-      const arr = v[tag];
-      if (!arr) continue;
-      for (const name of arr) {
-        if (!seen.has(name)) {
-          seen.add(name);
-          out.push(name);
-        }
-      }
+    for (const name of [...v.hard, ...v.tools, ...v.soft]) {
+      if (!seen.has(name)) { seen.add(name); out.push(name); }
     }
     return [role, out];
   })
 );
-
-// canonical stack name -> tag (first-seen wins across all roles in TAG_ORDER)
-export const STACK_TAGS: Record<string, StackTag> = (() => {
-  const map: Record<string, StackTag> = {};
-  for (const [, v] of Object.entries(RAW)) {
-    for (const tag of TAG_ORDER) {
-      const arr = v[tag];
-      if (!arr) continue;
-      for (const name of arr) {
-        if (!(name in map)) map[name] = tag;
-      }
-    }
-  }
-  return map;
-})();
-
-// Fallback stack list when no role is selected yet.
-export const COMMON_STACKS: string[] = [
-  "React", "Node.js", "TypeScript", "JavaScript", "Python", "SQL",
-  "PostgreSQL", "AWS", "Docker", "Figma", "Git",
-];
-
-export const USA_LOCATIONS = [
-  "New York City, NY","Los Angeles, CA","San Francisco, CA","Chicago, IL","Houston, TX",
-  "Dallas, TX","Austin, TX","Seattle, WA","Boston, MA","Denver, CO","Atlanta, GA","Miami, FL",
-  "Phoenix, AZ","Philadelphia, PA","Portland, OR","San Diego, CA","San Jose, CA","Washington, DC",
-  "Nashville, TN","Detroit, MI","Minneapolis, MN","Raleigh, NC","Charlotte, NC","Salt Lake City, UT",
-  "Tampa, FL","Orlando, FL","Kansas City, MO","St. Louis, MO","Indianapolis, IN","Columbus, OH",
-  "Cleveland, OH","Cincinnati, OH","Pittsburgh, PA","Baltimore, MD","Milwaukee, WI","Sacramento, CA",
-  "Riverside, CA","Las Vegas, NV","Albuquerque, NM","Oklahoma City, OK","Tulsa, OK","Memphis, TN",
-  "Louisville, KY","Birmingham, AL","Richmond, VA","New Orleans, LA","Buffalo, NY","Rochester, NY",
-  "Providence, RI","Hartford, CT","Boise, ID","Madison, WI","Des Moines, IA","Omaha, NE",
-];
 
 // ---- Field → roles ----
 const rolesByGroup = (g: RoleGroup) =>
@@ -630,70 +552,40 @@ export const FIELD_ROLES: Record<Field, string[]> = {
   "Program, Project & Technical-Adjacent": rolesByGroup("Program, Project & Technical-Adjacent"),
   "Emerging / Specialized": rolesByGroup("Emerging / Specialized"),
 };
-// dedupe
-for (const k of Object.keys(FIELD_ROLES) as Field[]) {
-  FIELD_ROLES[k] = Array.from(new Set(FIELD_ROLES[k]));
-}
 
 export const ROLE_FIELD_MAP: Record<string, Field> = (() => {
   const map: Record<string, Field> = {};
-  for (const f of FIELDS) {
-    for (const r of FIELD_ROLES[f]) if (!(r in map)) map[r] = f;
-  }
+  for (const f of FIELDS) for (const r of FIELD_ROLES[f]) if (!(r in map)) map[r] = f;
   return map;
 })();
 
-// ---- Soft skills (shared pool) ----
-export const SOFT_SKILLS = [
-  "Communication",
-  "Leadership",
-  "Mentoring",
-  "Stakeholder Management",
-  "Problem Solving",
-  "Collaboration",
-  "Ownership",
-  "Prioritization",
-  "Presentation",
-  "Cross-functional Work",
-  "Coaching",
-  "Negotiation",
-  "Strategic Thinking",
-  "Adaptability",
-];
-
-// ---- Field-level fallbacks for roles not in RAW ----
-export const FIELD_FALLBACK_HARD: Partial<Record<Field, string[]>> = {};
-
-export const FIELD_FALLBACK_TOOLS: Partial<Record<Field, string[]>> = {};
-
-// Split canonical stack items into hard vs tool buckets.
-const HARD_TAGS: StackTag[] = ["Language", "Framework", "Database", "Method"];
-const TOOL_TAGS: StackTag[] = ["Tool", "Platform"];
-
-export function skillsForRoles(roles: string[], field?: string) {
+export function skillsForRoles(roles: string[], _field?: string) {
   const hard = new Set<string>();
   const tools = new Set<string>();
+  const soft = new Set<string>();
   for (const r of roles) {
-    for (const name of ROLE_STACKS[r] ?? []) {
-      const tag = STACK_TAGS[name];
-      if (tag && HARD_TAGS.includes(tag)) hard.add(name);
-      else if (tag && TOOL_TAGS.includes(tag)) tools.add(name);
-    }
+    const def = RAW[r];
+    if (!def) continue;
+    def.hard.forEach((x) => hard.add(x));
+    def.tools.forEach((x) => tools.add(x));
+    def.soft.forEach((x) => soft.add(x));
   }
-  if (hard.size === 0 && field && FIELD_FALLBACK_HARD[field as Field]) {
-    FIELD_FALLBACK_HARD[field as Field]!.forEach((x) => hard.add(x));
-  }
-  if (tools.size === 0 && field && FIELD_FALLBACK_TOOLS[field as Field]) {
-    FIELD_FALLBACK_TOOLS[field as Field]!.forEach((x) => tools.add(x));
-  }
-  return {
-    hard: Array.from(hard),
-    tools: Array.from(tools),
-    soft: SOFT_SKILLS,
-  };
+  return { hard: Array.from(hard), tools: Array.from(tools), soft: Array.from(soft) };
 }
 
-// ---- US states + cities picker ----
+// ---- US locations ----
+export const USA_LOCATIONS = [
+  "New York City, NY","Los Angeles, CA","San Francisco, CA","Chicago, IL","Houston, TX",
+  "Dallas, TX","Austin, TX","Seattle, WA","Boston, MA","Denver, CO","Atlanta, GA","Miami, FL",
+  "Phoenix, AZ","Philadelphia, PA","Portland, OR","San Diego, CA","San Jose, CA","Washington, DC",
+  "Nashville, TN","Detroit, MI","Minneapolis, MN","Raleigh, NC","Charlotte, NC","Salt Lake City, UT",
+  "Tampa, FL","Orlando, FL","Kansas City, MO","St. Louis, MO","Indianapolis, IN","Columbus, OH",
+  "Cleveland, OH","Cincinnati, OH","Pittsburgh, PA","Baltimore, MD","Milwaukee, WI","Sacramento, CA",
+  "Riverside, CA","Las Vegas, NV","Albuquerque, NM","Oklahoma City, OK","Tulsa, OK","Memphis, TN",
+  "Louisville, KY","Birmingham, AL","Richmond, VA","New Orleans, LA","Buffalo, NY","Rochester, NY",
+  "Providence, RI","Hartford, CT","Boise, ID","Madison, WI","Des Moines, IA","Omaha, NE",
+];
+
 const STATE_NAMES: Record<string, string> = {
   AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",
   DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",
@@ -720,22 +612,10 @@ export const US_STATES: { code: string; name: string }[] = Object.keys(CITIES_BY
   .sort()
   .map((code) => ({ code, name: STATE_NAMES[code] ?? code }));
 
-// ---- Languages picker ----
+// ---- Languages ----
 export const POPULAR_LANGUAGES = [
-  "English",
-  "Spanish",
-  "French",
-  "German",
-  "Portuguese",
-  "Ukrainian",
-  "Polish",
-  "Russian",
-  "Mandarin",
-  "Hindi",
-  "Arabic",
-  "Japanese",
-  "Italian",
-  "Dutch",
+  "English","Spanish","French","German","Portuguese","Ukrainian","Polish","Russian",
+  "Mandarin","Hindi","Arabic","Japanese","Italian","Dutch",
 ];
 
 export const PROFICIENCY_LEVELS = ["A1","A2","B1","B2","C1","C2","Native"] as const;
