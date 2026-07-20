@@ -732,7 +732,6 @@ function SkillsGroup({
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
             const selected = value.includes(s);
-            const tag = STACK_TAGS[s];
             return (
               <button
                 key={s}
@@ -759,12 +758,7 @@ function SkillsGroup({
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   )}
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <span>{s}</span>
-                  {tag && (
-                    <span className="text-xs font-light text-[#67787C]">{tag}</span>
-                  )}
-                </span>
+                <span>{s}</span>
               </button>
             );
           })}
