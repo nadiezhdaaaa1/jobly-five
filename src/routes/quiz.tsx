@@ -34,8 +34,25 @@ export const Route = createFileRoute("/quiz")({
   component: QuizPage,
 });
 
-type StepKey = "field" | "role" | "stack" | "level" | "loc" | "email";
-const STEP_ORDER: StepKey[] = ["field", "role", "stack", "level", "loc", "email"];
+type StepKey =
+  | "field"
+  | "role"
+  | "hard"
+  | "tools"
+  | "soft"
+  | "level"
+  | "loc"
+  | "email";
+const STEP_ORDER: StepKey[] = [
+  "field",
+  "role",
+  "hard",
+  "tools",
+  "soft",
+  "level",
+  "loc",
+  "email",
+];
 
 function formatMoney(n: number) {
   return `$${Math.round(n / 1000)}k`;
@@ -65,6 +82,7 @@ function QuizPage() {
   );
   const hardPoolSet = useMemo(() => new Set(skillsPool.hard), [skillsPool.hard]);
   const toolsPoolSet = useMemo(() => new Set(skillsPool.tools), [skillsPool.tools]);
+  const softPoolSet = useMemo(() => new Set(skillsPool.soft), [skillsPool.soft]);
 
   // Role is invalid if any selected role isn't in the current field's role list.
   const fieldRoles = answers.field ? FIELD_ROLES[answers.field as keyof typeof FIELD_ROLES] : undefined;
@@ -74,12 +92,19 @@ function QuizPage() {
     !!fieldRoles &&
     rolesList.some((r) => !fieldRoles.includes(r));
 
-  // Skills invalid if hardSkills contains items no longer in the pool, or empty after role change.
-  const hard = answers.hardSkills ?? [];
-  const stackInvalid =
-    hard.length > 0 && hard.some((s) => !hardPoolSet.has(s));
-  const stackEmptied =
+  // Skill sub-steps: invalid when selection contains items no longer in the pool,
+  // emptied when a previous selection was wiped by upstream (field / role) changes.
+  const hardSel = answers.hardSkills ?? [];
+  const toolsSel = answers.tools ?? [];
+  const softSel = answers.softSkills ?? [];
+  const hardInvalid =
+    hardSel.length > 0 && hardSel.some((s) => !hardPoolSet.has(s));
+  const hardEmptied =
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
+  const toolsInvalid =
+    toolsSel.length > 0 && toolsSel.some((s) => !toolsPoolSet.has(s));
+  const softInvalid =
+    softSel.length > 0 && softSel.some((s) => !softPoolSet.has(s));
 
   // Role step shows collapsed-with-X when field change wiped the roles.
   const roleEmptied =
@@ -88,7 +113,9 @@ function QuizPage() {
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
-    stack: (answers.hardSkills?.length ?? 0) > 0 && !stackInvalid,
+    hard: (answers.hardSkills?.length ?? 0) > 0 && !hardInvalid,
+    tools: answers.tools !== undefined && !toolsInvalid,
+    soft: answers.softSkills !== undefined && !softInvalid,
     level: !!answers.level,
     loc:
       !!answers.workMode &&
@@ -127,11 +154,22 @@ function QuizPage() {
         roles: (a.roles ?? []).filter((r) => fieldRoles?.includes(r)),
       }));
     }
-    if (key === "stack" && (stackInvalid || stackEmptied)) {
+    if (key === "hard" && (hardInvalid || hardEmptied)) {
       setAnswers((a) => ({
         ...a,
         hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
+      }));
+    }
+    if (key === "tools" && toolsInvalid) {
+      setAnswers((a) => ({
+        ...a,
         tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
+      }));
+    }
+    if (key === "soft" && softInvalid) {
+      setAnswers((a) => ({
+        ...a,
+        softSkills: (a.softSkills ?? []).filter((s) => softPoolSet.has(s)),
       }));
     }
     setEditing(key);
@@ -178,12 +216,16 @@ function QuizPage() {
               completed[key] ||
               key === activeStep ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
-              (key === "stack" && (stackInvalid || stackEmptied));
+              (key === "hard" && (hardInvalid || hardEmptied)) ||
+              (key === "tools" && toolsInvalid) ||
+              (key === "soft" && softInvalid);
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
-              (key === "stack" && (stackInvalid || stackEmptied) && !isExpanded);
+              (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
+              (key === "tools" && toolsInvalid && !isExpanded) ||
+              (key === "soft" && softInvalid && !isExpanded);
             return (
               <StepShell
                 key={key}
@@ -221,6 +263,7 @@ function QuizPage() {
                         const pool = skillsForRoles(v, a.field);
                         const hardSet = new Set(pool.hard);
                         const toolSet = new Set(pool.tools);
+                        const softSet = new Set(pool.soft);
                         const prunedHard =
                           a.hardSkills !== undefined
                             ? a.hardSkills.filter((s) => hardSet.has(s))
@@ -229,26 +272,67 @@ function QuizPage() {
                           a.tools !== undefined
                             ? a.tools.filter((s) => toolSet.has(s))
                             : a.tools;
+                        const prunedSoft =
+                          a.softSkills !== undefined
+                            ? a.softSkills.filter((s) => softSet.has(s))
+                            : a.softSkills;
                         return {
                           ...a,
                           roles: v,
                           role: v[0],
                           hardSkills: prunedHard,
                           tools: prunedTools,
+                          softSkills: prunedSoft,
                         };
                       })
                     }
                     onContinue={() => advance("role", {})}
                   />
                 )}
-                {key === "stack" && (
-                  <SkillsStep
-                    pool={skillsPool}
-                    hard={answers.hardSkills ?? []}
-                    soft={answers.softSkills ?? []}
-                    tools={answers.tools ?? []}
-                    onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-                    onContinue={() => advance("stack", {})}
+                {key === "hard" && (
+                  <SingleSkillStep
+                    title="What are your hard skills?"
+                    description="Role-specific technical skills you actually work with."
+                    label="Hard skills"
+                    hint="At least one required"
+                    searchPlaceholder="Search hard skills"
+                    options={skillsPool.hard}
+                    value={answers.hardSkills ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, hardSkills: v }))}
+                    onContinue={() =>
+                      advance("hard", { hardSkills: answers.hardSkills ?? [] })
+                    }
+                    required
+                  />
+                )}
+                {key === "tools" && (
+                  <SingleSkillStep
+                    title="Which tools do you use?"
+                    description="Software and platforms you work with day to day."
+                    label="Tools"
+                    hint="Optional"
+                    searchPlaceholder="Search tools"
+                    options={skillsPool.tools}
+                    value={answers.tools ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, tools: v }))}
+                    onContinue={() =>
+                      advance("tools", { tools: answers.tools ?? [] })
+                    }
+                  />
+                )}
+                {key === "soft" && (
+                  <SingleSkillStep
+                    title="What are your soft skills?"
+                    description="How you work with people and approach problems."
+                    label="Soft skills"
+                    hint="Optional"
+                    searchPlaceholder="Search soft skills"
+                    options={skillsPool.soft}
+                    value={answers.softSkills ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, softSkills: v }))}
+                    onContinue={() =>
+                      advance("soft", { softSkills: answers.softSkills ?? [] })
+                    }
                   />
                 )}
                 {key === "level" && (
@@ -374,7 +458,9 @@ function StepShell({
 const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
-  stack: "Skills",
+  hard: "Hard skills",
+  tools: "Tools",
+  soft: "Soft skills",
   level: "Experience",
   loc: "Location and salary",
   email: "Email",
@@ -389,13 +475,12 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
         const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
         return rs.length ? rs.join(", ") : "-";
       }
-    case "stack": {
-      const parts: string[] = [];
-      if (a.hardSkills && a.hardSkills.length) parts.push(a.hardSkills.join(", "));
-      if (a.tools && a.tools.length) parts.push(a.tools.join(", "));
-      if (a.softSkills && a.softSkills.length) parts.push(a.softSkills.join(", "));
-      return parts.length ? parts.join(" · ") : "-";
-    }
+    case "hard":
+      return a.hardSkills && a.hardSkills.length ? a.hardSkills.join(", ") : "-";
+    case "tools":
+      return a.tools && a.tools.length ? a.tools.join(", ") : "-";
+    case "soft":
+      return a.softSkills && a.softSkills.length ? a.softSkills.join(", ") : "-";
     case "level": {
       const parts: string[] = [];
       if (a.level) parts.push(a.level);
@@ -620,56 +705,46 @@ function RoleStep({
   );
 }
 
-// ---------- 2. Skills (hard / soft / tools) ----------
+// ---------- 2. Skills (split: hard / tools / soft) ----------
 
-function SkillsStep({
-  pool,
-  hard,
-  soft,
-  tools,
+function SingleSkillStep({
+  title,
+  description,
+  label,
+  hint,
+  options,
+  value,
   onChange,
   onContinue,
+  searchPlaceholder,
+  required = false,
 }: {
-  pool: { hard: string[]; soft: string[]; tools: string[] };
-  hard: string[];
-  soft: string[];
-  tools: string[];
-  onChange: (p: Partial<QuizAnswers>) => void;
+  title: string;
+  description: string;
+  label: string;
+  hint: string;
+  options: string[];
+  value: string[];
+  onChange: (v: string[]) => void;
   onContinue: () => void;
+  searchPlaceholder: string;
+  required?: boolean;
 }) {
-  const canContinue = hard.length > 0;
+  const canContinue = required ? value.length > 0 : true;
   return (
     <div>
-      <StepHeading>What are your skills?</StepHeading>
+      <StepHeading>{title}</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Pick the hard skills, tools, and soft skills you actually work with.
+        {description}
       </p>
-
       <SkillsGroup
-        label="Hard skills"
-        hint="Role-specific technical skills. At least one required"
-        options={pool.hard}
-        value={hard}
-        onChange={(v) => onChange({ hardSkills: v })}
-        searchPlaceholder="Search hard skills"
+        label={label}
+        hint={hint}
+        options={options}
+        value={value}
+        onChange={onChange}
+        searchPlaceholder={searchPlaceholder}
       />
-      <SkillsGroup
-        label="Tools"
-        hint="Optional"
-        options={pool.tools}
-        value={tools}
-        onChange={(v) => onChange({ tools: v })}
-        searchPlaceholder="Search tools"
-      />
-      <SkillsGroup
-        label="Soft skills"
-        hint="Optional"
-        options={pool.soft}
-        value={soft}
-        onChange={(v) => onChange({ softSkills: v })}
-        searchPlaceholder="Search soft skills"
-      />
-
       <ContinueRow disabled={!canContinue} onClick={onContinue} />
     </div>
   );
