@@ -540,7 +540,7 @@ function FieldStep({
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         This narrows the roles and skills we'll ask about next.
       </p>
-      <div className="mt-4 rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      <div className="mt-4">
         <div className="flex flex-wrap gap-2">
           {FIELDS.map((f) => {
             const selected = value === f;
