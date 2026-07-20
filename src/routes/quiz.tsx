@@ -945,7 +945,7 @@ function ExperienceStep({
                 additionalLanguages: [{ lang, level: "B2" as ProficiencyLevel }],
               });
             }}
-            className="h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select an additional language"
           >
             <option value="">Select a language</option>
@@ -959,7 +959,7 @@ function ExperienceStep({
               onChange={(ev) =>
                 setExtraLevel(extras[0].lang, ev.target.value as ProficiencyLevel)
               }
-              className="h-10 w-full sm:w-auto rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+              className="select-native h-10 w-full sm:w-auto rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               aria-label={`${extras[0].lang} proficiency`}
             >
               {PROFICIENCY_LEVELS.map((lvl) => (
@@ -1097,7 +1097,7 @@ function LocationStep({
             <select
               value={stateCode}
               onChange={(e) => { setStateCode(e.target.value); setCity(""); }}
-              className="h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+              className="select-native h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
               aria-label="State"
             >
               <option value="">Select state</option>
@@ -1109,7 +1109,7 @@ function LocationStep({
               value={city}
               onChange={(e) => setCity(e.target.value)}
               disabled={!stateCode}
-              className="h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] disabled:opacity-50"
+              className="select-native h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] disabled:opacity-50"
               aria-label="City"
             >
               <option value="">Select city</option>
