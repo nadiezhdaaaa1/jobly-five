@@ -1,5 +1,59 @@
 export const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
 
+export const LEVEL_DEFAULT_YEARS: Record<string, number> = {
+  Junior: 1,
+  Mid: 3,
+  Senior: 7,
+  Lead: 12,
+};
+
+// ---- Field taxonomy (gates role + skills) ----
+export const FIELDS = [
+  "Engineering",
+  "Product",
+  "Design",
+  "Data",
+  "Sales",
+  "Marketing",
+  "Management",
+  "C-level",
+  "Other",
+] as const;
+export type Field = (typeof FIELDS)[number];
+
+// Custom roles that don't have RAW entries.
+const SALES_ROLES = [
+  "SDR / BDR",
+  "Account Executive",
+  "Account Manager",
+  "Sales Manager",
+  "Sales Director",
+  "VP Sales",
+  "Customer Success Manager",
+];
+const MARKETING_ROLES = [
+  "Growth Marketer",
+  "Content Marketer",
+  "Product Marketer",
+  "SEO Specialist",
+  "Performance Marketer",
+  "Brand Marketer",
+  "Marketing Manager",
+  "Head of Marketing",
+];
+const CLEVEL_ROLES = [
+  "CEO",
+  "CTO",
+  "CPO",
+  "COO",
+  "CFO",
+  "CMO",
+  "CRO",
+  "VP Engineering",
+  "VP Product",
+  "VP Design",
+];
+
 export const SPOKEN_LANGUAGES = [
   "English","Spanish","Chinese","Tagalog","Vietnamese","Arabic","French","Korean","Portuguese",
   "Haitian Creole","Hindi","German","Dutch","Polish","Italian","Urdu","Persian","Japanese",
@@ -591,3 +645,166 @@ export const USA_LOCATIONS = [
   "Louisville, KY","Birmingham, AL","Richmond, VA","New Orleans, LA","Buffalo, NY","Rochester, NY",
   "Providence, RI","Hartford, CT","Boise, ID","Madison, WI","Des Moines, IA","Omaha, NE",
 ];
+
+// ---- Field → roles ----
+const rolesByGroup = (g: RoleGroup) =>
+  Object.entries(RAW).filter(([, v]) => v.group === g).map(([r]) => r);
+
+export const FIELD_ROLES: Record<Field, string[]> = {
+  Engineering: [
+    ...rolesByGroup("Engineering"),
+    ...rolesByGroup("Infrastructure"),
+    "Staff Engineer",
+    "Tech Lead",
+    "Engineering Manager",
+    "Solutions Architect",
+    "Director of Engineering",
+  ],
+  Product: [...rolesByGroup("Product"), "Product Owner"],
+  Design: rolesByGroup("Design"),
+  Data: rolesByGroup("Data & AI"),
+  Sales: SALES_ROLES,
+  Marketing: MARKETING_ROLES,
+  Management: [
+    ...rolesByGroup("Leadership"),
+    ...rolesByGroup("Program"),
+  ],
+  "C-level": CLEVEL_ROLES,
+  Other: Object.keys(RAW),
+};
+// dedupe
+for (const k of Object.keys(FIELD_ROLES) as Field[]) {
+  FIELD_ROLES[k] = Array.from(new Set(FIELD_ROLES[k]));
+}
+
+export const ROLE_FIELD_MAP: Record<string, Field> = (() => {
+  const map: Record<string, Field> = {};
+  for (const f of FIELDS) {
+    if (f === "Other") continue;
+    for (const r of FIELD_ROLES[f]) if (!(r in map)) map[r] = f;
+  }
+  return map;
+})();
+
+// ---- Soft skills (shared pool) ----
+export const SOFT_SKILLS = [
+  "Communication",
+  "Leadership",
+  "Mentoring",
+  "Stakeholder Management",
+  "Problem Solving",
+  "Collaboration",
+  "Ownership",
+  "Prioritization",
+  "Presentation",
+  "Cross-functional Work",
+  "Coaching",
+  "Negotiation",
+  "Strategic Thinking",
+  "Adaptability",
+];
+
+// ---- Field-level fallbacks for roles not in RAW ----
+export const FIELD_FALLBACK_HARD: Partial<Record<Field, string[]>> = {
+  Sales: [
+    "Prospecting","Discovery","Cold Outreach","Negotiation","Pipeline Management",
+    "Forecasting","Account Planning","Solution Selling","MEDDIC","SPIN",
+  ],
+  Marketing: [
+    "SEO","SEM","Content Strategy","Copywriting","Brand Positioning","GTM Strategy",
+    "Lifecycle Marketing","Email Marketing","Paid Acquisition","A/B Testing","Analytics",
+  ],
+  "C-level": [
+    "Strategy","Fundraising","Board Management","P&L Ownership","M&A",
+    "Org Design","Vision Setting","OKRs",
+  ],
+  Management: [
+    "People Management","Delivery","Hiring","Performance Management","Roadmapping","OKRs",
+  ],
+};
+
+export const FIELD_FALLBACK_TOOLS: Partial<Record<Field, string[]>> = {
+  Sales: [
+    "Salesforce","HubSpot","Outreach","Salesloft","Gong","Apollo","LinkedIn Sales Navigator",
+    "ZoomInfo","Clari",
+  ],
+  Marketing: [
+    "HubSpot","Marketo","Google Analytics","Google Ads","Meta Ads","Ahrefs","Semrush",
+    "Mailchimp","Braze","Segment","Amplitude","Mixpanel","Notion","Figma",
+  ],
+  "C-level": ["Notion","Google Workspace","Slack","Linear","Jira","Looker","Amplitude"],
+  Management: ["Jira","Linear","Notion","Confluence","GitHub","Slack"],
+};
+
+// Split canonical stack items into hard vs tool buckets.
+const HARD_TAGS: StackTag[] = ["Language", "Framework", "Database", "Method"];
+const TOOL_TAGS: StackTag[] = ["Tool", "Platform"];
+
+export function skillsForRoles(roles: string[], field?: string) {
+  const hard = new Set<string>();
+  const tools = new Set<string>();
+  for (const r of roles) {
+    for (const name of ROLE_STACKS[r] ?? []) {
+      const tag = STACK_TAGS[name];
+      if (tag && HARD_TAGS.includes(tag)) hard.add(name);
+      else if (tag && TOOL_TAGS.includes(tag)) tools.add(name);
+    }
+  }
+  if (hard.size === 0 && field && FIELD_FALLBACK_HARD[field as Field]) {
+    FIELD_FALLBACK_HARD[field as Field]!.forEach((x) => hard.add(x));
+  }
+  if (tools.size === 0 && field && FIELD_FALLBACK_TOOLS[field as Field]) {
+    FIELD_FALLBACK_TOOLS[field as Field]!.forEach((x) => tools.add(x));
+  }
+  return {
+    hard: Array.from(hard),
+    tools: Array.from(tools),
+    soft: SOFT_SKILLS,
+  };
+}
+
+// ---- US states + cities picker ----
+const STATE_NAMES: Record<string, string> = {
+  AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",
+  DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",
+  KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",
+  MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",
+  NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",
+  OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",
+  TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",
+  WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia",
+};
+
+export const CITIES_BY_STATE: Record<string, string[]> = (() => {
+  const map: Record<string, string[]> = {};
+  for (const loc of USA_LOCATIONS) {
+    const m = loc.match(/^(.*),\s*([A-Z]{2})$/);
+    if (!m) continue;
+    const [, city, code] = m;
+    (map[code] ||= []).push(city);
+  }
+  return map;
+})();
+
+export const US_STATES: { code: string; name: string }[] = Object.keys(CITIES_BY_STATE)
+  .sort()
+  .map((code) => ({ code, name: STATE_NAMES[code] ?? code }));
+
+// ---- Languages picker ----
+export const POPULAR_LANGUAGES = [
+  "English",
+  "Spanish",
+  "French",
+  "German",
+  "Portuguese",
+  "Mandarin",
+  "Hindi",
+  "Arabic",
+  "Ukrainian",
+  "Polish",
+];
+
+export const PROFICIENCY_LEVELS = ["A1","A2","B1","B2","C1","C2","Native"] as const;
+
+// Fields where relocation / travel questions are relevant.
+export const RELO_TRAVEL_FIELDS: Field[] = ["Management", "Sales", "C-level"];

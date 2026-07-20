@@ -1,18 +1,31 @@
 // Simple in-memory + sessionStorage store shared across quiz → matches → auth.
 // No backend yet; this survives client-side navigation and refresh.
 
+export type ProficiencyLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | "Native";
+export type WorkMode = "remote" | "onsite";
+export type AdditionalLanguage = { lang: string; level: ProficiencyLevel };
+
 export type QuizAnswers = {
-  role?: string; // legacy, kept for backward-compat with earlier stored answers
+  field?: string;
+  role?: string; // legacy, kept for backward-compat
   roles?: string[];
-  stack?: string[];
+  stack?: string[]; // legacy — replaced by hardSkills/softSkills/tools
+  hardSkills?: string[];
+  softSkills?: string[];
+  tools?: string[];
   level?: string;
   years?: number;
-  languages?: string[];
+  languages?: string[]; // legacy
+  primaryLanguage?: string;
+  additionalLanguages?: AdditionalLanguage[];
+  workMode?: WorkMode;
   remote?: boolean;
   location?: string;
   locations?: string[];
   salaryMin?: number;
   salaryMax?: number;
+  openToRelocate?: boolean;
+  openToTravel?: boolean;
   email?: string;
 };
 
