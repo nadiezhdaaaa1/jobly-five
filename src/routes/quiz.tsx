@@ -637,7 +637,7 @@ function SkillsStep({
 
       <SkillsGroup
         label="Hard skills"
-        hint="Role-specific technical skills. At least one required."
+        hint="Role-specific technical skills. At least one required"
         options={pool.hard}
         value={hard}
         onChange={(v) => onChange({ hardSkills: v })}
@@ -645,7 +645,7 @@ function SkillsStep({
       />
       <SkillsGroup
         label="Soft skills"
-        hint="Optional."
+        hint="Optional"
         options={pool.soft}
         value={soft}
         onChange={(v) => onChange({ softSkills: v })}
@@ -653,7 +653,7 @@ function SkillsStep({
       />
       <SkillsGroup
         label="Tools"
-        hint="Optional."
+        hint="Optional"
         options={pool.tools}
         value={tools}
         onChange={(v) => onChange({ tools: v })}
