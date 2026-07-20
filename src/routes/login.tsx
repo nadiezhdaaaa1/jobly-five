@@ -93,7 +93,7 @@ function LoginPage() {
               />
             </label>
             <label className="block">
-              <span className="text-sm font-semibold">Password</span>
+              <span className="text-sm font-light text-[#090B0C]">Password</span>
               <input
                 type="password"
                 value={password}
