@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Pencil, Search, X, Loader2 } from "lucide-react";
+import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -18,7 +18,6 @@ import {
   LEVEL_DEFAULT_YEARS,
   FIELDS,
   FIELD_ROLES,
-  ROLE_FIELD_MAP,
   skillsForRoles,
   US_STATES,
   CITIES_BY_STATE,
@@ -48,7 +47,7 @@ function QuizPage() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [hydrated, setHydrated] = useState(false);
-  const [current, setCurrent] = useState<StepKey>("role");
+  const [current, setCurrent] = useState<StepKey>("field");
   const [editing, setEditing] = useState<StepKey | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -61,37 +60,42 @@ function QuizPage() {
     if (hydrated) saveQuiz(answers);
   }, [answers, hydrated]);
 
-  // Determine which steps are visible: all completed + first pending (= current or editing)
+  const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
+  const skillsPool = useMemo(
+    () => skillsForRoles(rolesList, answers.field),
+    [rolesList, answers.field]
+  );
+  const hardPoolSet = useMemo(() => new Set(skillsPool.hard), [skillsPool.hard]);
+  const toolsPoolSet = useMemo(() => new Set(skillsPool.tools), [skillsPool.tools]);
+
+  // Role is invalid if any selected role isn't in the current field's role list.
+  const fieldRoles = answers.field ? FIELD_ROLES[answers.field as keyof typeof FIELD_ROLES] : undefined;
+  const roleInvalid =
+    !!answers.field &&
+    rolesList.length > 0 &&
+    !!fieldRoles &&
+    rolesList.some((r) => !fieldRoles.includes(r));
+
+  // Skills invalid if hardSkills contains items no longer in the pool, or empty after role change.
+  const hard = answers.hardSkills ?? [];
+  const stackInvalid =
+    hard.length > 0 && hard.some((s) => !hardPoolSet.has(s));
+  const stackEmptied =
+    answers.hardSkills !== undefined && answers.hardSkills.length === 0;
+
   const completed: Record<StepKey, boolean> = {
-    role: (answers.roles?.length ?? 0) > 0,
-    stack: !!(answers.stack && answers.stack.length > 0),
+    field: !!answers.field,
+    role: rolesList.length > 0 && !roleInvalid,
+    stack: (answers.hardSkills?.length ?? 0) > 0 && !stackInvalid,
     level: !!answers.level,
     loc:
+      !!answers.workMode &&
+      (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0) &&
       answers.salaryMin != null &&
-      answers.salaryMax != null &&
-      (answers.remote || (answers.locations?.length ?? 0) > 0),
+      answers.salaryMax != null,
     email: !!answers.email,
   };
 
-  // Compute the stack options available for currently selected roles, and
-  // detect when a previously-completed stack no longer matches those options.
-  const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
-  const stackOptionsForRoles = useMemo(() => {
-    if (rolesList.length === 0) return new Set<string>();
-    const s = new Set<string>();
-    for (const r of rolesList) for (const name of ROLE_STACKS[r] ?? []) s.add(name);
-    return s;
-  }, [rolesList]);
-  const stackInvalid =
-    (answers.stack?.length ?? 0) > 0 &&
-    (rolesList.length === 0 ||
-      (answers.stack ?? []).some((s) => !stackOptionsForRoles.has(s)));
-  // Stack was previously completed but role changes wiped all valid items.
-  const stackEmptied =
-    answers.stack !== undefined && answers.stack.length === 0;
-
-  // On hydration, resume at the first incomplete step (for returning users).
-  // After that, only Continue advances the current step — selections alone must not collapse it.
   useEffect(() => {
     if (!hydrated) return;
     let next: StepKey = "email";
@@ -115,13 +119,17 @@ function QuizPage() {
   }
 
   function openEdit(key: StepKey) {
-    // When re-opening the Stack step in an invalid state, prune items that
-    // are no longer valid for the current role selection so the user can
-    // pick from the fresh option list.
-    if (key === "stack" && stackInvalid) {
+    if (key === "role" && roleInvalid) {
       setAnswers((a) => ({
         ...a,
-        stack: (a.stack ?? []).filter((s) => stackOptionsForRoles.has(s)),
+        roles: (a.roles ?? []).filter((r) => fieldRoles?.includes(r)),
+      }));
+    }
+    if (key === "stack" && (stackInvalid || stackEmptied)) {
+      setAnswers((a) => ({
+        ...a,
+        hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
+        tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
       }));
     }
     setEditing(key);
@@ -145,7 +153,6 @@ function QuizPage() {
           >
             jobly
           </Link>
-
           <Link
             to="/login"
             className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[10px] px-2 py-1"
@@ -168,40 +175,77 @@ function QuizPage() {
             const isVisible =
               completed[key] ||
               key === activeStep ||
+              (key === "role" && roleInvalid) ||
               (key === "stack" && (stackInvalid || stackEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
+            const invalid =
+              (key === "role" && roleInvalid && !isExpanded) ||
+              (key === "stack" && (stackInvalid || stackEmptied) && !isExpanded);
             return (
               <StepShell
                 key={key}
                 stepKey={key}
                 expanded={isExpanded}
                 answers={answers}
-                invalid={key === "stack" && (stackInvalid || stackEmptied) && !isExpanded}
+                invalid={invalid}
                 onEdit={() => openEdit(key)}
               >
+                {key === "field" && (
+                  <FieldStep
+                    value={answers.field}
+                    onChange={(field) =>
+                      setAnswers((a) => {
+                        // Reset roles / skills that no longer fit.
+                        const allowedRoles = FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [];
+                        const prunedRoles = (a.roles ?? []).filter((r) => allowedRoles.includes(r));
+                        return {
+                          ...a,
+                          field,
+                          roles: prunedRoles,
+                          role: prunedRoles[0],
+                        };
+                      })
+                    }
+                    onContinue={() => advance("field", {})}
+                  />
+                )}
                 {key === "role" && (
                   <RoleStep
+                    field={answers.field}
                     value={answers.roles ?? []}
                     onChange={(v) =>
                       setAnswers((a) => {
-                        const nextOpts = new Set<string>();
-                        for (const r of v) for (const n of ROLE_STACKS[r] ?? []) nextOpts.add(n);
-                        const prunedStack =
-                          a.stack !== undefined
-                            ? a.stack.filter((s) => nextOpts.has(s))
-                            : a.stack;
-                        return { ...a, roles: v, role: v[0], stack: prunedStack };
+                        const pool = skillsForRoles(v, a.field);
+                        const hardSet = new Set(pool.hard);
+                        const toolSet = new Set(pool.tools);
+                        const prunedHard =
+                          a.hardSkills !== undefined
+                            ? a.hardSkills.filter((s) => hardSet.has(s))
+                            : a.hardSkills;
+                        const prunedTools =
+                          a.tools !== undefined
+                            ? a.tools.filter((s) => toolSet.has(s))
+                            : a.tools;
+                        return {
+                          ...a,
+                          roles: v,
+                          role: v[0],
+                          hardSkills: prunedHard,
+                          tools: prunedTools,
+                        };
                       })
                     }
                     onContinue={() => advance("role", {})}
                   />
                 )}
                 {key === "stack" && (
-                  <StackStep
-                    roles={answers.roles ?? (answers.role ? [answers.role] : [])}
-                    value={answers.stack ?? []}
-                    onChange={(stack) => setAnswers((a) => ({ ...a, stack }))}
+                  <SkillsStep
+                    pool={skillsPool}
+                    hard={answers.hardSkills ?? []}
+                    soft={answers.softSkills ?? []}
+                    tools={answers.tools ?? []}
+                    onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
                     onContinue={() => advance("stack", {})}
                   />
                 )}
@@ -326,8 +370,9 @@ function StepShell({
 }
 
 const SUMMARY_LABEL: Record<StepKey, string> = {
+  field: "Field",
   role: "Role",
-  stack: "Stack",
+  stack: "Skills",
   level: "Experience",
   loc: "Location and salary",
   email: "Email",
@@ -335,25 +380,41 @@ const SUMMARY_LABEL: Record<StepKey, string> = {
 
 function summaryValue(key: StepKey, a: QuizAnswers): string {
   switch (key) {
+    case "field":
+      return a.field ?? "";
     case "role":
       return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
-    case "stack":
-      return a.stack && a.stack.length > 0 ? a.stack.join(", ") : "-";
+    case "stack": {
+      const parts: string[] = [];
+      if (a.hardSkills && a.hardSkills.length) parts.push(a.hardSkills.join(", "));
+      if (a.tools && a.tools.length) parts.push(a.tools.join(", "));
+      if (a.softSkills && a.softSkills.length) parts.push(a.softSkills.join(", "));
+      return parts.length ? parts.join(" · ") : "-";
+    }
     case "level": {
       const parts: string[] = [];
       if (a.level) parts.push(a.level);
       if (a.years != null) parts.push(`${formatYears(a.years)}y`);
-      if (a.languages && a.languages.length > 0) parts.push(...a.languages);
+      if (a.primaryLanguage) parts.push(`${a.primaryLanguage} (Native)`);
+      for (const l of a.additionalLanguages ?? []) parts.push(`${l.lang} (${l.level})`);
       return parts.join(" · ");
     }
     case "loc": {
       const locs = a.locations ?? [];
-      const where = locs.length > 0 ? locs.join(" · ") : a.remote ? "Remote" : "";
+      const where =
+        a.workMode === "remote"
+          ? "Anywhere (remote)"
+          : locs.length > 0
+          ? locs.join(" · ")
+          : "";
       const money =
         a.salaryMin != null && a.salaryMax != null
-          ? `${formatMoney(a.salaryMin)}–${formatMoney(a.salaryMax)}`
+          ? `${formatMoney(a.salaryMin)} – ${formatMoney(a.salaryMax)}`
           : "";
-      return [where, money].filter(Boolean).join(" · ");
+      const extras: string[] = [];
+      if (a.openToRelocate) extras.push("open to relocation");
+      if (a.openToTravel) extras.push("open to travel");
+      return [where, money, ...extras].filter(Boolean).join(" · ");
     }
     case "email":
       return a.email ?? "";
@@ -372,19 +433,65 @@ function StepHeading({ children }: { children: React.ReactNode }) {
   return <h2 className="text-2xl sm:text-[28px]">{children}</h2>;
 }
 
-// ---------- 1. Role ----------
+// ---------- 0. Field ----------
 
-function RoleStep({
+function FieldStep({
   value,
   onChange,
   onContinue,
 }: {
+  value?: string;
+  onChange: (f: string) => void;
+  onContinue: () => void;
+}) {
+  return (
+    <div>
+      <StepHeading>What field are you in?</StepHeading>
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+        This narrows the roles and skills we'll ask about next.
+      </p>
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {FIELDS.map((f) => {
+          const selected = value === f;
+          return (
+            <button
+              key={f}
+              type="button"
+              onClick={() => onChange(f)}
+              aria-pressed={selected}
+              className={cn(
+                "flex h-[56px] items-center justify-center rounded-[4px] border px-4 text-[16px] font-light leading-[1.6] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                selected
+                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
+              )}
+            >
+              {f}
+            </button>
+          );
+        })}
+      </div>
+      <ContinueRow disabled={!value} onClick={onContinue} />
+    </div>
+  );
+}
+
+// ---------- 1. Role ----------
+
+function RoleStep({
+  field,
+  value,
+  onChange,
+  onContinue,
+}: {
+  field?: string;
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const filtered = ROLES.filter((r) =>
+  const roles = field ? FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [] : [];
+  const filtered = roles.filter((r) =>
     r.toLowerCase().includes(query.trim().toLowerCase())
   );
   const MAX = 3;
@@ -478,7 +585,9 @@ function RoleStep({
                 </span>
                 <span className="inline-flex items-center gap-1">
                   <span>{r}</span>
-                  <span className="text-xs font-light text-[#67787C]">{ROLE_GROUP_MAP[r]}</span>
+                  {ROLE_GROUP_MAP[r] && (
+                    <span className="text-xs font-light text-[#67787C]">{ROLE_GROUP_MAP[r]}</span>
+                  )}
                 </span>
               </button>
             );
@@ -494,56 +603,97 @@ function RoleStep({
   );
 }
 
-// ---------- 2. Stack ----------
+// ---------- 2. Skills (hard / soft / tools) ----------
 
-function StackStep({
-  roles,
-  value,
+function SkillsStep({
+  pool,
+  hard,
+  soft,
+  tools,
   onChange,
   onContinue,
 }: {
-  roles: string[];
-  value: string[];
-  onChange: (v: string[]) => void;
+  pool: { hard: string[]; soft: string[]; tools: string[] };
+  hard: string[];
+  soft: string[];
+  tools: string[];
+  onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
 }) {
+  const canContinue = hard.length > 0;
+  return (
+    <div>
+      <StepHeading>What are your skills?</StepHeading>
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+        Pick the hard skills, soft skills, and tools you actually work with.
+      </p>
+
+      <SkillsGroup
+        label="Hard skills"
+        hint="Role-specific technical skills. At least one required."
+        options={pool.hard}
+        value={hard}
+        onChange={(v) => onChange({ hardSkills: v })}
+        searchPlaceholder="Search hard skills"
+      />
+      <SkillsGroup
+        label="Soft skills"
+        hint="Optional."
+        options={pool.soft}
+        value={soft}
+        onChange={(v) => onChange({ softSkills: v })}
+        searchPlaceholder="Search soft skills"
+      />
+      <SkillsGroup
+        label="Tools"
+        hint="Optional."
+        options={pool.tools}
+        value={tools}
+        onChange={(v) => onChange({ tools: v })}
+        searchPlaceholder="Search tools"
+      />
+
+      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+    </div>
+  );
+}
+
+function SkillsGroup({
+  label,
+  hint,
+  options,
+  value,
+  onChange,
+  searchPlaceholder,
+}: {
+  label: string;
+  hint: string;
+  options: string[];
+  value: string[];
+  onChange: (v: string[]) => void;
+  searchPlaceholder: string;
+}) {
   const [query, setQuery] = useState("");
-  const options = useMemo(() => {
-    if (!roles || roles.length === 0) return COMMON_STACKS;
-    const seen = new Set<string>();
-    const out: string[] = [];
-    for (const r of roles) {
-      for (const name of ROLE_STACKS[r] ?? []) {
-        if (!seen.has(name)) {
-          seen.add(name);
-          out.push(name);
-        }
-      }
-    }
-    return out;
-  }, [roles]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
   const toggle = (s: string) =>
     onChange(value.includes(s) ? value.filter((x) => x !== s) : [...value, s]);
 
-  const canContinue = value.length > 0;
-
   return (
-    <div>
-      <StepHeading>What's your stack?</StepHeading>
-      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Pick the tools and the methods you actually work with. Select at least one.
-      </p>
+    <div className="mt-6">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-sm font-light text-[#090B0C]">{label}</span>
+        <span className="text-xs text-[color:var(--color-text-muted)]">{hint}</span>
+      </div>
 
-      <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search technologies"
-          className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+          placeholder={searchPlaceholder}
+          className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
         {query && (
           <button
@@ -558,7 +708,7 @@ function StackStep({
       </div>
 
       {value.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           {value.map((s) => (
             <span
               key={s}
@@ -578,7 +728,7 @@ function StackStep({
         </div>
       )}
 
-      <div className="mt-4 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      <div className="mt-2 max-h-[160px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
             const selected = value.includes(s);
@@ -623,8 +773,6 @@ function StackStep({
           )}
         </div>
       </div>
-
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
     </div>
   );
 }
@@ -654,50 +802,47 @@ function ExperienceStep({
 }) {
   const level = answers.level;
   const years = answers.years ?? 0;
-  const languages = answers.languages ?? [];
-  const [langInput, setLangInput] = useState("");
-  const [langFocused, setLangFocused] = useState(false);
-  const [langHighlighted, setLangHighlighted] = useState(0);
+  const primary = answers.primaryLanguage ?? "English";
+  const extras: AdditionalLanguage[] = answers.additionalLanguages ?? [];
 
-  const commitLang = () => {
-    const v = langInput.trim().replace(/,+$/, "").trim();
-    if (!v) return;
-    if (languages.some((l) => l.toLowerCase() === v.toLowerCase())) {
-      setLangInput("");
-      return;
+  // Initialize primary language default on mount.
+  useEffect(() => {
+    if (!answers.primaryLanguage) onChange({ primaryLanguage: "English" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const setLevel = (l: string) => {
+    const patch: Partial<QuizAnswers> = { level: l };
+    // Auto-set years to sensible default (user may override afterwards).
+    if (answers.years == null || LEVEL_DEFAULT_YEARS[answers.level ?? ""] === answers.years) {
+      patch.years = LEVEL_DEFAULT_YEARS[l];
+    } else {
+      // Also set when years is currently the default of another level.
+      patch.years = LEVEL_DEFAULT_YEARS[l];
     }
-    onChange({ languages: [...languages, v] });
-    setLangInput("");
+    onChange(patch);
   };
 
-  const removeLang = (l: string) =>
-    onChange({ languages: languages.filter((x) => x !== l) });
-
-  const langQuery = langInput.trim().toLowerCase();
-  const filteredLangs = useMemo(
-    () =>
-      langQuery
-        ? SPOKEN_LANGUAGES.filter(
-            (lang) =>
-              lang.toLowerCase().includes(langQuery) &&
-              !languages.some((l) => l.toLowerCase() === lang.toLowerCase())
-          ).slice(0, 7)
-        : [],
-    [langQuery, languages]
-  );
-
-  useEffect(() => setLangHighlighted(0), [filteredLangs.length]);
-
-  const addLangSuggestion = (lang: string) => {
-    if (!languages.some((l) => l.toLowerCase() === lang.toLowerCase())) {
-      onChange({ languages: [...languages, lang] });
-    }
-    setLangInput("");
-  };
-
-  const canContinue = !!level;
+  const canContinue = !!level && !!primary;
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+
+  const toggleExtra = (lang: string) => {
+    if (lang === primary) return;
+    if (extras.some((e) => e.lang === lang)) {
+      onChange({ additionalLanguages: extras.filter((e) => e.lang !== lang) });
+    } else {
+      onChange({
+        additionalLanguages: [...extras, { lang, level: "B2" as ProficiencyLevel }],
+      });
+    }
+  };
+
+  const setExtraLevel = (lang: string, lvl: ProficiencyLevel) => {
+    onChange({
+      additionalLanguages: extras.map((e) => (e.lang === lang ? { ...e, level: lvl } : e)),
+    });
+  };
 
   return (
     <div>
@@ -710,7 +855,7 @@ function ExperienceStep({
             <button
               key={l}
               type="button"
-              onClick={() => onChange({ level: l })}
+              onClick={() => setLevel(l)}
               className={cn(
                 "relative flex h-[56px] items-center overflow-hidden rounded-[4px] border pl-4 pr-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
@@ -746,9 +891,7 @@ function ExperienceStep({
           </span>
         </div>
         <div className="relative mt-4 h-8">
-          {/* Track */}
           <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
-          {/* Selected range */}
           <div
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
             style={{
@@ -771,7 +914,6 @@ function ExperienceStep({
           {ticks.map((t) => (
             <span
               key={t}
-              data-exp-tick
               className="absolute top-0 -translate-x-1/2 whitespace-nowrap"
               style={{ left: `calc(11px + (100% - 22px) * ${t / 20})` }}
             >
@@ -782,86 +924,103 @@ function ExperienceStep({
       </div>
 
       <div className="mt-6">
-        <label className="block text-sm font-light text-[#090B0C]">Spoken languages</label>
-        <div className="relative mt-1.5">
-          <input
-            value={langInput}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v.endsWith(",")) {
-                const raw = v.replace(/,+$/, "").trim();
-                if (
-                  raw &&
-                  !languages.some((l) => l.toLowerCase() === raw.toLowerCase())
-                ) {
-                  onChange({ languages: [...languages, raw] });
-                }
-                setLangInput("");
-              } else {
-                setLangInput(v);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (langFocused && filteredLangs.length > 0) {
-                  addLangSuggestion(filteredLangs[langHighlighted]);
-                } else {
-                  commitLang();
-                }
-              } else if (e.key === "ArrowDown") {
-                e.preventDefault();
-                setLangHighlighted((i) => Math.min(i + 1, filteredLangs.length - 1));
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                setLangHighlighted((i) => Math.max(i - 1, 0));
-              } else if (e.key === "Backspace" && langInput === "" && languages.length > 0) {
-                onChange({ languages: languages.slice(0, -1) });
-              }
-            }}
-            onFocus={() => setLangFocused(true)}
-            onBlur={() => setLangFocused(false)}
-            placeholder="e.g. English"
-            className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-          />
-          {langFocused && langInput.trim() && filteredLangs.length > 0 && (
-            <ul
-              className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] py-1 shadow-sm"
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              {filteredLangs.map((lang, idx) => (
-                <li
-                  key={lang}
-                  onMouseDown={() => addLangSuggestion(lang)}
-                  onMouseEnter={() => setLangHighlighted(idx)}
+        <label className="block text-sm font-light text-[#090B0C]">Primary language</label>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {POPULAR_LANGUAGES.map((lang) => {
+            const selected = primary === lang;
+            return (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => {
+                  // Remove from additional if it was there.
+                  onChange({
+                    primaryLanguage: lang,
+                    additionalLanguages: extras.filter((e) => e.lang !== lang),
+                  });
+                }}
+                aria-pressed={selected}
+                className={cn(
+                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  selected
+                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                )}
+                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+              >
+                <span
                   className={cn(
-                    "cursor-pointer px-3 py-2 text-sm transition-colors",
-                    idx === langHighlighted ? "bg-[color:var(--color-surface-2)]" : "hover:bg-[color:var(--color-surface-2)]"
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
+                    selected
+                      ? "border-white bg-white"
+                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
                   )}
                 >
-                  {lang}
-                </li>
-              ))}
-            </ul>
-          )}
+                  {selected && <span className="h-2 w-2 rounded-full bg-[#0E735A]" />}
+                </span>
+                <span>{lang}</span>
+              </button>
+            );
+          })}
         </div>
-        {languages.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {languages.map((l) => (
-              <span
-                key={l}
-                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+      </div>
+
+      <div className="mt-5">
+        <label className="block text-sm font-light text-[#090B0C]">
+          Additional languages <span className="text-[color:var(--color-text-muted)]">(optional)</span>
+        </label>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {POPULAR_LANGUAGES.filter((l) => l !== primary).map((lang) => {
+            const entry = extras.find((e) => e.lang === lang);
+            const selected = !!entry;
+            return (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => toggleExtra(lang)}
+                aria-pressed={selected}
+                className={cn(
+                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  selected
+                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                )}
+                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
               >
-                {l}
-                <button
-                  type="button"
-                  onClick={() => removeLang(l)}
-                  aria-label={`Remove ${l}`}
-                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                <span
+                  className={cn(
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+                    selected
+                      ? "border-[#0E735A] bg-[#0E735A]"
+                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                  )}
                 >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </span>
+                  {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                </span>
+                <span>{lang}</span>
+              </button>
+            );
+          })}
+        </div>
+        {extras.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {extras.map((e) => (
+              <div
+                key={e.lang}
+                className="flex items-center justify-between gap-3 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2"
+              >
+                <span className="text-sm text-[#090B0C]">{e.lang}</span>
+                <select
+                  value={e.level}
+                  onChange={(ev) => setExtraLevel(e.lang, ev.target.value as ProficiencyLevel)}
+                  className="h-8 rounded-[4px] border border-[color:var(--color-border)] bg-white px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                  aria-label={`${e.lang} proficiency`}
+                >
+                  {PROFICIENCY_LEVELS.map((lvl) => (
+                    <option key={lvl} value={lvl}>{lvl}</option>
+                  ))}
+                </select>
+              </div>
             ))}
           </div>
         )}
@@ -911,51 +1070,30 @@ function LocationStep({
   onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
 }) {
-  const remote = answers.remote ?? false;
+  const workMode = answers.workMode;
   const locations = answers.locations ?? [];
-  const [locInput, setLocInput] = useState("");
-  const [focused, setFocused] = useState(false);
-  const [highlighted, setHighlighted] = useState(0);
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
+  const [stateCode, setStateCode] = useState<string>("");
+  const [city, setCity] = useState<string>("");
 
-  const canContinue = (remote || locations.length > 0) && minVal < maxVal;
+  const showReloTravel = !!answers.field && RELO_TRAVEL_FIELDS.includes(answers.field as any);
 
-  const commitLoc = () => {
-    const v = locInput.trim().replace(/,+$/, "").trim();
-    if (!v) return;
-    if (locations.some((l) => l.toLowerCase() === v.toLowerCase())) {
-      setLocInput("");
-      return;
-    }
-    onChange({ locations: [...locations, v] });
-    setLocInput("");
+  const canContinue =
+    !!workMode &&
+    (workMode === "remote" || locations.length > 0) &&
+    minVal < maxVal;
+
+  const addLocation = () => {
+    if (!stateCode || !city) return;
+    const label = `${city}, ${stateCode}`;
+    if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) return;
+    onChange({ locations: [...locations, label] });
+    setCity("");
   };
 
   const removeLoc = (l: string) =>
     onChange({ locations: locations.filter((x) => x !== l) });
-
-  const locQuery = locInput.trim().toLowerCase();
-  const filteredSuggestions = useMemo(
-    () =>
-      locQuery
-        ? USA_LOCATIONS.filter(
-            (loc) =>
-              loc.toLowerCase().includes(locQuery) &&
-              !locations.some((l) => l.toLowerCase() === loc.toLowerCase())
-          ).slice(0, 7)
-        : [],
-    [locQuery, locations]
-  );
-
-  useEffect(() => setHighlighted(0), [filteredSuggestions.length]);
-
-  const addSuggestion = (loc: string) => {
-    if (!locations.some((l) => l.toLowerCase() === loc.toLowerCase())) {
-      onChange({ locations: [...locations, loc] });
-    }
-    setLocInput("");
-  };
 
   const setMin = (v: number) => {
     const nv = Math.min(v, maxVal - SAL_STEP);
@@ -965,136 +1103,117 @@ function LocationStep({
     const nv = Math.max(v, minVal + SAL_STEP);
     onChange({ salaryMin: minVal, salaryMax: nv });
   };
-
   const pct = (v: number) => ((v - SAL_MIN) / (SAL_MAX - SAL_MIN)) * 100;
+
+  const cities = stateCode ? CITIES_BY_STATE[stateCode] ?? [] : [];
 
   return (
     <div>
       <StepHeading>Where and how much?</StepHeading>
 
-      <div className="mt-5 flex items-center justify-between rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3">
-        <div>
-          <div className="text-base font-light leading-relaxed text-[#090B0C]">Open to remote</div>
-          <div className="text-sm text-[color:var(--color-text-secondary)]">
-            Include fully remote roles
-          </div>
-        </div>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={remote}
-          onClick={() => onChange({ remote: !remote })}
-          className={cn(
-            "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-            remote ? "bg-[color:var(--color-green)]" : "bg-[color:var(--color-surface-2)]"
-          )}
-        >
-          <span
-            className={cn(
-              "inline-block h-5 w-5 transform rounded-full bg-white transition-transform",
-              remote ? "translate-x-6" : "translate-x-1"
-            )}
-          />
-        </button>
-      </div>
-
-      <div className="mt-4">
-        <label className="block text-sm font-light text-[#090B0C]">Preferred locations</label>
-        <div className="relative mt-1.5">
-          <input
-            value={locInput}
-            onChange={(e) => {
-              const v = e.target.value;
-              if (v.endsWith(",")) {
-                const raw = v.replace(/,+$/, "").trim();
-                if (
-                  raw &&
-                  !locations.some((l) => l.toLowerCase() === raw.toLowerCase())
-                ) {
-                  onChange({ locations: [...locations, raw] });
-                }
-                setLocInput("");
-              } else {
-                setLocInput(v);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (focused && filteredSuggestions.length > 0) {
-                  addSuggestion(filteredSuggestions[highlighted]);
-                } else {
-                  commitLoc();
-                }
-              } else if (e.key === "ArrowDown") {
-                e.preventDefault();
-                setHighlighted((i) => Math.min(i + 1, filteredSuggestions.length - 1));
-              } else if (e.key === "ArrowUp") {
-                e.preventDefault();
-                setHighlighted((i) => Math.max(i - 1, 0));
-              } else if (e.key === "Backspace" && locInput === "" && locations.length > 0) {
-                onChange({ locations: locations.slice(0, -1) });
-              }
-            }}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            placeholder="e.g. New York City, USA"
-            className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-          />
-          {focused && locInput.trim() && filteredSuggestions.length > 0 && (
-            <ul
-              className="absolute left-0 right-0 top-full z-10 mt-1 max-h-60 overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] py-1 shadow-sm"
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              {filteredSuggestions.map((loc, idx) => (
-                <li
-                  key={loc}
-                  onMouseDown={() => addSuggestion(loc)}
-                  onMouseEnter={() => setHighlighted(idx)}
-                  className={cn(
-                    "cursor-pointer px-3 py-2 text-sm transition-colors",
-                    idx === highlighted ? "bg-[color:var(--color-surface-2)]" : "hover:bg-[color:var(--color-surface-2)]"
-                  )}
-                >
-                  {loc}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {locations.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {locations.map((l) => (
-              <span
-                key={l}
-                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
-              >
-                {l}
-                <button
-                  type="button"
-                  onClick={() => removeLoc(l)}
-                  aria-label={`Remove ${l}`}
-                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
       <div className="mt-5">
+        <span className="block text-sm font-light text-[#090B0C]">Where do you want to work?</span>
+        <div className="mt-2 grid grid-cols-2 gap-3">
+          {[
+            { key: "remote" as WorkMode, label: "Remote" },
+            { key: "onsite" as WorkMode, label: "On-site / hybrid" },
+          ].map((opt) => {
+            const selected = workMode === opt.key;
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => {
+                  const patch: Partial<QuizAnswers> = {
+                    workMode: opt.key,
+                    remote: opt.key === "remote",
+                  };
+                  if (opt.key === "remote") patch.locations = [];
+                  onChange(patch);
+                }}
+                aria-pressed={selected}
+                className={cn(
+                  "flex h-[56px] items-center justify-center rounded-[4px] border px-4 text-[16px] font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  selected
+                    ? "border-[#00F1A9] bg-[#00F1A9]"
+                    : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
+                )}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {workMode === "onsite" && (
+        <div className="mt-5">
+          <label className="block text-sm font-light text-[#090B0C]">Preferred locations</label>
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]">
+            <select
+              value={stateCode}
+              onChange={(e) => { setStateCode(e.target.value); setCity(""); }}
+              className="h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+              aria-label="State"
+            >
+              <option value="">Select state</option>
+              {US_STATES.map((s) => (
+                <option key={s.code} value={s.code}>{s.name}</option>
+              ))}
+            </select>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={!stateCode}
+              className="h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] disabled:opacity-50"
+              aria-label="City"
+            >
+              <option value="">Select city</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={addLocation}
+              disabled={!stateCode || !city}
+              className="h-11 rounded-[4px] border border-[color:var(--color-border-strong)] bg-white px-4 text-sm font-medium transition-colors hover:bg-[color:var(--color-surface-2)] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add
+            </button>
+          </div>
+          {locations.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {locations.map((l) => (
+                <span
+                  key={l}
+                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+                >
+                  {l}
+                  <button
+                    type="button"
+                    onClick={() => removeLoc(l)}
+                    aria-label={`Remove ${l}`}
+                    className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="mt-6">
         <div className="flex items-baseline justify-between">
-          <span className="text-sm font-light text-[#090B0C]">Salary range</span>
+          <span className="text-sm font-light text-[#090B0C]">Annual salary (gross, USD)</span>
           <span className="text-base font-light leading-relaxed text-[#090B0C]">
             {formatMoney(minVal)} – {formatMoney(maxVal)}
           </span>
         </div>
         <div className="relative mt-4 h-8">
-          {/* Track */}
           <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
-          {/* Selected range */}
           <div
             className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
             style={{
@@ -1102,7 +1221,6 @@ function LocationStep({
               right: `calc(11px + (100% - 22px) * ${1 - pct(maxVal) / 100})`,
             }}
           />
-          {/* Inputs stacked */}
           <input
             type="range"
             min={SAL_MIN}
@@ -1137,6 +1255,23 @@ function LocationStep({
         </div>
       </div>
 
+      {showReloTravel && (
+        <div className="mt-6 space-y-3">
+          <ToggleRow
+            label="Open to relocation?"
+            hint="Optional — helps us match roles in other cities."
+            checked={!!answers.openToRelocate}
+            onChange={(v) => onChange({ openToRelocate: v })}
+          />
+          <ToggleRow
+            label="Open to business travel?"
+            hint="Optional — for roles that involve regular travel."
+            checked={!!answers.openToTravel}
+            onChange={(v) => onChange({ openToTravel: v })}
+          />
+        </div>
+      )}
+
       <style>{`
         .jobly-range { pointer-events: none; }
         .jobly-range::-webkit-slider-thumb {
@@ -1162,6 +1297,44 @@ function LocationStep({
       `}</style>
 
       <ContinueRow disabled={!canContinue} onClick={onContinue} />
+    </div>
+  );
+}
+
+function ToggleRow({
+  label,
+  hint,
+  checked,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3">
+      <div>
+        <div className="text-base font-light leading-relaxed text-[#090B0C]">{label}</div>
+        <div className="text-sm text-[color:var(--color-text-secondary)]">{hint}</div>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={cn(
+          "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          checked ? "bg-[color:var(--color-green)]" : "bg-[color:var(--color-surface-2)]"
+        )}
+      >
+        <span
+          className={cn(
+            "inline-block h-5 w-5 transform rounded-full bg-white transition-transform",
+            checked ? "translate-x-6" : "translate-x-1"
+          )}
+        />
+      </button>
     </div>
   );
 }
