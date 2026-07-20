@@ -55,7 +55,7 @@ export function LegalLayout({ doc }: { doc: LegalDoc }) {
               }
               if (b.type === "p") {
                 return (
-                  <p key={i} className="mt-4 leading-7 text-[color:var(--color-foreground)]">
+                  <p key={i} className="mt-4 leading-7 whitespace-pre-line text-[color:var(--color-foreground)]">
                     {b.text}
                   </p>
                 );
