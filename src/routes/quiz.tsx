@@ -164,13 +164,13 @@ function QuizPage() {
         hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
       }));
     }
-    if (key === "tools" && toolsInvalid) {
+    if (key === "tools" && (toolsInvalid || toolsEmptied)) {
       setAnswers((a) => ({
         ...a,
         tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
       }));
     }
-    if (key === "soft" && softInvalid) {
+    if (key === "soft" && (softInvalid || softEmptied)) {
       setAnswers((a) => ({
         ...a,
         softSkills: (a.softSkills ?? []).filter((s) => softPoolSet.has(s)),
