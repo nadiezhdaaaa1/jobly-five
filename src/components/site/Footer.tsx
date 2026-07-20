@@ -41,6 +41,15 @@ export function Footer() {
             <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
               Email-first job discovery platform for tech candidates.
             </p>
+            <p className="mt-4 max-w-xs text-xs text-[color:var(--color-text-muted)]">
+              NORELIX LIMITED · trading as Jobly
+              <br />
+              The Black Church, St Mary’s Place,
+              <br />
+              Dublin 7, D07 P4AX, Ireland
+              <br />
+              Company No. 817569
+            </p>
           </div>
           {COLS.map((c) => (
             <div key={c.title}>
