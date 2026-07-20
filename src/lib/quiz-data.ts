@@ -797,11 +797,15 @@ export const POPULAR_LANGUAGES = [
   "French",
   "German",
   "Portuguese",
+  "Ukrainian",
+  "Polish",
+  "Russian",
   "Mandarin",
   "Hindi",
   "Arabic",
-  "Ukrainian",
-  "Polish",
+  "Japanese",
+  "Italian",
+  "Dutch",
 ];
 
 export const PROFICIENCY_LEVELS = ["A1","A2","B1","B2","C1","C2","Native"] as const;
