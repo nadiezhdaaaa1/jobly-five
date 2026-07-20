@@ -83,6 +83,10 @@ function QuizPage() {
   const stackEmptied =
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
 
+  // Role step shows collapsed-with-X when field change wiped the roles.
+  const roleEmptied =
+    answers.roles !== undefined && answers.roles.length === 0;
+
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
@@ -119,7 +123,7 @@ function QuizPage() {
   }
 
   function openEdit(key: StepKey) {
-    if (key === "role" && roleInvalid) {
+    if (key === "role" && (roleInvalid || roleEmptied)) {
       setAnswers((a) => ({
         ...a,
         roles: (a.roles ?? []).filter((r) => fieldRoles?.includes(r)),
@@ -175,12 +179,12 @@ function QuizPage() {
             const isVisible =
               completed[key] ||
               key === activeStep ||
-              (key === "role" && roleInvalid) ||
+              (key === "role" && (roleInvalid || roleEmptied)) ||
               (key === "stack" && (stackInvalid || stackEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             const invalid =
-              (key === "role" && roleInvalid && !isExpanded) ||
+              (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
               (key === "stack" && (stackInvalid || stackEmptied) && !isExpanded);
             return (
               <StepShell
@@ -383,7 +387,10 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "field":
       return a.field ?? "";
     case "role":
-      return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
+      {
+        const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
+        return rs.length ? rs.join(", ") : "-";
+      }
     case "stack": {
       const parts: string[] = [];
       if (a.hardSkills && a.hardSkills.length) parts.push(a.hardSkills.join(", "));
