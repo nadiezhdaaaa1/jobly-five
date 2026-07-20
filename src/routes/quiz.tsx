@@ -1,18 +1,30 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Pencil, Search, X, Loader2 } from "lucide-react";
+import { Check, ChevronDown, Pencil, Search, X, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { loadQuiz, saveQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import {
-  ROLES,
-  ROLE_STACKS,
+  loadQuiz,
+  saveQuiz,
+  type QuizAnswers,
+  type ProficiencyLevel,
+  type WorkMode,
+  type AdditionalLanguage,
+} from "@/lib/quiz-store";
+import {
   ROLE_GROUP_MAP,
   STACK_TAGS,
-  COMMON_STACKS,
   LEVELS,
-  USA_LOCATIONS,
-  SPOKEN_LANGUAGES,
+  LEVEL_DEFAULT_YEARS,
+  FIELDS,
+  FIELD_ROLES,
+  ROLE_FIELD_MAP,
+  skillsForRoles,
+  US_STATES,
+  CITIES_BY_STATE,
+  POPULAR_LANGUAGES,
+  PROFICIENCY_LEVELS,
+  RELO_TRAVEL_FIELDS,
 } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/quiz")({
@@ -25,8 +37,8 @@ export const Route = createFileRoute("/quiz")({
   component: QuizPage,
 });
 
-type StepKey = "role" | "stack" | "level" | "loc" | "email";
-const STEP_ORDER: StepKey[] = ["role", "stack", "level", "loc", "email"];
+type StepKey = "field" | "role" | "stack" | "level" | "loc" | "email";
+const STEP_ORDER: StepKey[] = ["field", "role", "stack", "level", "loc", "email"];
 
 function formatMoney(n: number) {
   return `$${Math.round(n / 1000)}k`;
