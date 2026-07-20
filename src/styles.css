@@ -220,6 +220,13 @@
   line-height: 1.5;
 }
 
+@utility button-medium {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 .how-card-title-row {
   display: flex;
   align-items: center;
