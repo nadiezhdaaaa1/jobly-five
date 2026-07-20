@@ -118,8 +118,8 @@ function QuizPage() {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
     hard: (answers.hardSkills?.length ?? 0) > 0 && !hardInvalid,
-    tools: answers.tools !== undefined && !toolsInvalid,
-    soft: answers.softSkills !== undefined && !softInvalid,
+    tools: (answers.tools?.length ?? 0) > 0 && !toolsInvalid,
+    soft: (answers.softSkills?.length ?? 0) > 0 && !softInvalid,
     level: !!answers.level,
     loc:
       !!answers.workMode &&
