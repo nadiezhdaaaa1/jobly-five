@@ -828,17 +828,6 @@ function ExperienceStep({
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 
-  const toggleExtra = (lang: string) => {
-    if (lang === primary) return;
-    if (extras.some((e) => e.lang === lang)) {
-      onChange({ additionalLanguages: extras.filter((e) => e.lang !== lang) });
-    } else {
-      onChange({
-        additionalLanguages: [...extras, { lang, level: "B2" as ProficiencyLevel }],
-      });
-    }
-  };
-
   const setExtraLevel = (lang: string, lvl: ProficiencyLevel) => {
     onChange({
       additionalLanguages: extras.map((e) => (e.lang === lang ? { ...e, level: lvl } : e)),
