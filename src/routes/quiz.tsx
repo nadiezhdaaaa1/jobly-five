@@ -387,7 +387,10 @@ function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "field":
       return a.field ?? "";
     case "role":
-      return (a.roles && a.roles.length ? a.roles : a.role ? [a.role] : []).join(", ");
+      {
+        const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
+        return rs.length ? rs.join(", ") : "-";
+      }
     case "stack": {
       const parts: string[] = [];
       if (a.hardSkills && a.hardSkills.length) parts.push(a.hardSkills.join(", "));
