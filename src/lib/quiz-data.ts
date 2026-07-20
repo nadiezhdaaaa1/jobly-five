@@ -1,5 +1,59 @@
 export const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
 
+export const LEVEL_DEFAULT_YEARS: Record<string, number> = {
+  Junior: 1,
+  Mid: 3,
+  Senior: 7,
+  Lead: 12,
+};
+
+// ---- Field taxonomy (gates role + skills) ----
+export const FIELDS = [
+  "Engineering",
+  "Product",
+  "Design",
+  "Data",
+  "Sales",
+  "Marketing",
+  "Management",
+  "C-level",
+  "Other",
+] as const;
+export type Field = (typeof FIELDS)[number];
+
+// Custom roles that don't have RAW entries.
+const SALES_ROLES = [
+  "SDR / BDR",
+  "Account Executive",
+  "Account Manager",
+  "Sales Manager",
+  "Sales Director",
+  "VP Sales",
+  "Customer Success Manager",
+];
+const MARKETING_ROLES = [
+  "Growth Marketer",
+  "Content Marketer",
+  "Product Marketer",
+  "SEO Specialist",
+  "Performance Marketer",
+  "Brand Marketer",
+  "Marketing Manager",
+  "Head of Marketing",
+];
+const CLEVEL_ROLES = [
+  "CEO",
+  "CTO",
+  "CPO",
+  "COO",
+  "CFO",
+  "CMO",
+  "CRO",
+  "VP Engineering",
+  "VP Product",
+  "VP Design",
+];
+
 export const SPOKEN_LANGUAGES = [
   "English","Spanish","Chinese","Tagalog","Vietnamese","Arabic","French","Korean","Portuguese",
   "Haitian Creole","Hindi","German","Dutch","Polish","Italian","Urdu","Persian","Japanese",
