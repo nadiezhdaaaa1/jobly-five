@@ -314,7 +314,7 @@ function QuizPage() {
                     title="Which tools do you use?"
                     description="Software and platforms you work with day to day."
                     label="Tools"
-                    hint="Optional"
+                    hint="At least one required"
                     searchPlaceholder="Search tools"
                     options={skillsPool.tools}
                     value={answers.tools ?? []}
@@ -322,6 +322,7 @@ function QuizPage() {
                     onContinue={() =>
                       advance("tools", { tools: answers.tools ?? [] })
                     }
+                    required
                   />
                 )}
                 {key === "soft" && (
@@ -329,7 +330,7 @@ function QuizPage() {
                     title="What are your soft skills?"
                     description="How you work with people and approach problems."
                     label="Soft skills"
-                    hint="Optional"
+                    hint="At least one required"
                     searchPlaceholder="Search soft skills"
                     options={skillsPool.soft}
                     value={answers.softSkills ?? []}
@@ -337,6 +338,7 @@ function QuizPage() {
                     onContinue={() =>
                       advance("soft", { softSkills: answers.softSkills ?? [] })
                     }
+                    required
                   />
                 )}
                 {key === "level" && (
