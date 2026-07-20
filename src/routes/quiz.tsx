@@ -103,8 +103,12 @@ function QuizPage() {
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
   const toolsInvalid =
     toolsSel.length > 0 && toolsSel.some((s) => !toolsPoolSet.has(s));
+  const toolsEmptied =
+    answers.tools !== undefined && answers.tools.length === 0;
   const softInvalid =
     softSel.length > 0 && softSel.some((s) => !softPoolSet.has(s));
+  const softEmptied =
+    answers.softSkills !== undefined && answers.softSkills.length === 0;
 
   // Role step shows collapsed-with-X when field change wiped the roles.
   const roleEmptied =
@@ -114,8 +118,8 @@ function QuizPage() {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
     hard: (answers.hardSkills?.length ?? 0) > 0 && !hardInvalid,
-    tools: answers.tools !== undefined && !toolsInvalid,
-    soft: answers.softSkills !== undefined && !softInvalid,
+    tools: (answers.tools?.length ?? 0) > 0 && !toolsInvalid,
+    soft: (answers.softSkills?.length ?? 0) > 0 && !softInvalid,
     level: !!answers.level,
     loc:
       !!answers.workMode &&
@@ -160,13 +164,13 @@ function QuizPage() {
         hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
       }));
     }
-    if (key === "tools" && toolsInvalid) {
+    if (key === "tools" && (toolsInvalid || toolsEmptied)) {
       setAnswers((a) => ({
         ...a,
         tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
       }));
     }
-    if (key === "soft" && softInvalid) {
+    if (key === "soft" && (softInvalid || softEmptied)) {
       setAnswers((a) => ({
         ...a,
         softSkills: (a.softSkills ?? []).filter((s) => softPoolSet.has(s)),
@@ -217,15 +221,15 @@ function QuizPage() {
               key === activeStep ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
-              (key === "tools" && toolsInvalid) ||
-              (key === "soft" && softInvalid);
+              (key === "tools" && (toolsInvalid || toolsEmptied)) ||
+              (key === "soft" && (softInvalid || softEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
-              (key === "tools" && toolsInvalid && !isExpanded) ||
-              (key === "soft" && softInvalid && !isExpanded);
+              (key === "tools" && (toolsInvalid || toolsEmptied) && !isExpanded) ||
+              (key === "soft" && (softInvalid || softEmptied) && !isExpanded);
             return (
               <StepShell
                 key={key}
@@ -310,7 +314,7 @@ function QuizPage() {
                     title="Which tools do you use?"
                     description="Software and platforms you work with day to day."
                     label="Tools"
-                    hint="Optional"
+                    hint="At least one required"
                     searchPlaceholder="Search tools"
                     options={skillsPool.tools}
                     value={answers.tools ?? []}
@@ -318,6 +322,7 @@ function QuizPage() {
                     onContinue={() =>
                       advance("tools", { tools: answers.tools ?? [] })
                     }
+                    required
                   />
                 )}
                 {key === "soft" && (
@@ -325,7 +330,7 @@ function QuizPage() {
                     title="What are your soft skills?"
                     description="How you work with people and approach problems."
                     label="Soft skills"
-                    hint="Optional"
+                    hint="At least one required"
                     searchPlaceholder="Search soft skills"
                     options={skillsPool.soft}
                     value={answers.softSkills ?? []}
@@ -333,6 +338,7 @@ function QuizPage() {
                     onContinue={() =>
                       advance("soft", { softSkills: answers.softSkills ?? [] })
                     }
+                    required
                   />
                 )}
                 {key === "level" && (
