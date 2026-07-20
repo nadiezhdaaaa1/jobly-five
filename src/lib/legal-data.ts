@@ -55,10 +55,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     { type: "h2", text: "17. Miscellaneous" },
     { type: "p", text: "These Terms, together with the incorporated policies, are the entire agreement between you and us regarding the Service. If any provision is held unenforceable, the remaining provisions remain in effect. Our failure to enforce a provision is not a waiver. You may not assign these Terms without our consent; we may assign them in connection with a merger, acquisition, or sale of assets." },
     { type: "h2", text: "18. Contact" },
-    { type: "p", text: "NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569. Questions: hello@jobly.careers." },
+    { type: "p", text: "NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569. Questions: hello@jobly.careers." },
     ],
   },
   privacy: {
@@ -110,10 +107,7 @@ Company No. 817569. Questions: hello@jobly.careers." },
     { type: "h2", text: "11. Changes to this Policy" },
     { type: "p", text: "We may update this Policy. We will post the new version with an updated date and, for material changes, provide additional notice. Continued use after the effective date constitutes acceptance." },
     { type: "h2", text: "12. Contact" },
-    { type: "p", text: "NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569. Privacy contact / DPO (if applicable): privacy@jobly.careers." },
+    { type: "p", text: "NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569. Privacy contact / DPO (if applicable): privacy@jobly.careers." },
     ],
   },
   billing: {
@@ -141,10 +135,7 @@ Company No. 817569. Privacy contact / DPO (if applicable): privacy@jobly.careers
     { type: "h2", text: "9. Refunds" },
     { type: "p", text: "Refunds are governed by our Refund & Cancellation Policy. In-app purchases are subject to the applicable app store's refund process." },
     { type: "h2", text: "10. Contact" },
-    { type: "p", text: "Billing questions: hello@jobly.careers. NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569." },
+    { type: "p", text: "Billing questions: hello@jobly.careers. NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569." },
     ],
   },
   refund: {
@@ -171,10 +162,7 @@ Company No. 817569." },
     { type: "h2", text: "8. How to request a refund" },
     { type: "p", text: "For web (Stripe) purchases, contact hello@jobly.careers with your account email and the charge details. For app-store purchases, use Apple's or Google's refund process." },
     { type: "h2", text: "9. Contact" },
-    { type: "p", text: "NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569. Billing: hello@jobly.careers." },
+    { type: "p", text: "NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569. Billing: hello@jobly.careers." },
     ],
   },
   cookies: {
@@ -207,10 +195,7 @@ Company No. 817569. Billing: hello@jobly.careers." },
     { type: "h2", text: "6. Changes" },
     { type: "p", text: "We may update this Policy to reflect changes in the tools we use or in the law. We will post the updated version with a new date." },
     { type: "h2", text: "7. Contact" },
-    { type: "p", text: "NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569. Questions: privacy@jobly.careers." },
+    { type: "p", text: "NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569. Questions: privacy@jobly.careers." },
     ],
   },
   email: {
@@ -236,10 +221,7 @@ Company No. 817569. Questions: privacy@jobly.careers." },
     { type: "h2", text: "7. Deliverability providers" },
     { type: "p", text: "Emails are sent through our email service provider ([ESP, e.g., Postmark]) acting as our processor, as described in the Privacy Policy. Digest and transactional email is sent from alerts@jobly.careers and no-reply@jobly.careers." },
     { type: "h2", text: "8. Contact" },
-    { type: "p", text: "Questions about communications: privacy@jobly.careers or hello@jobly.careers. Sender: NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569." },
+    { type: "p", text: "Questions about communications: privacy@jobly.careers or hello@jobly.careers. Sender: NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569." },
     ],
   },
   disclaimer: {
@@ -263,10 +245,7 @@ Company No. 817569." },
     { type: "h2", text: "7. Limitation of liability" },
     { type: "p", text: "To the maximum extent permitted by law, Jobly is not liable for any loss or damage arising from your reliance on any Output or listing, from fraudulent or inaccurate listings, or from any employer's conduct. This Disclaimer supplements, and is subject to, the limitation of liability in our Terms of Service." },
     { type: "h2", text: "8. Contact" },
-    { type: "p", text: "NORELIX LIMITED · trading as Jobly
-The Black Church, St Mary’s Place,
-Dublin 7, D07 P4AX, Ireland
-Company No. 817569. Questions: hello@jobly.careers." },
+    { type: "p", text: "NORELIX LIMITED · trading as Jobly\nThe Black Church, St Mary’s Place,\nDublin 7, D07 P4AX, Ireland\nCompany No. 817569. Questions: hello@jobly.careers." },
     ],
   },
 };
