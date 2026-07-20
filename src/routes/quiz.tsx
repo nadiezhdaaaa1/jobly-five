@@ -221,15 +221,15 @@ function QuizPage() {
               key === activeStep ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
-              (key === "tools" && toolsInvalid) ||
-              (key === "soft" && softInvalid);
+              (key === "tools" && (toolsInvalid || toolsEmptied)) ||
+              (key === "soft" && (softInvalid || softEmptied));
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
-              (key === "tools" && toolsInvalid && !isExpanded) ||
-              (key === "soft" && softInvalid && !isExpanded);
+              (key === "tools" && (toolsInvalid || toolsEmptied) && !isExpanded) ||
+              (key === "soft" && (softInvalid || softEmptied) && !isExpanded);
             return (
               <StepShell
                 key={key}
