@@ -19,8 +19,10 @@ import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRefundRouteImport } from './routes/legal.refund'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalEmailRouteImport } from './routes/legal.email'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
+import { Route as LegalBillingRouteImport } from './routes/legal.billing'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
 const QuizRoute = QuizRouteImport.update({
@@ -73,6 +75,11 @@ const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
   path: '/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalEmailRoute = LegalEmailRouteImport.update({
+  id: '/legal/email',
+  path: '/legal/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalDisclaimerRoute = LegalDisclaimerRouteImport.update({
   id: '/legal/disclaimer',
   path: '/legal/disclaimer',
@@ -81,6 +88,11 @@ const LegalDisclaimerRoute = LegalDisclaimerRouteImport.update({
 const LegalCookiesRoute = LegalCookiesRouteImport.update({
   id: '/legal/cookies',
   path: '/legal/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalBillingRoute = LegalBillingRouteImport.update({
+  id: '/legal/billing',
+  path: '/legal/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
@@ -97,8 +109,10 @@ export interface FileRoutesByFullPath {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -112,8 +126,10 @@ export interface FileRoutesByTo {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -128,8 +144,10 @@ export interface FileRoutesById {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
+  '/legal/email': typeof LegalEmailRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
@@ -145,8 +163,10 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -160,8 +180,10 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -175,8 +197,10 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
+    | '/legal/email'
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
@@ -191,8 +215,10 @@ export interface RootRouteChildren {
   MatchesRoute: typeof MatchesRoute
   QuizRoute: typeof QuizRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
+  LegalEmailRoute: typeof LegalEmailRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
@@ -271,6 +297,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/email': {
+      id: '/legal/email'
+      path: '/legal/email'
+      fullPath: '/legal/email'
+      preLoaderRoute: typeof LegalEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/disclaimer': {
       id: '/legal/disclaimer'
       path: '/legal/disclaimer'
@@ -283,6 +316,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/cookies'
       fullPath: '/legal/cookies'
       preLoaderRoute: typeof LegalCookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/billing': {
+      id: '/legal/billing'
+      path: '/legal/billing'
+      fullPath: '/legal/billing'
+      preLoaderRoute: typeof LegalBillingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
@@ -303,8 +343,10 @@ const rootRouteChildren: RootRouteChildren = {
   MatchesRoute: MatchesRoute,
   QuizRoute: QuizRoute,
   BlogSlugRoute: BlogSlugRoute,
+  LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
+  LegalEmailRoute: LegalEmailRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
@@ -313,13 +355,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
