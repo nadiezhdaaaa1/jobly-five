@@ -12,8 +12,6 @@ import {
   type AdditionalLanguage,
 } from "@/lib/quiz-store";
 import {
-  ROLE_GROUP_MAP,
-  STACK_TAGS,
   LEVELS,
   LEVEL_DEFAULT_YEARS,
   FIELDS,
