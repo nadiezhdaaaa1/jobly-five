@@ -21,6 +21,7 @@ import { Route as LegalRefundRouteImport } from './routes/legal.refund'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
+import { Route as LegalBillingRouteImport } from './routes/legal.billing'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
 const QuizRoute = QuizRouteImport.update({
@@ -83,6 +84,11 @@ const LegalCookiesRoute = LegalCookiesRouteImport.update({
   path: '/legal/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalBillingRoute = LegalBillingRouteImport.update({
+  id: '/legal/billing',
+  path: '/legal/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/privacy': typeof LegalPrivacyRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/privacy'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/privacy'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/matches'
     | '/quiz'
     | '/blog/$slug'
+    | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/privacy'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   MatchesRoute: typeof MatchesRoute
   QuizRoute: typeof QuizRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
   LegalPrivacyRoute: typeof LegalPrivacyRoute
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/billing': {
+      id: '/legal/billing'
+      path: '/legal/billing'
+      fullPath: '/legal/billing'
+      preLoaderRoute: typeof LegalBillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/blog/$slug'
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   MatchesRoute: MatchesRoute,
   QuizRoute: QuizRoute,
   BlogSlugRoute: BlogSlugRoute,
+  LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
   LegalPrivacyRoute: LegalPrivacyRoute,
