@@ -62,7 +62,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "privacy",
     title: "Privacy Policy",
     lastUpdated: "2026-07-20",
-    intro: "This Privacy Policy explains how Zentaro Systems Ltd, trading as \"Jobly\" (Company No. 17178666) (\"Jobly,\" \"we,\" \"us\"), collects, uses, shares, and protects personal information when you use the Jobly website, web application, and mobile apps (the \"Service\"). By using the Service you agree to this Policy.",
+    intro: "This Privacy Policy explains how NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569) (\"Jobly,\" \"we,\" \"us\"), collects, uses, shares, and protects personal information when you use the Jobly website, web application, and mobile apps (the \"Service\"). By using the Service you agree to this Policy.",
     body: [
     { type: "h2", text: "1. Information we collect" },
     { type: "p", text: "Account information: name, email, password (hashed)." },
@@ -114,7 +114,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "billing",
     title: "Subscription & Billing Terms",
     lastUpdated: "2026-07-20",
-    intro: "These Subscription & Billing Terms are part of the Jobly Terms of Service (offered by Zentaro Systems Ltd, trading as \"Jobly,\" Company No. 17178666) and describe our plans, trials, automatic renewal, pause, and cancellation.",
+    intro: "These Subscription & Billing Terms are part of the Jobly Terms of Service (offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)) and describe our plans, trials, automatic renewal, pause, and cancellation.",
     body: [
     { type: "h2", text: "1. Free tier and paid plans" },
     { type: "p", text: "Jobly offers a free tier (e.g., a weekly digest without match score and without the tracker) and a paid subscription (\"Pro\") with expanded features (e.g., daily digest, match score, application tracker, \"found a job\" pause). The features, prices, and billing periods of each plan are presented to you at the point of purchase and may change as described in Section 7." },
@@ -142,7 +142,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "refund",
     title: "Refund & Cancellation Policy",
     lastUpdated: "2026-07-20",
-    intro: "This Policy explains how cancellations and refunds work for Jobly subscriptions (offered by Zentaro Systems Ltd, trading as \"Jobly,\" Company No. 17178666). It is part of our Terms of Service and should be read with the Subscription & Billing Terms.",
+    intro: "This Policy explains how cancellations and refunds work for Jobly subscriptions (offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)). It is part of our Terms of Service and should be read with the Subscription & Billing Terms.",
     body: [
     { type: "h2", text: "1. Cancelling your subscription" },
     { type: "p", text: "You may cancel at any time. Cancelling stops future renewals; you keep Pro access until the end of your current paid period. See the Subscription & Billing Terms for step-by-step cancellation (web: Manage Subscription → Cancel; in-app: through the App Store or Google Play)." },
@@ -169,7 +169,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "cookies",
     title: "Cookie Policy",
     lastUpdated: "2026-07-20",
-    intro: "Cookies and similar technologies (e.g., local storage, SDKs, pixels) are small files or identifiers stored on your device that help a website or app function, remember preferences, and understand usage. This Policy explains how Jobly (Zentaro Systems Ltd, trading as \"Jobly,\" Company No. 17178666) uses them on our website and web application. It supplements our Privacy Policy.",
+    intro: "Cookies and similar technologies (e.g., local storage, SDKs, pixels) are small files or identifiers stored on your device that help a website or app function, remember preferences, and understand usage. This Policy explains how Jobly (NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)) uses them on our website and web application. It supplements our Privacy Policy.",
     body: [
     { type: "h2", text: "1. What are cookies" },
     { type: "h2", text: "2. Categories we use" },
@@ -228,7 +228,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
     slug: "disclaimer",
     title: "Service Disclaimer",
     lastUpdated: "2026-07-20",
-    intro: "This Disclaimer applies to the Jobly service offered by Zentaro Systems Ltd, trading as \"Jobly\" (Company No. 17178666).",
+    intro: "This Disclaimer applies to the Jobly service offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)."
     body: [
     { type: "h2", text: "1. Informational purposes only" },
     { type: "p", text: "Jobly surfaces job listings and generates match scores, rankings, filters (including ghost-job/scam filtering), and career-related suggestions (collectively, \"Outputs\"). All Outputs are for general informational purposes only and are automated estimates. They are not recommendations, guarantees, or professional, career, legal, or financial advice." },
