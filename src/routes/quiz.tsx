@@ -12,8 +12,6 @@ import {
   type AdditionalLanguage,
 } from "@/lib/quiz-store";
 import {
-  ROLE_GROUP_MAP,
-  STACK_TAGS,
   LEVELS,
   LEVEL_DEFAULT_YEARS,
   FIELDS,
@@ -590,12 +588,7 @@ function RoleStep({
                 >
                   {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                 </span>
-                <span className="inline-flex items-center gap-1">
-                  <span>{r}</span>
-                  {ROLE_GROUP_MAP[r] && (
-                    <span className="text-xs font-light text-[#67787C]">{ROLE_GROUP_MAP[r]}</span>
-                  )}
-                </span>
+                <span>{r}</span>
               </button>
             );
           })}
