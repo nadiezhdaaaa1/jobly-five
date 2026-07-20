@@ -625,7 +625,7 @@ function SkillsStep({
     <div>
       <StepHeading>What are your skills?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Pick the hard skills, soft skills, and tools you actually work with.
+        Pick the hard skills, tools, and soft skills you actually work with.
       </p>
 
       <SkillsGroup
@@ -637,20 +637,20 @@ function SkillsStep({
         searchPlaceholder="Search hard skills"
       />
       <SkillsGroup
-        label="Soft skills"
-        hint="Optional"
-        options={pool.soft}
-        value={soft}
-        onChange={(v) => onChange({ softSkills: v })}
-        searchPlaceholder="Search soft skills"
-      />
-      <SkillsGroup
         label="Tools"
         hint="Optional"
         options={pool.tools}
         value={tools}
         onChange={(v) => onChange({ tools: v })}
         searchPlaceholder="Search tools"
+      />
+      <SkillsGroup
+        label="Soft skills"
+        hint="Optional"
+        options={pool.soft}
+        value={soft}
+        onChange={(v) => onChange({ softSkills: v })}
+        searchPlaceholder="Search soft skills"
       />
 
       <ContinueRow disabled={!canContinue} onClick={onContinue} />
