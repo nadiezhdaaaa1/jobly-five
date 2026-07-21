@@ -896,6 +896,8 @@ function ExperienceStep({
   const years = answers.years ?? 0;
   const primary = answers.primaryLanguage ?? "English";
   const extras: AdditionalLanguage[] = answers.additionalLanguages ?? [];
+  const [pendingLang, setPendingLang] = useState<string>("");
+  const [pendingLevel, setPendingLevel] = useState<ProficiencyLevel>("B2");
 
   // Initialize primary language default on mount.
   useEffect(() => {
@@ -919,10 +921,18 @@ function ExperienceStep({
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 
-  const setExtraLevel = (lang: string, lvl: ProficiencyLevel) => {
+  const usedLangs = new Set([primary, ...extras.map((e) => e.lang)]);
+  const availableLangs = POPULAR_LANGUAGES.filter((l) => !usedLangs.has(l));
+  const addExtra = () => {
+    if (!pendingLang) return;
     onChange({
-      additionalLanguages: extras.map((e) => (e.lang === lang ? { ...e, level: lvl } : e)),
+      additionalLanguages: [...extras, { lang: pendingLang, level: pendingLevel }],
     });
+    setPendingLang("");
+    setPendingLevel("B2");
+  };
+  const removeExtra = (lang: string) => {
+    onChange({ additionalLanguages: extras.filter((e) => e.lang !== lang) });
   };
 
   return (
@@ -1032,40 +1042,55 @@ function ExperienceStep({
         </label>
         <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
           <select
-            value={extras[0]?.lang ?? ""}
-            onChange={(ev) => {
-              const lang = ev.target.value;
-              if (!lang) {
-                onChange({ additionalLanguages: [] });
-                return;
-              }
-              onChange({
-                additionalLanguages: [{ lang, level: "B2" as ProficiencyLevel }],
-              });
-            }}
-            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            value={pendingLang}
+            onChange={(ev) => setPendingLang(ev.target.value)}
+            className="select-native h-10 w-full flex-1 rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select an additional language"
           >
-            <option value="">Select a language</option>
-            {POPULAR_LANGUAGES.filter((l) => l !== primary).map((lang) => (
+            <option value="">Language</option>
+            {availableLangs.map((lang) => (
               <option key={lang} value={lang}>{lang}</option>
             ))}
           </select>
-          {extras[0] && (
-            <select
-              value={extras[0].level}
-              onChange={(ev) =>
-                setExtraLevel(extras[0].lang, ev.target.value as ProficiencyLevel)
-              }
-              className="select-native h-10 w-full sm:w-auto rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-              aria-label={`${extras[0].lang} proficiency`}
-            >
-              {PROFICIENCY_LEVELS.map((lvl) => (
-                <option key={lvl} value={lvl}>{lvl}</option>
-              ))}
-            </select>
-          )}
+          <select
+            value={pendingLevel}
+            onChange={(ev) => setPendingLevel(ev.target.value as ProficiencyLevel)}
+            className="select-native h-10 w-full sm:w-[140px] rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            aria-label="Proficiency level"
+          >
+            {PROFICIENCY_LEVELS.map((lvl) => (
+              <option key={lvl} value={lvl}>{lvl}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={addExtra}
+            disabled={!pendingLang}
+            className="h-10 rounded-[4px] bg-[#090B0C] px-4 text-sm font-light text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 sm:w-auto"
+          >
+            Add
+          </button>
         </div>
+        {extras.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {extras.map((e) => (
+              <span
+                key={e.lang}
+                className="inline-flex items-center gap-2 rounded-[4px] border border-[#E3E7E8] bg-white py-1.5 pl-3 pr-1.5 text-sm font-light text-[#090B0C]"
+              >
+                {e.lang} • {e.level}
+                <button
+                  type="button"
+                  onClick={() => removeExtra(e.lang)}
+                  aria-label={`Remove ${e.lang}`}
+                  className="grid h-6 w-6 place-items-center rounded-[4px] text-[#67787C] hover:bg-[#F9FBFB] hover:text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <style>{`
