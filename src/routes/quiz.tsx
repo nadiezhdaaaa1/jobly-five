@@ -34,7 +34,7 @@ export const Route = createFileRoute("/quiz")({
   component: QuizPage,
 });
 
-type StepKey =
+export type StepKey =
   | "field"
   | "role"
   | "hard"
@@ -43,7 +43,7 @@ type StepKey =
   | "level"
   | "loc"
   | "email";
-const STEP_ORDER: StepKey[] = [
+export const STEP_ORDER: StepKey[] = [
   "field",
   "role",
   "hard",
