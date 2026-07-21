@@ -47,7 +47,7 @@ function useTrackerVersion() {
 
 // ---------- UI atoms ----------
 
-function CompanySquare({ name, logo, size = 32 }: { name: string; logo?: string; size?: number }) {
+function CompanySquare({ name, logo, size = 40 }: { name: string; logo?: string; size?: number }) {
   if (logo) {
     return (
       <img
