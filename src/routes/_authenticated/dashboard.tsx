@@ -459,9 +459,18 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
               {applyOpen ? (
                 <div
                   role="menu"
-                  className="absolute right-0 top-[34px] z-30 min-w-[230px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                  className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
                   style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
                 >
+                  <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
+                    <span>Tailor your resume</span>
+                    <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
+                    <span>Generate a cover letter</span>
+                    <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
+                  </div>
+                  <div className="border-t" />
                   <button
                     type="button"
                     role="menuitem"
