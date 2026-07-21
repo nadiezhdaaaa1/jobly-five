@@ -114,6 +114,13 @@ function QuizPage() {
   const roleEmptied =
     answers.roles !== undefined && answers.roles.length === 0;
 
+  // Loc step shows collapsed-with-X when workMode was previously set but is now cleared.
+  const locEmptied =
+    answers.workMode === undefined
+      ? false
+      : !answers.workMode ||
+        (answers.workMode === "onsite" && (answers.locations?.length ?? 0) === 0);
+
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
@@ -123,9 +130,7 @@ function QuizPage() {
     level: !!answers.level,
     loc:
       !!answers.workMode &&
-      (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0) &&
-      answers.salaryMin != null &&
-      answers.salaryMax != null,
+      (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
   };
 
