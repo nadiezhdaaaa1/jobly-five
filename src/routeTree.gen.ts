@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
@@ -26,6 +28,16 @@ import { Route as LegalBillingRouteImport } from './routes/legal.billing'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuizRoute = QuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -112,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
@@ -129,6 +143,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
@@ -148,6 +164,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
@@ -167,6 +185,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/reset-password'
+    | '/signup'
     | '/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
@@ -184,6 +204,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/reset-password'
+    | '/signup'
     | '/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
@@ -202,6 +224,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/reset-password'
+    | '/signup'
     | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
@@ -221,6 +245,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
   QuizRoute: typeof QuizRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SignupRoute: typeof SignupRoute
   BlogSlugRoute: typeof BlogSlugRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
@@ -234,6 +260,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quiz': {
       id: '/quiz'
       path: '/quiz'
@@ -367,6 +407,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
   QuizRoute: QuizRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  SignupRoute: SignupRoute,
   BlogSlugRoute: BlogSlugRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,

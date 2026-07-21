@@ -1,6 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
+
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
@@ -28,6 +31,14 @@ const NAV: NavItem[] = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/", replace: true });
+  }
+
   return (
     <header className="sticky top-0 z-[1100] border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 md:px-8">
@@ -59,18 +70,38 @@ export function Header() {
           </nav>
         </div>
         <div className="hidden items-center gap-6 lg:flex">
-          <Link
-            to="/login"
-            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/quiz"
-            className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
-          >
-            Get started
-          </Link>
+          {loading ? null : user ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+              >
+                Dashboard
+              </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="inline-flex h-10 items-center gap-2 rounded-button border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+              >
+                <LogOut size={14} /> Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/quiz"
+                className="inline-flex h-10 items-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
+              >
+                Get started
+              </Link>
+            </>
+          )}
         </div>
         <button
           type="button"
@@ -105,16 +136,36 @@ export function Header() {
                 </a>
               )
             )}
-            <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
-              Log in
-            </Link>
-            <Link
-              to="/quiz"
-              onClick={() => setOpen(false)}
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
-            >
-              Get started
-            </Link>
+            {user ? (
+              <>
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    void handleSignOut();
+                  }}
+                  className="mt-2 inline-flex h-11 items-center justify-center rounded-button border border-[color:var(--color-border)] px-4 text-sm"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
+                  Log in
+                </Link>
+                <Link
+                  to="/quiz"
+                  onClick={() => setOpen(false)}
+                  className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
+                >
+                  Get started
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
