@@ -72,19 +72,19 @@ export function Header() {
         <div className="hidden items-center gap-6 lg:flex">
           {loading ? null : user ? (
             <>
-              <Link
-                to="/dashboard"
-                className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-              >
-                Dashboard
-              </Link>
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="inline-flex h-10 items-center gap-2 rounded-button border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                className="inline-flex items-center gap-2 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
               >
                 <LogOut size={14} /> Sign out
               </button>
+              <Link
+                to="/dashboard"
+                className="inline-flex h-10 items-center rounded-button border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+              >
+                Dashboard
+              </Link>
             </>
           ) : (
             <>
