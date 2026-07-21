@@ -1,10 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { IconBookmark as Bookmark, IconCheck as Check, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp, IconExternalLink as ExternalLink, IconFileText as FileText, IconFlag as Flag, IconPencil as Pencil, IconPencil as PencilIcon, IconThumbDown as ThumbsDown, IconBolt as Zap } from "@tabler/icons-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  IconBookmark as Bookmark,
+  IconCheck as Check,
+  IconChevronDown as ChevronDown,
+  IconExternalLink as ExternalLink,
+  IconFlag as Flag,
+  IconPencil as PencilIcon,
+  IconThumbDown as ThumbsDown,
+  IconX as X,
+  IconBolt as Zap,
+} from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
-import { TODAY_JOBS, YESTERDAY_JOBS, type CardState, type Job } from "@/lib/jobs-data";
+import { getDigestDays, type Job } from "@/lib/jobs-data";
 import { useResumeState } from "@/lib/resume-store";
+import { loadQuiz } from "@/lib/quiz-store";
+import {
+  setStatus,
+  useCounts,
+  useJobRecord,
+  type JobStatus,
+} from "@/lib/tracker-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -15,18 +32,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   }),
   component: DigestScreen,
 });
-
-// ---------- Grouping ----------
-
-type DigestGroup = { key: string; label: string; jobs: Job[] };
-
-const TODAY: Job[] = TODAY_JOBS;
-const YESTERDAY: Job[] = YESTERDAY_JOBS;
-
-const OLDER_DAYS: DigestGroup[] = [
-  { key: "d3", label: "Fri, Jul 17", jobs: YESTERDAY.slice(0, 5) },
-  { key: "d4", label: "Thu, Jul 16", jobs: YESTERDAY.slice(0, 5) },
-];
 
 // ---------- Utilities ----------
 
@@ -60,13 +65,30 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 
 // ---------- Profile card ----------
 
-function ProfileCard() {
+function ParametersCard() {
   const resume = useResumeState();
+  const quiz = useMemo(() => loadQuiz(), []);
+  const rolesLine = (quiz.roles && quiz.roles.length ? quiz.roles : quiz.role ? [quiz.role] : ["Frontend Engineer"]).join(", ");
+  const skills = [
+    ...(quiz.hardSkills ?? []),
+    ...(quiz.tools ?? []),
+  ];
+  const skillsLine = skills.length ? skills.slice(0, 6).join(", ") : "React, TypeScript, Vue";
+  const level = quiz.level ?? "Senior";
+  const years = typeof quiz.years === "number" ? `${quiz.years}y` : "13y";
+  const langs = [
+    quiz.primaryLanguage ?? "English",
+    ...(quiz.additionalLanguages ?? []).map((l) => l.lang),
+  ];
+  const experienceLine = `${level} · ${years} · ${langs.join(" · ")}`;
+  const locations = (quiz.locations && quiz.locations.length ? quiz.locations : ["New York City", "Baltimore", "Philadelphia"]).slice(0, 3).join(" · ");
+  const salary = quiz.salaryMin && quiz.salaryMax ? `$${Math.round(quiz.salaryMin / 1000)}k–$${Math.round(quiz.salaryMax / 1000)}k` : "$100k–$160k";
+  const locationLine = `${locations} · ${salary}`;
   const rows = [
-    { label: "Role", value: "Frontend Engineer" },
-    { label: "Stack", value: "React, Vue, TypeScript" },
-    { label: "Experience", value: "Senior · 13y · English · Spanish · Dutch" },
-    { label: "Location and salary", value: "New York City · Baltimore · Philadelphia · $100k–$160k" },
+    { label: "Role", value: rolesLine },
+    { label: "Stack", value: skillsLine },
+    { label: "Experience", value: experienceLine },
+    { label: "Location and salary", value: locationLine },
   ];
   return (
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
@@ -131,16 +153,18 @@ function ProfileCard() {
 // ---------- Right rail ----------
 
 function RightRail() {
+  const counts = useCounts();
+  const items = [
+    { n: counts.saved, l: "Saved" },
+    { n: counts.applied, l: "Applied" },
+    { n: counts.interview, l: "Interview" },
+  ];
   return (
     <aside className="flex flex-col gap-4">
       <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
         <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Tracker</h3>
         <div className="mt-3 grid grid-cols-3 gap-2">
-          {[
-            { n: 4, l: "Saved" },
-            { n: 6, l: "Applied" },
-            { n: 2, l: "Interview" },
-          ].map((s) => (
+          {items.map((s) => (
             <div key={s.l}>
               <div className="text-[24px] leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
                 {s.n}
@@ -149,9 +173,9 @@ function RightRail() {
             </div>
           ))}
         </div>
-        <button type="button" className="mt-3 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">
+        <Link to="/tracker" className="mt-3 inline-block text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">
           Open tracker
-        </button>
+        </Link>
       </div>
       <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
         <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">
@@ -190,34 +214,49 @@ function useOutsideClose(open: boolean, onClose: () => void) {
 
 // ---------- Job card ----------
 
-function JobCard({
-  job,
-  state,
-  setState,
-  onOpen,
-}: {
-  job: Job;
-  state: CardState;
-  setState: (s: CardState) => void;
-  onOpen: () => void;
-}) {
+function statusLabel(s: JobStatus) {
+  switch (s) {
+    case "applied": return "Applied";
+    case "interview": return "Interview";
+    case "offer": return "Offer";
+    case "rejection": return "Rejection";
+    default: return "Saved";
+  }
+}
+
+function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
+  const record = useJobRecord(job.id);
+  const state = record.status;
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
   const [toast, setToast] = useState(false);
 
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
+  const statusRef = useOutsideClose(statusOpen, () => setStatusOpen(false));
 
   const saved = state === "saved";
-  const applied = state === "applied";
   const dismissed = state === "dismissed";
   const reported = state === "reported";
+  const inTracker = state === "saved" || state === "applied" || state === "interview" || state === "offer" || state === "rejection";
 
+  // Regime C — dismissed / reported compact rows
   if (reported) {
     return (
       <div className="flex items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px] text-[color:var(--color-text-secondary)]">
         <span>Thanks — we'll check this posting.</span>
-        <button type="button" className="text-[color:var(--color-green)] font-semibold hover:underline" onClick={() => setState("default")}>
+        <button type="button" className="text-[color:var(--color-green)] font-semibold hover:underline" onClick={() => setStatus(job.id, "default")}>
+          Undo
+        </button>
+      </div>
+    );
+  }
+  if (dismissed) {
+    return (
+      <div className="flex items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px] text-[color:var(--color-text-muted)] opacity-70">
+        <span className="truncate">{job.title} — dismissed</span>
+        <button type="button" className="text-[color:var(--color-green)] font-semibold hover:underline" onClick={() => setStatus(job.id, "default")}>
           Undo
         </button>
       </div>
@@ -231,8 +270,7 @@ function JobCard({
       <button
         type="button"
         aria-label={`Open details for ${job.title}`}
-        onClick={dismissed ? undefined : onOpen}
-        disabled={dismissed}
+        onClick={onOpen}
         className="flex w-full items-start gap-3 text-left"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
@@ -267,17 +305,92 @@ function JobCard({
         </span>
 
         <div className="ml-auto flex items-center gap-2">
-          {/* Thumbs-down */}
+          {inTracker ? (
+            // ---------- Regime B ----------
+            <>
+              <div className="relative" ref={dislikeRef}>
+                <button
+                  type="button"
+                  aria-label="Remove from tracker or report"
+                  aria-haspopup="menu"
+                  aria-expanded={dislikeOpen}
+                  onClick={() => setDislikeOpen((v) => !v)}
+                  className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <X size={15} strokeWidth={1.6} />
+                </button>
+                {dislikeOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-[34px] z-30 min-w-[230px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                    style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+                  >
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                      onClick={() => { setStatus(job.id, "default"); setDislikeOpen(false); }}
+                    >
+                      <X size={15} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
+                      Remove from tracker
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+                      onClick={() => { setStatus(job.id, "reported"); setDislikeOpen(false); }}
+                    >
+                      <Flag size={15} strokeWidth={1.6} />
+                      Report — looks fake or ghost
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="relative" ref={statusRef}>
+                <button
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded={statusOpen}
+                  onClick={() => setStatusOpen((v) => !v)}
+                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-3 text-[13px] font-semibold text-[color:var(--color-green)]"
+                >
+                  <Check size={13} strokeWidth={2} />
+                  {statusLabel(state)}
+                  <ChevronDown size={13} strokeWidth={2} />
+                </button>
+                {statusOpen ? (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-[34px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                    style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+                  >
+                    {(["saved", "applied", "interview", "offer", "rejection"] as JobStatus[]).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => { setStatus(job.id, s); setStatusOpen(false); }}
+                        className={`flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)] ${state === s ? "font-semibold text-[color:var(--color-green)]" : ""}`}
+                      >
+                        {statusLabel(s)}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </>
+          ) : (
+            // ---------- Regime A ----------
+            <>
           <div className="relative" ref={dislikeRef}>
             <button
               type="button"
               aria-label="Dislike or report"
               aria-haspopup="menu"
               aria-expanded={dislikeOpen}
-              aria-pressed={dismissed}
               onClick={() => setDislikeOpen((v) => !v)}
-              className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${dismissed ? "border-[color:var(--color-danger)] bg-[color:var(--color-danger-subtle)] text-[color:var(--color-danger)]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
-              onDoubleClick={() => dismissed && setState("default")}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <ThumbsDown size={15} strokeWidth={1.6} />
             </button>
@@ -291,10 +404,7 @@ function JobCard({
                   type="button"
                   role="menuitem"
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                  onClick={() => {
-                    setState("dismissed");
-                    setDislikeOpen(false);
-                  }}
+                  onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
                 >
                   <ThumbsDown size={15} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
                   Dislike — not a good match
@@ -303,10 +413,7 @@ function JobCard({
                   type="button"
                   role="menuitem"
                   className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                  onClick={() => {
-                    setState("reported");
-                    setDislikeOpen(false);
-                  }}
+                  onClick={() => { setStatus(job.id, "reported"); setDislikeOpen(false); }}
                 >
                   <Flag size={15} strokeWidth={1.6} />
                   Report — looks fake or ghost
@@ -315,25 +422,17 @@ function JobCard({
             ) : null}
           </div>
 
-          {/* Bookmark */}
           <button
             type="button"
             aria-label="Save to tracker"
             aria-pressed={saved}
-            onClick={() => setState(saved ? "default" : "saved")}
+            onClick={() => setStatus(job.id, saved ? "default" : "saved")}
             className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${saved ? "border-[#0E735A] text-[#0E735A]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
           >
             <Bookmark size={15} strokeWidth={1.6} fill={saved ? "#D8FBEF" : "none"} />
           </button>
 
-          {/* Apply */}
-          {applied ? (
-            <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-3 py-1.5 text-[13px] font-semibold text-[color:var(--color-green)]">
-              <Check size={14} strokeWidth={2} />
-              Applied
-            </span>
-          ) : (
-            <div className="relative" ref={applyRef}>
+          <div className="relative" ref={applyRef}>
               <button
                 type="button"
                 aria-haspopup="menu"
@@ -350,26 +449,11 @@ function JobCard({
                   className="absolute right-0 top-[34px] z-30 min-w-[230px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
                   style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
                 >
-                  <div className="flex items-center justify-between gap-2 px-3 py-2 text-[13px] text-[color:var(--color-text-muted)]" aria-disabled>
-                    <span className="flex items-center gap-2">
-                      <Pencil size={14} strokeWidth={1.6} />
-                      Tailor your resume
-                    </span>
-                    <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px]">Coming soon</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 px-3 py-2 text-[13px] text-[color:var(--color-text-muted)]" aria-disabled>
-                    <span className="flex items-center gap-2">
-                      <FileText size={14} strokeWidth={1.6} />
-                      Generate a cover letter
-                    </span>
-                    <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px]">Coming soon</span>
-                  </div>
-                  <div className="border-t" />
                   <button
                     type="button"
                     role="menuitem"
                     onClick={() => {
-                      window.open("#", "_blank");
+                      window.open(job.postingUrl ?? "#", "_blank");
                       setApplyOpen(false);
                       setToast(true);
                     }}
@@ -381,6 +465,7 @@ function JobCard({
                 </div>
               ) : null}
             </div>
+            </>
           )}
         </div>
       </div>
@@ -395,10 +480,7 @@ function JobCard({
           <button
             type="button"
             className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            onClick={() => {
-              setState("applied");
-              setToast(false);
-            }}
+            onClick={() => { setStatus(job.id, "applied"); setToast(false); }}
           >
             Yes, mark as applied
           </button>
@@ -428,63 +510,26 @@ function DigestGroupHeader({ label, count }: { label: string; count: number }) {
   );
 }
 
-function OlderDayRow({
-  group,
-  getState,
-  setState,
-  onOpen,
-}: {
-  group: DigestGroup;
-  getState: (job: Job) => CardState;
-  setState: (id: string, s: CardState) => void;
-  onOpen: (job: Job) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] p-[14px] text-left hover:bg-[color:var(--color-surface-2)]"
-      >
-        <span className="text-[14px] text-[color:var(--color-text-secondary)]">
-          {group.label} · <span className="font-semibold text-[color:var(--color-foreground)]">{group.jobs.length} matches</span>
-        </span>
-        {open ? <ChevronUp size={16} strokeWidth={1.6} /> : <ChevronDown size={16} strokeWidth={1.6} />}
-      </button>
-      {open ? (
-        <div className="mt-3 flex flex-col gap-3">
-          {group.jobs.map((j) => (
-            <JobCard
-              key={`${group.key}-${j.id}`}
-              job={j}
-              state={getState(j)}
-              setState={(s) => setState(j.id, s)}
-              onOpen={() => onOpen(j)}
-            />
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
+function DigestWall({ onOpen }: { onOpen: (job: Job) => void }) {
+  const allDays = useMemo(() => getDigestDays(), []);
+  const [visibleCount, setVisibleCount] = useState(2);
+  const sentinel = useRef<HTMLDivElement | null>(null);
 
-function DigestWall({
-  getState,
-  setState,
-  onOpen,
-}: {
-  getState: (job: Job) => CardState;
-  setState: (id: string, s: CardState) => void;
-  onOpen: (job: Job) => void;
-}) {
-  const groups = useMemo(
-    () => [
-      { key: "today", label: "Today, Mon, Jul 20", jobs: TODAY },
-      { key: "yesterday", label: "Yesterday, Sun, Jul 19", jobs: YESTERDAY },
-    ],
-    [],
-  );
+  useEffect(() => {
+    if (visibleCount >= allDays.length) return;
+    const el = sentinel.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setVisibleCount((c) => Math.min(c + 1, allDays.length));
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [visibleCount, allDays.length]);
+
+  const days = allDays.slice(0, visibleCount);
 
   return (
     <section>
@@ -497,28 +542,26 @@ function DigestWall({
       </p>
 
       <div className="mt-6 flex flex-col gap-8">
-        {groups.map((g) => (
+        {days.map((g) => (
           <div key={g.key}>
             <DigestGroupHeader label={g.label} count={g.jobs.length} />
             <div className="flex flex-col gap-3">
               {g.jobs.map((j) => (
-                <JobCard
-                  key={j.id}
-                  job={j}
-                  state={getState(j)}
-                  setState={(s) => setState(j.id, s)}
-                  onOpen={() => onOpen(j)}
-                />
+                <JobCard key={j.id} job={j} onOpen={() => onOpen(j)} />
               ))}
             </div>
           </div>
         ))}
 
-        <div className="flex flex-col gap-3">
-          {OLDER_DAYS.map((g) => (
-            <OlderDayRow key={g.key} group={g} getState={getState} setState={setState} onOpen={onOpen} />
-          ))}
-        </div>
+        {visibleCount < allDays.length ? (
+          <div ref={sentinel} className="py-6 text-center text-[13px] text-[color:var(--color-text-muted)]">
+            Loading older digests…
+          </div>
+        ) : (
+          <div className="py-6 text-center text-[12px] text-[color:var(--color-text-muted)]">
+            You've reached the end of your digest history.
+          </div>
+        )}
       </div>
     </section>
   );
@@ -527,16 +570,7 @@ function DigestWall({
 // ---------- Screen ----------
 
 function DigestScreen() {
-  const [states, setStates] = useState<Record<string, CardState>>({});
   const [openJob, setOpenJob] = useState<Job | null>(null);
-
-  const getState = useCallback(
-    (job: Job): CardState => states[job.id] ?? job.initialState ?? "default",
-    [states],
-  );
-  const setState = useCallback((id: string, s: CardState) => {
-    setStates((prev) => ({ ...prev, [id]: s }));
-  }, []);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -544,10 +578,10 @@ function DigestScreen() {
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6 lg:pb-24">
         <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)_250px]">
           <div className="lg:sticky lg:top-20 lg:self-start">
-            <ProfileCard />
+            <ParametersCard />
           </div>
           <div className="min-w-0">
-            <DigestWall getState={getState} setState={setState} onOpen={setOpenJob} />
+            <DigestWall onOpen={setOpenJob} />
           </div>
           <div className="lg:sticky lg:top-20 lg:self-start">
             <RightRail />
@@ -556,12 +590,7 @@ function DigestScreen() {
       </main>
       <MobileTabBar active="digest" />
       {openJob ? (
-        <JobDrawer
-          job={openJob}
-          state={getState(openJob)}
-          setState={(s) => setState(openJob.id, s)}
-          onClose={() => setOpenJob(null)}
-        />
+        <JobDrawer job={openJob} onClose={() => setOpenJob(null)} />
       ) : null}
     </div>
   );
