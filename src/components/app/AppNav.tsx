@@ -6,7 +6,7 @@ export type AppTab = "digest" | "tracker" | "resume" | "profile";
 const TABS: Array<{ key: AppTab; label: string; icon: typeof Mail; to: string }> = [
   { key: "digest", label: "Digest", icon: Mail, to: "/dashboard" },
   { key: "tracker", label: "Tracker", icon: Kanban, to: "/tracker" },
-  { key: "resume", label: "Resume", icon: FileText, to: "/dashboard" },
+  { key: "resume", label: "Resume", icon: FileText, to: "/resume" },
   { key: "profile", label: "Profile", icon: UserIcon, to: "/dashboard" },
 ];
 
