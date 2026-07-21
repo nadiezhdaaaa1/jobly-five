@@ -543,14 +543,18 @@ function StepHeading({ children }: { children: React.ReactNode }) {
 
 // ---------- 0. Field ----------
 
-function FieldStep({
+export function FieldStep({
   value,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   value?: string;
   onChange: (f: string) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   return (
     <div>
@@ -596,23 +600,27 @@ function FieldStep({
           })}
         </div>
       </div>
-      <ContinueRow disabled={!value} onClick={onContinue} />
+      <ContinueRow disabled={!value} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
 
 // ---------- 1. Role ----------
 
-function RoleStep({
+export function RoleStep({
   field,
   value,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   field?: string;
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const roles = field ? FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [] : [];
@@ -718,14 +726,14 @@ function RoleStep({
         </div>
       </div>
 
-      <ContinueRow disabled={value.length === 0} onClick={onContinue} />
+      <ContinueRow disabled={value.length === 0} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
 
 // ---------- 2. Skills (split: hard / tools / soft) ----------
 
-function SingleSkillStep({
+export function SingleSkillStep({
   title,
   description,
   label,
@@ -736,6 +744,8 @@ function SingleSkillStep({
   onContinue,
   searchPlaceholder,
   required = false,
+  submitLabel,
+  onCancel,
 }: {
   title: string;
   description: string;
@@ -747,6 +757,8 @@ function SingleSkillStep({
   onContinue: () => void;
   searchPlaceholder: string;
   required?: boolean;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const canContinue = required ? value.length > 0 : true;
   return (
@@ -763,7 +775,7 @@ function SingleSkillStep({
         onChange={onChange}
         searchPlaceholder={searchPlaceholder}
       />
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
