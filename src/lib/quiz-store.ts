@@ -63,3 +63,61 @@ export function updateQuiz(patch: Partial<QuizAnswers>) {
   const next = { ...loadQuiz(), ...patch };
   saveQuiz(next);
 }
+
+// Shared summary derived strictly from the quiz answers.
+// Used by the Digest parameters card and the Profile match card so
+// both surfaces always show identical information.
+export type QuizSummary = {
+  roles: string;
+  stack: string;
+  stackList: string[];
+  experience: string;
+  locationAndSalary: string;
+  level: string;
+  years: string;
+  languages: string;
+  locations: string;
+  salary: string;
+};
+
+const DASH = "—";
+
+export function quizSummary(q: QuizAnswers = loadQuiz()): QuizSummary {
+  const rolesArr = q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  const roles = rolesArr.length ? rolesArr.join(", ") : DASH;
+
+  const stackList = [...(q.hardSkills ?? []), ...(q.tools ?? [])];
+  const stack = stackList.length ? stackList.join(", ") : DASH;
+
+  const level = q.level ?? "";
+  const years = typeof q.years === "number" ? `${q.years}y` : "";
+  const langsArr = [
+    q.primaryLanguage,
+    ...((q.additionalLanguages ?? []).map((l) => l.lang)),
+  ].filter(Boolean) as string[];
+  const languages = langsArr.length ? langsArr.join(" · ") : "";
+  const expParts = [level, years, languages].filter(Boolean);
+  const experience = expParts.length ? expParts.join(" · ") : DASH;
+
+  const locs = q.locations?.length ? q.locations : [];
+  const locations = locs.length ? locs.join(" · ") : "";
+  const salary =
+    typeof q.salaryMin === "number" && typeof q.salaryMax === "number"
+      ? `$${Math.round((q.salaryMin >= 1000 ? q.salaryMin / 1000 : q.salaryMin))}k–$${Math.round((q.salaryMax >= 1000 ? q.salaryMax / 1000 : q.salaryMax))}k`
+      : "";
+  const locSalParts = [locations, salary].filter(Boolean);
+  const locationAndSalary = locSalParts.length ? locSalParts.join(" · ") : DASH;
+
+  return {
+    roles,
+    stack,
+    stackList,
+    experience,
+    locationAndSalary,
+    level: level || DASH,
+    years: years || DASH,
+    languages: languages || DASH,
+    locations: locations || DASH,
+    salary: salary || DASH,
+  };
+}

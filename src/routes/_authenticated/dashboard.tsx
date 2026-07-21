@@ -15,7 +15,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { getDigestDays, type Job } from "@/lib/jobs-data";
 import { useResumeState } from "@/lib/resume-store";
-import { loadQuiz } from "@/lib/quiz-store";
+import { quizSummary } from "@/lib/quiz-store";
 import {
   setStatus,
   useCounts,
@@ -67,28 +67,12 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 
 function ParametersCard() {
   const resume = useResumeState();
-  const quiz = useMemo(() => loadQuiz(), []);
-  const rolesLine = (quiz.roles && quiz.roles.length ? quiz.roles : quiz.role ? [quiz.role] : ["Frontend Engineer"]).join(", ");
-  const skills = [
-    ...(quiz.hardSkills ?? []),
-    ...(quiz.tools ?? []),
-  ];
-  const skillsLine = skills.length ? skills.slice(0, 6).join(", ") : "React, TypeScript, Vue";
-  const level = quiz.level ?? "Senior";
-  const years = typeof quiz.years === "number" ? `${quiz.years}y` : "13y";
-  const langs = [
-    quiz.primaryLanguage ?? "English",
-    ...(quiz.additionalLanguages ?? []).map((l) => l.lang),
-  ];
-  const experienceLine = `${level} · ${years} · ${langs.join(" · ")}`;
-  const locations = (quiz.locations && quiz.locations.length ? quiz.locations : ["New York City", "Baltimore", "Philadelphia"]).slice(0, 3).join(" · ");
-  const salary = quiz.salaryMin && quiz.salaryMax ? `$${Math.round(quiz.salaryMin / 1000)}k–$${Math.round(quiz.salaryMax / 1000)}k` : "$100k–$160k";
-  const locationLine = `${locations} · ${salary}`;
+  const summary = useMemo(() => quizSummary(), []);
   const rows = [
-    { label: "Role", value: rolesLine },
-    { label: "Stack", value: skillsLine },
-    { label: "Experience", value: experienceLine },
-    { label: "Location and salary", value: locationLine },
+    { label: "Role", value: summary.roles },
+    { label: "Stack", value: summary.stack },
+    { label: "Experience", value: summary.experience },
+    { label: "Location and salary", value: summary.locationAndSalary },
   ];
   return (
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
