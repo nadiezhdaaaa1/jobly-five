@@ -127,10 +127,14 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               <img
                 src={job.logo}
                 alt={`${job.company} logo`}
-                className="h-12 w-12 shrink-0 rounded-[4px] object-cover"
+                className="shrink-0 rounded-[4px] object-cover"
+                style={{ width: 64, height: 64 }}
               />
             ) : (
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+              <div
+                className="flex shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[18px] font-semibold text-white"
+                style={{ width: 64, height: 64 }}
+              >
                 {job.company.charAt(0)}
               </div>
             )}
