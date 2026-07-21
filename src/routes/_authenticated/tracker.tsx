@@ -431,8 +431,8 @@ function KanbanColumn({
   status,
   jobs,
   isDropTarget,
+  placeholderHeight,
   onDragOver,
-  onDragLeave,
   onDrop,
   onOpen,
   onDragStartJob,
@@ -444,11 +444,11 @@ function KanbanColumn({
   status: JobStatus;
   jobs: Job[];
   isDropTarget: boolean;
+  placeholderHeight: number;
   onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: () => void;
   onDrop: () => void;
   onOpen: (j: Job) => void;
-  onDragStartJob: (jobId: string) => void;
+  onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
   onRequestInterviewReminder: (jobId: string) => void;
   onRequestApplyToast: (jobId: string) => void;
@@ -457,8 +457,11 @@ function KanbanColumn({
   return (
     <div
       className="flex min-w-0 flex-col"
-      onDragOver={(e) => { e.preventDefault(); onDragOver(e); }}
-      onDragLeave={onDragLeave}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        onDragOver(e);
+      }}
       onDrop={(e) => { e.preventDefault(); onDrop(); }}
     >
       <div className="mb-3 flex items-center gap-2 px-1">
@@ -467,7 +470,10 @@ function KanbanColumn({
       </div>
       <div className="flex flex-col gap-3">
         {isDropTarget ? (
-          <div className="h-[72px] rounded-[6px] border-2 border-dashed" style={{ borderColor: "var(--color-border-strong)" }} />
+          <div
+            className="rounded-[6px] border-2 border-dashed"
+            style={{ borderColor: "var(--color-border-strong)", height: placeholderHeight || 96 }}
+          />
         ) : null}
         {jobs.length === 0 && !isDropTarget ? (
           <div className="rounded-[6px] border border-dashed p-6 text-center text-[13px] text-[color:var(--color-text-muted)]" style={{ borderColor: "var(--color-border-strong)" }}>
@@ -483,7 +489,8 @@ function KanbanColumn({
             onDragStart={(e) => {
               e.dataTransfer.setData("text/plain", j.id);
               e.dataTransfer.effectAllowed = "move";
-              onDragStartJob(j.id);
+              const h = (e.currentTarget as HTMLElement).getBoundingClientRect().height;
+              onDragStartJob(j.id, h);
             }}
             onDragEnd={onDragEnd}
             onRequestInterviewReminder={() => onRequestInterviewReminder(j.id)}
