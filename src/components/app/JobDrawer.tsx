@@ -378,7 +378,7 @@ function PipelinePanel({
 function OfferPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative overflow-hidden rounded-[8px] bg-[color:var(--color-mint)] p-4">
+      <div className="relative overflow-hidden rounded-[8px] border border-[color:var(--color-accent)] bg-[color:var(--color-mint)] p-4">
         <div
           className="relative z-10 text-[color:var(--color-foreground)]"
           style={{ fontSize: 13, fontWeight: 300 }}
