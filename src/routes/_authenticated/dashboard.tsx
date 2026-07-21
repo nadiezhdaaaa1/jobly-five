@@ -273,9 +273,17 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
         onClick={onOpen}
         className="flex w-full items-start gap-3 text-left"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
-          {job.company.charAt(0)}
-        </div>
+        {job.logo ? (
+          <img
+            src={job.logo}
+            alt={`${job.company} logo`}
+            className="h-10 w-10 shrink-0 rounded-[4px] object-cover"
+          />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
+            {job.company.charAt(0)}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">
             {job.title}
