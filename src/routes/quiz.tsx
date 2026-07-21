@@ -1167,7 +1167,10 @@ function LocationStep({
     if (!stateCode || !city) return;
     const label = `${city}, ${stateCode}`;
     if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) return;
-    onChange({ locations: [...locations, label] });
+    const patch: Partial<QuizAnswers> = { locations: [...locations, label] };
+    if (answers.salaryMin == null) patch.salaryMin = 100_000;
+    if (answers.salaryMax == null) patch.salaryMax = 160_000;
+    onChange(patch);
     setCity("");
   };
 
