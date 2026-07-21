@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -24,6 +23,7 @@ import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
 const QuizRoute = QuizRouteImport.update({
   id: '/quiz',
@@ -38,11 +38,6 @@ const MatchesRoute = MatchesRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -100,14 +95,19 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/_authenticated/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -121,10 +121,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -139,10 +139,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/quiz': typeof QuizRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -158,10 +158,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/contact'
-    | '/dashboard'
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
     | '/legal/cookies'
@@ -175,10 +175,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/contact'
-    | '/dashboard'
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
     | '/legal/cookies'
@@ -192,10 +192,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/contact'
-    | '/dashboard'
     | '/login'
     | '/matches'
     | '/quiz'
+    | '/_authenticated/dashboard'
     | '/blog/$slug'
     | '/legal/billing'
     | '/legal/cookies'
@@ -210,10 +210,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
-  DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
   QuizRoute: typeof QuizRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   BlogSlugRoute: typeof BlogSlugRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
@@ -246,13 +246,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -332,16 +325,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
-  DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
   QuizRoute: QuizRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   BlogSlugRoute: BlogSlugRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
