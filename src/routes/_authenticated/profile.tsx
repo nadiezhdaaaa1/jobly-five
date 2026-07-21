@@ -17,8 +17,18 @@ import {
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
-import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers, type WorkMode } from "@/lib/quiz-store";
-import { ROLES, USA_LOCATIONS } from "@/lib/quiz-data";
+import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { FIELD_ROLES, skillsForRoles } from "@/lib/quiz-data";
+import {
+  FieldStep,
+  RoleStep,
+  SingleSkillStep,
+  ExperienceStep,
+  LocationStep,
+  StepShell,
+  STEP_ORDER,
+  type StepKey,
+} from "@/routes/quiz";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -287,18 +297,7 @@ function ProfileScreen() {
           {/* Main column */}
           <div className="flex flex-col gap-4">
             {/* Card 1: Match preferences */}
-            <MatchCard
-              quiz={quiz}
-              editing={editing === "match"}
-              onEdit={() => setEditing("match")}
-              onCancel={() => {
-                setEditing(null);
-                window.setTimeout(() => matchPencilRef.current?.focus(), 0);
-              }}
-              onSave={saveMatch}
-              flash={flash === "match"}
-              pencilRef={matchPencilRef}
-            />
+            <MatchCard onSaved={saveMatch} flash={flash === "match"} />
 
             {/* Card 2: Previous jobs */}
             <JobsCard
