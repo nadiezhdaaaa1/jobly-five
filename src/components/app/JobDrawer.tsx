@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Bookmark,
-  Check,
-  ExternalLink,
-  FileText,
-  Flag,
-  Pencil,
-  ThumbsDown,
-  X,
-  Zap,
-} from "lucide-react";
+import { IconBookmark as Bookmark, IconCheck as Check, IconExternalLink as ExternalLink, IconFileText as FileText, IconFlag as Flag, IconPencil as Pencil, IconThumbDown as ThumbsDown, IconX as X, IconBolt as Zap } from "@tabler/icons-react";
 import type { CardState, Job } from "@/lib/jobs-data";
 
 function ago(days: number) {

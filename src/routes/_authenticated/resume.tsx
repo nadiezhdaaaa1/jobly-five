@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  ArrowLeft,
-  Briefcase,
-  FileText,
-  Pencil,
-  UploadCloud,
-  X,
-} from "lucide-react";
+import { IconArrowLeft as ArrowLeft, IconBriefcase as Briefcase, IconFileText as FileText, IconPencil as Pencil, IconCloudUpload as UploadCloud, IconX as X } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import {
   clearResume,
