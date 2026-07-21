@@ -161,6 +161,9 @@ export function InterviewReminderDialog({
                   onSelect={(d) => { if (d) setDate(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`); }}
                   initialFocus
                   className="pointer-events-auto p-3"
+                  classNames={{
+                    today: "rounded-md [&_button]:!bg-[color:var(--color-green,#0E735A)] [&_button]:!text-white",
+                  }}
                 />
               </PopoverContent>
             </Popover>
