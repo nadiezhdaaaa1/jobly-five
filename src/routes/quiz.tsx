@@ -1156,14 +1156,18 @@ const SAL_MIN = 60_000;
 const SAL_MAX = 220_000;
 const SAL_STEP = 5_000;
 
-function LocationStep({
+export function LocationStep({
   answers,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   answers: QuizAnswers;
   onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const workMode = answers.workMode;
   const locations = answers.locations ?? [];
