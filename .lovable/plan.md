@@ -1,37 +1,35 @@
-# Job Detail Drawer — Digest screen
+## Resume tab — plan
 
-Add a right-side drawer that opens when a user clicks a job card's body on the Digest screen. Replace the previous "title links to posting" behavior — the posting link now lives inside the drawer and Apply menu only.
+Build the Resume screen at `/resume` behind the `_authenticated` layout, matching the spec. Keep it purely frontend/mock — no backend, resume state stored in a shared client store so the Digest profile card can react.
 
-## Scope
-All work happens in `src/routes/_authenticated/dashboard.tsx` plus one new component file. No route changes, no data-model changes beyond enriching seed jobs.
+### Files
 
-## Changes
+**New** `src/routes/_authenticated/resume.tsx`
+- Route with `AppHeader active="resume"` + `MobileTabBar`.
+- Layout: max-w-1200 / 24px gutters. ≥1024px: main column + 280px sticky right rail; below: single column with rail after main.
+- H1 "Resume" (Stack Sans 400, 24px). Muted 13px "Used to score your matches since Jul 20" only when a resume exists.
+- Two states driven by shared store (`hasResume`):
+  - **Empty**: intro line + two entry cards (Upload / LinkedIn import), 6px radius, 20px padding, hover border→`--border-strong`, 34px mint square icon (4px).
+    - Card 1 click → inline dropzone panel replacing cards (dashed 1px `--border-strong`, 8px radius, 160px, "Drop your resume here or **browse**", subtext), required consent checkbox gating browse/drop, Back link.
+    - Card 2 click → instruction panel: heading, 4 numbered ordered-list steps (22px `--surface-2` circles + 14px text, 1px separators), secondary "Open my profile" button (new tab), same dropzone + consent + muted "We read the file you give us…" note.
+  - **Upload → parse states**: uploading (thin 4px `--accent` progress on `--surface-2`), parsing (editor skeleton + "Reading your resume…"), success (transition to editor with dismissible mint banner), error (`--danger-subtle` hint + "Try again"). Simulated with timeouts.
+  - **Editor**: stacked section cards (8px radius, 20px padding, 16px gaps). Section heading 15px/600 + pencil top-right, one-at-a-time edit (aria-expanded, focus mgmt). Per-section Save (primary) + Cancel (text), subtle "Saved" flash. Sections: Contact, Summary, Experience (entries with separators + Add/Remove), Education, Skills (rectangular 4px gray tags; skills matching quiz stack render mint + tiny caption), Languages.
+- Right rail (both states):
+  1. Tailoring teaser card at 55% opacity, non-interactive: gray `Coming soon` tag, "Tailor to a job" heading + body copy from spec.
+  2. File card (has-resume only): document icon, filename `resume_serhii.pdf`, added date, `Replace` (re-open upload) and `Delete` text links. Delete → focus-trapped confirm dialog ("Delete your resume?… / Delete danger / Keep it").
 
-### 1. `src/routes/_authenticated/dashboard.tsx` — JobCard
-- Make the card body (logo, title, meta, why-line, ring area) a clickable region that opens the drawer with this job. Footer controls (dislike, bookmark, Apply, and their menus) stop propagation and continue to work as today.
-- Remove any `<a href>` on the title; render it as text. Add hover state: border shifts to `--border-strong` and title underlines.
-- Lift `saved` / `applied` / `dismissed` state to the parent feed so the drawer and card share it (a `Map<jobId, JobState>` in the dashboard component). JobCard reads/writes via props.
-- Dismissed (thank-you row) cards do not open the drawer.
+**New** `src/lib/resume-store.ts`
+- Minimal module-level singleton + `useSyncExternalStore` hook: `useResumeState()` returning `{ hasResume, filename, addedDate, data }` and setters. Persists to `sessionStorage` (matches quiz store pattern).
+- Mock parsed content per spec (Serhii, Frontend Engineer Senior, 13y, React/Vue/TypeScript, NYC/Baltimore/Philadelphia, $100–160k; 3 experience entries, 1 education, ~11 skills, 3 languages).
 
-### 2. New `src/components/app/JobDrawer.tsx`
-Right-side floating panel, `role="dialog"`, `aria-modal="true"`, labelled by job title.
+**Edit** `src/components/app/AppNav.tsx`
+- Change resume tab `to: "/resume"`.
 
-- Container: 480px wide, full-height, white, 1px left `--border`, shadow `0 8px 24px rgba(0,0,0,.12)`, 8px radius on the left edge only (or square — flat). Slide-in 160ms ease-out; respects `prefers-reduced-motion`. Scrim `rgba(9,11,12,.32)`. Body scroll lock. Escape / scrim / X close. Focus trap; focus returns to originating card.
-- Mobile <768px: full-screen bottom sheet, sticky close.
-- Sticky header: 48px dark company square (4px radius, initial), title (18px/600, wraps), X icon-button. Meta line 13px `--text-secondary`: "Company · Location · Salary · Employment". Tag row: source tag (`Direct employer` mint / `Aggregated` gray) + `Posted N days ago` gray.
-- Sticky action row (1px bottom border): reuse the same dislike icon-button + menu, bookmark icon-button, and primary Apply split-button with menu (`Tailor your resume` — Coming soon, `Generate a cover letter` — Coming soon, separator, `Open posting to apply`). Bidirectional state sync with card. When applied: Apply replaced by mint `✓ Applied` chip. When saved: bookmark shows saved state.
-- Match section (first in scroll body): `--surface-2` fill, 8px radius, 16px padding. Left: 64px match ring (same spec as card ring). Right: "Why this matches you" (15px/600) + 3–5 criteria rows (13px), each with green ✓ (full match) or muted ~ (partial). Criteria derived from job data.
-- Job description: 14px body / 1.6 line-height on white. Subheadings 13px/600 `--text-secondary`: About the role / What you'll do / Requirements / Benefits. Bulleted lists allowed. No summarizing.
-- Details block: two-column definition rows with 1px separators — Employment type, Experience level, Workplace, Posted date, Job ID.
-- Sources block: small card (6px radius). "Sources" heading, primary source row with dot + name + external-link icon (e.g. "Greenhouse — company careers page"); if merged, secondary "Also found on: Adzuna, Jooble".
-- Footer: 12px `--text-muted` disclaimer + danger red 13px text button "Report — looks fake or ghost" (same flow as menu: card collapses to thank-you row with Undo, drawer closes).
-- Missing data: "Salary not listed" muted; if no description sections show "The employer provided a short listing." Never invent.
+**Edit** `src/routes/_authenticated/dashboard.tsx`
+- `ProfileCard` reads `useResumeState()`. When `hasResume`: replace the "Add your resume" block with filename row + mint `Added` tag + "Manage" link → `/resume`. When empty: existing CTA, `Add resume` button links to `/resume`.
 
-### 3. Seed data enrichment
-Extend the existing 10 seed jobs (in `dashboard.tsx`) with drawer fields: `description` (sections), `details`, `sources[]`, `criteria[]` (with `full | partial` status). Full plausible content for Nimbus Corp (95%), Orion Tech (86%), Vertex Solutions (74%) — 2–3 description sections, 4–5 criteria echoing the profile (Frontend Engineer · React/Vue/TS · Senior · NYC/Baltimore/Philadelphia or remote · $100–160k). Nimbus via Greenhouse + Adzuna duplicate; Vertex via Adzuna only (Aggregated). Remaining 7 use a shorter shared template.
+### Accessibility
+Dropzone as `<button>` (browse) + drag handlers, `role="status"` for upload/parse/success/error, real `<input type="checkbox">` with label, ordered list for steps, section pencils with `aria-expanded`, focus moves to first field on open and back to pencil on save/cancel, delete dialog is focus-trapped.
 
-## Do NOT
-No tabs, no similar-jobs, no comments/reviews, no AI-rewritten copy, no extra shadows beyond drawer + its nested menus, no route change for the drawer.
-
-## Accessibility
-`role="dialog"`, `aria-modal="true"`, `aria-labelledby` on the title. Focus trap while open; Escape closes; focus returns to card. Ring accessible name "N percent match". Criteria icons `aria-hidden`. Action row buttons keep their existing aria-labels.
+### Do NOT
+No builder, template gallery, photo upload, AI rewriting, export/download, LinkedIn URL input, or new shadows/colors. No backend persistence.
