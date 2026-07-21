@@ -183,9 +183,9 @@ function ProfileScreen() {
   }, [quiz.roles, resume]);
 
   return (
-    <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-8">
+    <div className="min-h-screen overflow-x-hidden bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="profile" />
-      <main className="mx-auto max-w-[1200px] px-6 py-8">
+      <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         {banner ? (
           <div className="mb-6 flex items-start justify-between gap-4 rounded-[6px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
             <span>Updated — your next digest will use these preferences.</span>
