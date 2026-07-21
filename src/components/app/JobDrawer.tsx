@@ -123,9 +123,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         <div className="px-5 pb-8 pt-5">
           {/* Identity block */}
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
-              {job.company.charAt(0)}
-            </div>
+            {job.logo ? (
+              <img
+                src={job.logo}
+                alt={`${job.company} logo`}
+                className="h-12 w-12 shrink-0 rounded-[4px] object-cover"
+              />
+            ) : (
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+                {job.company.charAt(0)}
+              </div>
+            )}
             <BigRing score={job.score} />
           </div>
           <h2 id={titleId} className="mt-4 text-[20px] font-semibold leading-snug text-[color:var(--color-foreground)]">

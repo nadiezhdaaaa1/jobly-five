@@ -47,7 +47,17 @@ function useTrackerVersion() {
 
 // ---------- UI atoms ----------
 
-function CompanySquare({ name, size = 32 }: { name: string; size?: number }) {
+function CompanySquare({ name, logo, size = 32 }: { name: string; logo?: string; size?: number }) {
+  if (logo) {
+    return (
+      <img
+        src={logo}
+        alt={`${name} logo`}
+        className="shrink-0 rounded-[4px] object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <div
       className="flex shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] font-semibold text-white"
@@ -194,7 +204,7 @@ function JobCard({
         aria-label={`Open details for ${job.title}`}
         className={`flex w-full items-start gap-3 text-left ${dim ? "opacity-70" : ""}`}
       >
-        <CompanySquare name={job.company} />
+        <CompanySquare name={job.company} logo={job.logo} />
         <div className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold leading-snug text-[color:var(--color-foreground)] group-hover:underline">
             {job.title}
