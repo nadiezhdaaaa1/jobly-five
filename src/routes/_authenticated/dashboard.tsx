@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
@@ -16,6 +16,7 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { TODAY_JOBS, YESTERDAY_JOBS, type CardState, type Job } from "@/lib/jobs-data";
+import { useResumeState } from "@/lib/resume-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -72,6 +73,7 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 // ---------- Profile card ----------
 
 function ProfileCard() {
+  const resume = useResumeState();
   const rows = [
     { label: "Field", value: "Program, Project & Technical-Adjacent" },
     { label: "Role", value: "Backend Engineer" },
@@ -102,16 +104,38 @@ function ProfileCard() {
           </div>
         ))}
         <div className="pt-4">
-          <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Add your resume</div>
-          <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Sharpen your matches — upload a file or build one in minutes. Your quiz answers are already in.
-          </p>
-          <button
-            type="button"
-            className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-          >
-            Add resume
-          </button>
+          {resume.hasResume ? (
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Resume</span>
+                <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+                  Added
+                </span>
+              </div>
+              <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                Powering your matches since {resume.addedDate}.
+              </p>
+              <Link
+                to="/resume"
+                className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-[4px] border px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:border-[color:var(--color-border-strong)]"
+              >
+                Manage resume
+              </Link>
+            </div>
+          ) : (
+            <div>
+              <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Add your resume</div>
+              <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                Sharpen your matches — upload a file or build one in minutes. Your quiz answers are already in.
+              </p>
+              <Link
+                to="/resume"
+                className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              >
+                Add resume
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </aside>
