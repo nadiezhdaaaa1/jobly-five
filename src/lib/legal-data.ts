@@ -6,7 +6,7 @@ export type LegalBlock =
   | { type: "table"; headers: string[]; rows: string[][] };
 
 export type LegalDoc = {
-  slug: "terms" | "privacy" | "billing" | "refund" | "cookies" | "email" | "disclaimer";
+  slug: "terms" | "privacy" | "billing" | "refund" | "cookies" | "email" | "disclaimer" | "dmca";
   title: string;
   lastUpdated: string;
   intro: string;
