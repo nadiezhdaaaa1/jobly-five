@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
   Check,
@@ -14,6 +14,8 @@ import {
   Zap,
 } from "lucide-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { JobDrawer } from "@/components/app/JobDrawer";
+import { TODAY_JOBS, YESTERDAY_JOBS, type CardState, type Job } from "@/lib/jobs-data";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -25,41 +27,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DigestScreen,
 });
 
-// ---------- Types & mock data ----------
-
-type Source = "direct" | "aggregated";
-type CardState = "default" | "saved" | "applied" | "dismissed" | "reported";
-
-type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  score: number;
-  why: string;
-  source: Source;
-  postedDays: number;
-  initialState?: CardState;
-};
+// ---------- Grouping ----------
 
 type DigestGroup = { key: string; label: string; jobs: Job[] };
 
-const TODAY: Job[] = [
-  { id: "t1", title: "Lead UI Developer", company: "Nimbus Corp", location: "Remote (US)", salary: "$160–200K", score: 95, why: "Expert in Vue.js + JavaScript, leadership role, competitive salary", source: "direct", postedDays: 3, initialState: "saved" },
-  { id: "t2", title: "Principal Frontend Developer", company: "Orion Tech", location: "Hybrid, Los Angeles", salary: "$150–190K", score: 86, why: "Proficient in Angular + TypeScript, senior position, salary fits your expectations", source: "aggregated", postedDays: 1 },
-  { id: "t3", title: "Senior React Engineer", company: "Vertex Solutions", location: "Remote (US)", salary: "$165–205K", score: 74, why: "Strong React + Redux skills, senior level, salary aligned with your range", source: "aggregated", postedDays: 4 },
-  { id: "t4", title: "Frontend Architect", company: "Helix Innovations", location: "Remote (US)", salary: "$180–220K", score: 71, why: "Expertise in Svelte + TypeScript, senior role, salary within your range", source: "direct", postedDays: 6, initialState: "applied" },
-  { id: "t5", title: "UI Engineer Lead", company: "Quantum Leap", location: "Remote (US)", salary: "$175–215K", score: 70, why: "Strong React + GraphQL experience, senior level, salary matches your expectations", source: "direct", postedDays: 8, initialState: "dismissed" },
-];
-
-const YESTERDAY: Job[] = [
-  { id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "Next.js + React expert, staff-level scope, salary above your target", source: "direct", postedDays: 2 },
-  { id: "y2", title: "Senior Software Engineer, Web", company: "Figma", location: "Hybrid, San Francisco", salary: "$175–215K", score: 68, why: "TypeScript + React fit, senior IC track, salary in range", source: "direct", postedDays: 2 },
-  { id: "y3", title: "Senior Frontend Engineer", company: "Linear", location: "Remote (US)", salary: "$170–210K", score: 76, why: "React + TypeScript match, senior role, competitive comp", source: "direct", postedDays: 3 },
-  { id: "y4", title: "Senior Product Engineer", company: "Notion", location: "Hybrid, New York", salary: "$180–220K", score: 72, why: "Full-stack React fit, senior scope, salary aligned", source: "aggregated", postedDays: 3 },
-  { id: "y5", title: "Senior Frontend Developer", company: "Ramp", location: "Hybrid, New York", salary: "$175–210K", score: 70, why: "React + TS strong match, senior level, salary within range", source: "direct", postedDays: 4 },
-];
+const TODAY: Job[] = TODAY_JOBS;
+const YESTERDAY: Job[] = YESTERDAY_JOBS;
 
 const OLDER_DAYS: DigestGroup[] = [
   { key: "d3", label: "Fri, Jul 17", jobs: YESTERDAY.slice(0, 5) },
