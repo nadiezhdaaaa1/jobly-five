@@ -144,6 +144,7 @@ export const TODAY_JOBS: Job[] = [
   }),
   withDefaults({
     id: "t2",
+    initialState: "rejection",
     title: "Principal Frontend Developer",
     company: "Orion Tech",
     location: "Hybrid, Los Angeles",
@@ -184,6 +185,7 @@ export const TODAY_JOBS: Job[] = [
   }),
   withDefaults({
     id: "t3",
+    initialState: "offer",
     title: "Senior React Engineer",
     company: "Vertex Solutions",
     location: "Remote (US)",
@@ -227,27 +229,27 @@ export const TODAY_JOBS: Job[] = [
 ];
 
 export const YESTERDAY_JOBS: Job[] = [
-  withDefaults({ id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "React + TypeScript match; staff scope stretches your senior track; comp above your $100–160K range", source: "direct", postedDays: 2 }),
+  withDefaults({ id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "React + TypeScript match; staff scope stretches your senior track; comp above your $100–160K range", source: "direct", postedDays: 2, initialState: "saved" }),
   withDefaults({ id: "y2", title: "Senior Software Engineer, Web", company: "Figma", location: "Hybrid, San Francisco", salary: "$175–215K", score: 68, why: "React + TypeScript senior fit; salary above range; hybrid SF outside your NYC/Baltimore/Philly preference", source: "direct", postedDays: 3, initialState: "interview" }),
-  withDefaults({ id: "y3", title: "Senior Vue.js Developer", company: "GitLab", location: "Remote (US)", salary: "$155–185K", score: 81, why: "Vue in your stack; senior level; salary sits right in your $100–160K range; fully remote", source: "direct", postedDays: 2 }),
-  withDefaults({ id: "y4", title: "Frontend Engineer, Design Systems", company: "Chromatic", location: "Remote (US)", salary: "$150–175K", score: 72, why: "React + TypeScript design-system work; salary inside your range; remote matches your preference", source: "aggregated", postedDays: 5 }),
+  withDefaults({ id: "y3", title: "Senior Vue.js Developer", company: "GitLab", location: "Remote (US)", salary: "$155–185K", score: 81, why: "Vue in your stack; senior level; salary sits right in your $100–160K range; fully remote", source: "direct", postedDays: 2, initialState: "saved" }),
+  withDefaults({ id: "y4", title: "Frontend Engineer, Design Systems", company: "Chromatic", location: "Remote (US)", salary: "$150–175K", score: 72, why: "React + TypeScript design-system work; salary inside your range; remote matches your preference", source: "aggregated", postedDays: 5, initialState: "applied" }),
   withDefaults({ id: "y5", title: "Senior TypeScript Engineer", company: "Deno", location: "Remote (US)", salary: "$160–190K", score: 66, why: "TypeScript-first role; senior scope; salary just above your range; remote fits your preference", source: "aggregated", postedDays: 4, initialState: "reported" }),
 ];
 
 export const OLDER_JOBS_1: Job[] = [
   withDefaults({ id: "d3-1", title: "Senior Frontend Engineer", company: "Linear", location: "Remote (US)", salary: "$170–210K", score: 84, why: "React + TypeScript senior fit; salary inside your range; remote matches your preference", source: "direct", postedDays: 3 }),
   withDefaults({ id: "d3-2", title: "Product Engineer, Web", company: "Notion", location: "Hybrid, New York", salary: "$180–220K", score: 77, why: "React product work; NYC matches your preference; senior scope", source: "direct", postedDays: 3, initialState: "applied" }),
-  withDefaults({ id: "d3-3", title: "Senior Frontend Developer", company: "Ramp", location: "Hybrid, New York", salary: "$175–210K", score: 73, why: "React + TypeScript; NYC hybrid fits; senior level; salary inside your range", source: "direct", postedDays: 4 }),
-  withDefaults({ id: "d3-4", title: "Senior UI Engineer", company: "Stripe", location: "Remote (US)", salary: "$185–225K", score: 80, why: "React senior scope; comp above your range; fully remote", source: "aggregated", postedDays: 3 }),
+  withDefaults({ id: "d3-3", title: "Senior Frontend Developer", company: "Ramp", location: "Hybrid, New York", salary: "$175–210K", score: 73, why: "React + TypeScript; NYC hybrid fits; senior level; salary inside your range", source: "direct", postedDays: 4, initialState: "saved" }),
+  withDefaults({ id: "d3-4", title: "Senior UI Engineer", company: "Stripe", location: "Remote (US)", salary: "$185–225K", score: 80, why: "React senior scope; comp above your range; fully remote", source: "aggregated", postedDays: 3, initialState: "interview" }),
   withDefaults({ id: "d3-5", title: "Senior Web Engineer", company: "Shopify", location: "Remote (Canada)", salary: "$160–195K", score: 69, why: "React + TypeScript; remote-first team; senior level", source: "aggregated", postedDays: 3, initialState: "dismissed" }),
 ];
 
 export const OLDER_JOBS_2: Job[] = [
   withDefaults({ id: "d4-1", title: "Senior Frontend Engineer", company: "Airbnb", location: "Hybrid, San Francisco", salary: "$180–220K", score: 71, why: "React + TypeScript senior scope; SF hybrid outside your preferred cities", source: "direct", postedDays: 4 }),
-  withDefaults({ id: "d4-2", title: "Senior Product Engineer", company: "Discord", location: "Remote (US)", salary: "$175–210K", score: 76, why: "React product work; remote fits; salary inside your range", source: "direct", postedDays: 4 }),
-  withDefaults({ id: "d4-3", title: "Frontend Engineer, Platform", company: "Cloudflare", location: "Remote (US)", salary: "$165–200K", score: 74, why: "TypeScript-first platform team; remote-first; senior scope", source: "aggregated", postedDays: 4 }),
-  withDefaults({ id: "d4-4", title: "Senior Frontend Engineer", company: "Datadog", location: "Hybrid, New York", salary: "$180–215K", score: 70, why: "React senior scope; NYC hybrid matches; salary inside your range", source: "direct", postedDays: 5 }),
-  withDefaults({ id: "d4-5", title: "Lead Frontend Engineer", company: "Retool", location: "Remote (US)", salary: "$205–235K", score: 82, why: "React + TypeScript lead scope; comp above your range; fully remote", source: "direct", postedDays: 5 }),
+  withDefaults({ id: "d4-2", title: "Senior Product Engineer", company: "Discord", location: "Remote (US)", salary: "$175–210K", score: 76, why: "React product work; remote fits; salary inside your range", source: "direct", postedDays: 4, initialState: "applied" }),
+  withDefaults({ id: "d4-3", title: "Frontend Engineer, Platform", company: "Cloudflare", location: "Remote (US)", salary: "$165–200K", score: 74, why: "TypeScript-first platform team; remote-first; senior scope", source: "aggregated", postedDays: 4, initialState: "saved" }),
+  withDefaults({ id: "d4-4", title: "Senior Frontend Engineer", company: "Datadog", location: "Hybrid, New York", salary: "$180–215K", score: 70, why: "React senior scope; NYC hybrid matches; salary inside your range", source: "direct", postedDays: 5, initialState: "interview" }),
+  withDefaults({ id: "d4-5", title: "Lead Frontend Engineer", company: "Retool", location: "Remote (US)", salary: "$205–235K", score: 82, why: "React + TypeScript lead scope; comp above your range; fully remote", source: "direct", postedDays: 5, initialState: "offer" }),
 ];
 
 export type DigestDay = { key: string; label: string; jobs: Job[] };
@@ -259,4 +261,8 @@ export function getDigestDays(): DigestDay[] {
     { key: "d3", label: "Fri, Jul 17", jobs: OLDER_JOBS_1 },
     { key: "d4", label: "Thu, Jul 16", jobs: OLDER_JOBS_2 },
   ];
+}
+
+export function getAllJobs(): Job[] {
+  return [...TODAY_JOBS, ...YESTERDAY_JOBS, ...OLDER_JOBS_1, ...OLDER_JOBS_2];
 }

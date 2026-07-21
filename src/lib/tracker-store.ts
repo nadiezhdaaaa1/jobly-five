@@ -30,6 +30,20 @@ function today(offset = 0) {
   return d.toISOString();
 }
 
+function todayAt(offsetDays: number, hours: number, minutes: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  d.setHours(hours, minutes, 0, 0);
+  return d.toISOString();
+}
+
+// Interview-reminder demo seeds: today (orange chip), upcoming (neutral),
+// and one interview with no reminder to cover all three visual states.
+const REMINDER_SEEDS: Record<string, string> = {
+  y2: todayAt(0, 14, 45),
+  "d3-4": todayAt(2, 11, 0),
+};
+
 function shortDate(iso?: string) {
   if (!iso) return "";
   const d = new Date(iso);
@@ -86,7 +100,28 @@ function seedFrom(jobs: Job[], extras: Seed[] = []) {
     if (!records.has(j.id)) {
       const r: JobRecord = { status: (j.initialState as JobStatus) ?? "default", notes: "" };
       if (r.status === "saved") r.savedAt = today(-2);
-      if (r.status === "applied") r.appliedAt = today(-1);
+      if (r.status === "applied") {
+        r.savedAt = today(-3);
+        r.appliedAt = today(-1);
+      }
+      if (r.status === "interview") {
+        r.savedAt = today(-6);
+        r.appliedAt = today(-4);
+        r.interviewAt = today(-1);
+      }
+      if (r.status === "offer") {
+        r.savedAt = today(-14);
+        r.appliedAt = today(-10);
+        r.interviewAt = today(-5);
+        r.offerAt = today(0);
+      }
+      if (r.status === "rejection") {
+        r.savedAt = today(-10);
+        r.appliedAt = today(-7);
+        r.rejectionAt = today(0);
+      }
+      const rem = REMINDER_SEEDS[j.id];
+      if (rem && r.status === "interview") r.reminderAt = rem;
       records.set(j.id, r);
     }
   }
