@@ -558,7 +558,16 @@ function TrackerScreen() {
     };
   buckets.saved.sort(sortDesc("savedAt"));
   buckets.applied.sort(sortDesc("appliedAt"));
-  buckets.interview.sort(sortDesc("interviewAt"));
+  // Interview: soonest upcoming reminder first; cards without a reminder go to the bottom,
+  // ordered by most recently moved into Interview.
+  buckets.interview.sort((a, x) => {
+    const ar = a.rec.reminderAt;
+    const xr = x.rec.reminderAt;
+    if (ar && xr) return ar.localeCompare(xr);
+    if (ar) return -1;
+    if (xr) return 1;
+    return (x.rec.interviewAt ?? "").localeCompare(a.rec.interviewAt ?? "");
+  });
   buckets.offer.sort(sortDesc("offerAt"));
   buckets.rejection.sort(sortDesc("rejectionAt"));
 
