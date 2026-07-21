@@ -103,7 +103,7 @@ export function quizSummary(q: QuizAnswers = loadQuiz()): QuizSummary {
   const locations = locs.length ? locs.join(" · ") : "";
   const salary =
     typeof q.salaryMin === "number" && typeof q.salaryMax === "number"
-      ? `$${Math.round(q.salaryMin / (q.salaryMin >= 1000 ? 1000 : 1))}k–$${Math.round(q.salaryMax / (q.salaryMax >= 1000 ? 1000 : 1))}k`
+      ? `$${Math.round((q.salaryMin >= 1000 ? q.salaryMin / 1000 : q.salaryMin))}k–$${Math.round((q.salaryMax >= 1000 ? q.salaryMax / 1000 : q.salaryMax))}k`
       : "";
   const locSalParts = [locations, salary].filter(Boolean);
   const locationAndSalary = locSalParts.length ? locSalParts.join(" · ") : DASH;
