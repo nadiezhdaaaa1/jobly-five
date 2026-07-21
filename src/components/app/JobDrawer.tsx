@@ -1,65 +1,38 @@
 import { useEffect, useRef, useState } from "react";
-import { IconBookmark as Bookmark, IconCheck as Check, IconExternalLink as ExternalLink, IconFileText as FileText, IconFlag as Flag, IconPencil as Pencil, IconThumbDown as ThumbsDown, IconX as X, IconBolt as Zap } from "@tabler/icons-react";
-import type { CardState, Job } from "@/lib/jobs-data";
-
-function ago(days: number) {
-  if (days <= 0) return "Posted today";
-  if (days === 1) return "Posted 1 day ago";
-  return `Posted ${days} days ago`;
-}
-
-function useOutsideClose(open: boolean, onClose: () => void) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!open) return;
-    function onDoc(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
-    }
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
-  }, [open, onClose]);
-  return ref;
-}
+import { IconCalendar as Calendar, IconCheck as Check, IconExternalLink as ExternalLink, IconX as X, IconBolt as Zap } from "@tabler/icons-react";
+import type { Job } from "@/lib/jobs-data";
+import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 
 function BigRing({ score }: { score: number }) {
   const size = 64;
-  const stroke = 5;
+  const stroke = 4;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
   return (
     <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-green)" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
       </svg>
-      <span className="absolute text-[16px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
+      <span className="absolute text-[16px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
         {score}%
       </span>
     </div>
   );
 }
 
-export function JobDrawer({
-  job,
-  state,
-  setState,
-  onClose,
-}: {
-  job: Job;
-  state: CardState;
-  setState: (s: CardState) => void;
-  onClose: () => void;
-}) {
-  const [dislikeOpen, setDislikeOpen] = useState(false);
-  const [applyOpen, setApplyOpen] = useState(false);
-  const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
+export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
+  const record = useJobRecord(job.id);
+  const status = record.status as JobStatus;
   const panelRef = useRef<HTMLDivElement | null>(null);
   const titleId = `job-drawer-title-${job.id}`;
+  const [notes, setNotesLocal] = useState(record.notes ?? "");
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const [postingToast, setPostingToast] = useState(false);
 
-  const saved = state === "saved";
-  const applied = state === "applied";
+  useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -80,14 +53,40 @@ export function JobDrawer({
 
   const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-  const description = job.description ?? [
-    { heading: "About the role", body: "The employer provided a short listing." },
-  ];
-  const criteria = job.criteria ?? [];
-  const details = job.details ?? {};
-  const sources = job.sources ?? [
-    { name: job.source === "direct" ? "Company careers page" : "Aggregated listing", role: "primary" as const },
-  ];
+  const isPipeline = status === "saved" || status === "applied" || status === "interview";
+  const isOffer = status === "offer";
+  const isRejection = status === "rejection";
+  const inTracker = status !== "default" && status !== "dismissed" && status !== "reported";
+
+  function handleStatus(next: JobStatus) {
+    if (next === "interview") {
+      setStatus(job.id, "interview");
+      setReminderOpen(true);
+      return;
+    }
+    setStatus(job.id, next);
+  }
+
+  function handleOpenPosting() {
+    window.open(job.postingUrl ?? "#", "_blank");
+    if (status !== "applied" && status !== "interview" && status !== "offer" && status !== "rejection") {
+      setPostingToast(true);
+    }
+  }
+
+  function handleNotesBlur() {
+    if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
+  }
+
+  const dateLine = (() => {
+    if (status === "applied") return `Applied ${dateHelpers.shortDate(record.appliedAt)}`;
+    if (status === "interview") return `Applied ${dateHelpers.shortDate(record.appliedAt ?? record.interviewAt)}`;
+    if (status === "offer") return `Received ${dateHelpers.shortDate(record.offerAt)}`;
+    if (status === "rejection") return `Received ${dateHelpers.shortDate(record.rejectionAt)}`;
+    return `Saved ${dateHelpers.shortDate(record.savedAt ?? new Date().toISOString())}`;
+  })();
+
+  const reminderToday = record.reminderAt ? dateHelpers.isSameLocalDay(record.reminderAt) : false;
 
   return (
     <div className="fixed inset-0 z-50" role="presentation">
@@ -103,7 +102,7 @@ export function JobDrawer({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="absolute right-0 top-0 flex h-full w-full flex-col bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
+        className="absolute right-0 top-0 h-full w-full overflow-y-auto bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
         style={{
           boxShadow: "0 8px 24px rgba(0,0,0,.12)",
           animation: reducedMotion ? undefined : "job-drawer-in 160ms ease-out",
@@ -111,251 +110,321 @@ export function JobDrawer({
       >
         <style>{`@keyframes job-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
 
-        {/* Sticky header */}
-        <div className="sticky top-0 z-10 border-b bg-[color:var(--color-surface-1)] px-5 pb-4 pt-5">
+        {/* Sticky close */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="sticky top-4 z-20 float-right mr-4 mt-4 flex h-8 w-8 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <X size={16} strokeWidth={1.6} />
+        </button>
+
+        <div className="px-5 pb-8 pt-5">
+          {/* Identity block */}
           <div className="flex items-start gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
               {job.company.charAt(0)}
             </div>
-            <h2 id={titleId} className="min-w-0 flex-1 text-[18px] font-semibold leading-snug text-[color:var(--color-foreground)]">
-              {job.title}
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <X size={16} strokeWidth={1.6} />
-            </button>
+            <BigRing score={job.score} />
           </div>
-          <div className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {job.company} · {job.location} · {job.salary || <span className="text-[color:var(--color-text-muted)]">Salary not listed</span>} · {job.employmentType ?? "Full-time"}
+          <h2 id={titleId} className="mt-4 text-[20px] font-semibold leading-snug text-[color:var(--color-foreground)]">
+            {job.title}
+          </h2>
+          <div className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            {job.company} · {job.location} · {job.salary}
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {job.source === "direct" ? (
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">Direct employer</span>
-            ) : (
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-secondary)]">Aggregated</span>
-            )}
-            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]">
-              {ago(job.postedDays)}
-            </span>
-          </div>
-        </div>
-
-        {/* Sticky action row */}
-        <div className="sticky top-[136px] z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-5 py-3">
-          <div className="relative" ref={dislikeRef}>
-            <button
-              type="button"
-              aria-label="Dislike or report"
-              aria-haspopup="menu"
-              aria-expanded={dislikeOpen}
-              onClick={() => setDislikeOpen((v) => !v)}
-              className="flex h-[32px] w-[32px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <ThumbsDown size={15} strokeWidth={1.6} />
-            </button>
-            {dislikeOpen ? (
-              <div
-                role="menu"
-                className="absolute left-0 top-[36px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-              >
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                  onClick={() => {
-                    setState("dismissed");
-                    setDislikeOpen(false);
-                    onClose();
-                  }}
-                >
-                  <ThumbsDown size={15} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
-                  Dislike — not a good match
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                  onClick={() => {
-                    setState("reported");
-                    setDislikeOpen(false);
-                    onClose();
-                  }}
-                >
-                  <Flag size={15} strokeWidth={1.6} />
-                  Report — looks fake or ghost
-                </button>
-              </div>
-            ) : null}
-          </div>
+          <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            {job.why}
+          </p>
 
           <button
             type="button"
-            aria-label="Save to tracker"
-            aria-pressed={saved}
-            onClick={() => setState(saved ? "default" : "saved")}
-            className={`flex h-[32px] w-[32px] items-center justify-center rounded-[4px] border ${saved ? "border-[color:var(--color-green)] bg-[color:var(--color-mint)] text-[color:var(--color-green)]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
+            onClick={handleOpenPosting}
+            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
-            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+            Open posting
+            <ExternalLink size={14} strokeWidth={1.8} />
           </button>
 
-          <div className="ml-auto">
-            {applied ? (
-              <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-3 py-1.5 text-[13px] font-semibold text-[color:var(--color-green)]">
-                <Check size={14} strokeWidth={2} />
-                Applied
-              </span>
-            ) : (
-              <div className="relative" ref={applyRef}>
-                <button
-                  type="button"
-                  aria-haspopup="menu"
-                  aria-expanded={applyOpen}
-                  onClick={() => setApplyOpen((v) => !v)}
-                  className="inline-flex h-[32px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-                >
-                  Apply
-                  <Zap size={13} strokeWidth={2} fill="currentColor" />
-                </button>
-                {applyOpen ? (
-                  <div
-                    role="menu"
-                    className="absolute right-0 top-[36px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                    style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                  >
-                    <div className="flex items-center justify-between gap-2 px-3 py-2 text-[13px] text-[color:var(--color-text-muted)]" aria-disabled>
-                      <span className="flex items-center gap-2"><Pencil size={14} strokeWidth={1.6} /> Tailor your resume</span>
-                      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px]">Coming soon</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-2 px-3 py-2 text-[13px] text-[color:var(--color-text-muted)]" aria-disabled>
-                      <span className="flex items-center gap-2"><FileText size={14} strokeWidth={1.6} /> Generate a cover letter</span>
-                      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px]">Coming soon</span>
-                    </div>
-                    <div className="border-t" />
-                    <button
-                      type="button"
-                      role="menuitem"
-                      onClick={() => {
-                        window.open(job.postingUrl ?? "#", "_blank");
-                        setApplyOpen(false);
-                        setState("applied");
-                      }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    >
-                      <ExternalLink size={14} strokeWidth={1.6} />
-                      Open posting to apply
-                    </button>
-                  </div>
-                ) : null}
-              </div>
-            )}
-          </div>
-        </div>
+          <div className="my-5 border-t" />
 
-        {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto px-5 py-5">
-          {/* Match section */}
-          <div className="flex gap-4 rounded-[8px] bg-[color:var(--color-surface-2)] p-4">
-            <BigRing score={job.score} />
-            <div className="min-w-0 flex-1">
-              <h3 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Why this matches you</h3>
-              <ul className="mt-2 flex flex-col gap-1.5">
-                {criteria.slice(0, 5).map((c, i) => (
-                  <li key={i} className="flex items-start gap-2 text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
-                    {c.status === "full" ? (
-                      <Check size={14} strokeWidth={2.2} className="mt-[3px] shrink-0 text-[color:var(--color-green)]" aria-hidden />
-                    ) : (
-                      <span className="mt-[3px] shrink-0 text-[color:var(--color-text-muted)]" aria-hidden>~</span>
-                    )}
-                    <span>{c.text}</span>
-                  </li>
-                ))}
-                {criteria.length === 0 ? (
-                  <li className="text-[13px] text-[color:var(--color-text-muted)]">{job.why}</li>
-                ) : null}
-              </ul>
-            </div>
-          </div>
+          {/* Stage-dependent body */}
+          {isPipeline ? (
+            <PipelinePanel
+              status={status}
+              dateLine={dateLine}
+              reminderIso={record.reminderAt}
+              reminderToday={reminderToday}
+              onStatus={handleStatus}
+              onSetReminder={() => setReminderOpen(true)}
+              onEditReminder={() => setReminderOpen(true)}
+              onRemoveReminder={() => setReminder(job.id, null)}
+              onRejection={() => setStatus(job.id, "rejection")}
+              onOffer={() => setStatus(job.id, "offer")}
+            />
+          ) : isOffer ? (
+            <OfferPanel dateLine={dateLine} onChangeStatus={handleStatus} />
+          ) : isRejection ? (
+            <RejectionPanel dateLine={dateLine} onChangeStatus={handleStatus} />
+          ) : (
+            <SaveCta onSave={() => setStatus(job.id, "saved")} />
+          )}
 
-          {/* Description */}
-          <div className="mt-6 flex flex-col gap-5">
-            {description.map((section, i) => (
-              <section key={i}>
-                <h4 className="text-[13px] font-semibold text-[color:var(--color-text-secondary)]">{section.heading}</h4>
-                {section.body ? (
-                  <p className="mt-2 text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300, lineHeight: 1.6 }}>
-                    {section.body}
-                  </p>
-                ) : null}
-                {section.bullets ? (
-                  <ul className="mt-2 list-disc pl-5 text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300, lineHeight: 1.6 }}>
-                    {section.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
-                  </ul>
-                ) : null}
-              </section>
-            ))}
-          </div>
-
-          {/* Details */}
-          <div className="mt-6">
-            <h4 className="text-[13px] font-semibold text-[color:var(--color-text-secondary)]">Details</h4>
-            <dl className="mt-2 divide-y border-y">
-              {[
-                ["Employment type", details.employmentType ?? job.employmentType ?? "Full-time"],
-                ["Experience level", details.experienceLevel ?? "Senior"],
-                ["Workplace", details.workplace ?? job.location],
-                ["Posted", details.postedDate ?? `${ago(job.postedDays).replace("Posted ", "")}`],
-                ["Job ID", details.jobId ?? job.id.toUpperCase()],
-              ].map(([k, v]) => (
-                <div key={k as string} className="flex items-center justify-between gap-4 py-2 text-[13px]">
-                  <dt className="text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{k}</dt>
-                  <dd className="text-right text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {/* Sources */}
-          <div className="mt-6 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
-            <h4 className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Sources</h4>
-            <div className="mt-2 flex flex-col gap-2">
-              {sources.filter((s) => s.role === "primary").map((s, i) => (
-                <a key={`p-${i}`} href={s.url ?? "#"} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[13px] text-[color:var(--color-foreground)] hover:underline">
-                  <span aria-hidden className="inline-block h-2 w-2 rounded-full bg-[color:var(--color-green)]" />
-                  <span className="flex-1">{s.name}</span>
-                  <ExternalLink size={13} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
-                </a>
-              ))}
-              {sources.some((s) => s.role === "secondary") ? (
-                <div className="text-[12px] text-[color:var(--color-text-muted)]">
-                  Also found on: {sources.filter((s) => s.role === "secondary").map((s) => s.name).join(", ")}
-                </div>
-              ) : null}
-            </div>
+          {/* Notes */}
+          <div className="mt-5">
+            <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotesLocal(e.target.value)}
+              onBlur={handleNotesBlur}
+              rows={5}
+              placeholder="Notes — contacts, salary discussed, next steps…"
+              className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            />
           </div>
 
           {/* Footer */}
-          <div className="mt-6 flex flex-col gap-3">
-            <p className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              Match scores are estimates based on your profile. Jobly doesn't guarantee interviews or employment.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setState("reported");
-                onClose();
-              }}
-              className="self-start text-[13px] font-semibold text-[color:var(--color-danger)] hover:underline"
-            >
-              Report — looks fake or ghost
-            </button>
+          <div className="mt-5 flex items-center justify-between text-[13px]">
+            {isOffer ? (
+              <span />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setStatus(job.id, "reported")}
+                className="font-semibold text-[color:var(--color-danger)] hover:underline"
+              >
+                Report — looks fake or ghost
+              </button>
+            )}
+            {inTracker ? (
+              <button
+                type="button"
+                onClick={() => setStatus(job.id, "default")}
+                className="text-[color:var(--color-text-muted)] hover:underline"
+              >
+                Remove from tracker
+              </button>
+            ) : <span />}
           </div>
         </div>
       </div>
+
+      <InterviewReminderDialog
+        open={reminderOpen}
+        jobTitle={job.title}
+        initialIso={record.reminderAt}
+        onCancel={() => setReminderOpen(false)}
+        onSave={(iso) => {
+          setReminder(job.id, iso);
+          setStatus(job.id, "interview");
+          setReminderOpen(false);
+        }}
+      />
+
+      {postingToast ? (
+        <div
+          role="status"
+          className="fixed inset-x-0 bottom-6 z-[70] mx-auto flex w-fit items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px]"
+          style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+        >
+          <span>Did you apply to {job.title}?</span>
+          <button
+            type="button"
+            onClick={() => { setStatus(job.id, "applied"); setPostingToast(false); }}
+            className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          >
+            Yes, mark as applied
+          </button>
+          <button
+            type="button"
+            onClick={() => setPostingToast(false)}
+            className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-text-secondary)]"
+          >
+            Not yet
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
+
+function SaveCta({ onSave }: { onSave: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onSave}
+      className="inline-flex h-10 w-full items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+    >
+      Save to tracker
+    </button>
+  );
+}
+
+function PipelinePanel({
+  status,
+  dateLine,
+  reminderIso,
+  reminderToday,
+  onStatus,
+  onSetReminder,
+  onEditReminder,
+  onRemoveReminder,
+  onRejection,
+  onOffer,
+}: {
+  status: JobStatus;
+  dateLine: string;
+  reminderIso?: string;
+  reminderToday: boolean;
+  onStatus: (s: JobStatus) => void;
+  onSetReminder: () => void;
+  onEditReminder: () => void;
+  onRemoveReminder: () => void;
+  onRejection: () => void;
+  onOffer: () => void;
+}) {
+  const tabs: { key: JobStatus; label: string }[] = [
+    { key: "saved", label: "Saved" },
+    { key: "applied", label: "Applied" },
+    { key: "interview", label: "Interview" },
+  ];
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onRejection}
+          className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Rejection
+        </button>
+        <button
+          type="button"
+          onClick={onOffer}
+          className="inline-flex h-10 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+        >
+          Received offer
+          <Zap size={13} strokeWidth={2} fill="currentColor" />
+        </button>
+      </div>
+      <div>
+        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</div>
+        <div className="mt-2 grid grid-cols-3 gap-1 rounded-[4px] border p-1">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => onStatus(t.key)}
+              className={`h-8 rounded-[4px] text-[13px] font-semibold transition-colors ${
+                t.key === status
+                  ? "bg-[color:var(--color-foreground)] text-white"
+                  : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
+
+      {status === "interview" ? (
+        <div>
+          <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Interview reminder</div>
+          {reminderIso ? (
+            <div
+              className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
+                reminderToday ? "bg-[#FFEDD4]" : "bg-[color:var(--color-surface-2)]"
+              }`}
+            >
+              <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
+                <Calendar size={14} strokeWidth={1.8} />
+                {dateHelpers.shortDateTime(reminderIso)}
+              </span>
+              <span className="flex items-center gap-3">
+                <button className="text-[12px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={onEditReminder}>Edit</button>
+                <button className="text-[12px] text-[color:var(--color-text-muted)] hover:underline" onClick={onRemoveReminder}>Remove</button>
+              </span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onSetReminder}
+              className="mt-2 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+            >
+              Set a reminder
+            </button>
+          )}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function OfferPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-[8px] bg-[color:var(--color-mint)] p-4">
+        <div className="text-[15px] font-semibold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
+          Congratulations on the offer!
+        </div>
+      </div>
+      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
+      <ChangeStatusLink onChange={onChangeStatus} />
+    </div>
+  );
+}
+
+function RejectionPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-[8px] p-4" style={{ background: "#FFE2E2" }}>
+        <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Rejection</div>
+        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          The right offer is close. Check the latest digest for more great opportunities.
+        </p>
+      </div>
+      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
+      <ChangeStatusLink onChange={onChangeStatus} />
+    </div>
+  );
+}
+
+function ChangeStatusLink({ onChange }: { onChange: (s: JobStatus) => void }) {
+  const [open, setOpen] = useState(false);
+  const opts: { key: JobStatus; label: string }[] = [
+    { key: "applied", label: "Applied" },
+    { key: "interview", label: "Interview" },
+    { key: "offer", label: "Received offer" },
+    { key: "rejection", label: "Rejection" },
+  ];
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="text-[13px] text-[color:var(--color-text-muted)] hover:underline"
+      >
+        Change status
+      </button>
+      {open ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {opts.map((o) => (
+            <button
+              key={o.key}
+              type="button"
+              onClick={() => { onChange(o.key); setOpen(false); }}
+              className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// Silence unused import warning if any (Check kept for potential future use)
+void Check;
