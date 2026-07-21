@@ -418,7 +418,17 @@ function DigestGroupHeader({ label, count }: { label: string; count: number }) {
   );
 }
 
-function OlderDayRow({ group }: { group: DigestGroup }) {
+function OlderDayRow({
+  group,
+  getState,
+  setState,
+  onOpen,
+}: {
+  group: DigestGroup;
+  getState: (job: Job) => CardState;
+  setState: (id: string, s: CardState) => void;
+  onOpen: (job: Job) => void;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -435,7 +445,13 @@ function OlderDayRow({ group }: { group: DigestGroup }) {
       {open ? (
         <div className="mt-3 flex flex-col gap-3">
           {group.jobs.map((j) => (
-            <JobCard key={`${group.key}-${j.id}`} job={j} />
+            <JobCard
+              key={`${group.key}-${j.id}`}
+              job={j}
+              state={getState(j)}
+              setState={(s) => setState(j.id, s)}
+              onOpen={() => onOpen(j)}
+            />
           ))}
         </div>
       ) : null}
@@ -443,7 +459,15 @@ function OlderDayRow({ group }: { group: DigestGroup }) {
   );
 }
 
-function DigestWall() {
+function DigestWall({
+  getState,
+  setState,
+  onOpen,
+}: {
+  getState: (job: Job) => CardState;
+  setState: (id: string, s: CardState) => void;
+  onOpen: (job: Job) => void;
+}) {
   const groups = useMemo(
     () => [
       { key: "today", label: "Today, Mon, Jul 20", jobs: TODAY },
@@ -468,7 +492,13 @@ function DigestWall() {
             <DigestGroupHeader label={g.label} count={g.jobs.length} />
             <div className="flex flex-col gap-3">
               {g.jobs.map((j) => (
-                <JobCard key={j.id} job={j} />
+                <JobCard
+                  key={j.id}
+                  job={j}
+                  state={getState(j)}
+                  setState={(s) => setState(j.id, s)}
+                  onOpen={() => onOpen(j)}
+                />
               ))}
             </div>
           </div>
@@ -476,7 +506,7 @@ function DigestWall() {
 
         <div className="flex flex-col gap-3">
           {OLDER_DAYS.map((g) => (
-            <OlderDayRow key={g.key} group={g} />
+            <OlderDayRow key={g.key} group={g} getState={getState} setState={setState} onOpen={onOpen} />
           ))}
         </div>
       </div>
@@ -487,6 +517,17 @@ function DigestWall() {
 // ---------- Screen ----------
 
 function DigestScreen() {
+  const [states, setStates] = useState<Record<string, CardState>>({});
+  const [openJob, setOpenJob] = useState<Job | null>(null);
+
+  const getState = useCallback(
+    (job: Job): CardState => states[job.id] ?? job.initialState ?? "default",
+    [states],
+  );
+  const setState = useCallback((id: string, s: CardState) => {
+    setStates((prev) => ({ ...prev, [id]: s }));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
@@ -496,7 +537,7 @@ function DigestScreen() {
             <ProfileCard />
           </div>
           <div className="min-w-0">
-            <DigestWall />
+            <DigestWall getState={getState} setState={setState} onOpen={setOpenJob} />
           </div>
           <div className="lg:sticky lg:top-20 lg:self-start">
             <RightRail />
@@ -504,6 +545,14 @@ function DigestScreen() {
         </div>
       </main>
       <MobileTabBar active="digest" />
+      {openJob ? (
+        <JobDrawer
+          job={openJob}
+          state={getState(openJob)}
+          setState={(s) => setState(openJob.id, s)}
+          onClose={() => setOpenJob(null)}
+        />
+      ) : null}
     </div>
   );
 }
