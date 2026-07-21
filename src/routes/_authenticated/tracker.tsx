@@ -332,12 +332,18 @@ function JobCard({
             <>
               <button
                 type="button"
-                aria-label="Unsave"
+                aria-label="Save the opening"
+                title="Save the opening"
+                aria-pressed
                 onClick={() => setStatus(job.id, "default")}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border"
-                style={{ borderColor: "#0E735A", color: "#0E735A" }}
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
-                <Bookmark size={15} strokeWidth={1.6} fill="#D8FBEF" />
+                <Bookmark
+                  size={15}
+                  strokeWidth={1.6}
+                  className="text-[color:var(--color-foreground)]"
+                  fill="var(--color-accent)"
+                />
               </button>
               <div className="relative" ref={applyRef}>
                 <button
