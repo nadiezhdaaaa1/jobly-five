@@ -119,7 +119,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
   },
   billing: {
     slug: "billing",
-    title: "Subscription & Billing Terms",
+    title: "Subscription & Billing",
     lastUpdated: "2026-07-21",
     intro: "These Subscription & Billing Terms are part of the Jobly Terms of Service (offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)) and describe our plans, trials, automatic renewal, pause, and cancellation.",
     body: [
@@ -147,7 +147,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
   },
   refund: {
     slug: "refund",
-    title: "Refund & Cancellation Policy",
+    title: "Refund Policy",
     lastUpdated: "2026-07-21",
     intro: "This Policy explains how cancellations and refunds work for Jobly subscriptions (offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569)). It is part of our Terms of Service and should be read with the Subscription & Billing Terms.",
     body: [
@@ -208,7 +208,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
   },
   email: {
     slug: "email",
-    title: "Email & Communications Consent",
+    title: "Email Consent",
     lastUpdated: "2026-07-21",
     intro: "Jobly is an email-first service. This notice explains what messages we send, how you consent, and how you control them. It supplements our Privacy Policy and Terms of Service.",
     body: [
@@ -234,7 +234,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
   },
   disclaimer: {
     slug: "disclaimer",
-    title: "Service Disclaimer",
+    title: "Disclaimer",
     lastUpdated: "2026-07-21",
     intro: "This Disclaimer applies to the Jobly service offered by NORELIX LIMITED, trading as \"Jobly\" (Company No. 817569).",
     body: [
@@ -258,7 +258,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
   },
   dmca: {
     slug: "dmca",
-    title: "DMCA / Copyright Policy",
+    title: "DMCA Policy",
     lastUpdated: "2026-07-21",
     intro: "Jobly, operated by NORELIX LIMITED (trading as \"Jobly,\" Company No. 817569), respects intellectual property rights and expects users to do the same. This policy explains how to report alleged copyright infringement, how we respond, and our policy for repeat infringers.",
     body: [
