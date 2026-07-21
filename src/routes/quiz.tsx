@@ -1208,6 +1208,8 @@ function LocationStep({
                     remote: opt.key === "remote",
                   };
                   if (opt.key === "remote") patch.locations = [];
+                  if (answers.salaryMin == null) patch.salaryMin = 100_000;
+                  if (answers.salaryMax == null) patch.salaryMax = 160_000;
                   onChange(patch);
                 }}
                 aria-pressed={selected}
