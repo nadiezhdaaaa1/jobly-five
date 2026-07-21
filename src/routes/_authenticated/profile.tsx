@@ -61,6 +61,88 @@ function ProfileScreen() {
   const email = user?.email ?? "serhii@example.com";
   const displayName = quiz.email ? "Serhii Kovalenko" : "Serhii Kovalenko";
   const [name, setName] = useState(displayName);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarPath, setAvatarPath] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      const path = data?.avatar_url ?? null;
+      if (!active || !path) return;
+      setAvatarPath(path);
+      const { data: signed } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(path, 60 * 60 * 24 * 7);
+      if (active && signed?.signedUrl) setAvatarUrl(signed.signedUrl);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !user) return;
+    if (!file.type.startsWith("image/")) {
+      setAvatarError("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setAvatarError("Image must be under 5 MB.");
+      return;
+    }
+    setAvatarError(null);
+    setUploading(true);
+    try {
+      const ext = (file.name.split(".").pop() || "png").toLowerCase();
+      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) throw upErr;
+      if (avatarPath && avatarPath !== path) {
+        await supabase.storage.from("avatars").remove([avatarPath]);
+      }
+      const { error: dbErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: path })
+        .eq("id", user.id);
+      if (dbErr) throw dbErr;
+      const { data: signed } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(path, 60 * 60 * 24 * 7);
+      setAvatarPath(path);
+      if (signed?.signedUrl) setAvatarUrl(signed.signedUrl);
+      showSaved("identity");
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : "Upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleAvatarRemove() {
+    if (!user || !avatarPath) return;
+    setUploading(true);
+    try {
+      await supabase.storage.from("avatars").remove([avatarPath]);
+      await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
+      setAvatarPath(null);
+      setAvatarUrl(null);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   function showSaved(key: string) {
     setFlash(key);
@@ -109,14 +191,47 @@ function ProfileScreen() {
 
         {/* Identity row */}
         <section className="mt-4 flex items-center gap-4">
-          <div
-            className="flex h-16 w-16 items-center justify-center rounded-[8px] text-[22px] font-semibold text-white"
-            style={{ background: "linear-gradient(135deg, var(--color-accent), var(--color-green))" }}
-            aria-hidden
-          >
-            {(name || "S").charAt(0).toUpperCase()}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              aria-label="Change avatar"
+              disabled={uploading}
+              className="group relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-[8px] text-[22px] font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
+              style={{ background: "linear-gradient(135deg, var(--color-accent), var(--color-green))" }}
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              ) : (
+                <span aria-hidden>{(name || "S").charAt(0).toUpperCase()}</span>
+              )}
+              <span className="pointer-events-none absolute inset-x-0 bottom-0 flex h-5 items-center justify-center bg-black/45 text-[10px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+                {uploading ? "Uploading…" : "Change"}
+              </span>
+            </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+            {avatarUrl ? (
+              <button
+                type="button"
+                onClick={handleAvatarRemove}
+                aria-label="Remove avatar"
+                disabled={uploading}
+                className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <X size={11} strokeWidth={1.8} />
+              </button>
+            ) : null}
           </div>
           <div className="flex-1 min-w-0">
+            {avatarError ? (
+              <div className="mb-1 text-[12px] text-[color:var(--color-danger)]">{avatarError}</div>
+            ) : null}
             {editing === "identity" ? (
               <form
                 onSubmit={(e) => {
