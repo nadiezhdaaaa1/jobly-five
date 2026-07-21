@@ -368,7 +368,7 @@ function JobCard({
                   aria-haspopup="menu"
                   aria-expanded={applyOpen}
                   onClick={() => setApplyOpen((v) => !v)}
-                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
                 >
                   Apply
                   <Zap size={13} strokeWidth={2} fill="currentColor" />
@@ -413,7 +413,7 @@ function JobCard({
                 aria-haspopup="menu"
                 aria-expanded={statusOpen}
                 onClick={() => setStatusOpen((v) => !v)}
-                className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 {currentStatusLabel()}
                 <ChevronDown size={13} strokeWidth={2} />
@@ -616,7 +616,7 @@ function TrackerScreen() {
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
-                className={`h-8 rounded-[4px] px-4 text-[13px] font-semibold transition-colors ${
+                className={`h-8 rounded-[4px] px-4 button-small transition-colors ${
                   tab === t
                     ? "bg-[color:var(--color-foreground)] text-white"
                     : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
@@ -803,7 +803,7 @@ function EmptyBoard() {
       </p>
       <Link
         to="/dashboard"
-        className="mt-1 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 py-2 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+        className="mt-1 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 py-2 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
       >
         Open digest
       </Link>

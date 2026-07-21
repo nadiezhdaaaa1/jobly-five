@@ -173,7 +173,7 @@ function RightRail() {
             </div>
           ))}
         </div>
-        <Link to="/tracker" className="mt-3 inline-block text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">
+        <Link to="/tracker" className="mt-3 inline-block button-small text-[color:var(--color-green)] hover:underline">
           Open tracker
         </Link>
       </div>
@@ -361,7 +361,7 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
                   aria-haspopup="menu"
                   aria-expanded={statusOpen}
                   onClick={() => setStatusOpen((v) => !v)}
-                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   {statusLabel(state)}
                   <ChevronDown size={13} strokeWidth={2} />
@@ -451,7 +451,7 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
                 aria-haspopup="menu"
                 aria-expanded={applyOpen}
                 onClick={() => setApplyOpen((v) => !v)}
-                className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
               >
                 Apply
                 <Zap size={13} strokeWidth={2} fill="currentColor" />
