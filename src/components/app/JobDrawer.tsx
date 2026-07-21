@@ -122,7 +122,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
         <div className="px-5 pb-8 pt-5">
           {/* Identity block */}
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-6">
             {job.logo ? (
               <img
                 src={job.logo}
