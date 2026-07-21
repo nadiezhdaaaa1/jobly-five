@@ -219,12 +219,14 @@ function QuizPage() {
             const isVisible =
               completed[key] ||
               key === activeStep ||
+              key === current ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
               (key === "tools" && (toolsInvalid || toolsEmptied)) ||
               (key === "soft" && (softInvalid || softEmptied));
             if (!isVisible) return null;
-            const isExpanded = key === activeStep;
+            const isExpanded =
+              key === activeStep || (key === current && !completed[key]);
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
