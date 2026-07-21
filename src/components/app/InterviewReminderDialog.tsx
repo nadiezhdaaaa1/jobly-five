@@ -92,6 +92,7 @@ export function InterviewReminderDialog({
             Time
             <input
               type="time"
+              lang="en-US"
               value={time}
               onChange={(e) => setTime(e.target.value)}
               className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
