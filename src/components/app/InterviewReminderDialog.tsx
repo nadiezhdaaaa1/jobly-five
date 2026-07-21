@@ -11,6 +11,57 @@ function defaultDate() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [hhStr, mmStr] = value.split(":");
+  const h24 = Number(hhStr ?? "0") || 0;
+  const mm = Number(mmStr ?? "0") || 0;
+  const period: "AM" | "PM" = h24 >= 12 ? "PM" : "AM";
+  const h12 = ((h24 + 11) % 12) + 1;
+
+  const emit = (nh12: number, nmm: number, np: "AM" | "PM") => {
+    let nh24 = nh12 % 12;
+    if (np === "PM") nh24 += 12;
+    onChange(`${pad(nh24)}:${pad(nmm)}`);
+  };
+
+  const selectCls =
+    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+
+  return (
+    <div className="flex items-center gap-1">
+      <select
+        aria-label="Hour"
+        value={h12}
+        onChange={(e) => emit(Number(e.target.value), mm, period)}
+        className={selectCls}
+      >
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+          <option key={h} value={h}>{pad(h)}</option>
+        ))}
+      </select>
+      <select
+        aria-label="Minute"
+        value={mm}
+        onChange={(e) => emit(h12, Number(e.target.value), period)}
+        className={selectCls}
+      >
+        {Array.from({ length: 60 }, (_, i) => i).map((m) => (
+          <option key={m} value={m}>{pad(m)}</option>
+        ))}
+      </select>
+      <select
+        aria-label="AM or PM"
+        value={period}
+        onChange={(e) => emit(h12, mm, e.target.value as "AM" | "PM")}
+        className={selectCls}
+      >
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  );
+}
+
 export function InterviewReminderDialog({
   open,
   initialIso,
@@ -78,6 +129,7 @@ export function InterviewReminderDialog({
         <p className="mt-2 text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           Let's set a reminder for the upcoming interview{jobTitle ? ` — ${jobTitle}` : ""}.
         </p>
+        {(() => null)()}
         <div className="mt-4 grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
             Date
@@ -88,16 +140,10 @@ export function InterviewReminderDialog({
               className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             />
           </label>
-          <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
-            Time
-            <input
-              type="time"
-              lang="en-US"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-            />
-          </label>
+          <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Time</span>
+            <TimePickerAmPm value={time} onChange={setTime} />
+          </div>
         </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
