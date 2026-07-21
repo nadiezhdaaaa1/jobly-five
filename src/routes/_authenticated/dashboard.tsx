@@ -8,12 +8,9 @@ import {
   ExternalLink,
   FileText,
   Flag,
-  Kanban,
-  Mail,
   Pencil,
   Pencil as PencilIcon,
   ThumbsDown,
-  User as UserIcon,
   Zap,
 } from "lucide-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
