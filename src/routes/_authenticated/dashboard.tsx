@@ -113,9 +113,9 @@ function ParametersCard() {
             initial
           )}
         </div>
-        <button type="button" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+        <Link to="/profile" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
           <PencilIcon size={16} strokeWidth={1.6} />
-        </button>
+        </Link>
       </div>
       <div className="mt-4 divide-y">
         {rows.map((r) => (
