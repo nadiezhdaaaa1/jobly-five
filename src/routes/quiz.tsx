@@ -907,14 +907,18 @@ const LEVEL_IMAGES: Record<string, string> = {
   Lead: leaImg.url,
 };
 
-function ExperienceStep({
+export function ExperienceStep({
   answers,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   answers: QuizAnswers;
   onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const level = answers.level;
   const years = answers.years ?? 0;
@@ -1141,7 +1145,7 @@ function ExperienceStep({
         }
       `}</style>
 
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
