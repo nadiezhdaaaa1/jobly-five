@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
   Check,
@@ -14,6 +14,8 @@ import {
   Zap,
 } from "lucide-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { JobDrawer } from "@/components/app/JobDrawer";
+import { TODAY_JOBS, YESTERDAY_JOBS, type CardState, type Job } from "@/lib/jobs-data";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -25,41 +27,12 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DigestScreen,
 });
 
-// ---------- Types & mock data ----------
-
-type Source = "direct" | "aggregated";
-type CardState = "default" | "saved" | "applied" | "dismissed" | "reported";
-
-type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  score: number;
-  why: string;
-  source: Source;
-  postedDays: number;
-  initialState?: CardState;
-};
+// ---------- Grouping ----------
 
 type DigestGroup = { key: string; label: string; jobs: Job[] };
 
-const TODAY: Job[] = [
-  { id: "t1", title: "Lead UI Developer", company: "Nimbus Corp", location: "Remote (US)", salary: "$160–200K", score: 95, why: "Expert in Vue.js + JavaScript, leadership role, competitive salary", source: "direct", postedDays: 3, initialState: "saved" },
-  { id: "t2", title: "Principal Frontend Developer", company: "Orion Tech", location: "Hybrid, Los Angeles", salary: "$150–190K", score: 86, why: "Proficient in Angular + TypeScript, senior position, salary fits your expectations", source: "aggregated", postedDays: 1 },
-  { id: "t3", title: "Senior React Engineer", company: "Vertex Solutions", location: "Remote (US)", salary: "$165–205K", score: 74, why: "Strong React + Redux skills, senior level, salary aligned with your range", source: "aggregated", postedDays: 4 },
-  { id: "t4", title: "Frontend Architect", company: "Helix Innovations", location: "Remote (US)", salary: "$180–220K", score: 71, why: "Expertise in Svelte + TypeScript, senior role, salary within your range", source: "direct", postedDays: 6, initialState: "applied" },
-  { id: "t5", title: "UI Engineer Lead", company: "Quantum Leap", location: "Remote (US)", salary: "$175–215K", score: 70, why: "Strong React + GraphQL experience, senior level, salary matches your expectations", source: "direct", postedDays: 8, initialState: "dismissed" },
-];
-
-const YESTERDAY: Job[] = [
-  { id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "Next.js + React expert, staff-level scope, salary above your target", source: "direct", postedDays: 2 },
-  { id: "y2", title: "Senior Software Engineer, Web", company: "Figma", location: "Hybrid, San Francisco", salary: "$175–215K", score: 68, why: "TypeScript + React fit, senior IC track, salary in range", source: "direct", postedDays: 2 },
-  { id: "y3", title: "Senior Frontend Engineer", company: "Linear", location: "Remote (US)", salary: "$170–210K", score: 76, why: "React + TypeScript match, senior role, competitive comp", source: "direct", postedDays: 3 },
-  { id: "y4", title: "Senior Product Engineer", company: "Notion", location: "Hybrid, New York", salary: "$180–220K", score: 72, why: "Full-stack React fit, senior scope, salary aligned", source: "aggregated", postedDays: 3 },
-  { id: "y5", title: "Senior Frontend Developer", company: "Ramp", location: "Hybrid, New York", salary: "$175–210K", score: 70, why: "React + TS strong match, senior level, salary within range", source: "direct", postedDays: 4 },
-];
+const TODAY: Job[] = TODAY_JOBS;
+const YESTERDAY: Job[] = YESTERDAY_JOBS;
 
 const OLDER_DAYS: DigestGroup[] = [
   { key: "d3", label: "Fri, Jul 17", jobs: YESTERDAY.slice(0, 5) },
@@ -207,8 +180,17 @@ function useOutsideClose(open: boolean, onClose: () => void) {
 
 // ---------- Job card ----------
 
-function JobCard({ job }: { job: Job }) {
-  const [state, setState] = useState<CardState>(job.initialState ?? "default");
+function JobCard({
+  job,
+  state,
+  setState,
+  onOpen,
+}: {
+  job: Job;
+  state: CardState;
+  setState: (s: CardState) => void;
+  onOpen: () => void;
+}) {
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [toast, setToast] = useState(false);
@@ -234,16 +216,22 @@ function JobCard({ job }: { job: Job }) {
 
   return (
     <article
-      className={`relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${dismissed ? "opacity-55" : ""}`}
+      className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 transition-colors ${dismissed ? "opacity-55" : "hover:border-[color:var(--color-border-strong)]"}`}
     >
-      <div className="flex items-start gap-3">
+      <button
+        type="button"
+        aria-label={`Open details for ${job.title}`}
+        onClick={dismissed ? undefined : onOpen}
+        disabled={dismissed}
+        className="flex w-full items-start gap-3 text-left"
+      >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
           {job.company.charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <a href="#" className="block text-[15px] font-semibold text-[color:var(--color-foreground)] hover:underline">
+          <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">
             {job.title}
-          </a>
+          </span>
           <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             {job.company} · {job.location} · {job.salary}
           </div>
@@ -252,7 +240,7 @@ function JobCard({ job }: { job: Job }) {
           </p>
         </div>
         <ScoreRing score={job.score} />
-      </div>
+      </button>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {job.source === "direct" ? (
@@ -430,7 +418,17 @@ function DigestGroupHeader({ label, count }: { label: string; count: number }) {
   );
 }
 
-function OlderDayRow({ group }: { group: DigestGroup }) {
+function OlderDayRow({
+  group,
+  getState,
+  setState,
+  onOpen,
+}: {
+  group: DigestGroup;
+  getState: (job: Job) => CardState;
+  setState: (id: string, s: CardState) => void;
+  onOpen: (job: Job) => void;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -447,7 +445,13 @@ function OlderDayRow({ group }: { group: DigestGroup }) {
       {open ? (
         <div className="mt-3 flex flex-col gap-3">
           {group.jobs.map((j) => (
-            <JobCard key={`${group.key}-${j.id}`} job={j} />
+            <JobCard
+              key={`${group.key}-${j.id}`}
+              job={j}
+              state={getState(j)}
+              setState={(s) => setState(j.id, s)}
+              onOpen={() => onOpen(j)}
+            />
           ))}
         </div>
       ) : null}
@@ -455,7 +459,15 @@ function OlderDayRow({ group }: { group: DigestGroup }) {
   );
 }
 
-function DigestWall() {
+function DigestWall({
+  getState,
+  setState,
+  onOpen,
+}: {
+  getState: (job: Job) => CardState;
+  setState: (id: string, s: CardState) => void;
+  onOpen: (job: Job) => void;
+}) {
   const groups = useMemo(
     () => [
       { key: "today", label: "Today, Mon, Jul 20", jobs: TODAY },
@@ -480,7 +492,13 @@ function DigestWall() {
             <DigestGroupHeader label={g.label} count={g.jobs.length} />
             <div className="flex flex-col gap-3">
               {g.jobs.map((j) => (
-                <JobCard key={j.id} job={j} />
+                <JobCard
+                  key={j.id}
+                  job={j}
+                  state={getState(j)}
+                  setState={(s) => setState(j.id, s)}
+                  onOpen={() => onOpen(j)}
+                />
               ))}
             </div>
           </div>
@@ -488,7 +506,7 @@ function DigestWall() {
 
         <div className="flex flex-col gap-3">
           {OLDER_DAYS.map((g) => (
-            <OlderDayRow key={g.key} group={g} />
+            <OlderDayRow key={g.key} group={g} getState={getState} setState={setState} onOpen={onOpen} />
           ))}
         </div>
       </div>
@@ -499,6 +517,17 @@ function DigestWall() {
 // ---------- Screen ----------
 
 function DigestScreen() {
+  const [states, setStates] = useState<Record<string, CardState>>({});
+  const [openJob, setOpenJob] = useState<Job | null>(null);
+
+  const getState = useCallback(
+    (job: Job): CardState => states[job.id] ?? job.initialState ?? "default",
+    [states],
+  );
+  const setState = useCallback((id: string, s: CardState) => {
+    setStates((prev) => ({ ...prev, [id]: s }));
+  }, []);
+
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
@@ -508,7 +537,7 @@ function DigestScreen() {
             <ProfileCard />
           </div>
           <div className="min-w-0">
-            <DigestWall />
+            <DigestWall getState={getState} setState={setState} onOpen={setOpenJob} />
           </div>
           <div className="lg:sticky lg:top-20 lg:self-start">
             <RightRail />
@@ -516,6 +545,14 @@ function DigestScreen() {
         </div>
       </main>
       <MobileTabBar active="digest" />
+      {openJob ? (
+        <JobDrawer
+          job={openJob}
+          state={getState(openJob)}
+          setState={(s) => setState(openJob.id, s)}
+          onClose={() => setOpenJob(null)}
+        />
+      ) : null}
     </div>
   );
 }
