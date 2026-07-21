@@ -319,7 +319,11 @@ function ProfileScreen() {
               onSaved={(k) => showSaved(k)}
             />
 
-            {/* Card 4: Account */}
+          </div>
+
+          {/* Right rail */}
+          <aside className="flex flex-col gap-4">
+            {/* Account */}
             <section id="card-account" className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
               <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Account</h2>
               <div className="mt-3 divide-y">
@@ -361,10 +365,6 @@ function ProfileScreen() {
                 </div>
               </div>
             </section>
-          </div>
-
-          {/* Right rail */}
-          <aside className="flex flex-col gap-4">
             <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
               <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Profile strength</h3>
               <div className="mt-3 flex items-center gap-3">
