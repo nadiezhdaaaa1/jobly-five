@@ -513,6 +513,7 @@ function TrackerScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState<JobStatus | null>(null);
+  const [dragHeight, setDragHeight] = useState<number>(0);
   const [reminderJobId, setReminderJobId] = useState<string | null>(null);
   const [applyToast, setApplyToast] = useState<Job | null>(null);
 
@@ -559,7 +560,18 @@ function TrackerScreen() {
       setStatus(draggingId, target);
     }
     setDraggingId(null);
+    setDragHeight(0);
   }
+
+  const handleDragStart = (id: string, height: number) => {
+    setDraggingId(id);
+    setDragHeight(height);
+  };
+  const handleDragEnd = () => {
+    setDraggingId(null);
+    setDragOver(null);
+    setDragHeight(0);
+  };
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -603,12 +615,12 @@ function TrackerScreen() {
                 status="saved"
                 jobs={savedJobs}
                 isDropTarget={dragOver === "saved" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("saved")}
-                onDragLeave={() => setDragOver((v) => (v === "saved" ? null : v))}
                 onDrop={() => handleDrop("saved")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
@@ -620,12 +632,12 @@ function TrackerScreen() {
                 status="applied"
                 jobs={appliedJobs}
                 isDropTarget={dragOver === "applied" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("applied")}
-                onDragLeave={() => setDragOver((v) => (v === "applied" ? null : v))}
                 onDrop={() => handleDrop("applied")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
@@ -637,12 +649,12 @@ function TrackerScreen() {
                 status="interview"
                 jobs={interviewJobs}
                 isDropTarget={dragOver === "interview" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("interview")}
-                onDragLeave={() => setDragOver((v) => (v === "interview" ? null : v))}
                 onDrop={() => handleDrop("interview")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
