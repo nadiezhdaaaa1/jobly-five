@@ -1,89 +1,60 @@
+# Tracker v2 Rebuild
 
-# Digest + Job Drawer v2
+Rewrite `src/routes/_authenticated/tracker.tsx` from scratch against the v2 spec. Reuse the shared `tracker-store`, existing `JobDrawer`, and `InterviewReminderDialog`. Do NOT touch design tokens, Digest, drawer internals, or reminder popup internals.
 
-Rebuild the Digest screen and Job Drawer against a single shared client-side job store, so status changes anywhere (digest card, drawer, right-rail counts, Tracker screen) stay in sync. Keep the header, greeting, tokens, and card visual anatomy exactly as they are.
+## 1. Data source: shared store, not local state
 
-## 1. Shared job store
+Delete the local `Application[]` / `INITIAL` array and local `useState`. The tracker reads jobs from `TODAY_JOBS`/`YESTERDAY_JOBS` (+ any older days already exposed in `jobs-data`) joined with `useJobRecord` from `@/lib/tracker-store`. Status, dates, reminders, notes all come from the store — the same source the Digest and Drawer already mutate. This is what makes drag/drop, dropdowns, and drawer edits stay in sync.
 
-New file `src/lib/tracker-store.ts` (module singleton + `useSyncExternalStore` hook):
+If the current mock jobs pool doesn't have ~15 items distributed across states (5 Saved, 4 Applied, 3 Interview incl. one with reminder today + one upcoming + one none, 2 Offer, 1 Rejection), extend `src/lib/jobs-data.ts` seed `initialState`s and add a small seed pass in `tracker-store` for reminders (one today ISO, one future ISO) so the target distribution is guaranteed on first load.
 
-- `Status = "default" | "saved" | "applied" | "interview" | "offer" | "rejection" | "dismissed" | "reported"` (extends today's `CardState`).
-- Per-job record: `{ status, savedAt, appliedAt, interviewAt, offerAt, rejectionAt, reminderAt?: ISO, notes: string }`.
-- Actions: `setStatus(id, next)`, `setReminder(id, iso|null)`, `setNotes(id, text)`, `removeFromTracker(id)` (→ back to `default`, clears dates).
-- Selectors: `useJobState(id)`, `useCounts()` returning `{ saved, applied, interview }`.
-- Seeded from `TODAY_JOBS`/`YESTERDAY_JOBS` `initialState` on first read; extended below.
+## 2. Header
 
-`CardState` in `src/lib/jobs-data.ts` widens to the new `Status` union; existing consumers (`Tracker`, `AppNav`) keep working because the added states are additive.
+- H1 "Tracker" + muted counter `{total} applications` where total = count of records whose status ∈ {saved, applied, interview, offer, rejection}. Drop the "· N need a follow-up" fragment.
+- Right: segmented tabs `Ongoing · Received offers · Rejections` (dark fill active, plain inactive in a 1px bordered container, 4px radius). Local `useState` `tab: "ongoing" | "offers" | "rejections"`, default `ongoing`.
 
-## 2. Mock data expansion (`src/lib/jobs-data.ts`)
+## 3. Tab 1 — Ongoing (Kanban)
 
-- Today (5 jobs): Nimbus 95 saved, Orion 86 default, Vertex 74 default, Helix 71 applied, Quantum 70 dismissed.
-- Yesterday (5): mix of default/saved plus one Interview w/ reminder (e.g. Figma) and one Reported (e.g. Deno). Distinct jobs at Vercel/Figma/GitLab/Chromatic/Deno.
-- Add two more full 5-job digests (Fri Jul 17, Thu Jul 16) with distinct companies (Linear, Notion, Ramp, Stripe, Shopify, Airbnb, Discord, Cloudflare, Datadog, Retool). Include at least one Applied w/ status dropdown demoing regime B, plus one Disliked compact row.
-- Provide `getDigestDays(): { key, label, jobs }[]` helper so the wall + lazy loader read from one source.
+Three equal columns `Saved · Applied · Interview` with header (name + gray count tag), 12px vertical gaps.
 
-## 3. Digest screen (`src/routes/_authenticated/dashboard.tsx`)
+**Sorting:** newest-first by the timestamp of the current status (`savedAt` / `appliedAt` / `interviewAt`), descending. Cards freshly moved land on top automatically.
 
-### Left column — Parameters card
-- Replace current `ProfileCard`. Header row: 56px gradient avatar left; "Edit parameters" text link (green, 600) on the right → `Link to="/profile"`. Remove pencil button and the 3D decoration.
-- Card title "Parameters" (Stack Sans display).
-- Render quiz sections dynamically from `useQuizStore()`: Role, Hard skills, Soft skills, Tools, Experience, Location and salary. Each section = 11px uppercase muted label + Body/Small value, hairline separators. Missing groups are skipped.
-- Resume block at bottom (hairline separator above): unchanged states, but CTA copy per spec; `Manage` becomes a text link (not a bordered button) when resume exists.
-- Sticky with independent internal scroll: `sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto`.
+**Drag & drop:** HTML5 DnD. On `dragover` set `dropTarget = column`; render a 2px dashed placeholder slot **above** the first card (never bottom). On drop → `setStatus(id, target)`. Dropping into Interview also opens `InterviewReminderDialog` (same shared dialog).
 
-### Center column — digest wall
-- Remove the collapsible "older days" rows. Instead, render each dated group as a plain header (date left, "N matches" right on background) followed by standalone job cards with 12px gaps. No outer wrapper.
-- Match counter = visible cards only (exclude dismissed/reported).
-- Lazy load: render first 2 days initially; `IntersectionObserver` on a sentinel appends the next day (skeleton row while loading, ~250ms simulated delay). Stop when data exhausted.
+**Card:** reuse the Digest card anatomy (logo square, title, meta, 52px ScoreRing, tags). Card body click opens `JobDrawer`.
 
-### Job card — two regimes
-Extract `JobCard` and split its right-side controls by regime derived from status:
+**Footer controls (regime by status):**
+- Saved: thumbs-down dropdown (Dislike → `dismissed`; Report → `reported`), bookmark active (green stroke, mint fill) which un-saves (`setStatus(id, "default")`), Apply dropdown (Tailor resume disabled + Coming soon, Cover letter disabled + Coming soon, divider, Open posting → new tab + "Did you apply?" toast → Yes moves to Applied).
+- Applied & Interview: X dropdown (Remove from tracker → `default`; Report → `reported`), no bookmark, Status dropdown button (`Applied ⌄` / `Interview ⌄`) with options Applied · Interview · Received offer · Rejection. Selecting Interview opens reminder dialog. Offer/Rejection move card off the Ongoing board.
+- Interview cards also show reminder chip in footer: calendar + `shortDateTime(reminderAt)`, mint/gray if upcoming, `#FFEDD4` if today (use `dateHelpers.isSameLocalDay`). Omit if no reminder.
 
-**Regime A** (`default` | `saved`): existing thumbs-down menu, bookmark, Apply dropdown. On "Open posting to apply" → open new tab, show existing bottom toast "Did you apply to {title}?" → Yes sets `applied`.
+**Empty states:** per column dashed slot "Nothing here yet"; board fully empty → centered "Nothing tracked yet" + accent `Open digest` link to `/dashboard`.
 
-**Regime B** (`applied` | `interview` | `offer` | `rejection`):
-- Left: **X** icon-button opening menu with `Remove from tracker` (→ status back to default) and `Report — looks fake or ghost` (danger).
-- No bookmark.
-- Right: bordered **status dropdown** (`Applied ⌄`) listing Applied / Interview / Received offer / Rejection. Selecting Interview triggers the shared reminder modal (see §5). Selecting any status updates the store; the digest, drawer, right-rail, and Tracker reflect it immediately.
-- Interview cards also render a reminder chip in the footer (mint if future, orange-subtle if today).
+## 4. Tab 2 — Received offers
 
-**Regime C** — compact rows for `dismissed` / `reported`: single-line muted logo + title/meta + date right + `Disliked`/`Reported` tag, 55% opacity, no drawer, no actions. Transient toast with Undo appears immediately after the action (auto-dismiss ~5s).
+CSS grid, `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`, gap 12px. Header row inside content area: "Received offers" + count tag. Sorted newest-first by `offerAt`.
 
-### Right column
-- Tracker widget: counts pulled from `useCounts()`; "Open tracker" is a `Link to="/tracker"` (green, 600).
-- Salary insights teaser unchanged.
+Card footer: X dropdown (Remove / Report), Status dropdown `Offer ⌄` with same 4 options (moves back to Ongoing board if Applied/Interview). Mint date tag: `Received {shortDate(offerAt)}`. No thumbs-down, no bookmark, no Apply.
 
-## 4. Job Drawer (`src/components/app/JobDrawer.tsx`)
+## 5. Tab 3 — Rejections
 
-Rebuild layout per spec:
-- Only the X button is sticky (top-right). Everything else scrolls as one flow.
-- Identity block: 48px logo + 64px `BigRing` side by side; title (18–20/600); meta line; "why it fits".
-- Full-width **Open posting** button (white, 1px border, external-link icon). When status is not yet `applied`, opening it starts the "Did you apply?" return-confirm (reuse toast).
-- Hairline separator.
-- **Stage-dependent body**, driven by store status:
-  - **Saved** / **Applied** / **Interview**: two side-by-side buttons `Rejection` (white/border) and `Received offer` (accent, lightning); "Status" label + segmented control (Saved · Applied · Interview) — active tab dark fill/white text; date line ("Saved Jul 18" / "Applied Jul 18" / same); Interview adds the reminder section (Set a reminder → popup; chip with Edit/Remove; orange-subtle when today).
-  - **Received offer**: mint `#D8FBEF` banner "Congratulations on the offer!"; "Received {date}"; muted `Change status` link reopens status choice.
-  - **Rejection**: red-subtle `#FFE2E2` banner with title + body copy; "Received {date}"; `Change status` link.
-- **Notes** textarea present in every state, autosave on blur → `setNotes`.
-- Footer text links: `Report — looks fake or ghost` (danger, left) and `Remove from tracker` (muted, right). Offer state omits Report; Rejection state keeps only Remove.
+Same grid as offers. Header "Rejections" + count. Sorted newest-first by `rejectionAt`. Card footer: X dropdown, Status dropdown `Rejection ⌄`. Red-subtle date tag (`#FFE2E2` bg, `#D00D01` text): `Received {shortDate(rejectionAt)}`. Media/title dimmed ~70% opacity, controls full opacity.
 
-Drop the existing sticky action row, details table, and sources block — spec says drawer content is short and focused.
+## 6. Shared bits to add
 
-## 5. Shared Interview reminder modal
+- A small `StatusDropdown` component (bordered button, chevron, options list) used in Applied/Interview/Offer/Rejection footers.
+- An `IconMenu` popover for the thumbs-down and X menus (danger red on Report).
+- An `ApplyMenu` popover matching the Digest's (same three items and confirm toast). If a reusable one exists in the Digest file, extract it into `src/components/app/` and import from both; otherwise copy the pattern here.
+- Reminder dialog is triggered via the same `InterviewReminderDialog` already in the drawer flow; opening it on drop or on status→Interview writes `reminderAt` via `setReminder`.
 
-New `src/components/app/InterviewReminderDialog.tsx`. Global-ish: mounted once inside `DigestScreen` and once inside `JobDrawer` (both call the same component; imperative open via local state). Centered modal, 8px radius, scrim, shadow. Fields: date input + time input. Buttons: `Save reminder` (accent) writes `setReminder(id, iso)`, `Cancel` closes and leaves reminder unset. Both paths still transition status to `interview`.
+## 7. Drawer wiring
 
-## 6. Tracker sync
+Card body click sets `openId`. Render existing `JobDrawer` (unchanged). All its mutations already flow through the store, so Kanban/tabs/counts refresh automatically.
 
-Tracker screen (`src/routes/_authenticated/tracker.tsx`) already renders columns from a local store — repoint it to `useJobState`/`useCounts` so Digest actions appear there instantly. Removing from tracker via any surface sets status back to `default`; setting Applied/Interview/Offer/Rejection from Digest places the card in the corresponding column.
+## 8. Files touched
 
-## 7. Technical notes
+- `src/routes/_authenticated/tracker.tsx` — full rewrite.
+- `src/lib/jobs-data.ts` — only if needed to guarantee the 5/4/3/2/1 mock distribution and reminder ISOs.
+- `src/lib/tracker-store.ts` — optionally add a small seed for two interview reminders (one today, one upcoming) so the orange/gray chips both show on first load.
 
-- Store lives in a plain module + `useSyncExternalStore`; no context provider needed. Reads inside SSR-safe branch (`if (typeof window)`).
-- Reminder dates: stored as ISO strings; "today" = same YYYY-MM-DD in local tz.
-- Skeleton row: 96px, border, `animate-pulse` on a muted rectangle.
-- Toast component inlined (already used today); extract to `Toast.tsx` if reused >2 places.
-- All colors via existing tokens; no new palette entries. Radii per spec (4px controls, 6px cards, 8px big cards/modals).
-
-## Out of scope
-Header/tab bar, greeting block, palette, card visual anatomy (logo/ring/tags), mobile bottom tab bar — untouched.
+Untouched: AppNav, JobDrawer internals, InterviewReminderDialog internals, Digest, design tokens.
