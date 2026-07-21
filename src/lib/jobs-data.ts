@@ -219,9 +219,9 @@ export const TODAY_JOBS: Job[] = [
 ];
 
 export const YESTERDAY_JOBS: Job[] = [
-  withDefaults({ id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "Next.js + React expert, staff-level scope, salary above your target", source: "direct", postedDays: 2 }),
-  withDefaults({ id: "y2", title: "Senior Software Engineer, Web", company: "Figma", location: "Hybrid, San Francisco", salary: "$175–215K", score: 68, why: "TypeScript + React fit, senior IC track, salary in range", source: "direct", postedDays: 2 }),
-  withDefaults({ id: "y3", title: "Senior Frontend Engineer", company: "Linear", location: "Remote (US)", salary: "$170–210K", score: 76, why: "React + TypeScript match, senior role, competitive comp", source: "direct", postedDays: 3 }),
-  withDefaults({ id: "y4", title: "Senior Product Engineer", company: "Notion", location: "Hybrid, New York", salary: "$180–220K", score: 72, why: "Full-stack React fit, senior scope, salary aligned", source: "aggregated", postedDays: 3 }),
-  withDefaults({ id: "y5", title: "Senior Frontend Developer", company: "Ramp", location: "Hybrid, New York", salary: "$175–210K", score: 70, why: "React + TS strong match, senior level, salary within range", source: "direct", postedDays: 4 }),
+  withDefaults({ id: "y1", title: "Staff Frontend Engineer", company: "Vercel", location: "Remote (US)", salary: "$190–230K", score: 79, why: "React + TypeScript match; staff scope stretches your senior track; comp above your $100–160K range", source: "direct", postedDays: 2 }),
+  withDefaults({ id: "y2", title: "Senior Software Engineer, Web", company: "Figma", location: "Hybrid, San Francisco", salary: "$175–215K", score: 68, why: "React + TypeScript senior fit; salary above range; hybrid SF outside your NYC/Baltimore/Philly preference", source: "direct", postedDays: 3 }),
+  withDefaults({ id: "y3", title: "Senior Vue.js Developer", company: "GitLab", location: "Remote (US)", salary: "$155–185K", score: 81, why: "Vue in your stack; senior level; salary sits right in your $100–160K range; fully remote", source: "direct", postedDays: 2 }),
+  withDefaults({ id: "y4", title: "Frontend Engineer, Design Systems", company: "Chromatic", location: "Remote (US)", salary: "$150–175K", score: 72, why: "React + TypeScript design-system work; salary inside your range; remote matches your preference", source: "aggregated", postedDays: 5 }),
+  withDefaults({ id: "y5", title: "Senior TypeScript Engineer", company: "Deno", location: "Remote (US)", salary: "$160–190K", score: 66, why: "TypeScript-first role; senior scope; salary just above your range; remote fits your preference", source: "aggregated", postedDays: 4 }),
 ];

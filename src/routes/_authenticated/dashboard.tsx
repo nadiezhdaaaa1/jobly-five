@@ -48,10 +48,10 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
   return (
     <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-green)" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
       </svg>
-      <span className="absolute text-[14px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
+      <span className="absolute text-[14px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
         {score}%
       </span>
     </div>
@@ -63,9 +63,8 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 function ProfileCard() {
   const resume = useResumeState();
   const rows = [
-    { label: "Field", value: "Program, Project & Technical-Adjacent" },
-    { label: "Role", value: "Backend Engineer" },
-    { label: "Stack", value: "Node, Java, Swift" },
+    { label: "Role", value: "Frontend Engineer" },
+    { label: "Stack", value: "React, Vue, TypeScript" },
     { label: "Experience", value: "Senior · 13y · English · Spanish · Dutch" },
     { label: "Location and salary", value: "New York City · Baltimore · Philadelphia · $100k–$160k" },
   ];
@@ -74,17 +73,16 @@ function ProfileCard() {
       <div className="flex items-start justify-between">
         <div
           className="flex h-14 w-14 items-center justify-center rounded-[6px] text-[20px] font-semibold text-white"
-          style={{ background: "linear-gradient(135deg, var(--color-accent), var(--color-green))" }}
+          style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
           aria-hidden
         >
           S
         </div>
-        <button type="button" aria-label="Edit profile" className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+        <button type="button" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
           <PencilIcon size={16} strokeWidth={1.6} />
         </button>
       </div>
-      <h2 className="mt-3 text-[16px] font-semibold text-[color:var(--color-foreground)]">Parameters</h2>
-      <div className="mt-3 divide-y">
+      <div className="mt-4 divide-y">
         {rows.map((r) => (
           <div key={r.label} className="py-3 first:pt-0">
             <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">{r.label}</div>
@@ -323,9 +321,9 @@ function JobCard({
             aria-label="Save to tracker"
             aria-pressed={saved}
             onClick={() => setState(saved ? "default" : "saved")}
-            className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${saved ? "border-[color:var(--color-green)] bg-[color:var(--color-mint)] text-[color:var(--color-green)]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
+            className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${saved ? "border-[#0E735A] text-[#0E735A]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
           >
-            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "#D8FBEF" : "none"} />
           </button>
 
           {/* Apply */}
@@ -447,10 +445,10 @@ function OlderDayRow({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-left"
+        className="flex w-full items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] p-[14px] text-left hover:bg-[color:var(--color-surface-2)]"
       >
         <span className="text-[14px] text-[color:var(--color-text-secondary)]">
-          {group.label} · {group.jobs.length} matches
+          {group.label} · <span className="font-semibold text-[color:var(--color-foreground)]">{group.jobs.length} matches</span>
         </span>
         {open ? <ChevronUp size={16} strokeWidth={1.6} /> : <ChevronDown size={16} strokeWidth={1.6} />}
       </button>
