@@ -221,10 +221,10 @@ function JobCard({
           </div>
         </div>
         <div className="text-right">
-          <span className="text-[18px] font-semibold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
+          <span className="text-[20px] font-semibold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
             {job.score}
           </span>
-          <span className="text-[12px] text-[color:var(--color-green)]">%</span>
+          <span className="text-[14px] text-[color:var(--color-green)]">%</span>
         </div>
       </button>
 
