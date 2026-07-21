@@ -1400,7 +1400,7 @@ export function LocationStep({
         }
       `}</style>
 
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
