@@ -17,8 +17,18 @@ import {
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
-import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers, type WorkMode } from "@/lib/quiz-store";
-import { ROLES, USA_LOCATIONS } from "@/lib/quiz-data";
+import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
+import {
+  FieldStep,
+  RoleStep,
+  SingleSkillStep,
+  ExperienceStep,
+  LocationStep,
+  StepShell,
+  STEP_ORDER,
+  type StepKey,
+} from "@/routes/quiz";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
@@ -287,18 +297,7 @@ function ProfileScreen() {
           {/* Main column */}
           <div className="flex flex-col gap-4">
             {/* Card 1: Match preferences */}
-            <MatchCard
-              quiz={quiz}
-              editing={editing === "match"}
-              onEdit={() => setEditing("match")}
-              onCancel={() => {
-                setEditing(null);
-                window.setTimeout(() => matchPencilRef.current?.focus(), 0);
-              }}
-              onSave={saveMatch}
-              flash={flash === "match"}
-              pencilRef={matchPencilRef}
-            />
+            <MatchCard onSaved={saveMatch} flash={flash === "match"} />
 
             {/* Card 2: Previous jobs */}
             <JobsCard
@@ -485,303 +484,172 @@ function SectionShell({
 
 // ---------- Match preferences ----------
 
-function MatchCard({
-  quiz,
-  editing,
-  onEdit,
-  onCancel,
-  onSave,
-  flash,
-  pencilRef,
-}: {
-  quiz: QuizAnswers;
-  editing: boolean;
-  onEdit: () => void;
-  onCancel: () => void;
-  onSave: (next: QuizAnswers) => void;
-  flash: boolean;
-  pencilRef: React.RefObject<HTMLButtonElement | null>;
-}) {
-  const summary = quizSummary(quiz);
+function MatchCard({ onSaved, flash }: { onSaved: (next: QuizAnswers) => void; flash: boolean }) {
+  const [committed, setCommitted] = useState<QuizAnswers>(() => loadQuiz());
+  const [draft, setDraft] = useState<QuizAnswers>(committed);
+  const [editing, setEditing] = useState<StepKey | null>(null);
 
-  return (
-    <SectionShell
-      title="Match preferences"
-      editing={editing}
-      onEdit={onEdit}
-      flash={flash}
-      pencilRef={pencilRef}
-    >
-      {editing ? (
-        <MatchEdit quiz={quiz} onCancel={onCancel} onSave={onSave} />
-      ) : (
-        <div className="divide-y">
-          <Row label="Role" value={summary.roles} />
-          <Row label="Stack" value={summary.stack} />
-          <Row label="Experience" value={summary.experience} />
-          <Row label="Location and salary" value={summary.locationAndSalary} />
-        </div>
-      )}
-    </SectionShell>
-  );
-}
+  const STEPS: StepKey[] = ["field", "role", "hard", "tools", "soft", "level", "loc"];
 
-function MatchEdit({ quiz, onCancel, onSave }: { quiz: QuizAnswers; onCancel: () => void; onSave: (q: QuizAnswers) => void }) {
-  const [role, setRole] = useState<string>(quiz.roles?.[0] ?? "Frontend Engineer");
-  const [roleQuery, setRoleQuery] = useState("");
-  const [stack, setStack] = useState<string[]>(quiz.hardSkills?.length ? quiz.hardSkills : ["React", "Vue", "TypeScript"]);
-  const [stackInput, setStackInput] = useState("");
-  const [level, setLevel] = useState<string>(quiz.level ?? "Senior");
-  const initialWorks: Record<string, boolean> = {
-    remote: quiz.workMode === "remote" || !!quiz.remote,
-    hybrid: false,
-    onsite: quiz.workMode === "onsite",
+  const openEdit = (key: StepKey) => {
+    setDraft(committed);
+    setEditing(key);
   };
-  if (!initialWorks.remote && !initialWorks.hybrid && !initialWorks.onsite) initialWorks.remote = true;
-  const [works, setWorks] = useState(initialWorks);
-  const [locations, setLocations] = useState<string[]>(quiz.locations?.length ? quiz.locations : ["New York City", "Baltimore", "Philadelphia"]);
-  const [locInput, setLocInput] = useState("");
-  const [salaryMin, setSalaryMin] = useState<number>(quiz.salaryMin ?? 100);
-  const [salaryMax, setSalaryMax] = useState<number>(quiz.salaryMax ?? 160);
+  const cancel = () => {
+    setDraft(committed);
+    setEditing(null);
+  };
+  const patchDraft = (patch: Partial<QuizAnswers>) => setDraft((d) => ({ ...d, ...patch }));
 
-  const roleSuggestions = useMemo(() => {
-    if (!roleQuery.trim()) return [] as string[];
-    const q = roleQuery.toLowerCase();
-    return ROLES.filter((r) => r.toLowerCase().includes(q)).slice(0, 6);
-  }, [roleQuery]);
+  const commit = (next: QuizAnswers) => {
+    // Cascade prune based on the step being saved.
+    let out: QuizAnswers = { ...next };
 
-  const locSuggestions = useMemo(() => {
-    if (!locInput.trim()) return [] as string[];
-    const q = locInput.toLowerCase();
-    return USA_LOCATIONS.filter((l) => l.toLowerCase().includes(q) && !locations.includes(l.split(",")[0])).slice(0, 6);
-  }, [locInput, locations]);
+    // If field changed, drop roles that no longer belong to the new field.
+    if (out.field) {
+      const allowed = new Set(FIELD_ROLES[out.field as keyof typeof FIELD_ROLES] ?? []);
+      const roles = (out.roles ?? []).filter((r) => allowed.has(r));
+      out.roles = roles;
+      out.role = roles[0];
+    }
+    // Prune skills to the pool derived from current roles.
+    const pool = skillsForRoles(out.roles ?? [], out.field);
+    out.hardSkills = (out.hardSkills ?? []).filter((s) => pool.hard.includes(s));
+    out.tools = (out.tools ?? []).filter((s) => pool.tools.includes(s));
+    out.softSkills = (out.softSkills ?? []).filter((s) => SOFT_SKILLS.includes(s));
 
-  const invalid = salaryMin > salaryMax;
+    updateQuiz(out);
+    setCommitted(out);
+    setDraft(out);
+    setEditing(null);
+    onSaved(out);
+  };
 
-  function commitStack(tag: string) {
-    const t = tag.trim();
-    if (!t || stack.includes(t)) return;
-    setStack([...stack, t]);
-    setStackInput("");
-  }
+  const source = editing ? draft : committed;
+  const rolesList = source.roles ?? (source.role ? [source.role] : []);
+  const pool = skillsForRoles(rolesList, source.field);
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (invalid) return;
-    const workMode: WorkMode | undefined = works.onsite && !works.remote ? "onsite" : "remote";
-    onSave({
-      ...quiz,
-      roles: [role],
-      role,
-      hardSkills: stack,
-      level,
-      workMode,
-      remote: works.remote,
-      locations: works.remote && !works.hybrid && !works.onsite ? [] : locations,
-      salaryMin,
-      salaryMax,
-    });
-  }
-
-  const locationsHidden = works.remote && !works.hybrid && !works.onsite;
+  const invalidFor = (key: StepKey): boolean => {
+    switch (key) {
+      case "field": return !committed.field;
+      case "role": return !(committed.roles?.length);
+      case "hard": return !(committed.hardSkills?.length);
+      case "tools": return !(committed.tools?.length);
+      case "soft": return !(committed.softSkills?.length);
+      case "level": return !committed.level;
+      case "loc": return !committed.workMode || (committed.workMode !== "remote" && !(committed.locations?.length));
+      default: return false;
+    }
+  };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
-      {/* Role */}
-      <div>
-        <label className="text-[12px] text-[color:var(--color-text-muted)]">Role</label>
-        <div className="mt-1 flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[13px]">
-            {role}
-          </span>
-          <input
-            autoFocus
-            value={roleQuery}
-            onChange={(e) => setRoleQuery(e.target.value)}
-            placeholder="Search a different role"
-            className="h-9 flex-1 rounded-[4px] border px-3 text-[13px]"
-          />
-        </div>
-        {roleSuggestions.length ? (
-          <div className="mt-1 flex flex-wrap gap-1.5">
-            {roleSuggestions.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => {
-                  setRole(r);
-                  setRoleQuery("");
-                }}
-                className="rounded-[4px] border px-2 py-1 text-[12px] hover:border-[color:var(--color-border-strong)]"
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        ) : null}
-      </div>
-
-      {/* Stack */}
-      <div>
-        <label className="text-[12px] text-[color:var(--color-text-muted)]">Stack</label>
-        <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-[4px] border p-2">
-          {stack.map((s) => (
-            <span key={s} className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">
-              {s}
-              <button
-                type="button"
-                aria-label={`Remove ${s}`}
-                onClick={() => setStack(stack.filter((x) => x !== s))}
-                className="rounded-full hover:bg-[color:var(--color-surface-2)]"
-              >
-                <X size={12} strokeWidth={2} />
-              </button>
-            </span>
-          ))}
-          <input
-            value={stackInput}
-            onChange={(e) => setStackInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                commitStack(stackInput);
-              } else if (e.key === "Backspace" && !stackInput && stack.length) {
-                setStack(stack.slice(0, -1));
-              }
-            }}
-            placeholder="Add a technology, press Enter"
-            className="min-w-[160px] flex-1 border-none bg-transparent px-1 text-[13px] outline-none"
-          />
-        </div>
-      </div>
-
-      {/* Level segmented */}
-      <div>
-        <label className="text-[12px] text-[color:var(--color-text-muted)]">Level</label>
-        <div className="mt-1 inline-flex overflow-hidden rounded-[4px] border">
-          {LEVELS.map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setLevel(l)}
-              className={`px-3 py-1.5 text-[13px] ${level === l ? "bg-[color:var(--color-accent)] text-[color:var(--color-on-accent)]" : "hover:bg-[color:var(--color-surface-2)]"}`}
+    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+      <header className="flex items-center justify-between">
+        <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Match preferences</h2>
+        {flash ? <span className="text-[12px] text-[color:var(--color-green)]">Saved</span> : null}
+      </header>
+      <ol className="mt-3 flex flex-col gap-2">
+        {STEPS.map((key) => {
+          const expanded = editing === key;
+          return (
+            <StepShell
+              key={key}
+              stepKey={key}
+              expanded={expanded}
+              answers={committed}
+              invalid={invalidFor(key)}
+              onEdit={() => openEdit(key)}
             >
-              {l}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Work type */}
-      <div>
-        <label className="text-[12px] text-[color:var(--color-text-muted)]">Work type</label>
-        <div className="mt-1 flex gap-4">
-          {WORK_TYPES.map((w) => (
-            <label key={w.key} className="flex items-center gap-2 text-[13px]">
-              <input
-                type="checkbox"
-                checked={works[w.key]}
-                onChange={(e) => setWorks({ ...works, [w.key]: e.target.checked })}
-              />
-              {w.label}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Locations */}
-      {!locationsHidden ? (
-        <div>
-          <label className="text-[12px] text-[color:var(--color-text-muted)]">Locations</label>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded-[4px] border p-2">
-            {locations.map((l) => (
-              <span key={l} className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px]">
-                {l}
-                <button type="button" aria-label={`Remove ${l}`} onClick={() => setLocations(locations.filter((x) => x !== l))}>
-                  <X size={12} strokeWidth={2} />
-                </button>
-              </span>
-            ))}
-            <input
-              value={locInput}
-              onChange={(e) => setLocInput(e.target.value)}
-              placeholder="Add a city"
-              className="min-w-[160px] flex-1 border-none bg-transparent px-1 text-[13px] outline-none"
-            />
-          </div>
-          {locSuggestions.length ? (
-            <div className="mt-1 flex flex-wrap gap-1.5">
-              {locSuggestions.map((s) => {
-                const city = s.split(",")[0];
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => {
-                      setLocations([...locations, city]);
-                      setLocInput("");
-                    }}
-                    className="rounded-[4px] border px-2 py-1 text-[12px] hover:border-[color:var(--color-border-strong)]"
-                  >
-                    {s}
-                  </button>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      {/* Salary */}
-      <div>
-        <label className="text-[12px] text-[color:var(--color-text-muted)]">Salary range</label>
-        <div className="mt-1 flex items-center gap-3">
-          <div className="relative">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-[color:var(--color-text-muted)]">$</span>
-            <input
-              type="number"
-              aria-label="Minimum salary"
-              aria-describedby={invalid ? "salary-error" : undefined}
-              value={salaryMin}
-              onChange={(e) => setSalaryMin(Number(e.target.value))}
-              className="h-9 w-28 rounded-[4px] border pl-6 pr-2 text-[13px]"
-            />
-            <div className="mt-0.5 text-[11px] text-[color:var(--color-text-muted)]">Minimum (k)</div>
-          </div>
-          <div className="relative">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-[color:var(--color-text-muted)]">$</span>
-            <input
-              type="number"
-              aria-label="Target salary"
-              value={salaryMax}
-              onChange={(e) => setSalaryMax(Number(e.target.value))}
-              className="h-9 w-28 rounded-[4px] border pl-6 pr-2 text-[13px]"
-            />
-            <div className="mt-0.5 text-[11px] text-[color:var(--color-text-muted)]">Target (k)</div>
-          </div>
-        </div>
-        {invalid ? (
-          <div id="salary-error" className="mt-1 text-[12px] text-[color:var(--color-danger)]">Minimum can't exceed target.</div>
-        ) : null}
-      </div>
-
-      <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-        These preferences directly shape your match scores.
-      </div>
-
-      <div className="flex items-center gap-2">
-        <button
-          type="submit"
-          disabled={invalid}
-          className="h-10 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
-        >
-          Save
-        </button>
-        <button type="button" onClick={onCancel} className="h-10 rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
-          Cancel
-        </button>
-      </div>
-    </form>
+              {key === "field" && (
+                <FieldStep
+                  value={draft.field}
+                  onChange={(f) => patchDraft({ field: f })}
+                  onContinue={() => commit(draft)}
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "role" && (
+                <RoleStep
+                  field={draft.field}
+                  value={draft.roles ?? []}
+                  onChange={(v) => patchDraft({ roles: v, role: v[0] })}
+                  onContinue={() => commit(draft)}
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "hard" && (
+                <SingleSkillStep
+                  title="Your hard skills"
+                  description="Pick technologies you're strong with."
+                  label="Hard skills"
+                  hint="Select all that apply."
+                  options={pool.hard}
+                  value={draft.hardSkills ?? []}
+                  onChange={(v) => patchDraft({ hardSkills: v })}
+                  onContinue={() => commit(draft)}
+                  searchPlaceholder="Search hard skills"
+                  required
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "tools" && (
+                <SingleSkillStep
+                  title="Tools you use"
+                  description="Pick the tools that match your workflow."
+                  label="Tools"
+                  hint="Select all that apply."
+                  options={pool.tools}
+                  value={draft.tools ?? []}
+                  onChange={(v) => patchDraft({ tools: v })}
+                  onContinue={() => commit(draft)}
+                  searchPlaceholder="Search tools"
+                  required
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "soft" && (
+                <SingleSkillStep
+                  title="Soft skills"
+                  description="Pick the qualities that describe how you work."
+                  label="Soft skills"
+                  hint="Select all that apply."
+                  options={SOFT_SKILLS}
+                  value={draft.softSkills ?? []}
+                  onChange={(v) => patchDraft({ softSkills: v })}
+                  onContinue={() => commit(draft)}
+                  searchPlaceholder="Search soft skills"
+                  required
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "level" && (
+                <ExperienceStep
+                  answers={draft}
+                  onChange={patchDraft}
+                  onContinue={() => commit(draft)}
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+              {key === "loc" && (
+                <LocationStep
+                  answers={draft}
+                  onChange={patchDraft}
+                  onContinue={() => commit(draft)}
+                  submitLabel="Save"
+                  onCancel={cancel}
+                />
+              )}
+            </StepShell>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 

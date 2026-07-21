@@ -34,7 +34,7 @@ export const Route = createFileRoute("/quiz")({
   component: QuizPage,
 });
 
-type StepKey =
+export type StepKey =
   | "field"
   | "role"
   | "hard"
@@ -43,7 +43,7 @@ type StepKey =
   | "level"
   | "loc"
   | "email";
-const STEP_ORDER: StepKey[] = [
+export const STEP_ORDER: StepKey[] = [
   "field",
   "role",
   "hard",
@@ -385,7 +385,7 @@ function QuizPage() {
 
 // ---------- Step shell (expanded card OR collapsed summary) ----------
 
-function StepShell({
+export function StepShell({
   stepKey,
   expanded,
   answers,
@@ -473,7 +473,7 @@ function StepShell({
   );
 }
 
-const SUMMARY_LABEL: Record<StepKey, string> = {
+export const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
   hard: "Hard skills",
@@ -484,7 +484,7 @@ const SUMMARY_LABEL: Record<StepKey, string> = {
   email: "Email",
 };
 
-function summaryValue(key: StepKey, a: QuizAnswers): string {
+export function summaryValue(key: StepKey, a: QuizAnswers): string {
   switch (key) {
     case "field":
       return a.field ?? "";
@@ -543,14 +543,18 @@ function StepHeading({ children }: { children: React.ReactNode }) {
 
 // ---------- 0. Field ----------
 
-function FieldStep({
+export function FieldStep({
   value,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   value?: string;
   onChange: (f: string) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   return (
     <div>
@@ -596,23 +600,27 @@ function FieldStep({
           })}
         </div>
       </div>
-      <ContinueRow disabled={!value} onClick={onContinue} />
+      <ContinueRow disabled={!value} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
 
 // ---------- 1. Role ----------
 
-function RoleStep({
+export function RoleStep({
   field,
   value,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   field?: string;
   value: string[];
   onChange: (v: string[]) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const roles = field ? FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [] : [];
@@ -718,14 +726,14 @@ function RoleStep({
         </div>
       </div>
 
-      <ContinueRow disabled={value.length === 0} onClick={onContinue} />
+      <ContinueRow disabled={value.length === 0} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
 
 // ---------- 2. Skills (split: hard / tools / soft) ----------
 
-function SingleSkillStep({
+export function SingleSkillStep({
   title,
   description,
   label,
@@ -736,6 +744,8 @@ function SingleSkillStep({
   onContinue,
   searchPlaceholder,
   required = false,
+  submitLabel,
+  onCancel,
 }: {
   title: string;
   description: string;
@@ -747,6 +757,8 @@ function SingleSkillStep({
   onContinue: () => void;
   searchPlaceholder: string;
   required?: boolean;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const canContinue = required ? value.length > 0 : true;
   return (
@@ -763,7 +775,7 @@ function SingleSkillStep({
         onChange={onChange}
         searchPlaceholder={searchPlaceholder}
       />
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
@@ -895,14 +907,18 @@ const LEVEL_IMAGES: Record<string, string> = {
   Lead: leaImg.url,
 };
 
-function ExperienceStep({
+export function ExperienceStep({
   answers,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   answers: QuizAnswers;
   onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const level = answers.level;
   const years = answers.years ?? 0;
@@ -1129,7 +1145,7 @@ function ExperienceStep({
         }
       `}</style>
 
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
@@ -1140,14 +1156,18 @@ const SAL_MIN = 60_000;
 const SAL_MAX = 220_000;
 const SAL_STEP = 5_000;
 
-function LocationStep({
+export function LocationStep({
   answers,
   onChange,
   onContinue,
+  submitLabel,
+  onCancel,
 }: {
   answers: QuizAnswers;
   onChange: (p: Partial<QuizAnswers>) => void;
   onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
 }) {
   const workMode = answers.workMode;
   const locations = answers.locations ?? [];
@@ -1380,7 +1400,7 @@ function LocationStep({
         }
       `}</style>
 
-      <ContinueRow disabled={!canContinue} onClick={onContinue} />
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
@@ -1504,21 +1524,41 @@ function EmailStep({
 
 // ---------- Continue button row ----------
 
-function ContinueRow({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+function ContinueRow({
+  disabled,
+  onClick,
+  label,
+  onCancel,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+  label?: string;
+  onCancel?: () => void;
+}) {
+  const primaryLabel = label ?? (onCancel ? "Save" : "Continue");
   return (
-    <div className="mt-6">
+    <div className="mt-6 flex items-center gap-2">
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+        >
+          Cancel
+        </button>
+      )}
       <button
         type="button"
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          "button-medium inline-flex h-12 w-full items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          "button-medium inline-flex h-12 flex-1 items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
           disabled
             ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
             : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
         )}
       >
-        Continue
+        {primaryLabel}
       </button>
     </div>
   );
