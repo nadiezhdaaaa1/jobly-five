@@ -18,7 +18,7 @@ import {
   type ResumeExperience,
 } from "@/lib/resume-store";
 import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { FIELD_ROLES, skillsForRoles } from "@/lib/quiz-data";
+import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
   FieldStep,
   RoleStep,
