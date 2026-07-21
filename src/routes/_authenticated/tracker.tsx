@@ -500,30 +500,27 @@ function TrackerScreen() {
   const [reminderJobId, setReminderJobId] = useState<string | null>(null);
   const [applyToast, setApplyToast] = useState<Job | null>(null);
 
-  // Compute buckets from the shared store on each render.
-  const buckets = useMemo(() => {
-    const b: Record<JobStatus, { job: Job; rec: JobRecord }[]> = {
-      default: [], saved: [], applied: [], interview: [], offer: [], rejection: [], dismissed: [], reported: [],
+  // Compute buckets from the shared store on each render. useTrackerVersion()
+  // above ensures we re-render on every store emit, so a plain (non-memoized)
+  // computation stays in sync with status changes from drag-and-drop.
+  const buckets: Record<JobStatus, { job: Job; rec: JobRecord }[]> = {
+    default: [], saved: [], applied: [], interview: [], offer: [], rejection: [], dismissed: [], reported: [],
+  };
+  for (const j of allJobs) {
+    const rec = readRecord(j.id);
+    buckets[rec.status].push({ job: j, rec });
+  }
+  const sortDesc = (key: keyof JobRecord) =>
+    (a: { rec: JobRecord }, x: { rec: JobRecord }) => {
+      const av = (a.rec[key] as string | undefined) ?? "";
+      const xv = (x.rec[key] as string | undefined) ?? "";
+      return xv.localeCompare(av);
     };
-    for (const j of allJobs) {
-      const rec = readRecord(j.id);
-      b[rec.status].push({ job: j, rec });
-    }
-    const sortDesc = (key: keyof JobRecord) =>
-      (a: { rec: JobRecord }, x: { rec: JobRecord }) => {
-        const av = (a.rec[key] as string | undefined) ?? "";
-        const xv = (x.rec[key] as string | undefined) ?? "";
-        return xv.localeCompare(av);
-      };
-    b.saved.sort(sortDesc("savedAt"));
-    b.applied.sort(sortDesc("appliedAt"));
-    b.interview.sort(sortDesc("interviewAt"));
-    b.offer.sort(sortDesc("offerAt"));
-    b.rejection.sort(sortDesc("rejectionAt"));
-    return b;
-  // Re-run when any store change bumps our sentinel version via useTrackerVersion.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allJobs, useVersion()]);
+  buckets.saved.sort(sortDesc("savedAt"));
+  buckets.applied.sort(sortDesc("appliedAt"));
+  buckets.interview.sort(sortDesc("interviewAt"));
+  buckets.offer.sort(sortDesc("offerAt"));
+  buckets.rejection.sort(sortDesc("rejectionAt"));
 
   const totalInTracker =
     buckets.saved.length + buckets.applied.length + buckets.interview.length + buckets.offer.length + buckets.rejection.length;
