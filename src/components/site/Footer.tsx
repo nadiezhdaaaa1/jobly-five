@@ -29,6 +29,7 @@ const COLS: { title: string; items: FooterLink[] }[] = [
       { label: "Refund Policy", to: "/legal/refund" },
       { label: "Email Consent", to: "/legal/email" },
       { label: "Disclaimer", to: "/legal/disclaimer" },
+     { label: "DMCA Policy", to: "/legal/dmca" },
     ],
   },
 ];
