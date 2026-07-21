@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { IconX as X } from "@tabler/icons-react";
+import { IconX as X, IconCalendar } from "@tabler/icons-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+
+const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function formatUS(d: Date) {
+  return `${MONTHS_SHORT[d.getMonth()]} ${pad(d.getDate())} ${d.getFullYear()}`;
+}
 
 function pad(n: number) {
   return n < 10 ? `0${n}` : `${n}`;
@@ -25,7 +32,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
   };
 
   const selectCls =
-    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-2 pr-6 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
 
   return (
     <div className="flex items-center gap-1">
@@ -45,7 +52,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
         onChange={(e) => emit(h12, Number(e.target.value), period)}
         className={selectCls}
       >
-        {Array.from({ length: 60 }, (_, i) => i).map((m) => (
+        {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
           <option key={m} value={m}>{pad(m)}</option>
         ))}
       </select>
@@ -131,15 +138,33 @@ export function InterviewReminderDialog({
         </p>
         {(() => null)()}
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
-            Date
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-            />
-          </label>
+          <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Date</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-10 items-center justify-between gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-left text-[14px] text-[color:var(--color-foreground)] outline-none hover:bg-[color:var(--color-surface-2)] focus-visible:border-[color:var(--color-accent)]"
+                >
+                  <span>{(() => { const [y,m,d] = date.split("-").map(Number); return formatUS(new Date(y, (m??1)-1, d??1)); })()}</span>
+                  <IconCalendar size={16} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="w-auto rounded-[8px] border bg-[color:var(--color-surface-1)] p-0"
+                style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+              >
+                <Calendar
+                  mode="single"
+                  selected={(() => { const [y,m,d] = date.split("-").map(Number); return new Date(y, (m??1)-1, d??1); })()}
+                  onSelect={(d) => { if (d) setDate(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`); }}
+                  initialFocus
+                  className="pointer-events-auto p-3"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
           <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
             <span>Time</span>
             <TimePickerAmPm value={time} onChange={setTime} />
