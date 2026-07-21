@@ -1,5 +1,13 @@
 export type Source = "direct" | "aggregated";
-export type CardState = "default" | "saved" | "applied" | "dismissed" | "reported";
+export type CardState =
+  | "default"
+  | "saved"
+  | "applied"
+  | "interview"
+  | "offer"
+  | "rejection"
+  | "dismissed"
+  | "reported";
 
 export type MatchCriterion = { status: "full" | "partial"; text: string };
 export type DescriptionSection = { heading: string; body?: string; bullets?: string[] };
