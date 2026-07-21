@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Clock, ExternalLink, StickyNote, X } from "lucide-react";
+import { IconClock as Clock, IconExternalLink as ExternalLink, IconNote as StickyNote, IconX as X } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 
 export const Route = createFileRoute("/_authenticated/tracker")({

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { FileText, Kanban, Mail, User as UserIcon } from "lucide-react";
+import { IconFileText as FileText, IconLayoutKanban as Kanban, IconMail as Mail, IconUser as UserIcon } from "@tabler/icons-react";
 
 export type AppTab = "digest" | "tracker" | "resume" | "profile";
 

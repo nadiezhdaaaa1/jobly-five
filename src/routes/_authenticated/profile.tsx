@@ -1,14 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  Check,
-  ChevronRight,
-  GripVertical,
-  Pencil,
-  X,
-} from "lucide-react";
+import { IconArrowDown as ArrowDown, IconArrowUp as ArrowUp, IconCheck as Check, IconChevronRight as ChevronRight, IconGripVertical as GripVertical, IconPencil as Pencil, IconX as X } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";

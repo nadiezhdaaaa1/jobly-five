@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Link as LinkIcon } from "lucide-react";
+import { IconLink as LinkIcon } from "@tabler/icons-react";
 import type { LegalDoc, LegalBlock } from "../../lib/legal-data";
 import { LEGAL_DOCS, LEGAL_ORDER, formatLegalDate, slugifyHeading } from "../../lib/legal-data";
 import { TableOfContents, type TocItem } from "../blog/TableOfContents";

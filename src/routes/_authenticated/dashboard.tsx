@@ -1,18 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Bookmark,
-  Check,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  FileText,
-  Flag,
-  Pencil,
-  Pencil as PencilIcon,
-  ThumbsDown,
-  Zap,
-} from "lucide-react";
+import { IconBookmark as Bookmark, IconCheck as Check, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp, IconExternalLink as ExternalLink, IconFileText as FileText, IconFlag as Flag, IconPencil as Pencil, IconPencil as PencilIcon, IconThumbDown as ThumbsDown, IconBolt as Zap } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { TODAY_JOBS, YESTERDAY_JOBS, type CardState, type Job } from "@/lib/jobs-data";

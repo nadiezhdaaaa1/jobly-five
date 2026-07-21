@@ -1,34 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  Menu,
-  X,
-  Check,
-  Minus,
-  ChevronDown,
-  Ghost,
-  ListFilter,
-  ClipboardList,
-  Sparkle,
-  Bug,
-  Server,
-  Terminal,
-  Network,
-  UserSearch,
-  Smartphone,
-  RefreshCw,
-  PenTool,
-  Database,
-  Palette,
-  FileText,
-  TrendingUp,
-  BarChart3,
-  Code2,
-  Crown,
-  ShieldCheck,
-  TabletSmartphone,
-  type LucideIcon,
-} from "lucide-react";
+import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconSparkles as Sparkle, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
 import heroAsset from "../assets/hero-2.png.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";

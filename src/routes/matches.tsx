@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, MapPin, Building2, DollarSign } from "lucide-react";
+import { IconLoader2 as Loader2, IconMapPin as MapPin, IconBuilding as Building2, IconCurrencyDollar as DollarSign } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";

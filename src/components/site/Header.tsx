@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Menu, X } from "lucide-react";
+import { IconLogout as LogOut, IconMenu2 as Menu, IconX as X } from "@tabler/icons-react";
 import { useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";

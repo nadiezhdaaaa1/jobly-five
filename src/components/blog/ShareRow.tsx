@@ -1,4 +1,4 @@
-import { Copy, Check, Linkedin, Twitter, Facebook } from "lucide-react";
+import { IconCopy as Copy, IconCheck as Check, IconBrandLinkedin as Linkedin, IconBrandTwitter as Twitter, IconBrandFacebook as Facebook } from "@tabler/icons-react";
 import { useState } from "react";
 
 export function ShareRow({ url, title }: { url: string; title: string }) {
