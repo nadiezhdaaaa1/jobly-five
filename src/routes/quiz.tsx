@@ -352,7 +352,12 @@ function QuizPage() {
                   <LocationStep
                     answers={answers}
                     onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-                    onContinue={() => advance("loc", {})}
+                    onContinue={() =>
+                      advance("loc", {
+                        salaryMin: answers.salaryMin ?? 100_000,
+                        salaryMax: answers.salaryMax ?? 160_000,
+                      })
+                    }
                   />
                 )}
                 {key === "email" && (
