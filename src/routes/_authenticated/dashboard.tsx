@@ -16,6 +16,8 @@ import { JobDrawer } from "@/components/app/JobDrawer";
 import { getDigestDays, type Job } from "@/lib/jobs-data";
 import { useResumeState } from "@/lib/resume-store";
 import { quizSummary } from "@/lib/quiz-store";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import {
   setStatus,
   useCounts,
@@ -68,6 +70,29 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 function ParametersCard() {
   const resume = useResumeState();
   const summary = useMemo(() => quizSummary(), []);
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      const path = data?.avatar_url ?? null;
+      if (!active || !path) return;
+      const { data: signed } = await supabase.storage
+        .from("avatars")
+        .createSignedUrl(path, 60 * 60 * 24 * 7);
+      if (active && signed?.signedUrl) setAvatarUrl(signed.signedUrl);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+  const initial = (user?.email ?? "S").charAt(0).toUpperCase();
   const rows = [
     { label: "Role", value: summary.roles },
     { label: "Stack", value: summary.stack },
@@ -78,11 +103,15 @@ function ParametersCard() {
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
       <div className="flex items-start justify-between">
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-[6px] text-[20px] font-semibold text-white"
+          className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[6px] text-[20px] font-semibold text-white"
           style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
           aria-hidden
         >
-          S
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            initial
+          )}
         </div>
         <button type="button" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
           <PencilIcon size={16} strokeWidth={1.6} />
