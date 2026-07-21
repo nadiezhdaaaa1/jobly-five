@@ -385,7 +385,7 @@ function QuizPage() {
 
 // ---------- Step shell (expanded card OR collapsed summary) ----------
 
-function StepShell({
+export function StepShell({
   stepKey,
   expanded,
   answers,
@@ -473,7 +473,7 @@ function StepShell({
   );
 }
 
-const SUMMARY_LABEL: Record<StepKey, string> = {
+export const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
   hard: "Hard skills",
@@ -484,7 +484,7 @@ const SUMMARY_LABEL: Record<StepKey, string> = {
   email: "Email",
 };
 
-function summaryValue(key: StepKey, a: QuizAnswers): string {
+export function summaryValue(key: StepKey, a: QuizAnswers): string {
   switch (key) {
     case "field":
       return a.field ?? "";
