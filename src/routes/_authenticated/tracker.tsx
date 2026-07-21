@@ -151,6 +151,7 @@ function JobCard({
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const statusRef = useOutsideClose(statusOpen, () => setStatusOpen(false));
@@ -194,9 +195,15 @@ function JobCard({
           e.dataTransfer.setDragImage(articleRef.current, 16, 16);
         }
         onDragStart?.(e);
+        // Hide the source card after the drag image is captured so only
+        // the drag preview remains visible while dragging.
+        setTimeout(() => setIsDragging(true), 0);
       }}
-      onDragEnd={onDragEnd}
-      className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${draggable ? "cursor-grab active:cursor-grabbing" : ""}`}
+      onDragEnd={(e) => {
+        setIsDragging(false);
+        onDragEnd?.(e);
+      }}
+      className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${draggable ? "cursor-grab active:cursor-grabbing" : ""} ${isDragging ? "hidden" : ""}`}
     >
       <button
         type="button"
