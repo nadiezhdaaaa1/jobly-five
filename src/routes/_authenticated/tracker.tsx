@@ -726,26 +726,39 @@ function TrackerScreen() {
       />
 
       {applyToast ? (
-        <div
-          role="status"
-          className="fixed inset-x-0 bottom-6 z-[70] mx-auto flex w-fit items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px]"
-          style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-        >
-          <span>Did you apply to {applyToast.title}?</span>
-          <button
-            type="button"
-            className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            onClick={() => { setStatus(applyToast.id, "applied"); setApplyToast(null); }}
+        <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true">
+          <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={() => setApplyToast(null)} aria-hidden />
+          <div
+            role="status"
+            className="relative z-10 w-[92%] max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+            style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
           >
-            Yes, mark as applied
-          </button>
-          <button
-            type="button"
-            className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-text-secondary)]"
-            onClick={() => setApplyToast(null)}
-          >
-            Not yet
-          </button>
+            <h2
+              className="text-[18px] font-semibold text-[color:var(--color-foreground)]"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Did you apply to {applyToast.title}?
+            </h2>
+            <p className="mt-2 text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              Let us know so we can move it to Applied on your tracker.
+            </p>
+            <div className="mt-5 flex flex-col gap-2">
+              <button
+                type="button"
+                className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                onClick={() => { setStatus(applyToast.id, "applied"); setApplyToast(null); }}
+              >
+                Yes, mark as applied
+              </button>
+              <button
+                type="button"
+                className="h-11 w-full rounded-[4px] border px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                onClick={() => setApplyToast(null)}
+              >
+                Not yet
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </div>
