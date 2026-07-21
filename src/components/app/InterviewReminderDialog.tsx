@@ -78,6 +78,7 @@ export function InterviewReminderDialog({
         <p className="mt-2 text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           Let's set a reminder for the upcoming interview{jobTitle ? ` — ${jobTitle}` : ""}.
         </p>
+        {(() => null)()}
         <div className="mt-4 grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
             Date
@@ -88,16 +89,10 @@ export function InterviewReminderDialog({
               className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             />
           </label>
-          <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
-            Time
-            <input
-              type="time"
-              lang="en-US"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-            />
-          </label>
+          <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Time</span>
+            <TimePickerAmPm value={time} onChange={setTime} />
+          </div>
         </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
