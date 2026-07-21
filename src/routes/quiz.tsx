@@ -114,6 +114,13 @@ function QuizPage() {
   const roleEmptied =
     answers.roles !== undefined && answers.roles.length === 0;
 
+  // Loc step shows collapsed-with-X when workMode was previously set but is now cleared.
+  const locEmptied =
+    answers.workMode === undefined
+      ? false
+      : !answers.workMode ||
+        (answers.workMode === "onsite" && (answers.locations?.length ?? 0) === 0);
+
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
@@ -123,9 +130,7 @@ function QuizPage() {
     level: !!answers.level,
     loc:
       !!answers.workMode &&
-      (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0) &&
-      answers.salaryMin != null &&
-      answers.salaryMax != null,
+      (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
   };
 
@@ -222,14 +227,16 @@ function QuizPage() {
               (key === "role" && (roleInvalid || roleEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
               (key === "tools" && (toolsInvalid || toolsEmptied)) ||
-              (key === "soft" && (softInvalid || softEmptied));
+              (key === "soft" && (softInvalid || softEmptied)) ||
+              (key === "loc" && locEmptied);
             if (!isVisible) return null;
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
               (key === "tools" && (toolsInvalid || toolsEmptied) && !isExpanded) ||
-              (key === "soft" && (softInvalid || softEmptied) && !isExpanded);
+              (key === "soft" && (softInvalid || softEmptied) && !isExpanded) ||
+              (key === "loc" && locEmptied && !isExpanded);
             return (
               <StepShell
                 key={key}
@@ -1160,7 +1167,10 @@ function LocationStep({
     if (!stateCode || !city) return;
     const label = `${city}, ${stateCode}`;
     if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) return;
-    onChange({ locations: [...locations, label] });
+    const patch: Partial<QuizAnswers> = { locations: [...locations, label] };
+    if (answers.salaryMin == null) patch.salaryMin = 100_000;
+    if (answers.salaryMax == null) patch.salaryMax = 160_000;
+    onChange(patch);
     setCity("");
   };
 
@@ -1201,6 +1211,8 @@ function LocationStep({
                     remote: opt.key === "remote",
                   };
                   if (opt.key === "remote") patch.locations = [];
+                  if (answers.salaryMin == null) patch.salaryMin = 100_000;
+                  if (answers.salaryMax == null) patch.salaryMax = 160_000;
                   onChange(patch);
                 }}
                 aria-pressed={selected}
