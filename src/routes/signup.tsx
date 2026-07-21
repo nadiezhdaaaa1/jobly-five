@@ -1,37 +1,32 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Log in — Jobly" },
+      { title: "Sign up — Jobly" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: LoginPage,
+  component: SignupPage,
 });
 
-function LoginPage() {
+function SignupPage() {
   const navigate = useNavigate();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-  useEffect(() => {
-    // If already signed in, skip login.
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
-    });
-  }, [navigate]);
 
   async function handleGoogle() {
     setError(null);
@@ -45,61 +40,53 @@ function LoginPage() {
       return;
     }
     if (result.redirected) return;
-    // Session already set — navigate.
     navigate({ to: "/dashboard" });
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!validEmail) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    if (password.length < 1) {
-      setError("Enter your password.");
-      return;
-    }
+    if (!validEmail) return setError("Enter a valid email address.");
+    if (password.length < 8) return setError("Password must be at least 8 characters.");
     setError(null);
     setSubmitting(true);
-    const { error: err } = await supabase.auth.signInWithPassword({
+    const { data, error: err } = await supabase.auth.signUp({
       email: email.trim(),
       password,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: name.trim() || undefined },
+      },
     });
     setSubmitting(false);
     if (err) {
-      setError(err.message === "Invalid login credentials" ? "Incorrect email or password." : err.message);
+      setError(err.message);
       return;
     }
-    navigate({ to: "/dashboard" });
-  }
-
-  async function handleForgotPassword() {
-    if (!validEmail) {
-      setError("Enter your email above first, then click Forgot password.");
-      return;
+    if (data.session) {
+      navigate({ to: "/dashboard" });
+    } else {
+      setNotice("Check your email to confirm your account, then log in.");
     }
-    setError(null);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (err) setError(err.message);
-    else setError("Check your inbox for a password reset link.");
   }
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-          <Link to="/" className="text-[30px] font-bold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-logo)" }}>
+          <Link
+            to="/"
+            className="text-[30px] font-bold text-[color:var(--color-green)]"
+            style={{ fontFamily: "var(--font-logo)" }}
+          >
             jobly
           </Link>
         </div>
       </header>
 
       <main className="mx-auto flex max-w-md flex-col px-4 py-10 sm:py-16">
-        <h1 className="text-3xl sm:text-4xl">Log in</h1>
+        <h1 className="text-3xl sm:text-4xl">Create your account</h1>
         <p className="mt-2 text-[color:var(--color-text-secondary)]">
-          Welcome back. Pick up where you left off.
+          Start getting five matches a day.
         </p>
 
         <div className="mt-8 flex flex-col gap-3">
@@ -121,6 +108,19 @@ function LoginPage() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
             <label className="block">
+              <span className="text-sm font-light text-[#090B0C]">Full name</span>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Alex Rivera"
+                className={cn(
+                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "border-[color:var(--color-border)]"
+                )}
+              />
+            </label>
+            <label className="block">
               <span className="text-sm font-light text-[#090B0C]">Email</span>
               <input
                 type="email"
@@ -139,25 +139,15 @@ function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password"
+                placeholder="At least 8 characters"
                 className={cn(
                   "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                 )}
               />
             </label>
-            {error && (
-              <span className="text-sm text-[color:var(--color-danger)]">{error}</span>
-            )}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
-              >
-                Forgot password?
-              </button>
-            </div>
+            {error && <span className="text-sm text-[color:var(--color-danger)]">{error}</span>}
+            {notice && <span className="text-sm text-[color:var(--color-green)]">{notice}</span>}
             <button
               type="submit"
               disabled={submitting}
@@ -166,22 +156,22 @@ function LoginPage() {
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Logging in…
+                  Creating account…
                 </>
               ) : (
-                "Log in"
+                "Create account"
               )}
             </button>
           </form>
         </div>
 
         <p className="mt-8 text-sm text-[color:var(--color-text-secondary)]">
-          New to Jobly?{" "}
+          Already have an account?{" "}
           <Link
-            to="/signup"
+            to="/login"
             className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
           >
-            Create an account
+            Log in
           </Link>
         </p>
       </main>
