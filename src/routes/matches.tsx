@@ -1,10 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconLoader2 as Loader2, IconMapPin as MapPin, IconBuilding as Building2, IconCurrencyDollar as DollarSign } from "@tabler/icons-react";
+import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { ScoreRing } from "@/components/landing/ScoreRing";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -212,34 +211,53 @@ function MatchesPage() {
   );
 }
 
+function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
+  const stroke = 4;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c - (score / 100) * c;
+  return (
+    <div className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-surface-2)" strokeWidth={stroke} fill="none" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="var(--color-accent)"
+          strokeWidth={stroke}
+          fill="none"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center text-[13px] font-semibold text-[color:var(--color-foreground)]">
+        {score}
+      </div>
+    </div>
+  );
+}
+
 function JobCard({ job }: { job: Job }) {
   return (
-    <li className="rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4">
-        <div className="min-w-0">
-          <h3 className="truncate text-lg sm:text-xl">{job.title}</h3>
-          <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-[color:var(--color-text-secondary)]">
-            <span className="inline-flex items-center gap-1.5">
-              <Building2 className="h-3.5 w-3.5" />
-              {job.company}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5" />
-              {job.location}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <DollarSign className="h-3.5 w-3.5" />
-              {job.salary}
-            </span>
+    <li className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
+      <div className="flex w-full items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
+          {job.company.charAt(0)}
+        </div>
+        <div className="min-w-0 flex-1">
+          <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">
+            {job.title}
+          </span>
+          <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            {job.company} · {job.location} · {job.salary}
           </div>
-          <p className="mt-3 text-sm text-[color:var(--color-foreground)]">
-            <span className="font-semibold text-[color:var(--color-green)]">Why it fits: </span>
+          <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
             {job.why}
           </p>
         </div>
-        <div className="shrink-0">
-          <ScoreRing value={job.score} label="Match" size={76} strokeWidth={7} />
-        </div>
+        <ScoreRing score={job.score} />
       </div>
     </li>
   );
