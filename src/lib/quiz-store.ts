@@ -58,3 +58,8 @@ export function clearQuiz() {
     // ignore
   }
 }
+
+export function updateQuiz(patch: Partial<QuizAnswers>) {
+  const next = { ...loadQuiz(), ...patch };
+  saveQuiz(next);
+}
