@@ -445,10 +445,10 @@ function OlderDayRow({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-left"
+        className="flex w-full items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] p-[14px] text-left hover:bg-[color:var(--color-surface-2)]"
       >
         <span className="text-[14px] text-[color:var(--color-text-secondary)]">
-          {group.label} · {group.jobs.length} matches
+          {group.label} · <span className="font-semibold text-[color:var(--color-foreground)]">{group.jobs.length} matches</span>
         </span>
         {open ? <ChevronUp size={16} strokeWidth={1.6} /> : <ChevronDown size={16} strokeWidth={1.6} />}
       </button>
