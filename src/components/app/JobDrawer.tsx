@@ -403,8 +403,8 @@ function RejectionPanel({ dateLine, onChangeStatus }: { dateLine: string; onChan
   return (
     <div className="flex flex-col gap-3">
       <div className="rounded-[8px] p-4" style={{ background: "#FFE2E2" }}>
-        <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Rejection</div>
-        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>Rejection</div>
+        <p className="mt-1 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           The right offer is close. Check the latest digest for more great opportunities.
         </p>
       </div>
