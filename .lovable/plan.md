@@ -1,46 +1,42 @@
-## Problem
+## Goal
+Replace the mocked login with real Lovable Cloud auth: Google + email/password, a signup flow, protected `/dashboard`, session-aware header, and a `profiles` table.
 
-You reported: when you click Edit on any earlier step, the "Location and salary" step is no longer visible as a collapsed summary card.
+## Steps
 
-I could not reproduce it in scripted flows (seeded state + Edit Field/Role both leave the collapsed "Location and salary · Anywhere (remote) · $100k – $160k" card in place). That means the trigger is a specific answer combination I haven't hit yet. Rather than guess the root cause, I'll:
+1. **Enable Lovable Cloud** (provisions auth + database + Supabase client at `@/integrations/supabase/client`).
 
-1. Harden the visibility rules so the step cannot silently vanish, and
-2. Ask you for a quick repro so we confirm the underlying data condition.
+2. **Database migration** — create `profiles` table:
+   - Columns: `id` (uuid PK → `auth.users.id` ON DELETE CASCADE), `email`, `full_name`, `avatar_url`, `created_at`, `updated_at`.
+   - `GRANT`s to `authenticated` + `service_role`.
+   - Enable RLS; policies: users can `SELECT`/`UPDATE` their own row.
+   - Trigger `handle_new_user()` on `auth.users` insert → auto-create profile row (pulls `full_name`/`avatar_url` from Google metadata).
 
-## Changes in `src/routes/quiz.tsx`
+3. **Configure Google provider** via `supabase--configure_social_auth`.
 
-### 1. Relax the `loc` completeness rule
+4. **Auth surface** in `src/routes/__root.tsx`:
+   - Register a single `onAuthStateChange` listener (filtered to SIGNED_IN / SIGNED_OUT / USER_UPDATED) → `router.invalidate()`.
+   - Expose session to the app via router context so header + guards read it.
 
-Current rule (line 124–128):
+5. **Rebuild `/login`** (`src/routes/login.tsx`):
+   - Real "Continue with Google" → `supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/dashboard' } })`.
+   - Real email/password → `supabase.auth.signInWithPassword`. Surface errors.
+   - Add "Sign up" link → new `/signup` route (email/password + Google, `emailRedirectTo: origin`).
+   - Add "Forgot password" → new `/forgot-password` + `/reset-password` routes (uses `resetPasswordForEmail` + `updateUser({ password })`).
 
-```
-loc:
-  !!answers.workMode &&
-  (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0) &&
-  answers.salaryMin != null &&
-  answers.salaryMax != null,
-```
+6. **Protect `/dashboard`** — move to `src/routes/_authenticated/dashboard.tsx` under the integration-managed `_authenticated` layout (redirects unauthenticated users to `/login`). Update `Get started` links that go to `/quiz` unchanged (public), but `/dashboard` becomes gated.
 
-Change to: `loc` counts as completed as soon as `workMode` is set (plus a location if on-site). Missing `salaryMin` / `salaryMax` will no longer hide the step; the summary already handles missing values gracefully.
+7. **Header session state** (`src/components/site/Header.tsx`):
+   - Replace static "Log in" with session-aware affordance: signed-out → `Log in` + `Get started`; signed-in → account menu with email/avatar + `Dashboard` link + `Sign out`.
+   - `Sign out`: `queryClient.cancelQueries()` → `clear()` → `supabase.auth.signOut()` → `navigate({ to: '/login', replace: true })`.
 
-### 2. Persist salary defaults the moment `loc` becomes valid
+8. **Verify** with Playwright: unauth `/dashboard` redirects to `/login`, email/password signup creates a profile row, Google button opens Google consent, signed-in header shows account menu, sign-out clears session.
 
-When the user picks Remote or adds a location, if `salaryMin` / `salaryMax` are still null, immediately set them to the defaults (`100_000` / `160_000`) via `onChange`, so the answer state matches what's shown in the collapsed summary and downstream consumers (matches, submit payload) don't see nulls.
+## Technical notes
+- Use the browser `supabase` client from `@/integrations/supabase/client` for all auth calls (never the admin/server client).
+- Google OAuth `redirectTo` must be a public same-origin URL — use `/dashboard` (the auth callback will land there and the auth listener will hydrate the session before the `_authenticated` gate runs). Alternatively use the app origin and let post-login navigation land the user on `/dashboard`.
+- Do not store roles on `profiles`; not needed now — skip user_roles table.
+- Keep `/quiz` public; only `/dashboard` is gated in this pass.
 
-### 3. Add a `loc` visibility fallback
-
-Mirror the pattern used for `role`/`hard`/`tools`/`soft`: introduce a `locEmptied` flag (set when `workMode` was previously chosen but then cleared) so the step still renders — collapsed with an "X" — instead of disappearing. This guarantees "Location and salary" is present in every rendered list once the user has touched it, no matter what upstream edits do.
-
-### 4. Verify
-
-After the change, walk both flows in the preview:
-- Complete the full quiz, click Edit on each earlier step in turn, confirm the "Location and salary" summary card stays in the list.
-- Reach `loc`, pick Remote → Continue without touching the sliders, then edit an earlier step; confirm the summary still shows "$100k – $160k".
-
-## Follow-up question
-
-To be sure we're fixing the right underlying cause, could you share one of:
-- The exact order of clicks that makes the Location card disappear (e.g. "chose On-site, added Austin, TX, Continue, then clicked Edit Role"), or
-- A screen recording / screenshots of the before-and-after states.
-
-I'll incorporate that into the fix before flipping to build.
+## Out of scope
+- Persisting quiz answers to the profile (can be a follow-up).
+- Additional providers (Apple, Microsoft), password strength / HIBP, MFA.
