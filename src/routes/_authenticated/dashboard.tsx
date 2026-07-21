@@ -63,9 +63,8 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 function ProfileCard() {
   const resume = useResumeState();
   const rows = [
-    { label: "Field", value: "Program, Project & Technical-Adjacent" },
-    { label: "Role", value: "Backend Engineer" },
-    { label: "Stack", value: "Node, Java, Swift" },
+    { label: "Role", value: "Frontend Engineer" },
+    { label: "Stack", value: "React, Vue, TypeScript" },
     { label: "Experience", value: "Senior · 13y · English · Spanish · Dutch" },
     { label: "Location and salary", value: "New York City · Baltimore · Philadelphia · $100k–$160k" },
   ];
@@ -74,17 +73,16 @@ function ProfileCard() {
       <div className="flex items-start justify-between">
         <div
           className="flex h-14 w-14 items-center justify-center rounded-[6px] text-[20px] font-semibold text-white"
-          style={{ background: "linear-gradient(135deg, var(--color-accent), var(--color-green))" }}
+          style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
           aria-hidden
         >
           S
         </div>
-        <button type="button" aria-label="Edit profile" className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+        <button type="button" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
           <PencilIcon size={16} strokeWidth={1.6} />
         </button>
       </div>
-      <h2 className="mt-3 text-[16px] font-semibold text-[color:var(--color-foreground)]">Parameters</h2>
-      <div className="mt-3 divide-y">
+      <div className="mt-4 divide-y">
         {rows.map((r) => (
           <div key={r.label} className="py-3 first:pt-0">
             <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">{r.label}</div>
