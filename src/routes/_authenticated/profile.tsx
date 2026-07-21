@@ -17,7 +17,7 @@ import {
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
-import { loadQuiz, updateQuiz, type QuizAnswers, type WorkMode } from "@/lib/quiz-store";
+import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers, type WorkMode } from "@/lib/quiz-store";
 import { ROLES, USA_LOCATIONS } from "@/lib/quiz-data";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -502,19 +502,7 @@ function MatchCard({
   flash: boolean;
   pencilRef: React.RefObject<HTMLButtonElement | null>;
 }) {
-  const roleValue = quiz.roles?.[0] ?? "Frontend Engineer";
-  const stack = quiz.hardSkills?.length ? quiz.hardSkills : ["React", "Vue", "TypeScript"];
-  const level = quiz.level ?? "Senior";
-  const workLabel = (() => {
-    const parts: string[] = [];
-    if (quiz.workMode === "remote" || quiz.remote) parts.push("Remote (US)");
-    if (quiz.workMode === "onsite") parts.push("On-site");
-    if (!parts.length) parts.push("Remote (US)");
-    parts.push("Hybrid OK");
-    return parts.join(" · ");
-  })();
-  const locs = quiz.locations?.length ? quiz.locations : ["New York City", "Baltimore", "Philadelphia"];
-  const salary = `$${quiz.salaryMin ?? 100}k–$${quiz.salaryMax ?? 160}k`;
+  const summary = quizSummary(quiz);
 
   return (
     <SectionShell
@@ -528,21 +516,10 @@ function MatchCard({
         <MatchEdit quiz={quiz} onCancel={onCancel} onSave={onSave} />
       ) : (
         <div className="divide-y">
-          <Row label="Role" value={roleValue} />
-          <div className="py-3">
-            <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">Stack</div>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {stack.map((s) => (
-                <span key={s} className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-          <Row label="Level" value={level} />
-          <Row label="Work type" value={workLabel} />
-          <Row label="Locations" value={locs.join(" · ")} />
-          <Row label="Salary range" value={salary} />
+          <Row label="Role" value={summary.roles} />
+          <Row label="Stack" value={summary.stack} />
+          <Row label="Experience" value={summary.experience} />
+          <Row label="Location and salary" value={summary.locationAndSalary} />
         </div>
       )}
     </SectionShell>
