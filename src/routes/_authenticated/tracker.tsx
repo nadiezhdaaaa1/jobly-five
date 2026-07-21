@@ -147,6 +147,7 @@ function JobCard({
 
   const dim = regime === "rejection";
   const draggable = regime === "saved" || regime === "applied-interview";
+  const articleRef = useRef<HTMLElement | null>(null);
 
   // Status dropdown options for anything past Saved
   const statusOptions: JobStatus[] = ["applied", "interview", "offer", "rejection"];
@@ -174,8 +175,16 @@ function JobCard({
 
   return (
     <article
+      ref={articleRef as React.RefObject<HTMLElement>}
       draggable={draggable}
-      onDragStart={onDragStart}
+      onDragStart={(e) => {
+        // Set a lightweight drag image so the browser doesn't render the
+        // whole card (which can look broken with popovers open).
+        if (articleRef.current) {
+          e.dataTransfer.setDragImage(articleRef.current, 16, 16);
+        }
+        onDragStart?.(e);
+      }}
       onDragEnd={onDragEnd}
       className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${draggable ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
