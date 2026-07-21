@@ -361,9 +361,8 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
                   aria-haspopup="menu"
                   aria-expanded={statusOpen}
                   onClick={() => setStatusOpen((v) => !v)}
-                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-3 text-[13px] font-semibold text-[color:var(--color-green)]"
+                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
                 >
-                  <Check size={13} strokeWidth={2} />
                   {statusLabel(state)}
                   <ChevronDown size={13} strokeWidth={2} />
                 </button>
