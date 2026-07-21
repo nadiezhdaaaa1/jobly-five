@@ -79,12 +79,12 @@ function ago(days: number) {
 // ---------- Header ----------
 
 function AppHeader({ hasNewDigest = true }: { hasNewDigest?: boolean }) {
-  const tabs = [
+  const tabs: Array<{ key: string; label: string; icon: typeof Mail; active?: boolean; dot?: boolean }> = [
     { key: "digest", label: "Digest", icon: Mail, active: true, dot: hasNewDigest },
     { key: "tracker", label: "Tracker", icon: Kanban },
     { key: "resume", label: "Resume", icon: FileText },
     { key: "profile", label: "Profile", icon: UserIcon },
-  ] as const;
+  ];
 
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
@@ -128,12 +128,12 @@ function AppHeader({ hasNewDigest = true }: { hasNewDigest?: boolean }) {
 }
 
 function MobileTabBar({ hasNewDigest = true }: { hasNewDigest?: boolean }) {
-  const tabs = [
+  const tabs: Array<{ key: string; label: string; icon: typeof Mail; active?: boolean; dot?: boolean }> = [
     { key: "digest", label: "Digest", icon: Mail, active: true, dot: hasNewDigest },
     { key: "tracker", label: "Tracker", icon: Kanban },
     { key: "resume", label: "Resume", icon: FileText },
     { key: "profile", label: "Profile", icon: UserIcon },
-  ] as const;
+  ];
   return (
     <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-[color:var(--color-surface-1)]">
       <div className="mx-auto grid max-w-[1200px] grid-cols-4">
