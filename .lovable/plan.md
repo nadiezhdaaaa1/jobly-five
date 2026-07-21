@@ -1,35 +1,56 @@
-## Resume tab — plan
+## Profile screen — plan
 
-Build the Resume screen at `/resume` behind the `_authenticated` layout, matching the spec. Keep it purely frontend/mock — no backend, resume state stored in a shared client store so the Digest profile card can react.
+Build the Profile tab at `/profile` behind `_authenticated`. Frontend-only, sharing state with the existing resume and quiz stores so edits sync across Digest, Resume, and Profile.
 
 ### Files
 
-**New** `src/routes/_authenticated/resume.tsx`
-- Route with `AppHeader active="resume"` + `MobileTabBar`.
-- Layout: max-w-1200 / 24px gutters. ≥1024px: main column + 280px sticky right rail; below: single column with rail after main.
-- H1 "Resume" (Stack Sans 400, 24px). Muted 13px "Used to score your matches since Jul 20" only when a resume exists.
-- Two states driven by shared store (`hasResume`):
-  - **Empty**: intro line + two entry cards (Upload / LinkedIn import), 6px radius, 20px padding, hover border→`--border-strong`, 34px mint square icon (4px).
-    - Card 1 click → inline dropzone panel replacing cards (dashed 1px `--border-strong`, 8px radius, 160px, "Drop your resume here or **browse**", subtext), required consent checkbox gating browse/drop, Back link.
-    - Card 2 click → instruction panel: heading, 4 numbered ordered-list steps (22px `--surface-2` circles + 14px text, 1px separators), secondary "Open my profile" button (new tab), same dropzone + consent + muted "We read the file you give us…" note.
-  - **Upload → parse states**: uploading (thin 4px `--accent` progress on `--surface-2`), parsing (editor skeleton + "Reading your resume…"), success (transition to editor with dismissible mint banner), error (`--danger-subtle` hint + "Try again"). Simulated with timeouts.
-  - **Editor**: stacked section cards (8px radius, 20px padding, 16px gaps). Section heading 15px/600 + pencil top-right, one-at-a-time edit (aria-expanded, focus mgmt). Per-section Save (primary) + Cancel (text), subtle "Saved" flash. Sections: Contact, Summary, Experience (entries with separators + Add/Remove), Education, Skills (rectangular 4px gray tags; skills matching quiz stack render mint + tiny caption), Languages.
-- Right rail (both states):
-  1. Tailoring teaser card at 55% opacity, non-interactive: gray `Coming soon` tag, "Tailor to a job" heading + body copy from spec.
-  2. File card (has-resume only): document icon, filename `resume_serhii.pdf`, added date, `Replace` (re-open upload) and `Delete` text links. Delete → focus-trapped confirm dialog ("Delete your resume?… / Delete danger / Keep it").
+**New** `src/routes/_authenticated/profile.tsx`
+- `AppHeader active="profile"` + `MobileTabBar`. Update `AppNav.tsx` Profile tab `to: "/profile"`.
+- Layout: max-w-1200, 24px gutters. ≥1024px main + 280px sticky rail; single column below.
+- Page header: H1 "Profile"; avatar row = 64px gradient (accent→green) with initial "S", name "Serhii Kovalenko" (18/600), email 13 muted, pencil to edit name only (avatar stays initials — spec forbids photo upload).
+- Dismissible mint banner at top after saving any match-relevant section: "Updated — your next digest will use these preferences."
+- Editing pattern reused across all cards: 8px radius, 20px padding, pencil top-right, one section editing at a time, Save primary + Cancel text, subtle "Saved" flash, `aria-expanded`, focus moves to first field / back to pencil.
 
-**New** `src/lib/resume-store.ts`
-- Minimal module-level singleton + `useSyncExternalStore` hook: `useResumeState()` returning `{ hasResume, filename, addedDate, data }` and setters. Persists to `sessionStorage` (matches quiz store pattern).
-- Mock parsed content per spec (Serhii, Frontend Engineer Senior, 13y, React/Vue/TypeScript, NYC/Baltimore/Philadelphia, $100–160k; 3 experience entries, 1 education, ~11 skills, 3 languages).
+**Card 1 — Match preferences** (reads/writes `useQuizState`)
+- View: label/value rows with 1px separators. Stack rendered as mint 4px rectangular tags.
+- Edit: Role single-select+search (from `ROLE_STACKS` keys), Stack tag input with typeahead, Level segmented (Junior/Mid/Senior/Staff+), Work type checkboxes (Remote/Hybrid/On-site), Locations tag input (hidden when only Remote), Salary Min/Target with $ prefix and inline "Minimum can't exceed target".
+- 12px muted microcopy in edit mode: "These preferences directly shape your match scores."
+- Saving triggers the top banner.
 
-**Edit** `src/components/app/AppNav.tsx`
-- Change resume tab `to: "/resume"`.
+**Card 2 — Previous jobs** (shared with Resume experience via `resume-store`)
+- Maps `ResumeExperience` (role/company/dates/bullets). Add optional `descriptionText` field for the profile textarea (falls back to joined bullets). Extend `resume-store` with helpers: `addExperience`, `updateExperience`, `removeExperience`, `reorderExperience`.
+- View entries separated by 1px lines: position 14/600 · company secondary · optional years muted; description ≤4 lines with "Show more".
+- Edit per entry: Position, Company, Years From/To selects (with "Present"), Responsibilities textarea 4 rows + live counter soft-cap 600. Drag handle (⋮⋮) + up/down keyboard buttons. `Remove` link with inline confirm ("Remove this job? / Remove / Keep").
+- `Add previous job` text button appends blank entry in edit mode. Empty state copy per spec.
+
+**Card 3 — Education** (shared with Resume education)
+- Extend `ResumeEducation` with `degreeType` (Bachelor's / Master's / PhD / Bootcamp / Certificate / Other) and `field`. Helpers `addEducation`, `updateEducation`, `removeEducation`.
+- Same entry pattern, fields per spec, inline remove confirm, `Add education`, empty state.
+
+**Card 4 — Account** (no edit mode)
+- Rows: Email (from `useAuth().user.email` fallback to mock), Plan (mint `Pro` tag + muted renews date), then chevron link rows: "Subscription & billing", "Notifications & digest frequency", "Security & sign-in" (placeholder buttons, no navigation). Final `Log out` text button — calls `supabase.auth.signOut()` + navigates `/login`.
+
+**Right rail**
+1. Profile strength card: heading, 4px square-ended progress bar (`--green` on `--surface-2`) at 70%, `role="progressbar"` with value text. Checklist rows: "Quiz completed ✓", "Resume added ✓" (reads `useResumeState().hasResume`), "Previous jobs — add at least one" ✓ if any, "Education — add at least one" ✓ if any, plus one intentionally-incomplete demo row "Verify your email" that scrolls to the account card. Incomplete rows are buttons that scroll+open the matching section. 12px muted caption.
+2. Info card "How matching works" — muted body copy per spec, no CTA.
+
+### Shared state changes
+
+**Edit** `src/lib/resume-store.ts`
+- Add per-entry mutation helpers (add/update/remove/reorder for experience and education).
+- Extend `ResumeExperience` with optional `description?: string`; `ResumeEducation` with optional `degreeType?` and `field?`. Update `DEFAULT_RESUME` to match the profile mock (Nimbus 2019–Present, Wavelabs 2013–2019, Bachelor's CS Kyiv Polytechnic 2009–2013) — Resume screen consumes the same records so both views stay aligned.
+
+**Edit** `src/lib/quiz-store.ts`
+- No shape change needed; profile reads/writes existing fields (roles, hardSkills/tools, level, workMode, locations, salaryMin/Max). Add small `updateQuiz(patch)` helper to merge+persist.
 
 **Edit** `src/routes/_authenticated/dashboard.tsx`
-- `ProfileCard` reads `useResumeState()`. When `hasResume`: replace the "Add your resume" block with filename row + mint `Added` tag + "Manage" link → `/resume`. When empty: existing CTA, `Add resume` button links to `/resume`.
+- `ProfileCard`'s existing quiz-derived rows already reflect the store; no logic change beyond confirming it re-renders after `updateQuiz`. Point "Edit profile" link (if any) to `/profile`.
+
+**Edit** `src/components/app/AppNav.tsx`
+- Profile tab `to: "/profile"`.
 
 ### Accessibility
-Dropzone as `<button>` (browse) + drag handlers, `role="status"` for upload/parse/success/error, real `<input type="checkbox">` with label, ordered list for steps, section pencils with `aria-expanded`, focus moves to first field on open and back to pencil on save/cancel, delete dialog is focus-trapped.
+Per spec — `aria-expanded` on edit toggles, focus management, keyboard reorder buttons, tag chips removable via Backspace / × with `aria-label`, focusable inline confirms, `role="progressbar"` on the strength bar, inline `aria-describedby` validation.
 
-### Do NOT
-No builder, template gallery, photo upload, AI rewriting, export/download, LinkedIn URL input, or new shadows/colors. No backend persistence.
+### Out of scope
+No password/2FA/billing forms, no CV formatting controls, no photo upload, no score rings, no "matches X jobs" counter, no new colors/shadows.

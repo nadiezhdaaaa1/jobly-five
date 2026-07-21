@@ -16,6 +16,7 @@ export type ResumeExperience = {
   company: string;
   dates: string;
   bullets: string[];
+  description?: string;
 };
 
 export type ResumeEducation = {
@@ -23,6 +24,8 @@ export type ResumeEducation = {
   degree: string;
   school: string;
   years: string;
+  degreeType?: string;
+  field?: string;
 };
 
 export type ResumeLanguage = { lang: string; level: string };
@@ -183,5 +186,65 @@ export function clearResume() {
 
 export function updateResumeData(patch: Partial<ResumeData>) {
   state = { ...state, data: { ...state.data, ...patch } };
+  emit();
+}
+
+function uid() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+export function addExperience() {
+  const entry: ResumeExperience = { id: uid(), role: "", company: "", dates: "", bullets: [], description: "" };
+  state = { ...state, data: { ...state.data, experience: [...state.data.experience, entry] } };
+  emit();
+  return entry.id;
+}
+
+export function updateExperience(id: string, patch: Partial<ResumeExperience>) {
+  state = {
+    ...state,
+    data: {
+      ...state.data,
+      experience: state.data.experience.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+    },
+  };
+  emit();
+}
+
+export function removeExperience(id: string) {
+  state = { ...state, data: { ...state.data, experience: state.data.experience.filter((e) => e.id !== id) } };
+  emit();
+}
+
+export function reorderExperience(id: string, dir: -1 | 1) {
+  const list = [...state.data.experience];
+  const i = list.findIndex((e) => e.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  state = { ...state, data: { ...state.data, experience: list } };
+  emit();
+}
+
+export function addEducation() {
+  const entry: ResumeEducation = { id: uid(), degree: "", school: "", years: "", degreeType: "", field: "" };
+  state = { ...state, data: { ...state.data, education: [...state.data.education, entry] } };
+  emit();
+  return entry.id;
+}
+
+export function updateEducation(id: string, patch: Partial<ResumeEducation>) {
+  state = {
+    ...state,
+    data: {
+      ...state.data,
+      education: state.data.education.map((e) => (e.id === id ? { ...e, ...patch } : e)),
+    },
+  };
+  emit();
+}
+
+export function removeEducation(id: string) {
+  state = { ...state, data: { ...state.data, education: state.data.education.filter((e) => e.id !== id) } };
   emit();
 }
