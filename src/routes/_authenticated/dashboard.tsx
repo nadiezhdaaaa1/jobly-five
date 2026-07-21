@@ -321,9 +321,9 @@ function JobCard({
             aria-label="Save to tracker"
             aria-pressed={saved}
             onClick={() => setState(saved ? "default" : "saved")}
-            className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${saved ? "border-[color:var(--color-green)] bg-[color:var(--color-mint)] text-[color:var(--color-green)]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
+            className={`flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border ${saved ? "border-[#0E735A] text-[#0E735A]" : "text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"}`}
           >
-            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "#D8FBEF" : "none"} />
           </button>
 
           {/* Apply */}
