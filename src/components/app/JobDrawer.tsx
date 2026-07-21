@@ -381,7 +381,7 @@ function OfferPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeSt
       <div className="relative overflow-hidden rounded-[8px] bg-[color:var(--color-mint)] p-4">
         <div
           className="relative z-10 text-[color:var(--color-foreground)]"
-          style={{ fontSize: 16, fontWeight: 300 }}
+          style={{ fontSize: 13, fontWeight: 300 }}
         >
           Congratulations on the offer!
         </div>
