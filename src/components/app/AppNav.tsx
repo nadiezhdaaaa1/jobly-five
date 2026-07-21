@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { IconFileText as FileText, IconLayoutKanban as Kanban, IconMail as Mail, IconUser as UserIcon } from "@tabler/icons-react";
+import { IconListDetails, IconTarget, IconFileDescription, IconUserSquare } from "@tabler/icons-react";
 
 export type AppTab = "digest" | "tracker" | "resume" | "profile";
 
-const TABS: Array<{ key: AppTab; label: string; icon: typeof Mail; to: string }> = [
-  { key: "digest", label: "Digest", icon: Mail, to: "/dashboard" },
-  { key: "tracker", label: "Tracker", icon: Kanban, to: "/tracker" },
-  { key: "resume", label: "Resume", icon: FileText, to: "/resume" },
-  { key: "profile", label: "Profile", icon: UserIcon, to: "/profile" },
+const TABS: Array<{ key: AppTab; label: string; icon: typeof IconListDetails; to: string }> = [
+  { key: "digest", label: "Digest", icon: IconListDetails, to: "/dashboard" },
+  { key: "tracker", label: "Tracker", icon: IconTarget, to: "/tracker" },
+  { key: "resume", label: "Resume", icon: IconFileDescription, to: "/resume" },
+  { key: "profile", label: "Profile", icon: IconUserSquare, to: "/profile" },
 ];
 
 export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; hasNewDigest?: boolean }) {
