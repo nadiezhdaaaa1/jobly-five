@@ -180,8 +180,17 @@ function useOutsideClose(open: boolean, onClose: () => void) {
 
 // ---------- Job card ----------
 
-function JobCard({ job }: { job: Job }) {
-  const [state, setState] = useState<CardState>(job.initialState ?? "default");
+function JobCard({
+  job,
+  state,
+  setState,
+  onOpen,
+}: {
+  job: Job;
+  state: CardState;
+  setState: (s: CardState) => void;
+  onOpen: () => void;
+}) {
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [toast, setToast] = useState(false);
@@ -207,16 +216,22 @@ function JobCard({ job }: { job: Job }) {
 
   return (
     <article
-      className={`relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${dismissed ? "opacity-55" : ""}`}
+      className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 transition-colors ${dismissed ? "opacity-55" : "hover:border-[color:var(--color-border-strong)]"}`}
     >
-      <div className="flex items-start gap-3">
+      <button
+        type="button"
+        aria-label={`Open details for ${job.title}`}
+        onClick={dismissed ? undefined : onOpen}
+        disabled={dismissed}
+        className="flex w-full items-start gap-3 text-left"
+      >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
           {job.company.charAt(0)}
         </div>
         <div className="min-w-0 flex-1">
-          <a href="#" className="block text-[15px] font-semibold text-[color:var(--color-foreground)] hover:underline">
+          <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">
             {job.title}
-          </a>
+          </span>
           <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             {job.company} · {job.location} · {job.salary}
           </div>
@@ -225,7 +240,7 @@ function JobCard({ job }: { job: Job }) {
           </p>
         </div>
         <ScoreRing score={job.score} />
-      </div>
+      </button>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {job.source === "direct" ? (
