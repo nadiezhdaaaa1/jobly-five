@@ -3,6 +3,7 @@ import { IconCalendar as Calendar, IconCheck as Check, IconExternalLink as Exter
 import type { Job } from "@/lib/jobs-data";
 import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
+import congratAsset from "@/assets/congrat.png.asset.json";
 
 function BigRing({ score }: { score: number }) {
   const size = 64;
@@ -377,10 +378,20 @@ function PipelinePanel({
 function OfferPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="rounded-[8px] bg-[color:var(--color-mint)] p-4">
-        <div className="text-[15px] font-semibold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
+      <div className="relative overflow-hidden rounded-[8px] bg-[color:var(--color-mint)] p-4">
+        <div
+          className="relative z-10 text-[color:var(--color-foreground)]"
+          style={{ fontSize: 16, fontWeight: 300 }}
+        >
           Congratulations on the offer!
         </div>
+        <img
+          src={congratAsset.url}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2"
+          style={{ height: "100%", width: "auto" }}
+        />
       </div>
       <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
       <ChangeStatusLink onChange={onChangeStatus} />
