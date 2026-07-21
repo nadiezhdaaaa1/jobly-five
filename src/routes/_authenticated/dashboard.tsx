@@ -8,14 +8,12 @@ import {
   ExternalLink,
   FileText,
   Flag,
-  Kanban,
-  Mail,
   Pencil,
   Pencil as PencilIcon,
   ThumbsDown,
-  User as UserIcon,
   Zap,
 } from "lucide-react";
+import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -77,92 +75,6 @@ function ago(days: number) {
 }
 
 // ---------- Header ----------
-
-function AppHeader({ hasNewDigest = true }: { hasNewDigest?: boolean }) {
-  const tabs: Array<{ key: string; label: string; icon: typeof Mail; active?: boolean; dot?: boolean }> = [
-    { key: "digest", label: "Digest", icon: Mail, active: true, dot: hasNewDigest },
-    { key: "tracker", label: "Tracker", icon: Kanban },
-    { key: "resume", label: "Resume", icon: FileText },
-    { key: "profile", label: "Profile", icon: UserIcon },
-  ];
-
-  return (
-    <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-[20px] font-semibold leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-logo)" }}>
-            jobly
-          </span>
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
-            Pro
-          </span>
-        </Link>
-        <nav className="hidden md:flex items-end gap-1">
-          {tabs.map((t) => {
-            const Icon = t.icon;
-            return (
-              <button
-                key={t.key}
-                type="button"
-                className={`relative flex h-14 w-[76px] flex-col items-center justify-center gap-1 border-b-2 ${t.active ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)]" : "border-transparent text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-secondary)]"}`}
-                aria-current={t.active ? "page" : undefined}
-              >
-                <span className="relative">
-                  <Icon size={19} strokeWidth={1.6} />
-                  {t.dot ? (
-                    <span
-                      className="absolute -right-1 -top-1 h-[7px] w-[7px] rounded-full bg-[color:var(--color-accent)]"
-                      style={{ boxShadow: "0 0 0 1.5px #fff" }}
-                      aria-hidden
-                    />
-                  ) : null}
-                </span>
-                <span className="text-[11px] leading-none">{t.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function MobileTabBar({ hasNewDigest = true }: { hasNewDigest?: boolean }) {
-  const tabs: Array<{ key: string; label: string; icon: typeof Mail; active?: boolean; dot?: boolean }> = [
-    { key: "digest", label: "Digest", icon: Mail, active: true, dot: hasNewDigest },
-    { key: "tracker", label: "Tracker", icon: Kanban },
-    { key: "resume", label: "Resume", icon: FileText },
-    { key: "profile", label: "Profile", icon: UserIcon },
-  ];
-  return (
-    <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-4">
-        {tabs.map((t) => {
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.key}
-              type="button"
-              className={`relative flex h-14 flex-col items-center justify-center gap-1 border-t-2 ${t.active ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)]" : "border-transparent text-[color:var(--color-text-muted)]"}`}
-            >
-              <span className="relative">
-                <Icon size={19} strokeWidth={1.6} />
-                {t.dot ? (
-                  <span
-                    className="absolute -right-1 -top-1 h-[7px] w-[7px] rounded-full bg-[color:var(--color-accent)]"
-                    style={{ boxShadow: "0 0 0 1.5px #fff" }}
-                    aria-hidden
-                  />
-                ) : null}
-              </span>
-              <span className="text-[11px] leading-none">{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
 
 // ---------- Score ring ----------
 
@@ -589,7 +501,7 @@ function DigestWall() {
 function DigestScreen() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-      <AppHeader />
+      <AppHeader active="digest" />
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6 lg:pb-24">
         <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)_250px]">
           <div className="lg:sticky lg:top-20 lg:self-start">
@@ -603,7 +515,7 @@ function DigestScreen() {
           </div>
         </div>
       </main>
-      <MobileTabBar />
+      <MobileTabBar active="digest" />
     </div>
   );
 }
