@@ -1504,21 +1504,41 @@ function EmailStep({
 
 // ---------- Continue button row ----------
 
-function ContinueRow({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+function ContinueRow({
+  disabled,
+  onClick,
+  label,
+  onCancel,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+  label?: string;
+  onCancel?: () => void;
+}) {
+  const primaryLabel = label ?? (onCancel ? "Save" : "Continue");
   return (
-    <div className="mt-6">
+    <div className="mt-6 flex items-center gap-2">
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+        >
+          Cancel
+        </button>
+      )}
       <button
         type="button"
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          "button-medium inline-flex h-12 w-full items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          "button-medium inline-flex h-12 flex-1 items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
           disabled
             ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
             : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
         )}
       >
-        Continue
+        {primaryLabel}
       </button>
     </div>
   );
