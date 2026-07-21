@@ -147,6 +147,7 @@ function JobCard({
 
   const dim = regime === "rejection";
   const draggable = regime === "saved" || regime === "applied-interview";
+  const articleRef = useRef<HTMLElement | null>(null);
 
   // Status dropdown options for anything past Saved
   const statusOptions: JobStatus[] = ["applied", "interview", "offer", "rejection"];
@@ -174,8 +175,16 @@ function JobCard({
 
   return (
     <article
+      ref={articleRef as React.RefObject<HTMLElement>}
       draggable={draggable}
-      onDragStart={onDragStart}
+      onDragStart={(e) => {
+        // Set a lightweight drag image so the browser doesn't render the
+        // whole card (which can look broken with popovers open).
+        if (articleRef.current) {
+          e.dataTransfer.setDragImage(articleRef.current, 16, 16);
+        }
+        onDragStart?.(e);
+      }}
       onDragEnd={onDragEnd}
       className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${draggable ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
@@ -422,8 +431,8 @@ function KanbanColumn({
   status,
   jobs,
   isDropTarget,
+  placeholderHeight,
   onDragOver,
-  onDragLeave,
   onDrop,
   onOpen,
   onDragStartJob,
@@ -435,11 +444,11 @@ function KanbanColumn({
   status: JobStatus;
   jobs: Job[];
   isDropTarget: boolean;
+  placeholderHeight: number;
   onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: () => void;
   onDrop: () => void;
   onOpen: (j: Job) => void;
-  onDragStartJob: (jobId: string) => void;
+  onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
   onRequestInterviewReminder: (jobId: string) => void;
   onRequestApplyToast: (jobId: string) => void;
@@ -448,8 +457,11 @@ function KanbanColumn({
   return (
     <div
       className="flex min-w-0 flex-col"
-      onDragOver={(e) => { e.preventDefault(); onDragOver(e); }}
-      onDragLeave={onDragLeave}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        onDragOver(e);
+      }}
       onDrop={(e) => { e.preventDefault(); onDrop(); }}
     >
       <div className="mb-3 flex items-center gap-2 px-1">
@@ -458,7 +470,10 @@ function KanbanColumn({
       </div>
       <div className="flex flex-col gap-3">
         {isDropTarget ? (
-          <div className="h-[72px] rounded-[6px] border-2 border-dashed" style={{ borderColor: "var(--color-border-strong)" }} />
+          <div
+            className="rounded-[6px] border-2 border-dashed"
+            style={{ borderColor: "var(--color-border-strong)", height: placeholderHeight || 96 }}
+          />
         ) : null}
         {jobs.length === 0 && !isDropTarget ? (
           <div className="rounded-[6px] border border-dashed p-6 text-center text-[13px] text-[color:var(--color-text-muted)]" style={{ borderColor: "var(--color-border-strong)" }}>
@@ -474,7 +489,8 @@ function KanbanColumn({
             onDragStart={(e) => {
               e.dataTransfer.setData("text/plain", j.id);
               e.dataTransfer.effectAllowed = "move";
-              onDragStartJob(j.id);
+              const h = (e.currentTarget as HTMLElement).getBoundingClientRect().height;
+              onDragStartJob(j.id, h);
             }}
             onDragEnd={onDragEnd}
             onRequestInterviewReminder={() => onRequestInterviewReminder(j.id)}
@@ -497,6 +513,7 @@ function TrackerScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState<JobStatus | null>(null);
+  const [dragHeight, setDragHeight] = useState<number>(0);
   const [reminderJobId, setReminderJobId] = useState<string | null>(null);
   const [applyToast, setApplyToast] = useState<Job | null>(null);
 
@@ -543,7 +560,18 @@ function TrackerScreen() {
       setStatus(draggingId, target);
     }
     setDraggingId(null);
+    setDragHeight(0);
   }
+
+  const handleDragStart = (id: string, height: number) => {
+    setDraggingId(id);
+    setDragHeight(height);
+  };
+  const handleDragEnd = () => {
+    setDraggingId(null);
+    setDragOver(null);
+    setDragHeight(0);
+  };
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -587,12 +615,12 @@ function TrackerScreen() {
                 status="saved"
                 jobs={savedJobs}
                 isDropTarget={dragOver === "saved" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("saved")}
-                onDragLeave={() => setDragOver((v) => (v === "saved" ? null : v))}
                 onDrop={() => handleDrop("saved")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
@@ -604,12 +632,12 @@ function TrackerScreen() {
                 status="applied"
                 jobs={appliedJobs}
                 isDropTarget={dragOver === "applied" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("applied")}
-                onDragLeave={() => setDragOver((v) => (v === "applied" ? null : v))}
                 onDrop={() => handleDrop("applied")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
@@ -621,12 +649,12 @@ function TrackerScreen() {
                 status="interview"
                 jobs={interviewJobs}
                 isDropTarget={dragOver === "interview" && draggingId !== null}
+                placeholderHeight={dragHeight}
                 onDragOver={() => setDragOver("interview")}
-                onDragLeave={() => setDragOver((v) => (v === "interview" ? null : v))}
                 onDrop={() => handleDrop("interview")}
                 onOpen={setOpenJob}
-                onDragStartJob={setDraggingId}
-                onDragEnd={() => { setDraggingId(null); setDragOver(null); }}
+                onDragStartJob={handleDragStart}
+                onDragEnd={handleDragEnd}
                 onRequestInterviewReminder={setReminderJobId}
                 onRequestApplyToast={(id) => {
                   const j = allJobs.find((x) => x.id === id);
