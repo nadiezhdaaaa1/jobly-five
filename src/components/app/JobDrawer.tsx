@@ -82,7 +82,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const dateLine = (() => {
     if (status === "applied") return `Applied ${dateHelpers.shortDate(record.appliedAt)}`;
     if (status === "interview") return `Applied ${dateHelpers.shortDate(record.appliedAt ?? record.interviewAt)}`;
-    if (status === "offer") return `Received ${dateHelpers.shortDate(record.offerAt)}`;
+    if (status === "offer") return `Offer received ${dateHelpers.shortDate(record.offerAt)}`;
     if (status === "rejection") return `Received ${dateHelpers.shortDate(record.rejectionAt)}`;
     return `Saved ${dateHelpers.shortDate(record.savedAt ?? new Date().toISOString())}`;
   })();
