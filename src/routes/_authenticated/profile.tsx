@@ -543,7 +543,7 @@ function MatchCard({ onSaved, flash }: { onSaved: (next: QuizAnswers) => void; f
   };
 
   return (
-    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+    <section>
       <header className="flex items-center justify-between">
         <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Match preferences</h2>
         {flash ? <span className="text-[12px] text-[color:var(--color-green)]">Saved</span> : null}
