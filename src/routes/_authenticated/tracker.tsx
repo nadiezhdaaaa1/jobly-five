@@ -622,7 +622,7 @@ function TrackerScreen() {
                     : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 }`}
               >
-                {t === "ongoing" ? "Ongoing" : t === "offers" ? "Received offers" : "Rejections"}
+                {t === "ongoing" ? "Ongoing" : t === "offers" ? "Offers" : "Rejections"}
               </button>
             ))}
           </div>
