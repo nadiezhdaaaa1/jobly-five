@@ -491,7 +491,7 @@ function KanbanColumn({
         <span className="text-[15px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>{title}</span>
         <CountTag n={jobs.length} />
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {isDropTarget ? (
           <div
             className="rounded-[6px] border-2 border-dashed"
