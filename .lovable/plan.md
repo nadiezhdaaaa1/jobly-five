@@ -1,28 +1,15 @@
-## Goal
-Replace the two-select (state → city → Add) location picker in the "Where and how much?" quiz step with a single search input that suggests both cities and whole states, and adds a chip on selection.
+## Fix select field arrow spacing
 
-## Behavior
-- One text input labeled "Preferred locations" with placeholder like "Search city or state…".
-- As the user types, show a dropdown of matches (max ~8):
-  - Cities from the existing `US_CITIES` map, shown as `City, ST` (e.g. `Austin, TX`).
-  - States from `US_STATES`, shown as `Entire state of {Name}` (e.g. `Entire state of California`).
-  - Matches when the query is a case-insensitive substring of the city name, state name, or state code.
-- Clicking a suggestion (or Enter on the highlighted one) adds a chip and clears the input.
-- Chip labels:
-  - City: `City, ST` (two-letter uppercase abbreviation).
-  - Whole state: `Entire state of {Name}`.
-- Chips remain removable via the existing X button. Duplicates ignored.
-- No standalone Add button anymore.
-- Keyboard: ↑/↓ to move highlight, Enter to add, Esc to close dropdown.
-- Dropdown styled to match existing quiz surfaces (white bg, `--color-border`, 4px radius, subtle shadow).
+The dropdown arrow on select fields sits flush against the right border because right-side padding is too small (or the shadcn Radix trigger has no reserved right space). Fix by adding right padding on all select triggers and native `<select>` elements.
 
-## Data / storage
-- Continue using `answers.locations: string[]`; each entry is the final chip label. Existing collapsed-summary logic (`quizSummary`) keeps working since it just joins strings.
-- Remove now-unused `stateCode` / `city` local state and the `addLocation` helper; keep `removeLoc`.
+### Changes
 
-## Scope
-- Only `LocationSalaryStep` in `src/routes/quiz.tsx`. No changes to salary slider, work-mode toggle, taxonomy, or store shape.
+1. **`src/components/ui/select.tsx`** (shadcn Radix trigger, line 22)
+   - Replace `px-3` with `pl-3 pr-2` and add a small `gap-2` so the ChevronDown icon has breathing room from the right border (target ~8px inner right padding + icon).
 
-### Technical notes
-- Build suggestions lazily from the current query: flat-map `US_CITIES` into `{label: "City, ST", value: "City, ST"}` and `US_STATES` into `{label: "Entire state of Name", value: "Entire state of Name"}`, filter by query, slice to 8.
-- Track `highlightIndex` for keyboard nav; close dropdown on outside click via a ref + `mousedown` listener.
+2. **Native `<select>` elements** — add right padding room for the browser-drawn arrow (use `pr-8` while keeping `pl-2`):
+   - `src/routes/_authenticated/profile.tsx` — lines 832, 837, 985, 993, 998
+   - `src/routes/quiz.tsx` — lines 1867, 1891, 1902 (language pickers)
+   - `src/components/app/InterviewReminderDialog.tsx` — lines 39, 49, 59 (time picker selects)
+
+No logic changes, no other UI changes.
