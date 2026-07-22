@@ -411,7 +411,7 @@ function QuizPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+      <main className="mx-auto max-w-2xl px-4 py-6 sm:py-8">
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl">Let's set up your matches</h1>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
