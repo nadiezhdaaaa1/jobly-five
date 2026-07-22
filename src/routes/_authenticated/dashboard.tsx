@@ -671,13 +671,10 @@ function DigestScreen() {
       <AppHeader active="digest" />
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6 lg:pb-24">
         {!pro ? (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-mint)]/40 px-4 py-3">
+          <div className="mb-6 rounded-[6px] border border-[color:var(--color-green)] bg-[color:var(--color-mint)]/40 px-4 py-3">
             <div className="text-[13px] text-[color:var(--color-foreground)]">
               You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
             </div>
-            <Link to="/settings" className="inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">
-              Go Pro
-            </Link>
           </div>
         ) : null}
         <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)_250px]">
