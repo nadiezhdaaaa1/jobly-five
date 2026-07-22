@@ -482,7 +482,7 @@ function FileRow({
     <li className="flex items-center gap-3 px-4 py-3 sm:px-5">
       <span
         aria-hidden
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[10px] font-bold uppercase tracking-wide text-white"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[10px] font-bold uppercase tracking-wide text-[color:var(--color-foreground)]"
       >
         {file.ext === "pdf" ? "PDF" : "DOC"}
       </span>
