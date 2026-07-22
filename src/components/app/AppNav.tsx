@@ -35,7 +35,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
         {!pro ? (
           <Link
             to="/settings"
-            className="hidden md:inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="hidden md:inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-medium text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Go Pro
           </Link>
