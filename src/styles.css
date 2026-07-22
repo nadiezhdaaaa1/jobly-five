@@ -244,6 +244,23 @@
   padding-right: 2.5rem;
 }
 
+/* Global normalization for every native <select> so text never crops and the
+ * chevron always has breathing room from the right border. Individual usages
+ * can still override padding, but the appearance/arrow are consistent. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2367787C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.25rem !important;
+}
+select::-ms-expand {
+  display: none;
+}
+
 /* Global disabled state for primary (accent) buttons.
  * Matches any button that uses the primary/accent background token so every
  * current and future accent CTA gets an unmistakably inert disabled state
