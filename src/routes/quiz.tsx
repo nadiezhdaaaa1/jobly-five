@@ -419,7 +419,7 @@ function QuizPage() {
           </p>
         </div>
 
-        <ol className="flex flex-col gap-4">
+        <ol className="flex flex-col gap-3">
           {STEP_ORDER.map((key) => {
             // Hide skill sections whose union flag is 'na', stack for roles with
             // a `stackNote`, and axes if none of scope/segment/motion apply.
