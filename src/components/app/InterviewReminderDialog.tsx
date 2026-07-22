@@ -32,7 +32,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
   };
 
   const selectCls =
-    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-2 pr-8 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+    "h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
 
   return (
     <div className="flex items-center gap-1">
@@ -40,7 +40,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
         aria-label="Hour"
         value={h12}
         onChange={(e) => emit(Number(e.target.value), mm, period)}
-        className={selectCls}
+        className={`${selectCls} w-[72px]`}
       >
         {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
           <option key={h} value={h}>{pad(h)}</option>
@@ -50,7 +50,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
         aria-label="Minute"
         value={mm}
         onChange={(e) => emit(h12, Number(e.target.value), period)}
-        className={selectCls}
+        className={`${selectCls} w-[72px]`}
       >
         {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
           <option key={m} value={m}>{pad(m)}</option>
@@ -60,7 +60,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
         aria-label="AM or PM"
         value={period}
         onChange={(e) => emit(h12, mm, e.target.value as "AM" | "PM")}
-        className={selectCls}
+        className={`${selectCls} w-[76px]`}
       >
         <option value="AM">AM</option>
         <option value="PM">PM</option>
