@@ -1,16 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { IconArrowLeft as ArrowLeft, IconBriefcase as Briefcase, IconFileText as FileText, IconPencil as Pencil, IconCloudUpload as UploadCloud, IconX as X } from "@tabler/icons-react";
+import {
+  IconCloudUpload as UploadCloud,
+  IconPencil as Pencil,
+  IconTrash as Trash,
+  IconCheck as Check,
+  IconX as X,
+  IconSparkles as Sparkles,
+} from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import {
-  clearResume,
-  setResume,
-  updateResumeData,
+  addResumeFile,
+  deleteResumeFile,
+  renameResumeFile,
+  setPrimaryResumeFile,
+  setResumeConsent,
   useResumeState,
-  type ResumeData,
-  type ResumeEducation,
-  type ResumeExperience,
+  type ResumeFile,
+  type ResumeFileExt,
 } from "@/lib/resume-store";
+import { isPro, usePlan } from "@/lib/plan-store";
 
 export const Route = createFileRoute("/_authenticated/resume")({
   head: () => ({
@@ -22,61 +31,116 @@ export const Route = createFileRoute("/_authenticated/resume")({
   component: ResumeScreen,
 });
 
-type EntryMode = null | "cards" | "upload" | "linkedin";
-type UploadPhase = "idle" | "uploading" | "parsing" | "error";
+const MAX_BYTES = 10 * 1024 * 1024;
+const FREE_LIMIT = 3;
+
+function formatSize(bytes: number): string {
+  if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+}
+
+function formatUploaded(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function extFromFile(f: File): ResumeFileExt | null {
+  const n = f.name.toLowerCase();
+  if (n.endsWith(".pdf")) return "pdf";
+  if (n.endsWith(".docx")) return "docx";
+  return null;
+}
+
+function baseName(name: string): string {
+  const idx = name.lastIndexOf(".");
+  return idx > 0 ? name.slice(0, idx) : name;
+}
+
+type UploadTask = {
+  id: string;
+  displayName: string;
+  ext: ResumeFileExt;
+  size: number;
+  pct: number;
+};
+
+type FileError = { message: string } | null;
 
 function ResumeScreen() {
   const state = useResumeState();
-  const [entryMode, setEntryMode] = useState<EntryMode>("cards");
-  const [uploadPhase, setUploadPhase] = useState<UploadPhase>("idle");
-  const [uploadPct, setUploadPct] = useState(0);
-  const [uploadName, setUploadName] = useState<string>("");
-  const [showBanner, setShowBanner] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [consent, setConsent] = useState(false);
+  const plan = usePlan();
+  const pro = isPro(plan);
+  const atLimit = !pro && state.files.length >= FREE_LIMIT;
 
-  const startUpload = (source: "upload" | "linkedin") => {
-    const name = source === "linkedin" ? "linkedin_profile.pdf" : "resume_serhii.pdf";
-    setUploadName(name);
-    setUploadPct(0);
-    setUploadPhase("uploading");
-    let pct = 0;
-    const tick = () => {
-      pct += 18 + Math.random() * 20;
-      if (pct >= 100) {
-        setUploadPct(100);
-        setUploadPhase("parsing");
-        setTimeout(() => {
-          setResume(name);
-          setShowBanner(true);
-          setEntryMode(null);
-          setUploadPhase("idle");
-          setConsent(false);
-        }, 1400);
-      } else {
-        setUploadPct(pct);
-        setTimeout(tick, 220);
-      }
+  const [uploads, setUploads] = useState<UploadTask[]>([]);
+  const [fileError, setFileError] = useState<FileError>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<number | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(null), 3500);
+  };
+
+  useEffect(
+    () => () => {
+      if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    },
+    [],
+  );
+
+  const startUpload = (file: File) => {
+    const ext = extFromFile(file);
+    if (!ext || file.size > MAX_BYTES) {
+      setFileError({
+        message: "We couldn't add this file. PDF or DOCX up to 10 MB.",
+      });
+      return;
+    }
+    if (!pro && state.files.length + uploads.length >= FREE_LIMIT) return;
+    setFileError(null);
+    const task: UploadTask = {
+      id: Math.random().toString(36).slice(2, 10),
+      displayName: file.name,
+      ext,
+      size: file.size,
+      pct: 0,
     };
-    setTimeout(tick, 220);
+    setUploads((u) => [...u, task]);
+    const tick = () => {
+      setUploads((u) => {
+        const cur = u.find((t) => t.id === task.id);
+        if (!cur) return u;
+        const next = Math.min(100, cur.pct + 18 + Math.random() * 20);
+        return u.map((t) => (t.id === task.id ? { ...t, pct: next } : t));
+      });
+    };
+    const timers: number[] = [];
+    for (let i = 1; i <= 5; i++) timers.push(window.setTimeout(tick, i * 220));
+    window.setTimeout(() => {
+      addResumeFile({ name: baseName(file.name), ext, size: file.size });
+      setUploads((u) => u.filter((t) => t.id !== task.id));
+      timers.forEach((t) => window.clearTimeout(t));
+    }, 5 * 220 + 200);
   };
 
-  const onReplace = () => {
-    setEntryMode("cards");
-    setShowBanner(false);
+  const onFiles = (files: FileList | null) => {
+    if (!files || !state.consented || atLimit) return;
+    for (const f of Array.from(files)) startUpload(f);
   };
 
-  const onDeleteConfirmed = () => {
-    clearResume();
-    setConfirmDelete(false);
-    setEntryMode("cards");
-    setShowBanner(false);
-  };
+  const orderedFiles = [...state.files].sort((a, b) => {
+    if (a.id === state.primaryId) return -1;
+    if (b.id === state.primaryId) return 1;
+    return a.uploadedAt < b.uploadedAt ? 1 : -1;
+  });
+
+  const hasAny = state.files.length > 0 || uploads.length > 0;
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-10">
       <AppHeader active="resume" />
-      <main className="mx-auto max-w-[1200px] px-6 py-8">
+      <main className="mx-auto w-full max-w-[720px] px-4 py-8 sm:px-6">
         <header className="mb-6">
           <h1
             className="text-[24px] leading-tight text-[color:var(--color-foreground)]"
@@ -84,80 +148,52 @@ function ResumeScreen() {
           >
             Resume
           </h1>
-          {state.hasResume ? (
-            <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]">
-              Used to score your matches since Jul 20
-            </p>
-          ) : null}
         </header>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="min-w-0">
-            {showBanner && state.hasResume ? (
-              <div className="mb-4 flex items-start justify-between gap-3 rounded-[8px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
-                <span>
-                  Here's what we read. Anything we got wrong? Your next digest will use this resume.
-                </span>
-                <button
-                  type="button"
-                  aria-label="Dismiss"
-                  onClick={() => setShowBanner(false)}
-                  className="shrink-0 rounded-[4px] p-1 hover:bg-black/5"
-                >
-                  <X size={14} strokeWidth={1.8} />
-                </button>
-              </div>
-            ) : null}
+        <ComingSoonBanner />
 
-            {!state.hasResume && uploadPhase === "idle" && entryMode === "cards" ? (
-              <EmptyEntry onPick={setEntryMode} />
-            ) : null}
-
-            {!state.hasResume && uploadPhase === "idle" && entryMode === "upload" ? (
-              <UploadPanel
-                consent={consent}
-                setConsent={setConsent}
-                onBack={() => setEntryMode("cards")}
-                onFile={() => startUpload("upload")}
-              />
-            ) : null}
-
-            {!state.hasResume && uploadPhase === "idle" && entryMode === "linkedin" ? (
-              <LinkedInPanel
-                consent={consent}
-                setConsent={setConsent}
-                onBack={() => setEntryMode("cards")}
-                onFile={() => startUpload("linkedin")}
-              />
-            ) : null}
-
-            {uploadPhase === "uploading" ? (
-              <UploadingPanel filename={uploadName} pct={uploadPct} />
-            ) : null}
-            {uploadPhase === "parsing" ? <ParsingSkeleton /> : null}
-            {uploadPhase === "error" ? (
-              <ErrorPanel onRetry={() => startUpload("upload")} />
-            ) : null}
-
-            {state.hasResume && uploadPhase === "idle" ? <ResumeEditor data={state.data} /> : null}
-          </div>
-
-          <aside className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
-            <TailoringTeaser />
-            {state.hasResume && state.filename ? (
-              <FileCard
-                filename={state.filename}
-                addedDate={state.addedDate ?? ""}
-                onReplace={onReplace}
-                onDelete={() => setConfirmDelete(true)}
-              />
-            ) : null}
-          </aside>
+        <div className="mt-4">
+          <UploadCard
+            state={state}
+            pro={pro}
+            atLimit={atLimit}
+            uploads={uploads}
+            fileError={fileError}
+            onFiles={onFiles}
+            onConsent={setResumeConsent}
+            onDismissError={() => setFileError(null)}
+            hasAny={hasAny}
+          />
         </div>
+
+        {state.files.length > 0 ? (
+          <div className="mt-4">
+            <FileList
+              files={orderedFiles}
+              primaryId={state.primaryId}
+              onMakePrimary={(id) => setPrimaryResumeFile(id)}
+              onRename={(id, name) => renameResumeFile(id, name)}
+              onDelete={(id) => {
+                const result = deleteResumeFile(id);
+                if (result.wasPrimary && result.promoted) {
+                  showToast(
+                    `${result.promoted.name}.${result.promoted.ext} is now your primary resume`,
+                  );
+                }
+              }}
+            />
+          </div>
+        ) : null}
       </main>
 
-      {confirmDelete ? (
-        <DeleteDialog onCancel={() => setConfirmDelete(false)} onConfirm={onDeleteConfirmed} />
+      {toast ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-24 left-1/2 z-40 -translate-x-1/2 rounded-[8px] bg-[color:var(--color-foreground)] px-4 py-2 text-[13px] font-medium text-white shadow-lg md:bottom-8"
+        >
+          {toast}
+        </div>
       ) : null}
 
       <MobileTabBar active="resume" />
@@ -165,993 +201,384 @@ function ResumeScreen() {
   );
 }
 
-// ---------- Empty entry ----------
+// ---------- Coming-soon banner ----------
 
-function EmptyEntry({ onPick }: { onPick: (m: EntryMode) => void }) {
+function ComingSoonBanner() {
   return (
-    <div>
-      <p
-        className="mb-5 text-[14px] text-[color:var(--color-text-secondary)]"
-        style={{ fontWeight: 300 }}
-      >
-        Your quiz answers are already in. Add a resume to sharpen your match scores.
-      </p>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <EntryCard
-          icon={<UploadCloud size={18} strokeWidth={1.8} className="text-[color:var(--color-green)]" />}
-          title="Upload your resume"
-          body="PDF or DOCX. We'll read it and fill everything in."
-          onClick={() => onPick("upload")}
-        />
-        <EntryCard
-          icon={<Briefcase size={18} strokeWidth={1.8} className="text-[color:var(--color-green)]" />}
-          title="Import from LinkedIn"
-          body="Save your profile as a PDF on LinkedIn, drop it here."
-          onClick={() => onPick("linkedin")}
-        />
-      </div>
-    </div>
-  );
-}
-
-function EntryCard({
-  icon,
-  title,
-  body,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex w-full flex-col items-start gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-5 text-left transition-colors hover:border-[color:var(--color-border-strong)]"
-    >
-      <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] bg-[color:var(--color-mint)]">
-        {icon}
-      </span>
-      <span className="text-[15px] font-semibold text-[color:var(--color-foreground)]">{title}</span>
+    <aside className="flex items-start gap-4 rounded-[8px] bg-[color:var(--color-surface-2)] px-4 py-4">
       <span
-        className="text-[13px] text-[color:var(--color-text-secondary)]"
-        style={{ fontWeight: 300 }}
+        aria-hidden
+        className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[8px] bg-white/60 text-[color:var(--color-green)] sm:flex"
+        style={{ opacity: 0.55 }}
       >
-        {body}
+        <Sparkles size={22} strokeWidth={1.6} />
       </span>
-    </button>
-  );
-}
-
-// ---------- Dropzone ----------
-
-function Dropzone({ disabled, onFile }: { disabled: boolean; onFile: () => void }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [drag, setDrag] = useState(false);
-  return (
-    <div
-      onDragOver={(e) => {
-        if (disabled) return;
-        e.preventDefault();
-        setDrag(true);
-      }}
-      onDragLeave={() => setDrag(false)}
-      onDrop={(e) => {
-        if (disabled) return;
-        e.preventDefault();
-        setDrag(false);
-        onFile();
-      }}
-      className={`flex h-[160px] flex-col items-center justify-center rounded-[8px] border border-dashed px-4 text-center ${
-        drag
-          ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-2)]"
-          : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)]"
-      } ${disabled ? "opacity-60" : ""}`}
-      aria-disabled={disabled}
-    >
-      <p className="text-[14px] text-[color:var(--color-foreground)]">
-        Drop your resume here or{" "}
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => inputRef.current?.click()}
-          className="font-semibold text-[color:var(--color-green)] underline underline-offset-2 disabled:cursor-not-allowed disabled:no-underline disabled:text-[color:var(--color-text-muted)]"
-        >
-          browse
-        </button>
-      </p>
-      <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">PDF or DOCX, up to 10 MB</p>
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".pdf,.docx"
-        className="hidden"
-        onChange={() => onFile()}
-      />
-    </div>
-  );
-}
-
-function ConsentCheckbox({
-  checked,
-  onChange,
-}: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <label className="mt-4 flex cursor-pointer items-start gap-3 text-[13px] text-[color:var(--color-text-secondary)]">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-[3px] h-[16px] w-[16px] shrink-0 accent-[color:var(--color-green)]"
-      />
-      <span style={{ fontWeight: 300 }}>
-        I agree to Jobly storing my resume to improve my job matches. I can delete it anytime.
-      </span>
-    </label>
-  );
-}
-
-function UploadPanel({
-  consent,
-  setConsent,
-  onBack,
-  onFile,
-}: {
-  consent: boolean;
-  setConsent: (v: boolean) => void;
-  onBack: () => void;
-  onFile: () => void;
-}) {
-  return (
-    <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-4 inline-flex items-center gap-1 text-[13px] text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-      >
-        <ArrowLeft size={14} strokeWidth={1.6} /> Back
-      </button>
-      <Dropzone disabled={!consent} onFile={onFile} />
-      <ConsentCheckbox checked={consent} onChange={setConsent} />
-    </div>
-  );
-}
-
-function LinkedInPanel({
-  consent,
-  setConsent,
-  onBack,
-  onFile,
-}: {
-  consent: boolean;
-  setConsent: (v: boolean) => void;
-  onBack: () => void;
-  onFile: () => void;
-}) {
-  const steps: React.ReactNode[] = [
-    "Open your LinkedIn profile",
-    <>
-      Click <strong>More</strong> under your name, then choose <strong>Save to PDF</strong>.
-    </>,
-    "LinkedIn downloads a PDF of your profile.",
-    "Drop that file below.",
-  ];
-  return (
-    <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-4 inline-flex items-center gap-1 text-[13px] text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
-      >
-        <ArrowLeft size={14} strokeWidth={1.6} /> Back
-      </button>
-      <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">
-        Get your LinkedIn profile as a PDF
-      </h2>
-      <ol className="mt-3 divide-y">
-        {steps.map((s, i) => (
-          <li key={i} className="flex items-start gap-3 py-3">
-            <span className="mt-[1px] flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-[color:var(--color-surface-2)] text-[12px] font-semibold text-[color:var(--color-foreground)]">
-              {i + 1}
-            </span>
-            <div
-              className="flex-1 text-[14px] text-[color:var(--color-foreground)]"
-              style={{ fontWeight: 300 }}
-            >
-              <div>{s}</div>
-              {i === 0 ? (
-                <a
-                  href="https://www.linkedin.com/in/me"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex h-9 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:border-[color:var(--color-border-strong)]"
-                >
-                  Open my profile
-                </a>
-              ) : null}
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div className="mt-4">
-        <Dropzone disabled={!consent} onFile={onFile} />
-        <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]">
-          We read the file you give us — Jobly never accesses your LinkedIn account.
-        </p>
-        <ConsentCheckbox checked={consent} onChange={setConsent} />
-      </div>
-    </div>
-  );
-}
-
-function UploadingPanel({ filename, pct }: { filename: string; pct: number }) {
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5"
-    >
-      <div className="text-[14px] text-[color:var(--color-foreground)]">{filename}</div>
-      <div className="mt-3 h-1 w-full bg-[color:var(--color-surface-2)]">
-        <div
-          className="h-1 bg-[color:var(--color-accent)] transition-all"
-          style={{ width: `${Math.min(100, pct)}%` }}
-        />
-      </div>
-      <div className="mt-2 text-[12px] text-[color:var(--color-text-muted)]">Uploading…</div>
-    </div>
-  );
-}
-
-function ParsingSkeleton() {
-  return (
-    <div role="status" aria-live="polite" className="flex flex-col gap-4">
-      <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-        <div className="text-[13px] text-[color:var(--color-text-secondary)]">
-          Reading your resume…
-        </div>
-        <div className="mt-4 space-y-2">
-          <div className="h-3 w-1/3 rounded bg-[color:var(--color-surface-2)]" />
-          <div className="h-3 w-2/3 rounded bg-[color:var(--color-surface-2)]" />
-          <div className="h-3 w-1/2 rounded bg-[color:var(--color-surface-2)]" />
-        </div>
-      </div>
-      <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-        <div className="space-y-2">
-          <div className="h-3 w-1/4 rounded bg-[color:var(--color-surface-2)]" />
-          <div className="h-3 w-4/5 rounded bg-[color:var(--color-surface-2)]" />
-          <div className="h-3 w-3/5 rounded bg-[color:var(--color-surface-2)]" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ErrorPanel({ onRetry }: { onRetry: () => void }) {
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="rounded-[8px] border p-5"
-      style={{ background: "var(--color-danger-subtle)" }}
-    >
-      <p className="text-[14px] text-[color:var(--color-foreground)]">
-        We couldn't read this file. Try a different PDF or DOCX — or the LinkedIn export, it parses
-        reliably.
-      </p>
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-3 inline-flex h-9 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:border-[color:var(--color-border-strong)]"
-      >
-        Try again
-      </button>
-    </div>
-  );
-}
-
-// ---------- Right rail ----------
-
-function TailoringTeaser() {
-  return (
-    <div
-      aria-hidden
-      className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4"
-      style={{ opacity: 0.55 }}
-    >
-      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-secondary)]">
-        Coming soon
-      </span>
-      <h3 className="mt-3 text-[15px] font-semibold text-[color:var(--color-foreground)]">
-        Tailor to a job
-      </h3>
-      <p
-        className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]"
-        style={{ fontWeight: 300 }}
-      >
-        One click adapts your resume to a specific opening — rewritten summary, reordered skills,
-        gap flags. Rolling out soon.
-      </p>
-    </div>
-  );
-}
-
-function FileCard({
-  filename,
-  addedDate,
-  onReplace,
-  onDelete,
-}: {
-  filename: string;
-  addedDate: string;
-  onReplace: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
-      <div className="flex items-start gap-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)]">
-          <FileText
-            size={16}
-            strokeWidth={1.6}
-            className="text-[color:var(--color-text-secondary)]"
-          />
+      <div className="min-w-0">
+        <span className="inline-flex items-center rounded-[4px] bg-white/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+          Coming soon
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">
-            {filename}
-          </div>
-          <div className="text-[12px] text-[color:var(--color-text-muted)]">Added {addedDate}</div>
-        </div>
-      </div>
-      <div className="mt-3 flex items-center gap-4 text-[13px]">
-        <button
-          type="button"
-          onClick={onReplace}
-          className="text-[color:var(--color-green)] hover:underline"
-        >
-          Replace
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="text-[color:var(--color-danger)] hover:underline"
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ---------- Delete dialog ----------
-
-function DeleteDialog({
-  onCancel,
-  onConfirm,
-}: {
-  onCancel: () => void;
-  onConfirm: () => void;
-}) {
-  const dialogRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null;
-    const first = dialogRef.current?.querySelector<HTMLElement>("button");
-    first?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      prev?.focus();
-    };
-  }, [onCancel]);
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(9,11,12,0.32)" }}
-      onClick={onCancel}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="del-title"
-    >
-      <div
-        ref={dialogRef}
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[400px] rounded-[8px] bg-[color:var(--color-surface-1)] p-5"
-        style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.12)" }}
-      >
-        <h3
-          id="del-title"
-          className="text-[16px] font-semibold text-[color:var(--color-foreground)]"
-        >
-          Delete your resume?
-        </h3>
+        <h2 className="mt-2 text-[15px] font-semibold text-[color:var(--color-foreground)]">
+          Tailor your resume to a job
+        </h2>
         <p
-          className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]"
+          className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]"
           style={{ fontWeight: 300 }}
         >
-          Your matches will fall back to your quiz profile.
+          One click will adapt your primary resume to a specific opening from your digest.
         </p>
-        <div className="mt-4 flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="inline-flex h-10 items-center rounded-[4px] px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            Keep it
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-danger)] px-4 text-[14px] font-semibold text-white hover:opacity-90"
-          >
-            Delete
-          </button>
-        </div>
       </div>
-    </div>
+    </aside>
   );
 }
 
-// ---------- Editor ----------
+// ---------- Upload card ----------
 
-const QUIZ_STACK = new Set(
-  ["React", "Vue", "TypeScript", "Next.js", "Tailwind CSS", "GraphQL", "Node.js"].map((s) =>
-    s.toLowerCase(),
-  ),
-);
-
-function ResumeEditor({ data }: { data: ResumeData }) {
-  return (
-    <div className="flex flex-col gap-4">
-      <ContactSection data={data} />
-      <SummarySection data={data} />
-      <ExperienceSection data={data} />
-      <EducationSection data={data} />
-      <SkillsSection data={data} />
-      <LanguagesSection data={data} />
-    </div>
-  );
-}
-
-function SectionCard({
-  title,
-  editing,
-  onEdit,
-  onSave,
-  onCancel,
-  saved,
-  children,
-  editContent,
+function UploadCard({
+  state,
+  pro,
+  atLimit,
+  uploads,
+  fileError,
+  onFiles,
+  onConsent,
+  onDismissError,
+  hasAny,
 }: {
-  title: string;
-  editing: boolean;
-  onEdit: () => void;
-  onSave: () => void;
-  onCancel: () => void;
-  saved?: boolean;
-  children: React.ReactNode;
-  editContent?: React.ReactNode;
+  state: ReturnType<typeof useResumeState>;
+  pro: boolean;
+  atLimit: boolean;
+  uploads: UploadTask[];
+  fileError: FileError;
+  onFiles: (files: FileList | null) => void;
+  onConsent: (v: boolean) => void;
+  onDismissError: () => void;
+  hasAny: boolean;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [drag, setDrag] = useState(false);
+  const disabled = !state.consented || atLimit;
+  const showCounter = !pro && state.files.length > 0;
+  const showEmptyCopy = !hasAny;
+
   return (
     <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">{title}</h2>
-        <div className="flex items-center gap-2">
-          {saved ? (
-            <span className="text-[12px] text-[color:var(--color-green)]">Saved</span>
-          ) : null}
-          {!editing ? (
-            <button
-              type="button"
-              aria-label={`Edit ${title}`}
-              aria-expanded={editing}
-              onClick={onEdit}
-              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+      {!state.consented ? (
+        <label className="mb-3 flex cursor-pointer items-start gap-3 text-[13px] text-[color:var(--color-text-secondary)]">
+          <input
+            type="checkbox"
+            checked={state.consented}
+            onChange={(e) => onConsent(e.target.checked)}
+            className="mt-[3px] h-[16px] w-[16px] shrink-0 accent-[color:var(--color-green)]"
+          />
+          <span style={{ fontWeight: 300 }}>
+            I agree to Jobly storing my resume files to improve my job matches. I can delete
+            them anytime.
+          </span>
+        </label>
+      ) : null}
+
+      <div
+        onClick={() => !disabled && inputRef.current?.click()}
+        onDragOver={(e) => {
+          if (disabled) return;
+          e.preventDefault();
+          setDrag(true);
+        }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => {
+          if (disabled) return;
+          e.preventDefault();
+          setDrag(false);
+          onFiles(e.dataTransfer.files);
+        }}
+        aria-disabled={disabled}
+        className={`flex flex-col items-center justify-center rounded-[6px] border border-dashed px-4 py-8 text-center transition-colors ${
+          disabled
+            ? "cursor-not-allowed border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]/60"
+            : "cursor-pointer border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] hover:bg-[color:var(--color-surface-2)]/60"
+        } ${drag ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-2)]" : ""}`}
+      >
+        <span
+          className={`flex h-9 w-9 items-center justify-center rounded-[4px] ${
+            disabled ? "text-[color:var(--color-text-muted)]" : "text-[color:var(--color-green)]"
+          }`}
+        >
+          <UploadCloud size={22} strokeWidth={1.6} />
+        </span>
+        {atLimit ? (
+          <>
+            <p className="mt-3 text-[14px] text-[color:var(--color-text-secondary)]">
+              You've reached the Free limit of 3 files.
+            </p>
+            <Link
+              to="/settings"
+              className="mt-2 text-[13px] font-semibold text-[color:var(--color-accent)] hover:underline"
             >
-              <Pencil size={15} strokeWidth={1.6} />
-            </button>
-          ) : null}
-        </div>
+              Upgrade to Pro for unlimited resumes
+            </Link>
+          </>
+        ) : (
+          <>
+            <p className="mt-3 text-[14px] text-[color:var(--color-foreground)]">
+              Drag a file here or{" "}
+              <span className="font-semibold text-[color:var(--color-green)] underline underline-offset-2">
+                browse
+              </span>
+            </p>
+            <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
+              PDF or DOCX, up to 10 MB
+            </p>
+          </>
+        )}
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".pdf,.docx"
+          className="hidden"
+          multiple
+          onChange={(e) => {
+            onFiles(e.target.files);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
+        />
       </div>
-      {editing ? editContent : children}
-      {editing ? (
-        <div className="mt-4 flex items-center gap-2">
+
+      {showEmptyCopy ? (
+        <p
+          className="mt-3 text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300 }}
+        >
+          Your primary resume sharpens your match scores.
+        </p>
+      ) : null}
+
+      {showCounter ? (
+        <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]">
+          {state.files.length} of {FREE_LIMIT} files
+        </p>
+      ) : null}
+
+      {fileError ? (
+        <div
+          role="alert"
+          className="mt-3 flex items-start justify-between gap-3 rounded-[6px] px-3 py-2 text-[13px]"
+          style={{ background: "var(--color-danger-subtle)", color: "var(--color-danger)" }}
+        >
+          <span>{fileError.message}</span>
           <button
             type="button"
-            onClick={onSave}
-            className="inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            onClick={() => inputRef.current?.click()}
+            className="shrink-0 font-semibold underline underline-offset-2"
           >
-            Save
+            Retry
           </button>
           <button
             type="button"
-            onClick={onCancel}
-            className="text-[13px] text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+            aria-label="Dismiss"
+            onClick={onDismissError}
+            className="shrink-0 rounded-[4px] p-0.5 hover:bg-black/5"
           >
-            Cancel
+            <X size={14} strokeWidth={1.8} />
           </button>
+        </div>
+      ) : null}
+
+      {uploads.length > 0 ? (
+        <div className="mt-3 flex flex-col gap-2">
+          {uploads.map((u) => (
+            <div key={u.id} className="rounded-[6px] border px-3 py-2">
+              <div className="flex items-center justify-between text-[13px] text-[color:var(--color-foreground)]">
+                <span className="truncate pr-2">{u.displayName}</span>
+                <span className="shrink-0 text-[12px] text-[color:var(--color-text-muted)]">
+                  {Math.round(u.pct)}%
+                </span>
+              </div>
+              <div className="mt-2 h-1 w-full bg-[color:var(--color-surface-2)]">
+                <div
+                  className="h-1 bg-[color:var(--color-accent)] transition-all"
+                  style={{ width: `${u.pct}%` }}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       ) : null}
     </section>
   );
 }
 
-function useSavedFlash() {
-  const [saved, setSaved] = useState(false);
-  const flash = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
-  };
-  return [saved, flash] as const;
-}
+// ---------- File list ----------
 
-const inputCls =
-  "w-full rounded-[4px] border bg-white px-3 py-2 text-[14px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-border-strong)]";
-
-function LabeledInput({
-  label,
-  value,
-  onChange,
+function FileList({
+  files,
+  primaryId,
+  onMakePrimary,
+  onRename,
+  onDelete,
 }: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
+  files: ResumeFile[];
+  primaryId: string | null;
+  onMakePrimary: (id: string) => void;
+  onRename: (id: string, name: string) => void;
+  onDelete: (id: string) => void;
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-[12px] text-[color:var(--color-text-secondary)]">
-        {label}
-      </span>
-      <input className={inputCls} value={value} onChange={(e) => onChange(e.target.value)} />
-    </label>
-  );
-}
-
-function ContactSection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(data.contact);
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.contact);
-  }, [editing, data.contact]);
-  return (
-    <SectionCard
-      title="Contact"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        updateResumeData({ contact: draft });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <LabeledInput label="Name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} />
-          <LabeledInput label="Email" value={draft.email} onChange={(v) => setDraft({ ...draft, email: v })} />
-          <LabeledInput label="Phone" value={draft.phone} onChange={(v) => setDraft({ ...draft, phone: v })} />
-          <LabeledInput label="Location" value={draft.location} onChange={(v) => setDraft({ ...draft, location: v })} />
-          <LabeledInput label="GitHub" value={draft.github} onChange={(v) => setDraft({ ...draft, github: v })} />
-          <LabeledInput label="Portfolio" value={draft.portfolio} onChange={(v) => setDraft({ ...draft, portfolio: v })} />
-          <LabeledInput label="LinkedIn" value={draft.linkedin} onChange={(v) => setDraft({ ...draft, linkedin: v })} />
-        </div>
-      }
-    >
-      <dl
-        className="grid grid-cols-1 gap-x-6 gap-y-2 text-[14px] md:grid-cols-2"
-        style={{ fontWeight: 300 }}
-      >
-        <Row label="Name" value={data.contact.name} />
-        <Row label="Email" value={data.contact.email} />
-        <Row label="Phone" value={data.contact.phone} />
-        <Row label="Location" value={data.contact.location} />
-        <Row label="GitHub" value={data.contact.github} />
-        <Row label="Portfolio" value={data.contact.portfolio} />
-        <Row label="LinkedIn" value={data.contact.linkedin} />
-      </dl>
-    </SectionCard>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex gap-2">
-      <dt className="w-[80px] shrink-0 text-[color:var(--color-text-muted)]">{label}</dt>
-      <dd className="text-[color:var(--color-foreground)]">{value}</dd>
-    </div>
-  );
-}
-
-function SummarySection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(data.summary);
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.summary);
-  }, [editing, data.summary]);
-  return (
-    <SectionCard
-      title="Summary"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        updateResumeData({ summary: draft });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={4}
-          className={inputCls + " min-h-[100px] leading-6"}
-        />
-      }
-    >
-      <p
-        className="text-[14px] leading-6 text-[color:var(--color-foreground)]"
-        style={{ fontWeight: 300 }}
-      >
-        {data.summary}
-      </p>
-    </SectionCard>
-  );
-}
-
-function ExperienceSection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<ResumeExperience[]>(data.experience);
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.experience);
-  }, [editing, data.experience]);
-
-  const view = (
-    <div className="divide-y">
-      {data.experience.map((e) => (
-        <div key={e.id} className="py-4 first:pt-0 last:pb-0">
-          <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
-            {e.role}
-          </div>
-          <div
-            className="text-[13px] text-[color:var(--color-text-secondary)]"
-            style={{ fontWeight: 300 }}
-          >
-            {e.company}
-          </div>
-          <div className="text-[12px] text-[color:var(--color-text-muted)]">{e.dates}</div>
-          {e.bullets.length ? (
-            <ul
-              className="mt-2 list-disc space-y-1 pl-5 text-[14px] text-[color:var(--color-foreground)]"
-              style={{ fontWeight: 300 }}
-            >
-              {e.bullets.slice(0, 5).map((b, i) => (
-                <li key={i}>{b}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      ))}
-    </div>
-  );
-
-  const edit = (
-    <div className="flex flex-col gap-4">
-      {draft.map((e, idx) => (
-        <div key={e.id} className="rounded-[6px] border p-3">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <LabeledInput
-              label="Role"
-              value={e.role}
-              onChange={(v) =>
-                setDraft(draft.map((x, i) => (i === idx ? { ...x, role: v } : x)))
-              }
-            />
-            <LabeledInput
-              label="Company"
-              value={e.company}
-              onChange={(v) =>
-                setDraft(draft.map((x, i) => (i === idx ? { ...x, company: v } : x)))
-              }
-            />
-            <LabeledInput
-              label="Dates"
-              value={e.dates}
-              onChange={(v) =>
-                setDraft(draft.map((x, i) => (i === idx ? { ...x, dates: v } : x)))
-              }
-            />
-          </div>
-          <label className="mt-3 block">
-            <span className="mb-1 block text-[12px] text-[color:var(--color-text-secondary)]">
-              Bullets (one per line, up to 5)
-            </span>
-            <textarea
-              rows={4}
-              value={e.bullets.join("\n")}
-              onChange={(ev) =>
-                setDraft(
-                  draft.map((x, i) =>
-                    i === idx
-                      ? { ...x, bullets: ev.target.value.split("\n").slice(0, 5) }
-                      : x,
-                  ),
-                )
-              }
-              className={inputCls + " min-h-[100px] leading-6"}
-            />
-          </label>
-          <div className="mt-2 text-right">
-            <button
-              type="button"
-              onClick={() => setDraft(draft.filter((_, i) => i !== idx))}
-              className="text-[12px] text-[color:var(--color-danger)] hover:underline"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={() =>
-          setDraft([
-            ...draft,
-            { id: `e${Date.now()}`, role: "", company: "", dates: "", bullets: [] },
-          ])
-        }
-        className="self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-      >
-        + Add experience
-      </button>
-    </div>
-  );
-
-  return (
-    <SectionCard
-      title="Experience"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        updateResumeData({ experience: draft });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={edit}
-    >
-      {view}
-    </SectionCard>
-  );
-}
-
-function EducationSection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<ResumeEducation[]>(data.education);
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.education);
-  }, [editing, data.education]);
-
-  return (
-    <SectionCard
-      title="Education"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        updateResumeData({ education: draft });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={
-        <div className="flex flex-col gap-4">
-          {draft.map((e, idx) => (
-            <div
-              key={e.id}
-              className="grid grid-cols-1 gap-3 rounded-[6px] border p-3 md:grid-cols-3"
-            >
-              <LabeledInput
-                label="Degree"
-                value={e.degree}
-                onChange={(v) =>
-                  setDraft(draft.map((x, i) => (i === idx ? { ...x, degree: v } : x)))
-                }
-              />
-              <LabeledInput
-                label="School"
-                value={e.school}
-                onChange={(v) =>
-                  setDraft(draft.map((x, i) => (i === idx ? { ...x, school: v } : x)))
-                }
-              />
-              <LabeledInput
-                label="Years"
-                value={e.years}
-                onChange={(v) =>
-                  setDraft(draft.map((x, i) => (i === idx ? { ...x, years: v } : x)))
-                }
-              />
-              <div className="text-right md:col-span-3">
-                <button
-                  type="button"
-                  onClick={() => setDraft(draft.filter((_, i) => i !== idx))}
-                  className="text-[12px] text-[color:var(--color-danger)] hover:underline"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={() =>
-              setDraft([
-                ...draft,
-                { id: `ed${Date.now()}`, degree: "", school: "", years: "" },
-              ])
-            }
-            className="self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-          >
-            + Add education
-          </button>
-        </div>
-      }
-    >
-      <div className="divide-y">
-        {data.education.map((e) => (
-          <div key={e.id} className="py-3 first:pt-0 last:pb-0">
-            <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
-              {e.degree}
-            </div>
-            <div
-              className="text-[13px] text-[color:var(--color-text-secondary)]"
-              style={{ fontWeight: 300 }}
-            >
-              {e.school}
-            </div>
-            <div className="text-[12px] text-[color:var(--color-text-muted)]">{e.years}</div>
-          </div>
-        ))}
-      </div>
-    </SectionCard>
-  );
-}
-
-function SkillsSection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(data.skills.join(", "));
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.skills.join(", "));
-  }, [editing, data.skills]);
-
-  const anyMatch = data.skills.some((s) => QUIZ_STACK.has(s.toLowerCase()));
-  return (
-    <SectionCard
-      title="Skills"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        updateResumeData({
-          skills: draft
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-        });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={
-        <label className="block">
-          <span className="mb-1 block text-[12px] text-[color:var(--color-text-secondary)]">
-            Comma-separated skills
-          </span>
-          <textarea
-            rows={3}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className={inputCls + " leading-6"}
+    <section className="overflow-hidden rounded-[8px] border bg-[color:var(--color-surface-1)]">
+      <ul className="divide-y">
+        {files.map((f) => (
+          <FileRow
+            key={f.id}
+            file={f}
+            isPrimary={f.id === primaryId}
+            onMakePrimary={() => onMakePrimary(f.id)}
+            onRename={(name) => onRename(f.id, name)}
+            onDelete={() => onDelete(f.id)}
           />
-        </label>
-      }
-    >
-      <div className="flex flex-wrap gap-2">
-        {data.skills.map((s) => {
-          const match = QUIZ_STACK.has(s.toLowerCase());
-          return (
-            <span
-              key={s}
-              className={`inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] ${
-                match
-                  ? "bg-[color:var(--color-mint)] text-[color:var(--color-green)]"
-                  : "bg-[color:var(--color-surface-2)] text-[color:var(--color-text-secondary)]"
-              }`}
-              style={{ fontWeight: 300 }}
-            >
-              {s}
-            </span>
-          );
-        })}
-      </div>
-      {anyMatch ? (
-        <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]">
-          Green skills also power your match scores.
-        </p>
-      ) : null}
-    </SectionCard>
-  );
-}
-
-function LanguagesSection({ data }: { data: ResumeData }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(
-    data.languages.map((l) => `${l.lang} — ${l.level}`).join("\n"),
-  );
-  const [saved, flash] = useSavedFlash();
-  useEffect(() => {
-    if (!editing) setDraft(data.languages.map((l) => `${l.lang} — ${l.level}`).join("\n"));
-  }, [editing, data.languages]);
-  return (
-    <SectionCard
-      title="Languages"
-      editing={editing}
-      onEdit={() => setEditing(true)}
-      onSave={() => {
-        const langs = draft
-          .split("\n")
-          .map((line) => {
-            const parts = line.split(/[—-]/).map((s) => s.trim());
-            const lang = parts[0];
-            const level = parts[1] ?? "";
-            return lang ? { lang, level } : null;
-          })
-          .filter(Boolean) as { lang: string; level: string }[];
-        updateResumeData({ languages: langs });
-        setEditing(false);
-        flash();
-      }}
-      onCancel={() => setEditing(false)}
-      saved={saved}
-      editContent={
-        <label className="block">
-          <span className="mb-1 block text-[12px] text-[color:var(--color-text-secondary)]">
-            One per line, e.g. "English — Fluent"
-          </span>
-          <textarea
-            rows={3}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className={inputCls + " leading-6"}
-          />
-        </label>
-      }
-    >
-      <ul
-        className="space-y-1 text-[14px] text-[color:var(--color-foreground)]"
-        style={{ fontWeight: 300 }}
-      >
-        {data.languages.map((l) => (
-          <li key={l.lang}>
-            {l.lang} — {l.level}
-          </li>
         ))}
       </ul>
-    </SectionCard>
+    </section>
+  );
+}
+
+function FileRow({
+  file,
+  isPrimary,
+  onMakePrimary,
+  onRename,
+  onDelete,
+}: {
+  file: ResumeFile;
+  isPrimary: boolean;
+  onMakePrimary: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
+}) {
+  const [renaming, setRenaming] = useState(false);
+  const [draft, setDraft] = useState(file.name);
+  const [confirming, setConfirming] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!renaming) setDraft(file.name);
+  }, [renaming, file.name]);
+
+  useEffect(() => {
+    if (renaming) inputRef.current?.select();
+  }, [renaming]);
+
+  const commit = () => {
+    const t = draft.trim();
+    if (t && t !== file.name) onRename(t);
+    setRenaming(false);
+  };
+
+  return (
+    <li className="flex items-center gap-3 px-4 py-3 sm:px-5">
+      <span
+        aria-hidden
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[10px] font-bold uppercase tracking-wide text-white"
+      >
+        {file.ext === "pdf" ? "PDF" : "DOC"}
+      </span>
+
+      <div className="min-w-0 flex-1">
+        {renaming ? (
+          <div className="flex items-center gap-1">
+            <input
+              ref={inputRef}
+              value={draft}
+              maxLength={80}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commit();
+                if (e.key === "Escape") setRenaming(false);
+              }}
+              onBlur={commit}
+              className="min-w-0 flex-1 rounded-[4px] border bg-white px-2 py-1 text-[14px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-border-strong)]"
+            />
+            <span className="shrink-0 text-[13px] text-[color:var(--color-text-muted)]">
+              .{file.ext}
+            </span>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">
+              {file.name}
+              <span className="text-[color:var(--color-text-muted)]">.{file.ext}</span>
+            </span>
+            {isPrimary ? (
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+                Primary
+              </span>
+            ) : null}
+          </div>
+        )}
+        <div className="mt-0.5 text-[12px] text-[color:var(--color-text-muted)]">
+          Uploaded {formatUploaded(file.uploadedAt)} · {formatSize(file.size)}
+        </div>
+      </div>
+
+      <div className="ml-auto flex shrink-0 items-center gap-1">
+        {confirming ? (
+          <div className="flex items-center gap-2 text-[13px]">
+            <span className="hidden text-[color:var(--color-text-secondary)] sm:inline">
+              Delete this file?
+            </span>
+            <button
+              type="button"
+              onClick={onDelete}
+              className="font-semibold text-[color:var(--color-danger)] hover:underline"
+            >
+              Delete
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <>
+            {!isPrimary && !renaming ? (
+              <button
+                type="button"
+                onClick={onMakePrimary}
+                className="hidden text-[13px] font-semibold text-[color:var(--color-green)] hover:underline sm:inline"
+              >
+                Make primary
+              </button>
+            ) : null}
+            {!isPrimary && !renaming ? (
+              <button
+                type="button"
+                aria-label="Make primary"
+                onClick={onMakePrimary}
+                className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] sm:hidden"
+              >
+                <Check size={16} strokeWidth={1.8} />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              aria-label={renaming ? "Save name" : "Rename"}
+              onClick={() => (renaming ? commit() : setRenaming(true))}
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <Pencil size={15} strokeWidth={1.6} />
+            </button>
+            <button
+              type="button"
+              aria-label="Delete"
+              onClick={() => setConfirming(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <Trash size={15} strokeWidth={1.6} />
+            </button>
+          </>
+        )}
+      </div>
+    </li>
   );
 }
