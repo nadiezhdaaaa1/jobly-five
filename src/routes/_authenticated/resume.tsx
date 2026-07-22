@@ -220,7 +220,7 @@ function ComingSoonBanner() {
         >
           Coming soon
         </span>
-        <h2 className="mt-2 text-[14px] font-bold text-[color:var(--color-foreground)]">
+        <h2 className="mt-2 text-[16px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
           Tailor your resume to a job
         </h2>
         <p className="mt-1 text-[12px] text-[color:var(--color-foreground)]">
