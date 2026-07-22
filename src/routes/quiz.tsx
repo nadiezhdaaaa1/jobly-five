@@ -27,8 +27,58 @@ import {
   getGroups,
   getRolesByGroup,
   searchRoles,
+  getChip,
+  softVocab,
+  type Chip,
+  type ChipFlag,
+  type ChipType,
   type Role as TaxRole,
 } from "@/data/taxonomy";
+import rawTaxonomy from "@/data/jobly_taxonomy.json";
+
+const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
+
+function taxRoleDefs(positions: string[]): TaxRole[] {
+  return positions
+    .map((p) => ALL_TAX_ROLES.find((r) => r.position === p))
+    .filter((r): r is TaxRole => !!r);
+}
+
+type SkillSectionKey = "stack" | "hard" | "tools" | "soft";
+
+function unionSectionFlag(defs: TaxRole[], key: SkillSectionKey): ChipFlag {
+  let seen: ChipFlag = "na";
+  for (const d of defs) {
+    const f = d.sections?.[key]?.flag;
+    if (f === "required") return "required";
+    if (f === "optional") seen = "optional";
+  }
+  return seen;
+}
+
+function taxPool(defs: TaxRole[], key: "stack" | "hard" | "tools"): string[] {
+  const set = new Set<string>();
+  for (const d of defs) for (const s of d[key] ?? []) set.add(s);
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+function taxSoftSuggested(defs: TaxRole[]): string[] {
+  const set = new Set<string>();
+  for (const d of defs) for (const s of d.soft ?? []) set.add(s);
+  return Array.from(set);
+}
+
+function firstStackNote(defs: TaxRole[]): string | undefined {
+  for (const d of defs) if (d.stackNote) return d.stackNote;
+  return undefined;
+}
+
+const CHIP_TYPE_FOR_SECTION: Record<SkillSectionKey, ChipType> = {
+  stack: "Stack",
+  hard: "Hard / Method",
+  tools: "Tools",
+  soft: "Soft",
+};
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
