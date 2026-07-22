@@ -293,7 +293,7 @@ function ProfileScreen() {
           </div>
         </section>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
           {/* Main column */}
           <div className="flex flex-col gap-4">
             {/* Card 1: Match preferences */}
