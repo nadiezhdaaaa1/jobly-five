@@ -681,6 +681,7 @@ export function StepShell({
 export const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
+  stack: "Stack",
   hard: "Hard skills",
   tools: "Tools",
   soft: "Soft skills",
@@ -698,6 +699,8 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
         const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
         return rs.length ? rs.join(", ") : "-";
       }
+    case "stack":
+      return a.stackSkills && a.stackSkills.length ? a.stackSkills.join(", ") : "-";
     case "hard":
       return a.hardSkills && a.hardSkills.length ? a.hardSkills.join(", ") : "-";
     case "tools":
