@@ -40,10 +40,24 @@ export type ResumeData = {
 };
 
 export type ResumeState = {
+  files: ResumeFile[];
+  primaryId: string | null;
+  consented: boolean;
+  // derived / legacy fields kept for cross-screen consumers
   hasResume: boolean;
   filename: string | null;
   addedDate: string | null;
   data: ResumeData;
+};
+
+export type ResumeFileExt = "pdf" | "docx";
+
+export type ResumeFile = {
+  id: string;
+  name: string; // filename without extension
+  ext: ResumeFileExt;
+  size: number; // bytes
+  uploadedAt: string; // ISO
 };
 
 export const DEFAULT_RESUME: ResumeData = {
@@ -123,16 +137,43 @@ export const DEFAULT_RESUME: ResumeData = {
 
 const KEY = "jobly.resume";
 
+function formatAdded(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function derive(base: {
+  files: ResumeFile[];
+  primaryId: string | null;
+  consented: boolean;
+  data: ResumeData;
+}): ResumeState {
+  const primary = base.files.find((f) => f.id === base.primaryId) ?? null;
+  return {
+    ...base,
+    hasResume: base.files.length > 0,
+    filename: primary ? `${primary.name}.${primary.ext}` : null,
+    addedDate: primary ? formatAdded(primary.uploadedAt) : null,
+  };
+}
+
 function initialState(): ResumeState {
   if (typeof window !== "undefined") {
     try {
       const raw = window.sessionStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw) as ResumeState;
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<ResumeState>;
+        return derive({
+          files: parsed.files ?? [],
+          primaryId: parsed.primaryId ?? null,
+          consented: parsed.consented ?? false,
+          data: parsed.data ?? DEFAULT_RESUME,
+        });
+      }
     } catch {
       // ignore
     }
   }
-  return { hasResume: false, filename: null, addedDate: null, data: DEFAULT_RESUME };
+  return derive({ files: [], primaryId: null, consented: false, data: DEFAULT_RESUME });
 }
 
 let state: ResumeState = initialState();
@@ -163,7 +204,12 @@ function getSnapshot() {
   return state;
 }
 
-const SERVER_STATE: ResumeState = { hasResume: false, filename: null, addedDate: null, data: DEFAULT_RESUME };
+const SERVER_STATE: ResumeState = derive({
+  files: [],
+  primaryId: null,
+  consented: false,
+  data: DEFAULT_RESUME,
+});
 function getServerSnapshot() {
   return SERVER_STATE;
 }
@@ -172,16 +218,63 @@ export function useResumeState() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
-export function setResume(filename: string, data: ResumeData = DEFAULT_RESUME) {
-  const now = new Date();
-  const added = now.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  state = { hasResume: true, filename, addedDate: added, data };
+function commit(next: {
+  files: ResumeFile[];
+  primaryId: string | null;
+  consented: boolean;
+  data: ResumeData;
+}) {
+  state = derive(next);
   emit();
 }
 
-export function clearResume() {
-  state = { hasResume: false, filename: null, addedDate: null, data: DEFAULT_RESUME };
-  emit();
+export function addResumeFile(input: { name: string; ext: ResumeFileExt; size: number }): ResumeFile {
+  const file: ResumeFile = {
+    id: uid(),
+    name: input.name,
+    ext: input.ext,
+    size: input.size,
+    uploadedAt: new Date().toISOString(),
+  };
+  const files = [...state.files, file];
+  const primaryId = state.primaryId ?? file.id;
+  commit({ files, primaryId, consented: state.consented, data: state.data });
+  return file;
+}
+
+export function renameResumeFile(id: string, name: string) {
+  const trimmed = name.trim().slice(0, 80);
+  if (!trimmed) return;
+  const files = state.files.map((f) => (f.id === id ? { ...f, name: trimmed } : f));
+  commit({ files, primaryId: state.primaryId, consented: state.consented, data: state.data });
+}
+
+export function setPrimaryResumeFile(id: string) {
+  if (!state.files.some((f) => f.id === id)) return;
+  commit({ files: state.files, primaryId: id, consented: state.consented, data: state.data });
+}
+
+/**
+ * Deletes a file. If it was primary, promotes the next most recently uploaded
+ * file. Returns the new primary file (or null) so callers can toast.
+ */
+export function deleteResumeFile(id: string): { promoted: ResumeFile | null; wasPrimary: boolean } {
+  const wasPrimary = state.primaryId === id;
+  const files = state.files.filter((f) => f.id !== id);
+  let primaryId = state.primaryId;
+  let promoted: ResumeFile | null = null;
+  if (wasPrimary) {
+    const next = [...files].sort((a, b) => (a.uploadedAt < b.uploadedAt ? 1 : -1))[0] ?? null;
+    primaryId = next?.id ?? null;
+    promoted = next;
+  }
+  commit({ files, primaryId, consented: state.consented, data: state.data });
+  return { promoted, wasPrimary };
+}
+
+export function setResumeConsent(v: boolean) {
+  if (state.consented === v) return;
+  commit({ files: state.files, primaryId: state.primaryId, consented: v, data: state.data });
 }
 
 export function updateResumeData(patch: Partial<ResumeData>) {
