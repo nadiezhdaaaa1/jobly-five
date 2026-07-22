@@ -32,7 +32,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
   };
 
   const selectCls =
-    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-2 pr-6 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+    "h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-2 pr-8 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
 
   return (
     <div className="flex items-center gap-1">
