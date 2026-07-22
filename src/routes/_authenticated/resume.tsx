@@ -360,7 +360,7 @@ function UploadCard({
               </span>
             </p>
             <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
-              PDF or DOCX, up to 10 MB
+              PDF or DOCX, up to 5 MB
             </p>
           </>
         )}
