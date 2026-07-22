@@ -7,6 +7,7 @@ import {
   IconCheck as Check,
   IconX as X,
   IconPlus as Plus,
+  IconDownload as Download,
 } from "@tabler/icons-react";
 import comingSoonAsset from "@/assets/resume-coming-soon.png.asset.json";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/resume")({
   component: ResumeScreen,
 });
 
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 5 * 1024 * 1024;
 const FREE_LIMIT = 3;
 
 function formatSize(bytes: number): string {
@@ -95,7 +96,7 @@ function ResumeScreen() {
     const ext = extFromFile(file);
     if (!ext || file.size > MAX_BYTES) {
       setFileError({
-        message: "We couldn't add this file. PDF or DOCX up to 10 MB.",
+        message: "We couldn't add this file. PDF or DOCX up to 5 MB.",
       });
       return;
     }
@@ -171,6 +172,23 @@ function ResumeScreen() {
               primaryId={state.primaryId}
               onMakePrimary={(id) => setPrimaryResumeFile(id)}
               onRename={(id, name) => renameResumeFile(id, name)}
+              onDownload={(file) => {
+                const mime =
+                  file.ext === "pdf"
+                    ? "application/pdf"
+                    : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                const blob = new Blob([`Jobly resume placeholder — ${file.name}.${file.ext}`], {
+                  type: mime,
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${file.name}.${file.ext}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+              }}
               onDelete={(id) => {
                 const result = deleteResumeFile(id);
                 if (result.wasPrimary && result.promoted) {
@@ -359,7 +377,7 @@ function UploadCard({
               </span>
             </p>
             <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
-              PDF or DOCX, up to 10 MB
+              PDF or DOCX, up to 5 MB
             </p>
           </>
         )}
@@ -447,12 +465,14 @@ function FileList({
   primaryId,
   onMakePrimary,
   onRename,
+  onDownload,
   onDelete,
 }: {
   files: ResumeFile[];
   primaryId: string | null;
   onMakePrimary: (id: string) => void;
   onRename: (id: string, name: string) => void;
+  onDownload: (file: ResumeFile) => void;
   onDelete: (id: string) => void;
 }) {
   return (
@@ -465,6 +485,7 @@ function FileList({
             isPrimary={f.id === primaryId}
             onMakePrimary={() => onMakePrimary(f.id)}
             onRename={(name) => onRename(f.id, name)}
+            onDownload={() => onDownload(f)}
             onDelete={() => onDelete(f.id)}
           />
         ))}
@@ -478,12 +499,14 @@ function FileRow({
   isPrimary,
   onMakePrimary,
   onRename,
+  onDownload,
   onDelete,
 }: {
   file: ResumeFile;
   isPrimary: boolean;
   onMakePrimary: () => void;
   onRename: (name: string) => void;
+  onDownload: () => void;
   onDelete: () => void;
 }) {
   const [renaming, setRenaming] = useState(false);
@@ -600,6 +623,14 @@ function FileRow({
               className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <Pencil size={15} strokeWidth={1.6} />
+            </button>
+            <button
+              type="button"
+              aria-label="Download"
+              onClick={onDownload}
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <Download size={15} strokeWidth={1.6} />
             </button>
             <button
               type="button"
