@@ -43,7 +43,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
               src={proCubeAsset.url}
               alt=""
               aria-hidden
-              className="pointer-events-none absolute right-0 top-1/2 h-[52px] w-auto -translate-y-1/2"
+              className="pointer-events-none absolute right-0 top-1/2 h-9 w-auto -translate-y-1/2"
             />
           </Link>
         ) : null}
