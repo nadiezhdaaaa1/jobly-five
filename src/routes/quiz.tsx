@@ -1995,8 +1995,10 @@ export function LocationStep({
   const locations = answers.locations ?? [];
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
-  const [stateCode, setStateCode] = useState<string>("");
-  const [city, setCity] = useState<string>("");
+  const [locQuery, setLocQuery] = useState<string>("");
+  const [locOpen, setLocOpen] = useState<boolean>(false);
+  const [locHighlight, setLocHighlight] = useState<number>(0);
+  const locBoxRef = useRef<HTMLDivElement | null>(null);
 
   const showReloTravel = !!answers.field && RELO_TRAVEL_FIELDS.includes(answers.field as any);
 
@@ -2005,15 +2007,19 @@ export function LocationStep({
     (workMode === "remote" || locations.length > 0) &&
     minVal < maxVal;
 
-  const addLocation = () => {
-    if (!stateCode || !city) return;
-    const label = `${city}, ${stateCode}`;
-    if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) return;
+  const addLocationLabel = (label: string) => {
+    if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) {
+      setLocQuery("");
+      setLocOpen(false);
+      return;
+    }
     const patch: Partial<QuizAnswers> = { locations: [...locations, label] };
     if (answers.salaryMin == null) patch.salaryMin = 100_000;
     if (answers.salaryMax == null) patch.salaryMax = 160_000;
     onChange(patch);
-    setCity("");
+    setLocQuery("");
+    setLocOpen(false);
+    setLocHighlight(0);
   };
 
   const removeLoc = (l: string) =>
@@ -2029,7 +2035,43 @@ export function LocationStep({
   };
   const pct = (v: number) => ((v - SAL_MIN) / (SAL_MAX - SAL_MIN)) * 100;
 
-  const cities = stateCode ? CITIES_BY_STATE[stateCode] ?? [] : [];
+  const locSuggestions = (() => {
+    const q = locQuery.trim().toLowerCase();
+    if (!q) return [] as { label: string; key: string }[];
+    const taken = new Set(locations.map((l) => l.toLowerCase()));
+    const out: { label: string; key: string }[] = [];
+    for (const s of US_STATES) {
+      if (
+        s.name.toLowerCase().includes(q) ||
+        s.code.toLowerCase() === q
+      ) {
+        const label = `Entire state of ${s.name}`;
+        if (!taken.has(label.toLowerCase())) out.push({ label, key: `state:${s.code}` });
+      }
+    }
+    for (const s of US_STATES) {
+      const cs = CITIES_BY_STATE[s.code] ?? [];
+      for (const c of cs) {
+        if (c.toLowerCase().includes(q)) {
+          const label = `${c}, ${s.code}`;
+          if (!taken.has(label.toLowerCase())) out.push({ label, key: `city:${s.code}:${c}` });
+        }
+      }
+      if (out.length >= 40) break;
+    }
+    return out.slice(0, 8);
+  })();
+
+  useEffect(() => {
+    if (!locOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (locBoxRef.current && !locBoxRef.current.contains(e.target as Node)) {
+        setLocOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [locOpen]);
 
   return (
     <div>
@@ -2075,38 +2117,66 @@ export function LocationStep({
       {workMode === "onsite" && (
         <div className="mt-5">
           <label className="block text-sm font-light text-[#090B0C]">Preferred locations</label>
-          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]">
-            <select
-              value={stateCode}
-              onChange={(e) => { setStateCode(e.target.value); setCity(""); }}
-              className="select-native h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-              aria-label="State"
-            >
-              <option value="">Select state</option>
-              {US_STATES.map((s) => (
-                <option key={s.code} value={s.code}>{s.name}</option>
-              ))}
-            </select>
-            <select
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              disabled={!stateCode}
-              className="select-native h-11 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] disabled:opacity-50"
-              aria-label="City"
-            >
-              <option value="">Select city</option>
-              {cities.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={addLocation}
-              disabled={!stateCode || !city}
-              className="h-11 rounded-[4px] border border-[color:var(--color-border-strong)] bg-white px-4 text-sm font-medium transition-colors hover:bg-[color:var(--color-surface-2)] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Add
-            </button>
+          <div ref={locBoxRef} className="relative mt-2">
+            <input
+              type="text"
+              value={locQuery}
+              onChange={(e) => {
+                setLocQuery(e.target.value);
+                setLocOpen(true);
+                setLocHighlight(0);
+              }}
+              onFocus={() => { if (locQuery.trim()) setLocOpen(true); }}
+              onKeyDown={(e) => {
+                if (!locOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
+                  if (locSuggestions.length) setLocOpen(true);
+                }
+                if (e.key === "ArrowDown") {
+                  e.preventDefault();
+                  setLocHighlight((h) => Math.min(h + 1, Math.max(locSuggestions.length - 1, 0)));
+                } else if (e.key === "ArrowUp") {
+                  e.preventDefault();
+                  setLocHighlight((h) => Math.max(h - 1, 0));
+                } else if (e.key === "Enter") {
+                  e.preventDefault();
+                  const s = locSuggestions[locHighlight];
+                  if (s) addLocationLabel(s.label);
+                } else if (e.key === "Escape") {
+                  setLocOpen(false);
+                }
+              }}
+              placeholder="Search city or state…"
+              aria-label="Search city or state"
+              autoComplete="off"
+              className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+            />
+            {locOpen && locSuggestions.length > 0 && (
+              <ul
+                role="listbox"
+                className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-64 overflow-auto rounded-[4px] border border-[color:var(--color-border)] bg-white shadow-md"
+              >
+                {locSuggestions.map((s, i) => (
+                  <li
+                    key={s.key}
+                    role="option"
+                    aria-selected={i === locHighlight}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      addLocationLabel(s.label);
+                    }}
+                    onMouseEnter={() => setLocHighlight(i)}
+                    className={cn(
+                      "cursor-pointer px-3 py-2 text-sm",
+                      i === locHighlight
+                        ? "bg-[color:var(--color-surface-2)]"
+                        : "bg-white"
+                    )}
+                  >
+                    {s.label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           {locations.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-2">
