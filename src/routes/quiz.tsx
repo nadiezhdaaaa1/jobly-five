@@ -714,6 +714,7 @@ export const SUMMARY_LABEL: Record<StepKey, string> = {
   hard: "Hard skills",
   tools: "Tools",
   soft: "Soft skills",
+  axes: "Scope & focus",
   level: "Experience",
   loc: "Location and salary",
   email: "Email",
@@ -736,6 +737,16 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
       return a.tools && a.tools.length ? a.tools.join(", ") : "-";
     case "soft":
       return a.softSkills && a.softSkills.length ? a.softSkills.join(", ") : "-";
+    case "axes": {
+      const parts: string[] = [];
+      const s = a.scope;
+      if (s?.orgSize) parts.push(`Team ${s.orgSize}`);
+      if (s?.budget) parts.push(`Budget ${s.budget}`);
+      if (s?.stage) parts.push(s.stage);
+      if (a.segment) parts.push(a.segment);
+      if (a.motion) parts.push(a.motion);
+      return parts.length ? parts.join(" · ") : "-";
+    }
     case "level": {
       const parts: string[] = [];
       if (a.level) parts.push(a.level);
