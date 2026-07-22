@@ -1995,8 +1995,10 @@ export function LocationStep({
   const locations = answers.locations ?? [];
   const minVal = answers.salaryMin ?? 100_000;
   const maxVal = answers.salaryMax ?? 160_000;
-  const [stateCode, setStateCode] = useState<string>("");
-  const [city, setCity] = useState<string>("");
+  const [locQuery, setLocQuery] = useState<string>("");
+  const [locOpen, setLocOpen] = useState<boolean>(false);
+  const [locHighlight, setLocHighlight] = useState<number>(0);
+  const locBoxRef = useRef<HTMLDivElement | null>(null);
 
   const showReloTravel = !!answers.field && RELO_TRAVEL_FIELDS.includes(answers.field as any);
 
@@ -2005,15 +2007,19 @@ export function LocationStep({
     (workMode === "remote" || locations.length > 0) &&
     minVal < maxVal;
 
-  const addLocation = () => {
-    if (!stateCode || !city) return;
-    const label = `${city}, ${stateCode}`;
-    if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) return;
+  const addLocationLabel = (label: string) => {
+    if (locations.some((l) => l.toLowerCase() === label.toLowerCase())) {
+      setLocQuery("");
+      setLocOpen(false);
+      return;
+    }
     const patch: Partial<QuizAnswers> = { locations: [...locations, label] };
     if (answers.salaryMin == null) patch.salaryMin = 100_000;
     if (answers.salaryMax == null) patch.salaryMax = 160_000;
     onChange(patch);
-    setCity("");
+    setLocQuery("");
+    setLocOpen(false);
+    setLocHighlight(0);
   };
 
   const removeLoc = (l: string) =>
@@ -2029,7 +2035,43 @@ export function LocationStep({
   };
   const pct = (v: number) => ((v - SAL_MIN) / (SAL_MAX - SAL_MIN)) * 100;
 
-  const cities = stateCode ? CITIES_BY_STATE[stateCode] ?? [] : [];
+  const locSuggestions = (() => {
+    const q = locQuery.trim().toLowerCase();
+    if (!q) return [] as { label: string; key: string }[];
+    const taken = new Set(locations.map((l) => l.toLowerCase()));
+    const out: { label: string; key: string }[] = [];
+    for (const s of US_STATES) {
+      if (
+        s.name.toLowerCase().includes(q) ||
+        s.code.toLowerCase() === q
+      ) {
+        const label = `Entire state of ${s.name}`;
+        if (!taken.has(label.toLowerCase())) out.push({ label, key: `state:${s.code}` });
+      }
+    }
+    for (const s of US_STATES) {
+      const cs = CITIES_BY_STATE[s.code] ?? [];
+      for (const c of cs) {
+        if (c.toLowerCase().includes(q)) {
+          const label = `${c}, ${s.code}`;
+          if (!taken.has(label.toLowerCase())) out.push({ label, key: `city:${s.code}:${c}` });
+        }
+      }
+      if (out.length >= 40) break;
+    }
+    return out.slice(0, 8);
+  })();
+
+  useEffect(() => {
+    if (!locOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (locBoxRef.current && !locBoxRef.current.contains(e.target as Node)) {
+        setLocOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [locOpen]);
 
   return (
     <div>
