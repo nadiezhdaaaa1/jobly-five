@@ -7,6 +7,7 @@ import {
   IconCheck as Check,
   IconX as X,
   IconPlus as Plus,
+  IconDownload as Download,
 } from "@tabler/icons-react";
 import comingSoonAsset from "@/assets/resume-coming-soon.png.asset.json";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
@@ -33,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/resume")({
   component: ResumeScreen,
 });
 
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 5 * 1024 * 1024;
 const FREE_LIMIT = 3;
 
 function formatSize(bytes: number): string {
@@ -95,7 +96,7 @@ function ResumeScreen() {
     const ext = extFromFile(file);
     if (!ext || file.size > MAX_BYTES) {
       setFileError({
-        message: "We couldn't add this file. PDF or DOCX up to 10 MB.",
+        message: "We couldn't add this file. PDF or DOCX up to 5 MB.",
       });
       return;
     }
