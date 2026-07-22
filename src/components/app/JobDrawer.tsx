@@ -4,6 +4,8 @@ import type { Job } from "@/lib/jobs-data";
 import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import congratAsset from "@/assets/congrat.png.asset.json";
+import { Link } from "@tanstack/react-router";
+import { usePlan, isPro } from "@/lib/plan-store";
 
 function BigRing({ score }: { score: number }) {
   const size = 64;
@@ -25,6 +27,8 @@ function BigRing({ score }: { score: number }) {
 }
 
 export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
+  const plan = usePlan();
+  const pro = isPro(plan);
   const record = useJobRecord(job.id);
   const status = record.status as JobStatus;
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -139,7 +143,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 {job.company.charAt(0)}
               </div>
             )}
-            <BigRing score={job.score} />
+            {pro ? <BigRing score={job.score} /> : null}
           </div>
           <h2 id={titleId} className="mt-4 text-[20px] font-semibold leading-snug text-[color:var(--color-foreground)]">
             {job.title}
@@ -147,9 +151,11 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           <div className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             {job.company} · {job.location} · {job.salary}
           </div>
-          <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            {job.why}
-          </p>
+          {pro ? (
+            <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+              {job.why}
+            </p>
+          ) : null}
 
           <button
             type="button"
@@ -162,8 +168,21 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
           <div className="my-5 border-t" />
 
-          {/* Stage-dependent body */}
-          {isPipeline ? (
+          {!pro ? (
+            <div className="rounded-[6px] border bg-[color:var(--color-mint)]/40 p-4">
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+              <div className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">Track this application</div>
+              <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                Save, mark applied, set interview reminders. Available on Pro.
+              </p>
+              <Link
+                to="/settings"
+                className="mt-3 inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              >
+                Go Pro
+              </Link>
+            </div>
+          ) : isPipeline ? (
             <PipelinePanel
               status={status}
               dateLine={dateLine}
