@@ -532,6 +532,15 @@ type Tab = "ongoing" | "offers" | "rejections";
 
 function TrackerScreen() {
   const plan = usePlan();
+  useTrackerVersion();
+  const allJobs = useMemo(() => getAllJobs(), []);
+  const [tab, setTab] = useState<Tab>("ongoing");
+  const [openJob, setOpenJob] = useState<Job | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState<JobStatus | null>(null);
+  const [dragHeight, setDragHeight] = useState<number>(0);
+  const [reminderJobId, setReminderJobId] = useState<string | null>(null);
+  const [applyToast, setApplyToast] = useState<Job | null>(null);
   if (!isPro(plan)) {
     return (
       <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -558,15 +567,6 @@ function TrackerScreen() {
       </div>
     );
   }
-  useTrackerVersion();
-  const allJobs = useMemo(() => getAllJobs(), []);
-  const [tab, setTab] = useState<Tab>("ongoing");
-  const [openJob, setOpenJob] = useState<Job | null>(null);
-  const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOver, setDragOver] = useState<JobStatus | null>(null);
-  const [dragHeight, setDragHeight] = useState<number>(0);
-  const [reminderJobId, setReminderJobId] = useState<string | null>(null);
-  const [applyToast, setApplyToast] = useState<Job | null>(null);
 
   // Compute buckets from the shared store on each render. useTrackerVersion()
   // above ensures we re-render on every store emit, so a plain (non-memoized)
