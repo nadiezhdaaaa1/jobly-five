@@ -797,7 +797,7 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
       const extras: string[] = [];
       if (a.openToRelocate) extras.push("open to relocation");
       if (a.openToTravel) extras.push("open to travel");
-      return [where, money, ...extras].filter(Boolean).join(" · ");
+      return [money, where, ...extras].filter(Boolean).join(" · ");
     }
     case "email":
       return a.email ?? "";
