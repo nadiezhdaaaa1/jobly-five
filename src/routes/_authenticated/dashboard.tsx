@@ -19,6 +19,7 @@ import { loadQuiz } from "@/lib/quiz-store";
 import { SUMMARY_LABEL, summaryValue, type StepKey } from "@/routes/quiz";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePlan, isPro } from "@/lib/plan-store";
 import {
   setStatus,
   useCounts,
@@ -49,6 +50,23 @@ function ago(days: number) {
 // ---------- Score ring ----------
 
 function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
+  const plan = usePlan();
+  if (!isPro(plan)) {
+    return (
+      <div
+        className="relative flex shrink-0 items-center justify-center rounded-full"
+        style={{ width: size, height: size, background: "var(--color-surface-2)" }}
+        role="img"
+        aria-label="Match score locked — upgrade to Pro"
+        title="Upgrade to Pro to see match scores"
+      >
+        <svg width={size - 8} height={size - 8} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-[color:var(--color-text-muted)]">
+          <rect x="4" y="11" width="16" height="9" rx="1.5" />
+          <path d="M8 11V8a4 4 0 1 1 8 0v3" />
+        </svg>
+      </div>
+    );
+  }
   const stroke = 4;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
@@ -166,6 +184,8 @@ function ParametersCard() {
 // ---------- Right rail ----------
 
 function RightRail() {
+  const plan = usePlan();
+  const pro = isPro(plan);
   const counts = useCounts();
   const items = [
     { n: counts.saved, l: "Saved" },
@@ -174,6 +194,7 @@ function RightRail() {
   ];
   return (
     <aside className="flex flex-col gap-4">
+      {pro ? (
       <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
         <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Tracker</h3>
         <div className="mt-3 grid grid-cols-3 gap-2">
@@ -190,6 +211,18 @@ function RightRail() {
           Open tracker
         </Link>
       </div>
+      ) : (
+      <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
+        <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+        <h3 className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">Track every application</h3>
+        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          Saved, applied, interviews, offers — organized. Pro unlocks the full tracker.
+        </p>
+        <Link to="/settings" className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">
+          Go Pro
+        </Link>
+      </div>
+      )}
       <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
         <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">
           In development
@@ -238,6 +271,8 @@ function statusLabel(s: JobStatus) {
 }
 
 function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
+  const plan = usePlan();
+  const pro = isPro(plan);
   const record = useJobRecord(job.id);
   const state = record.status;
   const [dislikeOpen, setDislikeOpen] = useState(false);
@@ -304,9 +339,11 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
           <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             {job.company} · {job.location} · {job.salary}
           </div>
-          <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            {job.why}
-          </p>
+          {pro ? (
+            <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+              {job.why}
+            </p>
+          ) : null}
         </div>
         <ScoreRing score={job.score} />
       </button>
@@ -606,11 +643,23 @@ function DigestWall({ onOpen }: { onOpen: (job: Job) => void }) {
 
 function DigestScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
+  const plan = usePlan();
+  const pro = isPro(plan);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6 lg:pb-24">
+        {!pro ? (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-mint)]/40 px-4 py-3">
+            <div className="text-[13px] text-[color:var(--color-foreground)]">
+              You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
+            </div>
+            <Link to="/settings" className="inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">
+              Go Pro
+            </Link>
+          </div>
+        ) : null}
         <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)_250px]">
           <div className="lg:sticky lg:top-20 lg:self-start">
             <ParametersCard />
