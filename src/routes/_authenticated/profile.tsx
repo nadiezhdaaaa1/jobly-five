@@ -200,7 +200,7 @@ function ProfileScreen() {
         </h1>
 
         {/* Identity row */}
-        <section className="mt-4 flex items-center gap-4">
+        <section className="mt-4 flex items-start gap-4 sm:items-center">
           <div className="relative">
             <button
               type="button"
@@ -238,7 +238,7 @@ function ProfileScreen() {
               </button>
             ) : null}
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             {avatarError ? (
               <div className="mb-1 text-[12px] text-[color:var(--color-danger)]">{avatarError}</div>
             ) : null}
@@ -257,7 +257,7 @@ function ProfileScreen() {
                   aria-label="Display name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="h-10 rounded-[4px] border px-3 text-[15px]"
+                  className="h-10 min-w-0 flex-1 rounded-[4px] border px-3 text-[15px] sm:flex-none sm:w-64"
                 />
                 <button type="submit" className="h-10 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">Save</button>
                 <button
@@ -273,27 +273,27 @@ function ProfileScreen() {
               </form>
             ) : (
               <div>
-                <div className="flex items-center gap-2">
-                  <div className="text-[18px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="min-w-0 truncate text-[18px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
                   <button
                     ref={identityPencilRef}
                     type="button"
                     aria-label="Edit name"
                     aria-expanded={false}
                     onClick={() => setEditing("identity")}
-                    className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
                   >
                     <Pencil size={15} strokeWidth={1.6} />
                   </button>
                   {flash === "identity" ? <span className="text-[12px] text-[color:var(--color-green)]">Saved</span> : null}
                 </div>
-                <div className="text-[13px] text-[color:var(--color-text-muted)]">{email}</div>
+                <div className="truncate text-[13px] text-[color:var(--color-text-muted)]">{email}</div>
               </div>
             )}
           </div>
         </section>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,1fr)_260px] lg:grid-cols-[minmax(0,1fr)_280px]">
           {/* Main column */}
           <div className="flex flex-col gap-4">
             {/* Card 1: Match preferences */}
