@@ -24,6 +24,7 @@ import {
   type JobStatus,
 } from "@/lib/tracker-store";
 import { useSyncExternalStore } from "react";
+import { usePlan, isPro } from "@/lib/plan-store";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: () => ({
@@ -530,6 +531,7 @@ function KanbanColumn({
 type Tab = "ongoing" | "offers" | "rejections";
 
 function TrackerScreen() {
+  const plan = usePlan();
   useTrackerVersion();
   const allJobs = useMemo(() => getAllJobs(), []);
   const [tab, setTab] = useState<Tab>("ongoing");
@@ -539,6 +541,32 @@ function TrackerScreen() {
   const [dragHeight, setDragHeight] = useState<number>(0);
   const [reminderJobId, setReminderJobId] = useState<string | null>(null);
   const [applyToast, setApplyToast] = useState<Job | null>(null);
+  if (!isPro(plan)) {
+    return (
+      <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
+        <AppHeader active="tracker" />
+        <main className="mx-auto max-w-[720px] px-6 pb-24 pt-12">
+          <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-8 text-center">
+            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+            <h1 className="mt-3 text-[24px]" style={{ fontFamily: "var(--font-display)" }}>
+              Track every application in one place
+            </h1>
+            <p className="mx-auto mt-2 max-w-[440px] text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              Kanban board for Saved, Applied, Interviews, Offers, and Rejections. Interview reminders included. Available on Pro.
+            </p>
+            <Link
+              to="/settings"
+              className="mt-5 inline-flex h-11 items-center rounded-[4px] bg-[color:var(--color-accent)] px-5 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Upgrade to Pro — $9.99/mo
+            </Link>
+            <div className="mt-2 text-[11px] text-[color:var(--color-text-muted)]">3-day free trial</div>
+          </div>
+        </main>
+        <MobileTabBar active="tracker" />
+      </div>
+    );
+  }
 
   // Compute buckets from the shared store on each render. useTrackerVersion()
   // above ensures we re-render on every store emit, so a plain (non-memoized)
