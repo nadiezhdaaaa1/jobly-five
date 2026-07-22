@@ -134,13 +134,27 @@ function QuizPage() {
   }, [answers, hydrated]);
 
   const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
-  const skillsPool = useMemo(
-    () => skillsForRoles(rolesList, answers.field),
-    [rolesList, answers.field]
-  );
-  const hardPoolSet = useMemo(() => new Set(skillsPool.hard), [skillsPool.hard]);
-  const toolsPoolSet = useMemo(() => new Set(skillsPool.tools), [skillsPool.tools]);
-  const softPoolSet = useMemo(() => new Set(skillsPool.soft), [skillsPool.soft]);
+  const roleDefs = useMemo(() => taxRoleDefs(rolesList), [rolesList]);
+  const stackPool = useMemo(() => taxPool(roleDefs, "stack"), [roleDefs]);
+  const hardPool = useMemo(() => taxPool(roleDefs, "hard"), [roleDefs]);
+  const toolsPool = useMemo(() => taxPool(roleDefs, "tools"), [roleDefs]);
+  const softPool = useMemo(() => softVocab.slice(), []);
+  const softSuggested = useMemo(() => taxSoftSuggested(roleDefs), [roleDefs]);
+  const stackNote = useMemo(() => firstStackNote(roleDefs), [roleDefs]);
+  const sectionFlag: Record<SkillSectionKey, ChipFlag> = {
+    stack: roleDefs.length ? unionSectionFlag(roleDefs, "stack") : "required",
+    hard: roleDefs.length ? unionSectionFlag(roleDefs, "hard") : "required",
+    tools: roleDefs.length ? unionSectionFlag(roleDefs, "tools") : "required",
+    soft: roleDefs.length ? unionSectionFlag(roleDefs, "soft") : "required",
+  };
+  // stackNote roles skip the pool but still keep the section as complete
+  // (we treat it as auto-complete since there's nothing to pick).
+  const stackPoolSuppressed = !!stackNote;
+
+  const stackPoolSet = useMemo(() => new Set(stackPool), [stackPool]);
+  const hardPoolSet = useMemo(() => new Set(hardPool), [hardPool]);
+  const toolsPoolSet = useMemo(() => new Set(toolsPool), [toolsPool]);
+  const softPoolSet = useMemo(() => new Set(softPool), [softPool]);
 
   // Role is invalid if any selected role isn't in the current field's role list.
   const fieldRoles = answers.field
@@ -154,20 +168,40 @@ function QuizPage() {
 
   // Skill sub-steps: invalid when selection contains items no longer in the pool,
   // emptied when a previous selection was wiped by upstream (field / role) changes.
+  const stackSel = answers.stackSkills ?? [];
+  const stackCustom = answers.stackCustom ?? [];
+  const hardCustom = answers.hardCustom ?? [];
+  const toolsCustom = answers.toolsCustom ?? [];
+  const softCustom = answers.softCustom ?? [];
   const hardSel = answers.hardSkills ?? [];
   const toolsSel = answers.tools ?? [];
   const softSel = answers.softSkills ?? [];
+  const stackInvalid =
+    !stackPoolSuppressed &&
+    stackSel.length > 0 &&
+    stackSel.some((s) => !stackPoolSet.has(s) && !stackCustom.includes(s));
+  const stackEmptied =
+    !stackPoolSuppressed &&
+    sectionFlag.stack === "required" &&
+    answers.stackSkills !== undefined &&
+    answers.stackSkills.length === 0;
   const hardInvalid =
-    hardSel.length > 0 && hardSel.some((s) => !hardPoolSet.has(s));
+    hardSel.length > 0 &&
+    hardSel.some((s) => !hardPoolSet.has(s) && !hardCustom.includes(s));
   const hardEmptied =
+    sectionFlag.hard === "required" &&
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
   const toolsInvalid =
-    toolsSel.length > 0 && toolsSel.some((s) => !toolsPoolSet.has(s));
+    toolsSel.length > 0 &&
+    toolsSel.some((s) => !toolsPoolSet.has(s) && !toolsCustom.includes(s));
   const toolsEmptied =
+    sectionFlag.tools === "required" &&
     answers.tools !== undefined && answers.tools.length === 0;
   const softInvalid =
-    softSel.length > 0 && softSel.some((s) => !softPoolSet.has(s));
+    softSel.length > 0 &&
+    softSel.some((s) => !softPoolSet.has(s) && !softCustom.includes(s));
   const softEmptied =
+    sectionFlag.soft === "required" &&
     answers.softSkills !== undefined && answers.softSkills.length === 0;
 
   // Role step shows collapsed-with-X when field change wiped the roles.
@@ -181,17 +215,45 @@ function QuizPage() {
       : !answers.workMode ||
         (answers.workMode === "onsite" && (answers.locations?.length ?? 0) === 0);
 
+  const visitedOptional = new Set(answers.visitedOptional ?? []);
+  const sectionComplete = (k: SkillSectionKey): boolean => {
+    if (sectionFlag[k] === "na") return true;
+    if (k === "stack" && stackPoolSuppressed) return true;
+    if (sectionFlag[k] === "optional") {
+      // Optional: complete once user has visited/continued past, even if empty.
+      const hasVal =
+        (k === "stack" && stackSel.length > 0) ||
+        (k === "hard" && hardSel.length > 0) ||
+        (k === "tools" && toolsSel.length > 0) ||
+        (k === "soft" && softSel.length > 0);
+      return hasVal || visitedOptional.has(k);
+    }
+    // required
+    switch (k) {
+      case "stack": return stackSel.length > 0 && !stackInvalid;
+      case "hard": return hardSel.length > 0 && !hardInvalid;
+      case "tools": return toolsSel.length > 0 && !toolsInvalid;
+      case "soft": return softSel.length > 0 && !softInvalid;
+    }
+  };
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
-    hard: (answers.hardSkills?.length ?? 0) > 0 && !hardInvalid,
-    tools: (answers.tools?.length ?? 0) > 0 && !toolsInvalid,
-    soft: (answers.softSkills?.length ?? 0) > 0 && !softInvalid,
+    stack: sectionComplete("stack"),
+    hard: sectionComplete("hard"),
+    tools: sectionComplete("tools"),
+    soft: sectionComplete("soft"),
     level: !!answers.level,
     loc:
       !!answers.workMode &&
       (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
+  };
+
+  const isSkillStepHidden = (k: SkillSectionKey): boolean => {
+    if (sectionFlag[k] === "na") return true;
+    if (k === "stack" && stackPoolSuppressed) return true;
+    return false;
   };
 
   useEffect(() => {
