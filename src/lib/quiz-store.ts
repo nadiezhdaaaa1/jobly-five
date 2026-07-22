@@ -32,6 +32,10 @@ export type QuizAnswers = {
   openToRelocate?: boolean;
   openToTravel?: boolean;
   email?: string;
+  // Match-weighting axes (conditional per role/level; see quiz.tsx AxesStep).
+  scope?: { orgSize?: string; budget?: string; stage?: string };
+  segment?: string;
+  motion?: string;
   // Tracks skill sections the user has explicitly continued past.
   // Used to treat 'optional' sections as complete even when empty.
   visitedOptional?: ("stack" | "hard" | "tools" | "soft")[];
