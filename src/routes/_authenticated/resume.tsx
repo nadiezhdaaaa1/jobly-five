@@ -626,6 +626,14 @@ function FileRow({
             </button>
             <button
               type="button"
+              aria-label="Download"
+              onClick={onDownload}
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <Download size={15} strokeWidth={1.6} />
+            </button>
+            <button
+              type="button"
               aria-label="Delete"
               onClick={() => setConfirming(true)}
               className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
