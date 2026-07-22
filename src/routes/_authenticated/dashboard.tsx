@@ -60,10 +60,9 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
         aria-label="Match score locked — upgrade to Pro"
         title="Upgrade to Pro to see match scores"
       >
-        <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-[color:var(--color-text-muted)]">
-          <rect x="4" y="11" width="16" height="9" rx="1.5" />
-          <path d="M8 11V8a4 4 0 1 1 8 0v3" />
-        </svg>
+        <span className="text-[14px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
+          --%
+        </span>
       </div>
     );
   }
