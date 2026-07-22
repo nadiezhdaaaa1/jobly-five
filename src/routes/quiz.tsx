@@ -1726,7 +1726,7 @@ export function ExperienceStep({
                   className={cn(
                     "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
                     active
-                      ? "bg-[#00F1A9] text-[#090B0C]"
+                    ? "bg-[color:var(--color-green)] text-white"
                       : "text-[#67787C] hover:text-[#090B0C]",
                   )}
                   aria-pressed={active}
@@ -1742,7 +1742,7 @@ export function ExperienceStep({
                 className={cn(
                   "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
                   track === "Exec"
-                    ? "bg-[#00F1A9] text-[#090B0C]"
+                    ? "bg-[color:var(--color-green)] text-white"
                     : "text-[#67787C] hover:text-[#090B0C]",
                 )}
                 aria-pressed={track === "Exec"}
