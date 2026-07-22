@@ -260,9 +260,9 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const [freq, setFreq] = useState<"daily" | "weekly">(pro ? "daily" : "weekly");
+  const [freq, setFreq] = useState<"daily" | "weekdays" | "weekly">(pro ? "daily" : "weekly");
   useEffect(() => {
-    if (!pro && freq === "daily") setFreq("weekly");
+    if (!pro && freq !== "weekly") setFreq("weekly");
   }, [pro, freq]);
   const [toggles, setToggles] = useState({
     digest: true,
@@ -280,28 +280,19 @@ function NotificationsCard({ plan }: { plan: Plan }) {
     <Card title="Notifications">
       <div>
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Digest frequency</div>
-        <div className="mt-2 flex flex-col gap-2">
-          <RadioRow
-            checked={freq === "daily"}
-            disabled={!pro}
-            onChange={() => setFreq("daily")}
-            label={
-              <span className="flex items-center gap-2">
-                Daily
-                {!pro ? (
-                  <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--color-green)]">
-                    Pro
-                  </span>
-                ) : null}
-              </span>
-            }
-            caption={!pro ? "Daily digest is a Pro feature." : undefined}
-          />
-          <RadioRow
-            checked={freq === "weekly"}
-            onChange={() => setFreq("weekly")}
-            label="Weekly"
-          />
+        <div className="mt-2">
+          <select
+            value={freq}
+            onChange={(e) => setFreq(e.target.value as "daily" | "weekdays" | "weekly")}
+            className="w-full max-w-xs rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2 text-[14px] text-[color:var(--color-foreground)]"
+          >
+            <option value="daily" disabled={!pro}>Daily{!pro ? " (Pro)" : ""}</option>
+            <option value="weekdays" disabled={!pro}>Weekdays only{!pro ? " (Pro)" : ""}</option>
+            <option value="weekly">Weekly</option>
+          </select>
+          {!pro ? (
+            <div className="mt-2 text-[12px] text-[color:var(--color-text-muted)]">Daily and Weekdays only are Pro features.</div>
+          ) : null}
         </div>
       </div>
       <div className="mt-5 divide-y">
