@@ -706,7 +706,7 @@ export function StepShell({
 
   return (
     <li ref={ref} className="jobly-step-reveal">
-      <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-6">
+      <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-8">
         {children}
       </div>
       <style>{`
