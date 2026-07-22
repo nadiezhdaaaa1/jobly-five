@@ -227,6 +227,13 @@
   line-height: 1.5;
 }
 
+@utility button-large {
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 @utility button-small {
   font-family: var(--font-sans);
   font-size: 0.875rem;
