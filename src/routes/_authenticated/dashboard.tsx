@@ -132,7 +132,7 @@ function ParametersCard() {
               initial
             )}
           </div>
-          <span className="text-[14px] font-semibold text-[color:var(--color-foreground)] lg:hidden">
+          <span className="text-[14px] font-medium text-[color:var(--color-foreground)] lg:hidden">
             Your parameters
           </span>
         </div>
