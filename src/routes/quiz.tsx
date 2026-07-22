@@ -14,6 +14,10 @@ import {
 import {
   LEVELS,
   LEVEL_DEFAULT_YEARS,
+  BASE_LEVELS,
+  IC_LEVELS,
+  MGMT_LEVELS,
+  EXEC_LEVELS,
   FIELDS,
   FIELD_ROLES,
   skillsForRoles,
@@ -30,6 +34,8 @@ import {
   getChip,
   softVocab,
   axes as TAX_AXES,
+  levelLadder,
+  titleComposition,
   type Chip,
   type ChipFlag,
   type ChipType,
@@ -759,7 +765,10 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
     }
     case "level": {
       const parts: string[] = [];
-      if (a.level) parts.push(a.level);
+      if (a.level) {
+        const title = composedTitle(a.field, a.level);
+        parts.push(title || a.level);
+      }
       if (a.years != null) parts.push(`${formatYears(a.years)}y`);
       if (a.primaryLanguage) parts.push(`${a.primaryLanguage} (Native)`);
       for (const l of a.additionalLanguages ?? []) parts.push(`${l.lang} (${l.level})`);
@@ -1509,6 +1518,57 @@ const LEVEL_IMAGES: Record<string, string> = {
   Lead: leaImg.url,
 };
 
+// --- Level track helpers (taxonomy-driven fork at Senior) ------------------
+
+function rolesAllowMgmt(defs: TaxRole[]): boolean {
+  return defs.some((r) => (r.track ?? "").includes("Mgmt"));
+}
+function rolesAllowExec(defs: TaxRole[]): boolean {
+  return defs.some(
+    (r) => r.group === "C-level / Executive" || (r.track ?? "").includes("Exec"),
+  );
+}
+
+// Compose a display title from field + selected level using taxonomy.
+export function composedTitle(field?: string, level?: string): string {
+  if (!level) return "";
+  const row = field ? titleComposition.find((r) => r.function === field) : undefined;
+  if (row) {
+    if (level === "Head" && row.head && row.head !== "—") return row.head;
+    if (level === "VP" && row.vp && row.vp !== "—") return row.vp;
+    if (level === "Exec" && row.exec && row.exec !== "—") return row.exec;
+  }
+  const rung = levelLadder.find((r) => r.level === level);
+  if (rung && rung.titlePattern && rung.titlePattern !== "—" && rung.titlePattern !== "fork point") {
+    return rung.titlePattern.replace("{Function}", field ?? "").trim();
+  }
+  return field ? `${level} ${field}` : level;
+}
+
+// Parse levelLadder.yearsHint like "0", "0–2", "4–8", "8+" into [min,max].
+function parseYearsHint(hint: string): [number, number] {
+  const s = hint.replace(/\s/g, "");
+  const plus = s.match(/^(\d+)\+$/);
+  if (plus) return [Number(plus[1]), 99];
+  const range = s.match(/^(\d+)[–-](\d+)$/);
+  if (range) return [Number(range[1]), Number(range[2])];
+  const single = s.match(/^(\d+)$/);
+  if (single) return [Number(single[1]), Number(single[1])];
+  return [0, 99];
+}
+
+function yearsHintNote(level: string | undefined, years: number): string | null {
+  if (!level) return null;
+  const rung = levelLadder.find((r) => r.level === level);
+  if (!rung) return null;
+  const [lo, hi] = parseYearsHint(rung.yearsHint);
+  // Soft window: allow ±2 outside the hint before nudging.
+  if (years + 2 < lo || years - 2 > hi) {
+    return `${level} roles typically fall around ${rung.yearsHint} years — double-check this is right.`;
+  }
+  return null;
+}
+
 export function ExperienceStep({
   answers,
   onChange,
@@ -1529,6 +1589,27 @@ export function ExperienceStep({
   const [pendingLang, setPendingLang] = useState<string>("");
   const [pendingLevel, setPendingLevel] = useState<ProficiencyLevel>("B2");
 
+  // Track fork lives here so selecting a base rung can reveal or hide it.
+  const selectedRoleNames = answers.roles && answers.roles.length ? answers.roles : answers.role ? [answers.role] : [];
+  const roleDefs = taxRoleDefs(selectedRoleNames);
+  const hasMgmt = rolesAllowMgmt(roleDefs);
+  const hasExec = rolesAllowExec(roleDefs);
+
+  const isBase = level ? (BASE_LEVELS as readonly string[]).includes(level) : false;
+  const isIC = level ? (IC_LEVELS as readonly string[]).includes(level) : false;
+  const isMgmt = level ? (MGMT_LEVELS as readonly string[]).includes(level) : false;
+  const isExec = level ? (EXEC_LEVELS as readonly string[]).includes(level) : false;
+  const baseSelected = isBase ? level : isIC || isMgmt || isExec ? "Senior" : undefined;
+  const showTrackFork = baseSelected === "Senior" && (hasMgmt || hasExec);
+
+  const track: "IC" | "Mgmt" | "Exec" | undefined = isIC
+    ? "IC"
+    : isExec
+    ? "Exec"
+    : isMgmt
+    ? "Mgmt"
+    : answers.track;
+
   // Initialize primary language default on mount.
   useEffect(() => {
     if (!answers.primaryLanguage) onChange({ primaryLanguage: "English" });
@@ -1537,6 +1618,11 @@ export function ExperienceStep({
 
   const setLevel = (l: string) => {
     const patch: Partial<QuizAnswers> = { level: l };
+    // Keep track in sync with the chosen level.
+    if ((IC_LEVELS as readonly string[]).includes(l)) patch.track = "IC";
+    else if ((EXEC_LEVELS as readonly string[]).includes(l)) patch.track = "Exec";
+    else if ((MGMT_LEVELS as readonly string[]).includes(l)) patch.track = "Mgmt";
+    else patch.track = undefined;
     // Auto-set years to sensible default (user may override afterwards).
     if (answers.years == null || LEVEL_DEFAULT_YEARS[answers.level ?? ""] === answers.years) {
       patch.years = LEVEL_DEFAULT_YEARS[l];
@@ -1545,6 +1631,11 @@ export function ExperienceStep({
       patch.years = LEVEL_DEFAULT_YEARS[l];
     }
     onChange(patch);
+  };
+
+  const setTrack = (t: "IC" | "Mgmt" | "Exec") => {
+    // Switching tracks clears the fork-level so the user picks one from the new list.
+    onChange({ track: t, level: "Senior", years: LEVEL_DEFAULT_YEARS.Senior });
   };
 
   const canContinue = !!level && !!primary;
@@ -1569,9 +1660,9 @@ export function ExperienceStep({
     <div>
       <StepHeading>What's your experience?</StepHeading>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        {LEVELS.map((l) => {
-          const selected = level === l;
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        {BASE_LEVELS.map((l) => {
+          const selected = baseSelected === l;
           return (
             <button
               key={l}
@@ -1593,16 +1684,125 @@ export function ExperienceStep({
                 )}
                 {l}
               </span>
-              <img
-                src={LEVEL_IMAGES[l]}
-                alt=""
-                aria-hidden="true"
-                className="absolute right-0 top-0 h-full w-auto object-contain object-right"
-              />
+              {LEVEL_IMAGES[l] && (
+                <img
+                  src={LEVEL_IMAGES[l]}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute right-0 top-0 h-full w-auto object-contain object-right"
+                />
+              )}
             </button>
           );
         })}
       </div>
+
+      {showTrackFork && (
+        <div className="mt-4">
+          <div className="text-sm font-light text-[#090B0C]">Track</div>
+          <div className="mt-2 inline-flex rounded-[4px] border border-[#E3E7E8] bg-white p-1">
+            {(["IC", "Mgmt"] as const).map((t) => {
+              const label = t === "IC" ? "Individual contributor" : "Management";
+              const active = track === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTrack(t)}
+                  className={cn(
+                    "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                    active
+                      ? "bg-[#00F1A9] text-[#090B0C]"
+                      : "text-[#67787C] hover:text-[#090B0C]",
+                  )}
+                  aria-pressed={active}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            {hasExec && (
+              <button
+                type="button"
+                onClick={() => setTrack("Exec")}
+                className={cn(
+                  "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                  track === "Exec"
+                    ? "bg-[#00F1A9] text-[#090B0C]"
+                    : "text-[#67787C] hover:text-[#090B0C]",
+                )}
+                aria-pressed={track === "Exec"}
+              >
+                Executive
+              </button>
+            )}
+          </div>
+
+          {track && track !== "Exec" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(track === "IC" ? IC_LEVELS : MGMT_LEVELS).map((l) => {
+                const selected = level === l;
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLevel(l)}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      selected
+                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
+                    )}
+                    aria-pressed={selected}
+                  >
+                    {selected && (
+                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      </span>
+                    )}
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {track === "Exec" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {EXEC_LEVELS.map((l) => {
+                const selected = level === l;
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLevel(l)}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      selected
+                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
+                    )}
+                    aria-pressed={selected}
+                  >
+                    {selected && (
+                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      </span>
+                    )}
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {composedTitle(answers.field, level) && (
+        <div className="mt-3 text-xs text-[#67787C]">
+          Reads as <span className="text-[#090B0C]">{composedTitle(answers.field, level)}</span>
+        </div>
+      )}
 
       <div className="mt-6">
         <div className="flex items-baseline justify-between">
@@ -1642,6 +1842,9 @@ export function ExperienceStep({
             </span>
           ))}
         </div>
+        {yearsHintNote(level, years) && (
+          <div className="mt-2 text-xs text-[#67787C]">{yearsHintNote(level, years)}</div>
+        )}
       </div>
 
       <div className="mt-6">
