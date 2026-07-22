@@ -18,6 +18,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
+        <div className="flex items-center gap-7">
         <Link to="/" className="flex items-center gap-2">
           <span
             className="leading-none text-[color:var(--color-green)]"
@@ -34,11 +35,12 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
         {!pro ? (
           <Link
             to="/settings"
-            className="hidden md:inline-flex h-8 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="hidden md:inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Go Pro
           </Link>
         ) : null}
+        </div>
         <nav className="hidden md:flex items-end gap-1">
           {TABS.map((t) => {
             const Icon = t.icon;
