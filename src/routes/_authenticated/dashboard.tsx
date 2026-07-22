@@ -139,7 +139,7 @@ function ParametersCard() {
         {rows.map((r) => (
           <div key={r.label} className="py-3 first:pt-0">
             <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">{r.label}</div>
-            <div className="mt-1 text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>{r.value}</div>
+            <div className="mt-1 line-clamp-3 text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>{r.value}</div>
           </div>
         ))}
         <div className="pt-4">
