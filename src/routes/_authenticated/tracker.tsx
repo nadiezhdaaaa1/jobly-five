@@ -654,13 +654,13 @@ function TrackerScreen() {
               {totalInTracker} application{totalInTracker === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="inline-flex rounded-[4px] border bg-[color:var(--color-surface-1)] p-1">
+          <div className="flex w-full sm:inline-flex sm:w-auto rounded-[4px] border bg-[color:var(--color-surface-1)] p-1">
             {(["ongoing", "offers", "rejections"] as Tab[]).map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setTab(t)}
-                className={`h-8 w-[120px] rounded-[4px] button-small transition-colors ${
+                className={`h-8 flex-1 sm:w-[120px] sm:flex-none rounded-[4px] button-small transition-colors ${
                   tab === t
                     ? "bg-[color:var(--color-green)] text-white"
                     : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
