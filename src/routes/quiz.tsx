@@ -2316,9 +2316,7 @@ function EmailStep({
           disabled={!valid || submitting}
           className={cn(
             "button-medium mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-            !valid || submitting
-              ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
-              : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           )}
         >
           {submitting ? (
@@ -2489,9 +2487,7 @@ function ContinueRow({
         onClick={onClick}
         className={cn(
           "button-medium inline-flex h-12 flex-1 items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-          disabled
-            ? "bg-[color:var(--color-success-subtle)] text-[color:var(--color-text-muted)] cursor-not-allowed"
-            : "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
         )}
       >
         {primaryLabel}
