@@ -10,9 +10,14 @@ export type QuizAnswers = {
   role?: string; // legacy, kept for backward-compat
   roles?: string[];
   stack?: string[]; // legacy — replaced by hardSkills/softSkills/tools
+  stackSkills?: string[];
+  stackCustom?: string[];
   hardSkills?: string[];
+  hardCustom?: string[];
   softSkills?: string[];
+  softCustom?: string[];
   tools?: string[];
+  toolsCustom?: string[];
   level?: string;
   years?: number;
   languages?: string[]; // legacy
@@ -27,6 +32,9 @@ export type QuizAnswers = {
   openToRelocate?: boolean;
   openToTravel?: boolean;
   email?: string;
+  // Tracks skill sections the user has explicitly continued past.
+  // Used to treat 'optional' sections as complete even when empty.
+  visitedOptional?: ("stack" | "hard" | "tools" | "soft")[];
 };
 
 const KEY = "jobly.quiz";

@@ -27,8 +27,58 @@ import {
   getGroups,
   getRolesByGroup,
   searchRoles,
+  getChip,
+  softVocab,
+  type Chip,
+  type ChipFlag,
+  type ChipType,
   type Role as TaxRole,
 } from "@/data/taxonomy";
+import rawTaxonomy from "@/data/jobly_taxonomy.json";
+
+const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
+
+function taxRoleDefs(positions: string[]): TaxRole[] {
+  return positions
+    .map((p) => ALL_TAX_ROLES.find((r) => r.position === p))
+    .filter((r): r is TaxRole => !!r);
+}
+
+type SkillSectionKey = "stack" | "hard" | "tools" | "soft";
+
+function unionSectionFlag(defs: TaxRole[], key: SkillSectionKey): ChipFlag {
+  let seen: ChipFlag = "na";
+  for (const d of defs) {
+    const f = d.sections?.[key]?.flag;
+    if (f === "required") return "required";
+    if (f === "optional") seen = "optional";
+  }
+  return seen;
+}
+
+function taxPool(defs: TaxRole[], key: "stack" | "hard" | "tools"): string[] {
+  const set = new Set<string>();
+  for (const d of defs) for (const s of d[key] ?? []) set.add(s);
+  return Array.from(set).sort((a, b) => a.localeCompare(b));
+}
+
+function taxSoftSuggested(defs: TaxRole[]): string[] {
+  const set = new Set<string>();
+  for (const d of defs) for (const s of d.soft ?? []) set.add(s);
+  return Array.from(set);
+}
+
+function firstStackNote(defs: TaxRole[]): string | undefined {
+  for (const d of defs) if (d.stackNote) return d.stackNote;
+  return undefined;
+}
+
+const CHIP_TYPE_FOR_SECTION: Record<SkillSectionKey, ChipType> = {
+  stack: "Stack",
+  hard: "Hard / Method",
+  tools: "Tools",
+  soft: "Soft",
+};
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -43,6 +93,7 @@ export const Route = createFileRoute("/quiz")({
 export type StepKey =
   | "field"
   | "role"
+  | "stack"
   | "hard"
   | "tools"
   | "soft"
@@ -52,6 +103,7 @@ export type StepKey =
 export const STEP_ORDER: StepKey[] = [
   "field",
   "role",
+  "stack",
   "hard",
   "tools",
   "soft",
@@ -82,13 +134,27 @@ function QuizPage() {
   }, [answers, hydrated]);
 
   const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
-  const skillsPool = useMemo(
-    () => skillsForRoles(rolesList, answers.field),
-    [rolesList, answers.field]
-  );
-  const hardPoolSet = useMemo(() => new Set(skillsPool.hard), [skillsPool.hard]);
-  const toolsPoolSet = useMemo(() => new Set(skillsPool.tools), [skillsPool.tools]);
-  const softPoolSet = useMemo(() => new Set(skillsPool.soft), [skillsPool.soft]);
+  const roleDefs = useMemo(() => taxRoleDefs(rolesList), [rolesList]);
+  const stackPool = useMemo(() => taxPool(roleDefs, "stack"), [roleDefs]);
+  const hardPool = useMemo(() => taxPool(roleDefs, "hard"), [roleDefs]);
+  const toolsPool = useMemo(() => taxPool(roleDefs, "tools"), [roleDefs]);
+  const softPool = useMemo(() => softVocab.slice(), []);
+  const softSuggested = useMemo(() => taxSoftSuggested(roleDefs), [roleDefs]);
+  const stackNote = useMemo(() => firstStackNote(roleDefs), [roleDefs]);
+  const sectionFlag: Record<SkillSectionKey, ChipFlag> = {
+    stack: roleDefs.length ? unionSectionFlag(roleDefs, "stack") : "required",
+    hard: roleDefs.length ? unionSectionFlag(roleDefs, "hard") : "required",
+    tools: roleDefs.length ? unionSectionFlag(roleDefs, "tools") : "required",
+    soft: roleDefs.length ? unionSectionFlag(roleDefs, "soft") : "required",
+  };
+  // stackNote roles skip the pool but still keep the section as complete
+  // (we treat it as auto-complete since there's nothing to pick).
+  const stackPoolSuppressed = !!stackNote;
+
+  const stackPoolSet = useMemo(() => new Set(stackPool), [stackPool]);
+  const hardPoolSet = useMemo(() => new Set(hardPool), [hardPool]);
+  const toolsPoolSet = useMemo(() => new Set(toolsPool), [toolsPool]);
+  const softPoolSet = useMemo(() => new Set(softPool), [softPool]);
 
   // Role is invalid if any selected role isn't in the current field's role list.
   const fieldRoles = answers.field
@@ -102,20 +168,40 @@ function QuizPage() {
 
   // Skill sub-steps: invalid when selection contains items no longer in the pool,
   // emptied when a previous selection was wiped by upstream (field / role) changes.
+  const stackSel = answers.stackSkills ?? [];
+  const stackCustom = answers.stackCustom ?? [];
+  const hardCustom = answers.hardCustom ?? [];
+  const toolsCustom = answers.toolsCustom ?? [];
+  const softCustom = answers.softCustom ?? [];
   const hardSel = answers.hardSkills ?? [];
   const toolsSel = answers.tools ?? [];
   const softSel = answers.softSkills ?? [];
+  const stackInvalid =
+    !stackPoolSuppressed &&
+    stackSel.length > 0 &&
+    stackSel.some((s) => !stackPoolSet.has(s) && !stackCustom.includes(s));
+  const stackEmptied =
+    !stackPoolSuppressed &&
+    sectionFlag.stack === "required" &&
+    answers.stackSkills !== undefined &&
+    answers.stackSkills.length === 0;
   const hardInvalid =
-    hardSel.length > 0 && hardSel.some((s) => !hardPoolSet.has(s));
+    hardSel.length > 0 &&
+    hardSel.some((s) => !hardPoolSet.has(s) && !hardCustom.includes(s));
   const hardEmptied =
+    sectionFlag.hard === "required" &&
     answers.hardSkills !== undefined && answers.hardSkills.length === 0;
   const toolsInvalid =
-    toolsSel.length > 0 && toolsSel.some((s) => !toolsPoolSet.has(s));
+    toolsSel.length > 0 &&
+    toolsSel.some((s) => !toolsPoolSet.has(s) && !toolsCustom.includes(s));
   const toolsEmptied =
+    sectionFlag.tools === "required" &&
     answers.tools !== undefined && answers.tools.length === 0;
   const softInvalid =
-    softSel.length > 0 && softSel.some((s) => !softPoolSet.has(s));
+    softSel.length > 0 &&
+    softSel.some((s) => !softPoolSet.has(s) && !softCustom.includes(s));
   const softEmptied =
+    sectionFlag.soft === "required" &&
     answers.softSkills !== undefined && answers.softSkills.length === 0;
 
   // Role step shows collapsed-with-X when field change wiped the roles.
@@ -129,17 +215,45 @@ function QuizPage() {
       : !answers.workMode ||
         (answers.workMode === "onsite" && (answers.locations?.length ?? 0) === 0);
 
+  const visitedOptional = new Set(answers.visitedOptional ?? []);
+  const sectionComplete = (k: SkillSectionKey): boolean => {
+    if (sectionFlag[k] === "na") return true;
+    if (k === "stack" && stackPoolSuppressed) return true;
+    if (sectionFlag[k] === "optional") {
+      // Optional: complete once user has visited/continued past, even if empty.
+      const hasVal =
+        (k === "stack" && stackSel.length > 0) ||
+        (k === "hard" && hardSel.length > 0) ||
+        (k === "tools" && toolsSel.length > 0) ||
+        (k === "soft" && softSel.length > 0);
+      return hasVal || visitedOptional.has(k);
+    }
+    // required
+    switch (k) {
+      case "stack": return stackSel.length > 0 && !stackInvalid;
+      case "hard": return hardSel.length > 0 && !hardInvalid;
+      case "tools": return toolsSel.length > 0 && !toolsInvalid;
+      case "soft": return softSel.length > 0 && !softInvalid;
+    }
+  };
   const completed: Record<StepKey, boolean> = {
     field: !!answers.field,
     role: rolesList.length > 0 && !roleInvalid,
-    hard: (answers.hardSkills?.length ?? 0) > 0 && !hardInvalid,
-    tools: (answers.tools?.length ?? 0) > 0 && !toolsInvalid,
-    soft: (answers.softSkills?.length ?? 0) > 0 && !softInvalid,
+    stack: sectionComplete("stack"),
+    hard: sectionComplete("hard"),
+    tools: sectionComplete("tools"),
+    soft: sectionComplete("soft"),
     level: !!answers.level,
     loc:
       !!answers.workMode &&
       (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0),
     email: !!answers.email,
+  };
+
+  const isSkillStepHidden = (k: SkillSectionKey): boolean => {
+    if (sectionFlag[k] === "na") return true;
+    if (k === "stack" && stackPoolSuppressed) return true;
+    return false;
   };
 
   useEffect(() => {
@@ -153,9 +267,33 @@ function QuizPage() {
   const activeStep = editing ?? current;
 
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
-    setAnswers((a) => ({ ...a, ...patch }));
+    setAnswers((a) => {
+      const merged = { ...a, ...patch };
+      // Mark optional skill sections as visited when the user continues past them.
+      if (
+        (nextFrom === "stack" || nextFrom === "hard" || nextFrom === "tools" || nextFrom === "soft") &&
+        sectionFlag[nextFrom] === "optional"
+      ) {
+        const set = new Set(merged.visitedOptional ?? []);
+        set.add(nextFrom);
+        merged.visitedOptional = Array.from(set);
+      }
+      return merged;
+    });
     const idx = STEP_ORDER.indexOf(nextFrom);
-    const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
+    // Skip any hidden ('na' / stackNote-suppressed) skill sections.
+    let nextIdx = Math.min(idx + 1, STEP_ORDER.length - 1);
+    while (
+      nextIdx < STEP_ORDER.length - 1 &&
+      (STEP_ORDER[nextIdx] === "stack" ||
+        STEP_ORDER[nextIdx] === "hard" ||
+        STEP_ORDER[nextIdx] === "tools" ||
+        STEP_ORDER[nextIdx] === "soft") &&
+      isSkillStepHidden(STEP_ORDER[nextIdx] as SkillSectionKey)
+    ) {
+      nextIdx += 1;
+    }
+    const next = STEP_ORDER[nextIdx];
     if (editing === nextFrom) {
       setEditing(null);
       setCurrent(next);
@@ -171,22 +309,36 @@ function QuizPage() {
         roles: (a.roles ?? []).filter((r) => fieldRoles?.includes(r)),
       }));
     }
+    if (key === "stack" && (stackInvalid || stackEmptied)) {
+      setAnswers((a) => ({
+        ...a,
+        stackSkills: (a.stackSkills ?? []).filter(
+          (s) => stackPoolSet.has(s) || (a.stackCustom ?? []).includes(s)
+        ),
+      }));
+    }
     if (key === "hard" && (hardInvalid || hardEmptied)) {
       setAnswers((a) => ({
         ...a,
-        hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
+        hardSkills: (a.hardSkills ?? []).filter(
+          (s) => hardPoolSet.has(s) || (a.hardCustom ?? []).includes(s)
+        ),
       }));
     }
     if (key === "tools" && (toolsInvalid || toolsEmptied)) {
       setAnswers((a) => ({
         ...a,
-        tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
+        tools: (a.tools ?? []).filter(
+          (s) => toolsPoolSet.has(s) || (a.toolsCustom ?? []).includes(s)
+        ),
       }));
     }
     if (key === "soft" && (softInvalid || softEmptied)) {
       setAnswers((a) => ({
         ...a,
-        softSkills: (a.softSkills ?? []).filter((s) => softPoolSet.has(s)),
+        softSkills: (a.softSkills ?? []).filter(
+          (s) => softPoolSet.has(s) || (a.softCustom ?? []).includes(s)
+        ),
       }));
     }
     setEditing(key);
@@ -229,10 +381,19 @@ function QuizPage() {
 
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
+            // Hide skill sections whose union flag is 'na', and hide the stack
+            // section entirely for roles that carry a `stackNote` (no pool).
+            if (
+              (key === "stack" || key === "hard" || key === "tools" || key === "soft") &&
+              isSkillStepHidden(key as SkillSectionKey)
+            ) {
+              return null;
+            }
             const isVisible =
               completed[key] ||
               key === activeStep ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
+              (key === "stack" && (stackInvalid || stackEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
               (key === "tools" && (toolsInvalid || toolsEmptied)) ||
               (key === "soft" && (softInvalid || softEmptied)) ||
@@ -241,6 +402,7 @@ function QuizPage() {
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
+              (key === "stack" && (stackInvalid || stackEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
               (key === "tools" && (toolsInvalid || toolsEmptied) && !isExpanded) ||
               (key === "soft" && (softInvalid || softEmptied) && !isExpanded) ||
@@ -279,26 +441,40 @@ function QuizPage() {
                     value={answers.roles ?? []}
                     onChange={(v) =>
                       setAnswers((a) => {
-                        const pool = skillsForRoles(v, a.field);
-                        const hardSet = new Set(pool.hard);
-                        const toolSet = new Set(pool.tools);
-                        const softSet = new Set(pool.soft);
+                        const defs = taxRoleDefs(v);
+                        const stackSet = new Set(taxPool(defs, "stack"));
+                        const hardSet = new Set(taxPool(defs, "hard"));
+                        const toolSet = new Set(taxPool(defs, "tools"));
+                        const softSet = new Set(softVocab);
+                        const prunedStack =
+                          a.stackSkills !== undefined
+                            ? a.stackSkills.filter(
+                                (s) => stackSet.has(s) || (a.stackCustom ?? []).includes(s)
+                              )
+                            : a.stackSkills;
                         const prunedHard =
                           a.hardSkills !== undefined
-                            ? a.hardSkills.filter((s) => hardSet.has(s))
+                            ? a.hardSkills.filter(
+                                (s) => hardSet.has(s) || (a.hardCustom ?? []).includes(s)
+                              )
                             : a.hardSkills;
                         const prunedTools =
                           a.tools !== undefined
-                            ? a.tools.filter((s) => toolSet.has(s))
+                            ? a.tools.filter(
+                                (s) => toolSet.has(s) || (a.toolsCustom ?? []).includes(s)
+                              )
                             : a.tools;
                         const prunedSoft =
                           a.softSkills !== undefined
-                            ? a.softSkills.filter((s) => softSet.has(s))
+                            ? a.softSkills.filter(
+                                (s) => softSet.has(s) || (a.softCustom ?? []).includes(s)
+                              )
                             : a.softSkills;
                         return {
                           ...a,
                           roles: v,
                           role: v[0],
+                          stackSkills: prunedStack,
                           hardSkills: prunedHard,
                           tools: prunedTools,
                           softSkills: prunedSoft,
@@ -308,52 +484,73 @@ function QuizPage() {
                     onContinue={() => advance("role", {})}
                   />
                 )}
+                {key === "stack" && (
+                  <CategorizedSkillStep
+                    title="What's your stack?"
+                    description="Languages, frameworks, databases and cloud platforms you work with."
+                    chipType="Stack"
+                    options={stackPool}
+                    withCategories
+                    value={answers.stackSkills ?? []}
+                    customs={answers.stackCustom ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, stackSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, stackCustom: c }))}
+                    required={sectionFlag.stack === "required"}
+                    onContinue={() =>
+                      advance("stack", { stackSkills: answers.stackSkills ?? [] })
+                    }
+                  />
+                )}
                 {key === "hard" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="What are your hard skills?"
-                    description="Role-specific technical skills you actually work with."
-                    label="Hard skills"
-                    hint="At least one required"
-                    searchPlaceholder="Search hard skills"
-                    options={skillsPool.hard}
+                    description="Role-specific technical skills and methods you actually work with."
+                    chipType="Hard / Method"
+                    options={hardPool}
+                    withCategories={false}
                     value={answers.hardSkills ?? []}
+                    customs={answers.hardCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, hardSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, hardCustom: c }))}
+                    required={sectionFlag.hard === "required"}
                     onContinue={() =>
                       advance("hard", { hardSkills: answers.hardSkills ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "tools" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="Which tools do you use?"
                     description="Software and platforms you work with day to day."
-                    label="Tools"
-                    hint="At least one required"
-                    searchPlaceholder="Search tools"
-                    options={skillsPool.tools}
+                    chipType="Tools"
+                    options={toolsPool}
+                    withCategories
                     value={answers.tools ?? []}
+                    customs={answers.toolsCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, tools: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, toolsCustom: c }))}
+                    required={sectionFlag.tools === "required"}
                     onContinue={() =>
                       advance("tools", { tools: answers.tools ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "soft" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="What are your soft skills?"
                     description="How you work with people and approach problems."
-                    label="Soft skills"
-                    hint="At least one required"
-                    searchPlaceholder="Search soft skills"
-                    options={skillsPool.soft}
+                    chipType="Soft"
+                    options={softPool}
+                    withCategories={false}
+                    suggested={softSuggested}
                     value={answers.softSkills ?? []}
+                    customs={answers.softCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, softSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, softCustom: c }))}
+                    required={sectionFlag.soft === "required"}
                     onContinue={() =>
                       advance("soft", { softSkills: answers.softSkills ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "level" && (
@@ -484,6 +681,7 @@ export function StepShell({
 export const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
+  stack: "Stack",
   hard: "Hard skills",
   tools: "Tools",
   soft: "Soft skills",
@@ -501,6 +699,8 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
         const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
         return rs.length ? rs.join(", ") : "-";
       }
+    case "stack":
+      return a.stackSkills && a.stackSkills.length ? a.stackSkills.join(", ") : "-";
     case "hard":
       return a.hardSkills && a.hardSkills.length ? a.hardSkills.join(", ") : "-";
     case "tools":
@@ -946,6 +1146,301 @@ function SkillsGroup({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ---------- 2b. Categorized skills (Stack / Hard / Tools / Soft) ----------
+
+export function CategorizedSkillStep({
+  title,
+  description,
+  chipType,
+  options,
+  value,
+  customs,
+  onChange,
+  onCustomsChange,
+  withCategories,
+  suggested,
+  required = true,
+  onContinue,
+  submitLabel,
+  onCancel,
+}: {
+  title: string;
+  description: string;
+  chipType: ChipType;
+  options: string[];
+  value: string[];
+  customs: string[];
+  onChange: (v: string[]) => void;
+  onCustomsChange: (c: string[]) => void;
+  withCategories: boolean;
+  suggested?: string[];
+  required?: boolean;
+  onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [pending, setPending] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const filtered = options.filter((s) => (q ? s.toLowerCase().includes(q) : true));
+
+  // Group by chip.category (from the shared chipLibrary — never guessed).
+  const groups: [string, string[]][] = useMemo(() => {
+    if (!withCategories) {
+      // Soft: sort suggested items first, then alphabetical.
+      if (suggested && suggested.length) {
+        const sug = new Set(suggested);
+        const sorted = filtered
+          .slice()
+          .sort((a, b) => {
+            const sa = sug.has(a) ? 0 : 1;
+            const sb = sug.has(b) ? 0 : 1;
+            if (sa !== sb) return sa - sb;
+            return a.localeCompare(b);
+          });
+        return [["", sorted]];
+      }
+      return [["", filtered.slice().sort((a, b) => a.localeCompare(b))]];
+    }
+    const map = new Map<string, string[]>();
+    for (const label of filtered) {
+      const chip: Chip | undefined = getChip(chipType, label);
+      const cat = chip?.category ?? "Other";
+      const arr = map.get(cat) ?? [];
+      arr.push(label);
+      map.set(cat, arr);
+    }
+    return Array.from(map.entries())
+      .map(([cat, list]) => [cat, list.slice().sort((a, b) => a.localeCompare(b))] as [string, string[]])
+      .sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filtered, withCategories, suggested, chipType]);
+
+  const suggestedSet = useMemo(() => new Set(suggested ?? []), [suggested]);
+
+  const toggle = (s: string) => {
+    if (value.includes(s)) onChange(value.filter((x) => x !== s));
+    else onChange([...value, s]);
+  };
+
+  const selectAll = () => {
+    const merged = new Set(value);
+    for (const s of options) merged.add(s);
+    for (const c of customs) merged.add(c);
+    onChange(Array.from(merged));
+  };
+  const clearAll = () => {
+    onChange([]);
+    onCustomsChange([]);
+  };
+
+  const commitCustom = () => {
+    const label = pending.trim();
+    if (!label) return;
+    // No duplicates against pool or existing customs.
+    const lower = label.toLowerCase();
+    if (options.some((o) => o.toLowerCase() === lower)) {
+      // Just select the matching pool item.
+      const match = options.find((o) => o.toLowerCase() === lower)!;
+      if (!value.includes(match)) onChange([...value, match]);
+    } else if (!customs.some((c) => c.toLowerCase() === lower)) {
+      onCustomsChange([...customs, label]);
+      onChange([...value, label]);
+    }
+    setPending("");
+    setAdding(false);
+  };
+
+  const removeCustom = (label: string) => {
+    onCustomsChange(customs.filter((c) => c !== label));
+    onChange(value.filter((v) => v !== label));
+  };
+
+  const canContinue = required ? value.length > 0 : true;
+
+  const renderChip = (
+    s: string,
+    opts: { custom?: boolean } = {}
+  ) => {
+    const selected = value.includes(s);
+    const isSuggested = !opts.custom && suggestedSet.has(s);
+    return (
+      <button
+        key={s}
+        type="button"
+        onClick={() => (opts.custom ? toggle(s) : toggle(s))}
+        aria-pressed={selected}
+        className={cn(
+          "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          selected
+            ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+            : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+        )}
+        style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+      >
+        <span
+          className={cn(
+            "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+            selected
+              ? "border-[#0E735A] bg-[#0E735A]"
+              : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+          )}
+        >
+          {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+        </span>
+        <span>{s}</span>
+        {isSuggested && !selected && (
+          <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" aria-label="suggested" />
+        )}
+        {opts.custom && (
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label={`Remove ${s}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              removeCustom(s);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.stopPropagation();
+                removeCustom(s);
+              }
+            }}
+            className="ml-1 grid h-4 w-4 place-items-center rounded-[2px] text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+          >
+            <X className="h-3 w-3" />
+          </span>
+        )}
+      </button>
+    );
+  };
+
+  return (
+    <div>
+      <StepHeading>{title}</StepHeading>
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{description}</p>
+
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span className="text-sm font-light text-[#090B0C]">
+          {required ? "At least one required" : "Optional"}
+          <span className="ml-2 text-xs text-[color:var(--color-text-muted)]">
+            {value.length} selected
+          </span>
+        </span>
+        <div className="flex items-center gap-3 text-xs">
+          <button
+            type="button"
+            onClick={selectAll}
+            className="text-[color:var(--color-text-secondary)] underline-offset-2 hover:text-[color:var(--color-foreground)] hover:underline"
+          >
+            Select all
+          </button>
+          <span className="text-[color:var(--color-text-muted)]">·</span>
+          <button
+            type="button"
+            onClick={clearAll}
+            className="text-[color:var(--color-text-secondary)] underline-offset-2 hover:text-[color:var(--color-foreground)] hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+        <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={`Search ${chipType.toLowerCase()}`}
+          className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className="text-[color:var(--color-text-muted)]"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="mt-3 max-h-[280px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+        {filtered.length === 0 && !customs.length && (
+          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+        )}
+        <div className="flex flex-col gap-3">
+          {groups.map(([cat, list]) => (
+            <div key={cat || "flat"}>
+              {cat && (
+                <div className="mb-1.5 text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                  {cat}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {list.map((s) => renderChip(s))}
+              </div>
+            </div>
+          ))}
+
+          {customs.length > 0 && (
+            <div>
+              <div className="mb-1.5 text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                Custom
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {customs.map((s) => renderChip(s, { custom: true }))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {adding ? (
+                <span className="inline-flex items-center rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2 py-1">
+                  <input
+                    autoFocus
+                    value={pending}
+                    onChange={(e) => setPending(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitCustom();
+                      } else if (e.key === "Escape") {
+                        setPending("");
+                        setAdding(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (pending.trim()) commitCustom();
+                      else setAdding(false);
+                    }}
+                    placeholder="Type and press Enter"
+                    className="h-6 w-40 bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+                  />
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAdding(true)}
+                  className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2.5 py-1 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                >
+                  + Add your own
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
     </div>
   );
 }
