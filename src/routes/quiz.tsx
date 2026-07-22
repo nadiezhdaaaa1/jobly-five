@@ -873,7 +873,7 @@ export function FieldStep({
                 className={cn(
                   "button-small inline-flex h-11 items-center rounded-[4px] border px-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)] text-white"
+                    ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)] text-[#090B0C]"
                     : "border-[color:var(--color-border)] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]"
                 )}
               >
