@@ -172,6 +172,23 @@ function ResumeScreen() {
               primaryId={state.primaryId}
               onMakePrimary={(id) => setPrimaryResumeFile(id)}
               onRename={(id, name) => renameResumeFile(id, name)}
+              onDownload={(file) => {
+                const mime =
+                  file.ext === "pdf"
+                    ? "application/pdf"
+                    : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                const blob = new Blob([`Jobly resume placeholder — ${file.name}.${file.ext}`], {
+                  type: mime,
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${file.name}.${file.ext}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+              }}
               onDelete={(id) => {
                 const result = deleteResumeFile(id);
                 if (result.wasPrimary && result.promoted) {
