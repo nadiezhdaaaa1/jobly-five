@@ -15,7 +15,8 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { getDigestDays, type Job } from "@/lib/jobs-data";
 import { useResumeState } from "@/lib/resume-store";
-import { quizSummary } from "@/lib/quiz-store";
+import { loadQuiz } from "@/lib/quiz-store";
+import { SUMMARY_LABEL, summaryValue, type StepKey } from "@/routes/quiz";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -69,7 +70,7 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 
 function ParametersCard() {
   const resume = useResumeState();
-  const summary = useMemo(() => quizSummary(), []);
+  const quiz = useMemo(() => loadQuiz(), []);
   const { user } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   useEffect(() => {
@@ -93,12 +94,11 @@ function ParametersCard() {
     };
   }, [user]);
   const initial = (user?.email ?? "S").charAt(0).toUpperCase();
-  const rows = [
-    { label: "Role", value: summary.roles },
-    { label: "Stack", value: summary.stack },
-    { label: "Experience", value: summary.experience },
-    { label: "Location and salary", value: summary.locationAndSalary },
-  ];
+  const STEPS: StepKey[] = ["field", "role", "hard", "tools", "soft", "level", "loc"];
+  const rows = STEPS.map((k) => ({
+    label: SUMMARY_LABEL[k],
+    value: summaryValue(k, quiz) || "-",
+  }));
   return (
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
       <div className="flex items-start justify-between">
