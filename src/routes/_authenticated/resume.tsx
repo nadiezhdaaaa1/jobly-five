@@ -6,9 +6,11 @@ import {
   IconTrash as Trash,
   IconCheck as Check,
   IconX as X,
+  IconPlus as Plus,
 } from "@tabler/icons-react";
 import comingSoonAsset from "@/assets/resume-coming-soon.png.asset.json";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   addResumeFile,
   deleteResumeFile,
@@ -136,35 +138,30 @@ function ResumeScreen() {
   });
 
   const hasAny = state.files.length > 0 || uploads.length > 0;
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-10">
       <AppHeader active="resume" />
       <main className="mx-auto w-full max-w-[720px] px-4 py-8 sm:px-6">
-        <header className="mb-6">
+        <header className="mb-6 flex items-center justify-between gap-3">
           <h1
             className="text-[24px] leading-tight text-[color:var(--color-foreground)]"
             style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
           >
             Resume
           </h1>
+          <button
+            type="button"
+            onClick={() => setUploadOpen(true)}
+            className="button-small inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-[color:var(--color-primary)] px-3 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          >
+            <Plus size={16} strokeWidth={2} />
+            Add
+          </button>
         </header>
 
         <ComingSoonBanner />
-
-        <div className="mt-4">
-          <UploadCard
-            state={state}
-            pro={pro}
-            atLimit={atLimit}
-            uploads={uploads}
-            fileError={fileError}
-            onFiles={onFiles}
-            onConsent={setResumeConsent}
-            onDismissError={() => setFileError(null)}
-            hasAny={hasAny}
-          />
-        </div>
 
         {state.files.length > 0 ? (
           <div className="mt-4">
@@ -183,8 +180,37 @@ function ResumeScreen() {
               }}
             />
           </div>
-        ) : null}
+        ) : (
+          <p
+            className="mt-4 text-[13px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
+            Your primary resume sharpens your match scores.
+          </p>
+        )}
       </main>
+
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent className="max-w-[480px] rounded-[8px] border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+          <DialogTitle
+            className="text-[16px] font-semibold text-[color:var(--color-foreground)]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Add resume
+          </DialogTitle>
+          <UploadCard
+            state={state}
+            pro={pro}
+            atLimit={atLimit}
+            uploads={uploads}
+            fileError={fileError}
+            onFiles={onFiles}
+            onConsent={setResumeConsent}
+            onDismissError={() => setFileError(null)}
+            hasAny={hasAny}
+          />
+        </DialogContent>
+      </Dialog>
 
       {toast ? (
         <div
@@ -267,7 +293,7 @@ function UploadCard({
   const showEmptyCopy = !hasAny;
 
   return (
-    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+    <section className="pt-1">
       {!state.consented ? (
         <label className="mb-3 flex cursor-pointer items-start gap-3 text-[13px] text-[color:var(--color-text-secondary)]">
           <input
