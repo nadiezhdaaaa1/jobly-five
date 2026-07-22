@@ -564,15 +564,16 @@ export function FieldStep({
   submitLabel?: string;
   onCancel?: () => void;
 }) {
+  const groups = getGroups();
   return (
     <div>
-      <StepHeading>What field are you in?</StepHeading>
+      <StepHeading>What's your field?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         This narrows the roles and skills we'll ask about next.
       </p>
       <div className="mt-4">
         <div className="flex flex-wrap gap-2">
-          {FIELDS.map((f) => {
+          {groups.map((f) => {
             const selected = value === f;
             return (
               <button
