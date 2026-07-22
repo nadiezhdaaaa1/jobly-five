@@ -1515,6 +1515,57 @@ const LEVEL_IMAGES: Record<string, string> = {
   Lead: leaImg.url,
 };
 
+// --- Level track helpers (taxonomy-driven fork at Senior) ------------------
+
+function rolesAllowMgmt(defs: TaxRole[]): boolean {
+  return defs.some((r) => (r.track ?? "").includes("Mgmt"));
+}
+function rolesAllowExec(defs: TaxRole[]): boolean {
+  return defs.some(
+    (r) => r.group === "C-level / Executive" || (r.track ?? "").includes("Exec"),
+  );
+}
+
+// Compose a display title from field + selected level using taxonomy.
+export function composedTitle(field?: string, level?: string): string {
+  if (!level) return "";
+  const row = field ? titleComposition.find((r) => r.function === field) : undefined;
+  if (row) {
+    if (level === "Head" && row.head && row.head !== "—") return row.head;
+    if (level === "VP" && row.vp && row.vp !== "—") return row.vp;
+    if (level === "Exec" && row.exec && row.exec !== "—") return row.exec;
+  }
+  const rung = levelLadder.find((r) => r.level === level);
+  if (rung && rung.titlePattern && rung.titlePattern !== "—" && rung.titlePattern !== "fork point") {
+    return rung.titlePattern.replace("{Function}", field ?? "").trim();
+  }
+  return field ? `${level} ${field}` : level;
+}
+
+// Parse levelLadder.yearsHint like "0", "0–2", "4–8", "8+" into [min,max].
+function parseYearsHint(hint: string): [number, number] {
+  const s = hint.replace(/\s/g, "");
+  const plus = s.match(/^(\d+)\+$/);
+  if (plus) return [Number(plus[1]), 99];
+  const range = s.match(/^(\d+)[–-](\d+)$/);
+  if (range) return [Number(range[1]), Number(range[2])];
+  const single = s.match(/^(\d+)$/);
+  if (single) return [Number(single[1]), Number(single[1])];
+  return [0, 99];
+}
+
+function yearsHintNote(level: string | undefined, years: number): string | null {
+  if (!level) return null;
+  const rung = levelLadder.find((r) => r.level === level);
+  if (!rung) return null;
+  const [lo, hi] = parseYearsHint(rung.yearsHint);
+  // Soft window: allow ±2 outside the hint before nudging.
+  if (years + 2 < lo || years - 2 > hi) {
+    return `${level} roles typically fall around ${rung.yearsHint} years — double-check this is right.`;
+  }
+  return null;
+}
+
 export function ExperienceStep({
   answers,
   onChange,
