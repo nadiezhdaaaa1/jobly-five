@@ -20,7 +20,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
         <div className="flex items-center gap-5">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-3">
           <span
             className="leading-none text-[color:var(--color-green)]"
             style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em" }}
@@ -28,7 +28,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
             jobly
           </span>
           {pro ? (
-            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2.5 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">
               {plan === "paused" ? "Paused" : "Pro"}
             </span>
           ) : null}
