@@ -100,7 +100,7 @@ function ParametersCard() {
     value: summaryValue(k, quiz) || "-",
   }));
   return (
-    <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4">
+    <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain">
       <div className="flex items-start justify-between">
         <div
           className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[6px] text-[20px] font-semibold text-white"
