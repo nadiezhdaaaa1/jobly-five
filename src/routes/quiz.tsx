@@ -1873,7 +1873,7 @@ export function ExperienceStep({
                 additionalLanguages: extras.filter((e) => e.lang !== lang),
               });
             }}
-            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select primary language"
           >
             {POPULAR_LANGUAGES.map((lang) => (
@@ -1891,7 +1891,7 @@ export function ExperienceStep({
           <select
             value={pendingLang}
             onChange={(ev) => setPendingLang(ev.target.value)}
-            className="select-native h-10 w-full flex-1 rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full flex-1 rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select an additional language"
           >
             <option value="">Language</option>
@@ -1902,7 +1902,7 @@ export function ExperienceStep({
           <select
             value={pendingLevel}
             onChange={(ev) => setPendingLevel(ev.target.value as ProficiencyLevel)}
-            className="select-native h-10 w-full sm:w-[140px] rounded-[4px] border border-[color:var(--color-border)] bg-white px-3 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full sm:w-[140px] rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Proficiency level"
           >
             {PROFICIENCY_LEVELS.map((lvl) => (
