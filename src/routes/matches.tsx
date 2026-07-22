@@ -4,6 +4,7 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { getAllJobs, type Job } from "@/lib/jobs-data";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -15,57 +16,13 @@ export const Route = createFileRoute("/matches")({
   component: MatchesPage,
 });
 
-type Job = {
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  score: number;
-  why: string;
-};
+const MOCK_JOBS: Job[] = getAllJobs().slice(0, 5);
 
-const MOCK_JOBS: Job[] = [
-  {
-    title: "Senior Frontend Engineer",
-    company: "Linear",
-    location: "Remote · EU",
-    salary: "$160k–$190k",
-    score: 96,
-    why: "React + TypeScript match your stack, and salary sits at the top of your range.",
-  },
-  {
-    title: "Staff Product Engineer",
-    company: "Vercel",
-    location: "Remote · Global",
-    salary: "$180k–$220k",
-    score: 92,
-    why: "Next.js team building at your level; remote-first with async culture.",
-  },
-  {
-    title: "Full-Stack Engineer",
-    company: "Supabase",
-    location: "Remote · EMEA",
-    salary: "$140k–$180k",
-    score: 89,
-    why: "Postgres + TypeScript stack, open-source culture, senior scope.",
-  },
-  {
-    title: "Senior Software Engineer, Platform",
-    company: "Stripe",
-    location: "Berlin · Hybrid",
-    salary: "$150k–$185k",
-    score: 84,
-    why: "Strong TypeScript infra work, but hybrid — worth a look if you'd relocate.",
-  },
-  {
-    title: "Product Engineer",
-    company: "Raycast",
-    location: "Remote · EU",
-    salary: "$130k–$170k",
-    score: 81,
-    why: "Small team, high ownership, React/TS across the product.",
-  },
-];
+function ago(days: number) {
+  if (days <= 0) return "Posted today";
+  if (days === 1) return "Posted 1 day ago";
+  return `Posted ${days} days ago`;
+}
 
 function MatchesPage() {
   const navigate = useNavigate();
@@ -131,7 +88,7 @@ function MatchesPage() {
 
         <ol className="mt-6 flex flex-col gap-3">
           {MOCK_JOBS.map((j) => (
-            <JobCard key={j.title} job={j} />
+            <JobCard key={j.id} job={j} />
           ))}
         </ol>
 
@@ -221,24 +178,14 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
+    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-surface-2)" strokeWidth={stroke} fill="none" />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="var(--color-accent)"
-          strokeWidth={stroke}
-          fill="none"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-        />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center text-[13px] font-semibold text-[color:var(--color-foreground)]">
-        {score}
-      </div>
+      <span className="absolute text-[14px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
+        {score}%
+      </span>
     </div>
   );
 }
@@ -247,9 +194,13 @@ function JobCard({ job }: { job: Job }) {
   return (
     <li className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
       <div className="flex w-full items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
-          {job.company.charAt(0)}
-        </div>
+        {job.logo ? (
+          <img src={job.logo} alt={`${job.company} logo`} className="h-10 w-10 shrink-0 rounded-[4px] object-cover" />
+        ) : (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
+            {job.company.charAt(0)}
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">
             {job.title}
@@ -262,6 +213,20 @@ function JobCard({ job }: { job: Job }) {
           </p>
         </div>
         <ScoreRing score={job.score} />
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {job.source === "direct" ? (
+          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">
+            Direct employer
+          </span>
+        ) : (
+          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-secondary)]">
+            Aggregated
+          </span>
+        )}
+        <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]">
+          {ago(job.postedDays)}
+        </span>
       </div>
     </li>
   );
