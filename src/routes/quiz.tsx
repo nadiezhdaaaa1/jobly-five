@@ -267,9 +267,33 @@ function QuizPage() {
   const activeStep = editing ?? current;
 
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
-    setAnswers((a) => ({ ...a, ...patch }));
+    setAnswers((a) => {
+      const merged = { ...a, ...patch };
+      // Mark optional skill sections as visited when the user continues past them.
+      if (
+        (nextFrom === "stack" || nextFrom === "hard" || nextFrom === "tools" || nextFrom === "soft") &&
+        sectionFlag[nextFrom] === "optional"
+      ) {
+        const set = new Set(merged.visitedOptional ?? []);
+        set.add(nextFrom);
+        merged.visitedOptional = Array.from(set);
+      }
+      return merged;
+    });
     const idx = STEP_ORDER.indexOf(nextFrom);
-    const next = STEP_ORDER[Math.min(idx + 1, STEP_ORDER.length - 1)];
+    // Skip any hidden ('na' / stackNote-suppressed) skill sections.
+    let nextIdx = Math.min(idx + 1, STEP_ORDER.length - 1);
+    while (
+      nextIdx < STEP_ORDER.length - 1 &&
+      (STEP_ORDER[nextIdx] === "stack" ||
+        STEP_ORDER[nextIdx] === "hard" ||
+        STEP_ORDER[nextIdx] === "tools" ||
+        STEP_ORDER[nextIdx] === "soft") &&
+      isSkillStepHidden(STEP_ORDER[nextIdx] as SkillSectionKey)
+    ) {
+      nextIdx += 1;
+    }
+    const next = STEP_ORDER[nextIdx];
     if (editing === nextFrom) {
       setEditing(null);
       setCurrent(next);
@@ -285,22 +309,36 @@ function QuizPage() {
         roles: (a.roles ?? []).filter((r) => fieldRoles?.includes(r)),
       }));
     }
+    if (key === "stack" && (stackInvalid || stackEmptied)) {
+      setAnswers((a) => ({
+        ...a,
+        stackSkills: (a.stackSkills ?? []).filter(
+          (s) => stackPoolSet.has(s) || (a.stackCustom ?? []).includes(s)
+        ),
+      }));
+    }
     if (key === "hard" && (hardInvalid || hardEmptied)) {
       setAnswers((a) => ({
         ...a,
-        hardSkills: (a.hardSkills ?? []).filter((s) => hardPoolSet.has(s)),
+        hardSkills: (a.hardSkills ?? []).filter(
+          (s) => hardPoolSet.has(s) || (a.hardCustom ?? []).includes(s)
+        ),
       }));
     }
     if (key === "tools" && (toolsInvalid || toolsEmptied)) {
       setAnswers((a) => ({
         ...a,
-        tools: (a.tools ?? []).filter((s) => toolsPoolSet.has(s)),
+        tools: (a.tools ?? []).filter(
+          (s) => toolsPoolSet.has(s) || (a.toolsCustom ?? []).includes(s)
+        ),
       }));
     }
     if (key === "soft" && (softInvalid || softEmptied)) {
       setAnswers((a) => ({
         ...a,
-        softSkills: (a.softSkills ?? []).filter((s) => softPoolSet.has(s)),
+        softSkills: (a.softSkills ?? []).filter(
+          (s) => softPoolSet.has(s) || (a.softCustom ?? []).includes(s)
+        ),
       }));
     }
     setEditing(key);
