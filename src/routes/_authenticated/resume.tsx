@@ -123,6 +123,7 @@ function ResumeScreen() {
       addResumeFile({ name: baseName(file.name), ext, size: file.size });
       setUploads((u) => u.filter((t) => t.id !== task.id));
       timers.forEach((t) => window.clearTimeout(t));
+      setUploadOpen(false);
     }, 5 * 220 + 200);
   };
 
