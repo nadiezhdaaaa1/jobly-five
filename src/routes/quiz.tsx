@@ -831,15 +831,36 @@ export function FieldStep({
   submitLabel?: string;
   onCancel?: () => void;
 }) {
-  const groups = getGroups();
+  const FIELD_ORDER = [
+    "Engineering",
+    "Data & AI / ML",
+    "Product",
+    "Design",
+    "Infrastructure, DevOps & Cloud",
+    "QA & Testing",
+    "Security",
+    "Engineering Leadership & Architecture",
+    "Program, Project & Technical-Adjacent",
+    "C-level / Executive",
+    "Sales",
+    "Marketing",
+    "Support & Customer Success",
+    "HR & Recruitment / People",
+    "Emerging / Specialized",
+  ];
+  const available = getGroups();
+  const groups = [
+    ...FIELD_ORDER.filter((g) => available.includes(g)),
+    ...available.filter((g) => !FIELD_ORDER.includes(g)),
+  ];
   return (
     <div>
       <StepHeading>What's your field?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         This narrows the roles and skills we'll ask about next.
       </p>
-      <div className="mt-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="mt-6">
+        <div className="flex flex-wrap gap-3">
           {groups.map((f) => {
             const selected = value === f;
             return (
@@ -850,33 +871,21 @@ export function FieldStep({
                 aria-checked={selected}
                 onClick={() => onChange(f)}
                 className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "button-small inline-flex h-11 items-center rounded-[4px] border px-4 text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[#00F1A9] bg-[#00F1A9]"
+                    ? "border-[#0E735A] bg-[color:var(--color-mint)]"
                     : "border-[color:var(--color-border)] bg-white hover:border-[color:var(--color-border-strong)]"
                 )}
-                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
               >
-                <span
-                  className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
-                    selected
-                      ? "border-white bg-white"
-                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
-                  )}
-                  style={selected ? { borderWidth: 1 } : undefined}
-                >
-                  {selected && (
-                    <span className="h-2 w-2 rounded-full bg-[#0E735A]" />
-                  )}
-                </span>
-                <span>{f}</span>
+                {f}
               </button>
             );
           })}
         </div>
       </div>
-      <ContinueRow disabled={!value} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
+      <div className="mt-2">
+        <ContinueRow disabled={!value} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
+      </div>
     </div>
   );
 }
