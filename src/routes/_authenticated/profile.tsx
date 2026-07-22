@@ -323,48 +323,7 @@ function ProfileScreen() {
 
           {/* Right rail */}
           <aside className="flex flex-col gap-4">
-            {/* Account */}
-            <section id="card-account" className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-              <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Account</h2>
-              <div className="mt-3 divide-y">
-                <Row label="Email" value={email} />
-                <div className="flex items-center justify-between py-3">
-                  <div>
-                    <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">Plan</div>
-                    <div className="mt-1 flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
-                      <span className="text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>renews Aug 20, 2026</span>
-                    </div>
-                  </div>
-                </div>
-                {[
-                  "Subscription & billing",
-                  "Notifications & digest frequency",
-                  "Security & sign-in",
-                ].map((label) => (
-                  <button
-                    key={label}
-                    type="button"
-                    className="flex w-full items-center justify-between py-3 text-left text-[14px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-                  >
-                    <span>{label}</span>
-                    <ChevronRight size={16} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
-                  </button>
-                ))}
-                <div className="pt-3">
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      navigate({ to: "/login" });
-                    }}
-                    className="text-[13px] text-[color:var(--color-text-secondary)] hover:underline"
-                  >
-                    Log out
-                  </button>
-                </div>
-              </div>
-            </section>
+            {/* Account moved to Settings tab */}
             <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
               <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Profile strength</h3>
               <div className="mt-3 flex items-center gap-3">
