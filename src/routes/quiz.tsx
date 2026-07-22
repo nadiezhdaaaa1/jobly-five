@@ -1657,9 +1657,9 @@ export function ExperienceStep({
     <div>
       <StepHeading>What's your experience?</StepHeading>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        {LEVELS.map((l) => {
-          const selected = level === l;
+      <div className="mt-5 grid grid-cols-3 gap-3">
+        {BASE_LEVELS.map((l) => {
+          const selected = baseSelected === l;
           return (
             <button
               key={l}
@@ -1681,16 +1681,125 @@ export function ExperienceStep({
                 )}
                 {l}
               </span>
-              <img
-                src={LEVEL_IMAGES[l]}
-                alt=""
-                aria-hidden="true"
-                className="absolute right-0 top-0 h-full w-auto object-contain object-right"
-              />
+              {LEVEL_IMAGES[l] && (
+                <img
+                  src={LEVEL_IMAGES[l]}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute right-0 top-0 h-full w-auto object-contain object-right"
+                />
+              )}
             </button>
           );
         })}
       </div>
+
+      {showTrackFork && (
+        <div className="mt-4">
+          <div className="text-sm font-light text-[#090B0C]">Track</div>
+          <div className="mt-2 inline-flex rounded-[4px] border border-[#E3E7E8] bg-white p-1">
+            {(["IC", "Mgmt"] as const).map((t) => {
+              const label = t === "IC" ? "Individual contributor" : "Management";
+              const active = track === t;
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setTrack(t)}
+                  className={cn(
+                    "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                    active
+                      ? "bg-[#00F1A9] text-[#090B0C]"
+                      : "text-[#67787C] hover:text-[#090B0C]",
+                  )}
+                  aria-pressed={active}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            {hasExec && (
+              <button
+                type="button"
+                onClick={() => setTrack("Exec")}
+                className={cn(
+                  "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                  track === "Exec"
+                    ? "bg-[#00F1A9] text-[#090B0C]"
+                    : "text-[#67787C] hover:text-[#090B0C]",
+                )}
+                aria-pressed={track === "Exec"}
+              >
+                Executive
+              </button>
+            )}
+          </div>
+
+          {track && track !== "Exec" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {(track === "IC" ? IC_LEVELS : MGMT_LEVELS).map((l) => {
+                const selected = level === l;
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLevel(l)}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      selected
+                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
+                    )}
+                    aria-pressed={selected}
+                  >
+                    {selected && (
+                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      </span>
+                    )}
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {track === "Exec" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {EXEC_LEVELS.map((l) => {
+                const selected = level === l;
+                return (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLevel(l)}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      selected
+                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
+                    )}
+                    aria-pressed={selected}
+                  >
+                    {selected && (
+                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      </span>
+                    )}
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {composedTitle(answers.field, level) && (
+        <div className="mt-3 text-xs text-[#67787C]">
+          Reads as <span className="text-[#090B0C]">{composedTitle(answers.field, level)}</span>
+        </div>
+      )}
 
       <div className="mt-6">
         <div className="flex items-baseline justify-between">
