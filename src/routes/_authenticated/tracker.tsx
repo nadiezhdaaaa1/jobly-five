@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
+import proCube from "@/assets/pro-cube.png.asset.json";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
@@ -547,7 +548,13 @@ function TrackerScreen() {
         <AppHeader active="tracker" />
         <main className="mx-auto max-w-[720px] px-6 pb-24 pt-12">
           <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-8 text-center">
-            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+            <img
+              src={proCube.url}
+              alt=""
+              aria-hidden
+              className="mx-auto h-32 w-32 object-contain"
+            />
+            <span className="mt-4 inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-3 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">Pro</span>
             <h1 className="mt-3 text-[24px]" style={{ fontFamily: "var(--font-display)" }}>
               Track every application in one place
             </h1>
