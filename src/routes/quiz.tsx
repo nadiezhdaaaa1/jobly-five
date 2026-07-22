@@ -1615,6 +1615,11 @@ export function ExperienceStep({
 
   const setLevel = (l: string) => {
     const patch: Partial<QuizAnswers> = { level: l };
+    // Keep track in sync with the chosen level.
+    if ((IC_LEVELS as readonly string[]).includes(l)) patch.track = "IC";
+    else if ((EXEC_LEVELS as readonly string[]).includes(l)) patch.track = "Exec";
+    else if ((MGMT_LEVELS as readonly string[]).includes(l)) patch.track = "Mgmt";
+    else patch.track = undefined;
     // Auto-set years to sensible default (user may override afterwards).
     if (answers.years == null || LEVEL_DEFAULT_YEARS[answers.level ?? ""] === answers.years) {
       patch.years = LEVEL_DEFAULT_YEARS[l];
@@ -1623,6 +1628,11 @@ export function ExperienceStep({
       patch.years = LEVEL_DEFAULT_YEARS[l];
     }
     onChange(patch);
+  };
+
+  const setTrack = (t: "IC" | "Mgmt" | "Exec") => {
+    // Switching tracks clears the fork-level so the user picks one from the new list.
+    onChange({ track: t, level: "Senior", years: LEVEL_DEFAULT_YEARS.Senior });
   };
 
   const canContinue = !!level && !!primary;
