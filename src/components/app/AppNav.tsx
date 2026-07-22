@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { IconListDetails, IconTarget, IconFileDescription, IconUserSquare } from "@tabler/icons-react";
+import { IconListDetails, IconTarget, IconFileDescription, IconUserSquare, IconSettings } from "@tabler/icons-react";
+import { usePlan, isPro } from "@/lib/plan-store";
 
-export type AppTab = "digest" | "tracker" | "resume" | "profile";
+export type AppTab = "digest" | "tracker" | "resume" | "profile" | "settings";
 
 const TABS: Array<{ key: AppTab; label: string; icon: typeof IconListDetails; to: string }> = [
   { key: "digest", label: "Digest", icon: IconListDetails, to: "/dashboard" },
   { key: "tracker", label: "Tracker", icon: IconTarget, to: "/tracker" },
   { key: "resume", label: "Resume", icon: IconFileDescription, to: "/resume" },
   { key: "profile", label: "Profile", icon: IconUserSquare, to: "/profile" },
+  { key: "settings", label: "Settings", icon: IconSettings, to: "/settings" },
 ];
 
 export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; hasNewDigest?: boolean }) {
+  const plan = usePlan();
+  const pro = isPro(plan);
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
@@ -21,10 +25,20 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
           >
             jobly
           </span>
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
-            Pro
-          </span>
+          {pro ? (
+            <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+              {plan === "paused" ? "Paused" : "Pro"}
+            </span>
+          ) : null}
         </Link>
+        {!pro ? (
+          <Link
+            to="/settings"
+            className="hidden md:inline-flex h-8 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          >
+            Go Pro
+          </Link>
+        ) : null}
         <nav className="hidden md:flex items-end gap-1">
           {TABS.map((t) => {
             const Icon = t.icon;
@@ -60,7 +74,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
 export function MobileTabBar({ active, hasNewDigest = true }: { active: AppTab; hasNewDigest?: boolean }) {
   return (
     <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-4">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-5">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = t.key === active;
@@ -82,7 +96,7 @@ export function MobileTabBar({ active, hasNewDigest = true }: { active: AppTab; 
                   />
                 ) : null}
               </span>
-              <span className="text-[11px] leading-none">{t.label}</span>
+              <span className="text-[10px] leading-none">{t.label}</span>
             </Link>
           );
         })}
