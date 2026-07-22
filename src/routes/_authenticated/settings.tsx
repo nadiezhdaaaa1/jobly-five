@@ -352,7 +352,7 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
       aria-label={label}
       onClick={() => onChange(!on)}
       className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-[4px] transition-colors ${
-        on ? "bg-[color:var(--color-accent)]" : "bg-[color:var(--color-surface-2)]"
+        on ? "bg-[color:var(--color-green)]" : "bg-[color:var(--color-surface-2)]"
       }`}
     >
       <span
