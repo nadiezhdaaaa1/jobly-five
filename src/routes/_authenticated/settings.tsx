@@ -95,7 +95,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             {summary}
           </p>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-col items-stretch gap-2">
           {plan === "free" ? (
             <button
               type="button"
@@ -105,13 +105,27 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               Upgrade to Pro — $9.99/mo
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={() => setCancelStep(1)}
-              className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Cancel subscription
-            </button>
+            <>
+              {plan === "paused" ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlan("pro");
+                    onFlash("Pro resumed.");
+                  }}
+                  className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                >
+                  Unpause
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setCancelStep(plan === "paused" ? 2 : 1)}
+                className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Cancel subscription
+              </button>
+            </>
           )}
         </div>
       </div>
