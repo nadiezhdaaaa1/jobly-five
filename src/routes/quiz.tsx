@@ -670,7 +670,7 @@ export function StepShell({
         <button
           type="button"
           onClick={onEdit}
-          className="group flex w-full items-center justify-between gap-3 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
+          className="group flex w-full items-center justify-between gap-3 rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
           aria-label={`Edit ${SUMMARY_LABEL[stepKey]}`}
         >
           <div className="flex min-w-0 items-center gap-3">
@@ -706,7 +706,7 @@ export function StepShell({
 
   return (
     <li ref={ref} className="jobly-step-reveal">
-      <div className="rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-6">
+      <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-6">
         {children}
       </div>
       <style>{`
