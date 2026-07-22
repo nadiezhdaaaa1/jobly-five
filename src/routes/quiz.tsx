@@ -29,6 +29,7 @@ import {
   searchRoles,
   getChip,
   softVocab,
+  axes as TAX_AXES,
   type Chip,
   type ChipFlag,
   type ChipType,
@@ -97,6 +98,7 @@ export type StepKey =
   | "hard"
   | "tools"
   | "soft"
+  | "axes"
   | "level"
   | "loc"
   | "email";
@@ -107,6 +109,7 @@ export const STEP_ORDER: StepKey[] = [
   "hard",
   "tools",
   "soft",
+  "axes",
   "level",
   "loc",
   "email",
