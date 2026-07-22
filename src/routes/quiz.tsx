@@ -381,10 +381,19 @@ function QuizPage() {
 
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
+            // Hide skill sections whose union flag is 'na', and hide the stack
+            // section entirely for roles that carry a `stackNote` (no pool).
+            if (
+              (key === "stack" || key === "hard" || key === "tools" || key === "soft") &&
+              isSkillStepHidden(key as SkillSectionKey)
+            ) {
+              return null;
+            }
             const isVisible =
               completed[key] ||
               key === activeStep ||
               (key === "role" && (roleInvalid || roleEmptied)) ||
+              (key === "stack" && (stackInvalid || stackEmptied)) ||
               (key === "hard" && (hardInvalid || hardEmptied)) ||
               (key === "tools" && (toolsInvalid || toolsEmptied)) ||
               (key === "soft" && (softInvalid || softEmptied)) ||
@@ -393,6 +402,7 @@ function QuizPage() {
             const isExpanded = key === activeStep;
             const invalid =
               (key === "role" && (roleInvalid || roleEmptied) && !isExpanded) ||
+              (key === "stack" && (stackInvalid || stackEmptied) && !isExpanded) ||
               (key === "hard" && (hardInvalid || hardEmptied) && !isExpanded) ||
               (key === "tools" && (toolsInvalid || toolsEmptied) && !isExpanded) ||
               (key === "soft" && (softInvalid || softEmptied) && !isExpanded) ||
@@ -431,26 +441,40 @@ function QuizPage() {
                     value={answers.roles ?? []}
                     onChange={(v) =>
                       setAnswers((a) => {
-                        const pool = skillsForRoles(v, a.field);
-                        const hardSet = new Set(pool.hard);
-                        const toolSet = new Set(pool.tools);
-                        const softSet = new Set(pool.soft);
+                        const defs = taxRoleDefs(v);
+                        const stackSet = new Set(taxPool(defs, "stack"));
+                        const hardSet = new Set(taxPool(defs, "hard"));
+                        const toolSet = new Set(taxPool(defs, "tools"));
+                        const softSet = new Set(softVocab);
+                        const prunedStack =
+                          a.stackSkills !== undefined
+                            ? a.stackSkills.filter(
+                                (s) => stackSet.has(s) || (a.stackCustom ?? []).includes(s)
+                              )
+                            : a.stackSkills;
                         const prunedHard =
                           a.hardSkills !== undefined
-                            ? a.hardSkills.filter((s) => hardSet.has(s))
+                            ? a.hardSkills.filter(
+                                (s) => hardSet.has(s) || (a.hardCustom ?? []).includes(s)
+                              )
                             : a.hardSkills;
                         const prunedTools =
                           a.tools !== undefined
-                            ? a.tools.filter((s) => toolSet.has(s))
+                            ? a.tools.filter(
+                                (s) => toolSet.has(s) || (a.toolsCustom ?? []).includes(s)
+                              )
                             : a.tools;
                         const prunedSoft =
                           a.softSkills !== undefined
-                            ? a.softSkills.filter((s) => softSet.has(s))
+                            ? a.softSkills.filter(
+                                (s) => softSet.has(s) || (a.softCustom ?? []).includes(s)
+                              )
                             : a.softSkills;
                         return {
                           ...a,
                           roles: v,
                           role: v[0],
+                          stackSkills: prunedStack,
                           hardSkills: prunedHard,
                           tools: prunedTools,
                           softSkills: prunedSoft,
@@ -460,52 +484,73 @@ function QuizPage() {
                     onContinue={() => advance("role", {})}
                   />
                 )}
+                {key === "stack" && (
+                  <CategorizedSkillStep
+                    title="What's your stack?"
+                    description="Languages, frameworks, databases and cloud platforms you work with."
+                    chipType="Stack"
+                    options={stackPool}
+                    withCategories
+                    value={answers.stackSkills ?? []}
+                    customs={answers.stackCustom ?? []}
+                    onChange={(v) => setAnswers((a) => ({ ...a, stackSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, stackCustom: c }))}
+                    required={sectionFlag.stack === "required"}
+                    onContinue={() =>
+                      advance("stack", { stackSkills: answers.stackSkills ?? [] })
+                    }
+                  />
+                )}
                 {key === "hard" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="What are your hard skills?"
-                    description="Role-specific technical skills you actually work with."
-                    label="Hard skills"
-                    hint="At least one required"
-                    searchPlaceholder="Search hard skills"
-                    options={skillsPool.hard}
+                    description="Role-specific technical skills and methods you actually work with."
+                    chipType="Hard / Method"
+                    options={hardPool}
+                    withCategories={false}
                     value={answers.hardSkills ?? []}
+                    customs={answers.hardCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, hardSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, hardCustom: c }))}
+                    required={sectionFlag.hard === "required"}
                     onContinue={() =>
                       advance("hard", { hardSkills: answers.hardSkills ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "tools" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="Which tools do you use?"
                     description="Software and platforms you work with day to day."
-                    label="Tools"
-                    hint="At least one required"
-                    searchPlaceholder="Search tools"
-                    options={skillsPool.tools}
+                    chipType="Tools"
+                    options={toolsPool}
+                    withCategories
                     value={answers.tools ?? []}
+                    customs={answers.toolsCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, tools: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, toolsCustom: c }))}
+                    required={sectionFlag.tools === "required"}
                     onContinue={() =>
                       advance("tools", { tools: answers.tools ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "soft" && (
-                  <SingleSkillStep
+                  <CategorizedSkillStep
                     title="What are your soft skills?"
                     description="How you work with people and approach problems."
-                    label="Soft skills"
-                    hint="At least one required"
-                    searchPlaceholder="Search soft skills"
-                    options={skillsPool.soft}
+                    chipType="Soft"
+                    options={softPool}
+                    withCategories={false}
+                    suggested={softSuggested}
                     value={answers.softSkills ?? []}
+                    customs={answers.softCustom ?? []}
                     onChange={(v) => setAnswers((a) => ({ ...a, softSkills: v }))}
+                    onCustomsChange={(c) => setAnswers((a) => ({ ...a, softCustom: c }))}
+                    required={sectionFlag.soft === "required"}
                     onContinue={() =>
                       advance("soft", { softSkills: answers.softSkills ?? [] })
                     }
-                    required
                   />
                 )}
                 {key === "level" && (
