@@ -90,6 +90,7 @@ function ParametersCard() {
   const quiz = useMemo(() => loadQuiz(), []);
   const { user } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
     let active = true;
@@ -119,22 +120,42 @@ function ParametersCard() {
   return (
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto lg:overscroll-contain">
       <div className="flex items-start justify-between">
-        <div
-          className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-[6px] text-[20px] font-semibold text-white"
-          style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
-          aria-hidden
-        >
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            initial
-          )}
+        <div className="flex min-w-0 items-center gap-3">
+          <div
+            className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[6px] text-[20px] font-semibold text-white"
+            style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
+            aria-hidden
+          >
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              initial
+            )}
+          </div>
+          <span className="text-[14px] font-semibold text-[color:var(--color-foreground)] lg:hidden">
+            Your parameters
+          </span>
         </div>
-        <Link to="/profile" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-          <PencilIcon size={16} strokeWidth={1.6} />
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link to="/profile" aria-label="Edit profile" className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+            <PencilIcon size={16} strokeWidth={1.6} />
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label={open ? "Collapse parameters" : "Expand parameters"}
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] lg:hidden"
+          >
+            <ChevronDown
+              size={16}
+              strokeWidth={1.6}
+              className={`transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
       </div>
-      <div className="mt-4 divide-y">
+      <div className={`mt-4 divide-y ${open ? "" : "hidden"} lg:block`}>
         {rows.map((r) => (
           <div key={r.label} className="py-3 first:pt-0">
             <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">{r.label}</div>
