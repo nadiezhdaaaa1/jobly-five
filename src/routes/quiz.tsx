@@ -1586,6 +1586,27 @@ export function ExperienceStep({
   const [pendingLang, setPendingLang] = useState<string>("");
   const [pendingLevel, setPendingLevel] = useState<ProficiencyLevel>("B2");
 
+  // Track fork lives here so selecting a base rung can reveal or hide it.
+  const selectedRoleNames = answers.roles && answers.roles.length ? answers.roles : answers.role ? [answers.role] : [];
+  const roleDefs = taxRoleDefs(selectedRoleNames);
+  const hasMgmt = rolesAllowMgmt(roleDefs);
+  const hasExec = rolesAllowExec(roleDefs);
+
+  const isBase = level ? (BASE_LEVELS as readonly string[]).includes(level) : false;
+  const isIC = level ? (IC_LEVELS as readonly string[]).includes(level) : false;
+  const isMgmt = level ? (MGMT_LEVELS as readonly string[]).includes(level) : false;
+  const isExec = level ? (EXEC_LEVELS as readonly string[]).includes(level) : false;
+  const baseSelected = isBase ? level : isIC || isMgmt || isExec ? "Senior" : undefined;
+  const showTrackFork = baseSelected === "Senior" && (hasMgmt || hasExec);
+
+  const track: "IC" | "Mgmt" | "Exec" | undefined = isIC
+    ? "IC"
+    : isExec
+    ? "Exec"
+    : isMgmt
+    ? "Mgmt"
+    : answers.track;
+
   // Initialize primary language default on mount.
   useEffect(() => {
     if (!answers.primaryLanguage) onChange({ primaryLanguage: "English" });
