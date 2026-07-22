@@ -2045,7 +2045,7 @@ export function LocationStep({
         s.name.toLowerCase().includes(q) ||
         s.code.toLowerCase() === q
       ) {
-        const label = `Entire state of ${s.name}`;
+        const label = `State of ${s.name}`;
         if (!taken.has(label.toLowerCase())) out.push({ label, key: `state:${s.code}` });
       }
     }
