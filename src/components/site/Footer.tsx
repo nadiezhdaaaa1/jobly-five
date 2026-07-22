@@ -42,7 +42,7 @@ export function Footer() {
           <div>
             <Wordmark />
             <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
-              Email-first job discovery platform for tech candidates.
+              Email-first job discovery platform
             </p>
             <p className="mt-4 max-w-xs text-xs text-[color:var(--color-text-muted)]">
               NORELIX LIMITED · trading as Jobly
