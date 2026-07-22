@@ -1150,6 +1150,301 @@ function SkillsGroup({
   );
 }
 
+// ---------- 2b. Categorized skills (Stack / Hard / Tools / Soft) ----------
+
+export function CategorizedSkillStep({
+  title,
+  description,
+  chipType,
+  options,
+  value,
+  customs,
+  onChange,
+  onCustomsChange,
+  withCategories,
+  suggested,
+  required = true,
+  onContinue,
+  submitLabel,
+  onCancel,
+}: {
+  title: string;
+  description: string;
+  chipType: ChipType;
+  options: string[];
+  value: string[];
+  customs: string[];
+  onChange: (v: string[]) => void;
+  onCustomsChange: (c: string[]) => void;
+  withCategories: boolean;
+  suggested?: string[];
+  required?: boolean;
+  onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [pending, setPending] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const filtered = options.filter((s) => (q ? s.toLowerCase().includes(q) : true));
+
+  // Group by chip.category (from the shared chipLibrary — never guessed).
+  const groups: [string, string[]][] = useMemo(() => {
+    if (!withCategories) {
+      // Soft: sort suggested items first, then alphabetical.
+      if (suggested && suggested.length) {
+        const sug = new Set(suggested);
+        const sorted = filtered
+          .slice()
+          .sort((a, b) => {
+            const sa = sug.has(a) ? 0 : 1;
+            const sb = sug.has(b) ? 0 : 1;
+            if (sa !== sb) return sa - sb;
+            return a.localeCompare(b);
+          });
+        return [["", sorted]];
+      }
+      return [["", filtered.slice().sort((a, b) => a.localeCompare(b))]];
+    }
+    const map = new Map<string, string[]>();
+    for (const label of filtered) {
+      const chip: Chip | undefined = getChip(chipType, label);
+      const cat = chip?.category ?? "Other";
+      const arr = map.get(cat) ?? [];
+      arr.push(label);
+      map.set(cat, arr);
+    }
+    return Array.from(map.entries())
+      .map(([cat, list]) => [cat, list.slice().sort((a, b) => a.localeCompare(b))] as [string, string[]])
+      .sort((a, b) => a[0].localeCompare(b[0]));
+  }, [filtered, withCategories, suggested, chipType]);
+
+  const suggestedSet = useMemo(() => new Set(suggested ?? []), [suggested]);
+
+  const toggle = (s: string) => {
+    if (value.includes(s)) onChange(value.filter((x) => x !== s));
+    else onChange([...value, s]);
+  };
+
+  const selectAll = () => {
+    const merged = new Set(value);
+    for (const s of options) merged.add(s);
+    for (const c of customs) merged.add(c);
+    onChange(Array.from(merged));
+  };
+  const clearAll = () => {
+    onChange([]);
+    onCustomsChange([]);
+  };
+
+  const commitCustom = () => {
+    const label = pending.trim();
+    if (!label) return;
+    // No duplicates against pool or existing customs.
+    const lower = label.toLowerCase();
+    if (options.some((o) => o.toLowerCase() === lower)) {
+      // Just select the matching pool item.
+      const match = options.find((o) => o.toLowerCase() === lower)!;
+      if (!value.includes(match)) onChange([...value, match]);
+    } else if (!customs.some((c) => c.toLowerCase() === lower)) {
+      onCustomsChange([...customs, label]);
+      onChange([...value, label]);
+    }
+    setPending("");
+    setAdding(false);
+  };
+
+  const removeCustom = (label: string) => {
+    onCustomsChange(customs.filter((c) => c !== label));
+    onChange(value.filter((v) => v !== label));
+  };
+
+  const canContinue = required ? value.length > 0 : true;
+
+  const renderChip = (
+    s: string,
+    opts: { custom?: boolean } = {}
+  ) => {
+    const selected = value.includes(s);
+    const isSuggested = !opts.custom && suggestedSet.has(s);
+    return (
+      <button
+        key={s}
+        type="button"
+        onClick={() => (opts.custom ? toggle(s) : toggle(s))}
+        aria-pressed={selected}
+        className={cn(
+          "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          selected
+            ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+            : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+        )}
+        style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+      >
+        <span
+          className={cn(
+            "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+            selected
+              ? "border-[#0E735A] bg-[#0E735A]"
+              : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+          )}
+        >
+          {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+        </span>
+        <span>{s}</span>
+        {isSuggested && !selected && (
+          <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" aria-label="suggested" />
+        )}
+        {opts.custom && (
+          <span
+            role="button"
+            tabIndex={0}
+            aria-label={`Remove ${s}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              removeCustom(s);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.stopPropagation();
+                removeCustom(s);
+              }
+            }}
+            className="ml-1 grid h-4 w-4 place-items-center rounded-[2px] text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+          >
+            <X className="h-3 w-3" />
+          </span>
+        )}
+      </button>
+    );
+  };
+
+  return (
+    <div>
+      <StepHeading>{title}</StepHeading>
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{description}</p>
+
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span className="text-sm font-light text-[#090B0C]">
+          {required ? "At least one required" : "Optional"}
+          <span className="ml-2 text-xs text-[color:var(--color-text-muted)]">
+            {value.length} selected
+          </span>
+        </span>
+        <div className="flex items-center gap-3 text-xs">
+          <button
+            type="button"
+            onClick={selectAll}
+            className="text-[color:var(--color-text-secondary)] underline-offset-2 hover:text-[color:var(--color-foreground)] hover:underline"
+          >
+            Select all
+          </button>
+          <span className="text-[color:var(--color-text-muted)]">·</span>
+          <button
+            type="button"
+            onClick={clearAll}
+            className="text-[color:var(--color-text-secondary)] underline-offset-2 hover:text-[color:var(--color-foreground)] hover:underline"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+        <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={`Search ${chipType.toLowerCase()}`}
+          className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className="text-[color:var(--color-text-muted)]"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div className="mt-3 max-h-[280px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+        {filtered.length === 0 && !customs.length && (
+          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+        )}
+        <div className="flex flex-col gap-3">
+          {groups.map(([cat, list]) => (
+            <div key={cat || "flat"}>
+              {cat && (
+                <div className="mb-1.5 text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                  {cat}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {list.map((s) => renderChip(s))}
+              </div>
+            </div>
+          ))}
+
+          {customs.length > 0 && (
+            <div>
+              <div className="mb-1.5 text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                Custom
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {customs.map((s) => renderChip(s, { custom: true }))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {adding ? (
+                <span className="inline-flex items-center rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2 py-1">
+                  <input
+                    autoFocus
+                    value={pending}
+                    onChange={(e) => setPending(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        commitCustom();
+                      } else if (e.key === "Escape") {
+                        setPending("");
+                        setAdding(false);
+                      }
+                    }}
+                    onBlur={() => {
+                      if (pending.trim()) commitCustom();
+                      else setAdding(false);
+                    }}
+                    placeholder="Type and press Enter"
+                    className="h-6 w-40 bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
+                  />
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setAdding(true)}
+                  className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2.5 py-1 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                >
+                  + Add your own
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
+    </div>
+  );
+}
+
 // ---------- 3. Experience ----------
 
 import junImg from "@/assets/Jun.png.asset.json";
