@@ -23,6 +23,12 @@ import {
   PROFICIENCY_LEVELS,
   RELO_TRAVEL_FIELDS,
 } from "@/lib/quiz-data";
+import {
+  getGroups,
+  getRolesByGroup,
+  searchRoles,
+  type Role as TaxRole,
+} from "@/data/taxonomy";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -85,7 +91,9 @@ function QuizPage() {
   const softPoolSet = useMemo(() => new Set(skillsPool.soft), [skillsPool.soft]);
 
   // Role is invalid if any selected role isn't in the current field's role list.
-  const fieldRoles = answers.field ? FIELD_ROLES[answers.field as keyof typeof FIELD_ROLES] : undefined;
+  const fieldRoles = answers.field
+    ? getRolesByGroup(answers.field).map((r) => r.position)
+    : undefined;
   const roleInvalid =
     !!answers.field &&
     rolesList.length > 0 &&
@@ -252,7 +260,7 @@ function QuizPage() {
                     onChange={(field) =>
                       setAnswers((a) => {
                         // Reset roles / skills that no longer fit.
-                        const allowedRoles = FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [];
+                        const allowedRoles = getRolesByGroup(field).map((r) => r.position);
                         const prunedRoles = (a.roles ?? []).filter((r) => allowedRoles.includes(r));
                         return {
                           ...a,
