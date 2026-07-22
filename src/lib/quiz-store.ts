@@ -10,9 +10,14 @@ export type QuizAnswers = {
   role?: string; // legacy, kept for backward-compat
   roles?: string[];
   stack?: string[]; // legacy — replaced by hardSkills/softSkills/tools
+  stackSkills?: string[];
+  stackCustom?: string[];
   hardSkills?: string[];
+  hardCustom?: string[];
   softSkills?: string[];
+  softCustom?: string[];
   tools?: string[];
+  toolsCustom?: string[];
   level?: string;
   years?: number;
   languages?: string[]; // legacy
