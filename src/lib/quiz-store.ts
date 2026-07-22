@@ -19,6 +19,7 @@ export type QuizAnswers = {
   tools?: string[];
   toolsCustom?: string[];
   level?: string;
+  track?: "IC" | "Mgmt" | "Exec";
   years?: number;
   languages?: string[]; // legacy
   primaryLanguage?: string;
