@@ -183,7 +183,7 @@ function ProfileScreen() {
   }, [quiz.roles, resume]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[color:var(--color-background)] pb-24 md:pb-8">
+    <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="profile" />
       <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         {banner ? (
