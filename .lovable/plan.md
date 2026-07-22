@@ -1,11 +1,14 @@
-## Fix mobile overflow in Profile edit steps
+## Problem
 
-At 393px width, the Experience card's Level chooser renders three cards in a fixed `grid-cols-3` row. Each card only gets ~100px, so the labels get clipped ("Juni…", "Ser…") and the absolute-positioned cube images spill visually past the card. Nothing else on the Profile page overflows the viewport at mobile width — Playwright at 393px reports no elements past `window.innerWidth`, but the level row is visibly broken inside the card.
+In `InterviewReminderDialog`, the three time selects (hour / minute / AM-PM) crop their values ("02" → "0:", "PM" → "Pl"). Cause: the global `select { padding-right: 2.25rem !important }` rule I added stacks on top of the compact `flex-1 min-w-0` selects, leaving too little room for the 2-character value plus the custom chevron.
 
-### Change
+## Fix
 
-**`src/routes/quiz.tsx`** — `ExperienceStep`, line 1677
-- Replace `grid grid-cols-3 gap-3` with `grid grid-cols-1 gap-3 sm:grid-cols-3`.
-- Result: on mobile, Junior/Mid/Senior stack full-width so the label has room and the right-aligned image no longer collides with the text. From `sm:` up (≥640px), the original 3-across layout is preserved.
+1. In `src/styles.css`, soften the global `select` rule:
+   - Drop `!important` on `padding-right` so per-instance padding wins.
+   - Move the chevron slightly inward (`right 0.5rem center`) so compact selects still show text.
+2. In `src/components/app/InterviewReminderDialog.tsx`, on the three time selects:
+   - Replace `flex-1 min-w-0 pl-2 pr-8` with a fixed width sized for content (hour/minute ~72px, AM/PM ~76px) and `pr-7` so the value renders fully next to the chevron.
+   - Keep the existing border/radius/focus styles.
 
-No other visual or logic changes. This fix applies everywhere `ExperienceStep` is used (quiz + Profile edit).
+No other components use these classes for time-style compact selects, so the global relaxation is safe; wider selects (profile year pickers, quiz) already have room.
