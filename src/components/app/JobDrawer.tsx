@@ -350,7 +350,7 @@ function PipelinePanel({
               onClick={() => onStatus(t.key)}
               className={`h-8 rounded-[4px] text-[13px] font-semibold transition-colors ${
                 t.key === status
-                  ? "bg-[color:var(--color-foreground)] text-white"
+                  ? "bg-[color:var(--color-green)] text-white"
                   : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
               }`}
             >
