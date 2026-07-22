@@ -465,12 +465,14 @@ function FileList({
   primaryId,
   onMakePrimary,
   onRename,
+  onDownload,
   onDelete,
 }: {
   files: ResumeFile[];
   primaryId: string | null;
   onMakePrimary: (id: string) => void;
   onRename: (id: string, name: string) => void;
+  onDownload: (file: ResumeFile) => void;
   onDelete: (id: string) => void;
 }) {
   return (
@@ -483,6 +485,7 @@ function FileList({
             isPrimary={f.id === primaryId}
             onMakePrimary={() => onMakePrimary(f.id)}
             onRename={(name) => onRename(f.id, name)}
+            onDownload={() => onDownload(f)}
             onDelete={() => onDelete(f.id)}
           />
         ))}
@@ -496,12 +499,14 @@ function FileRow({
   isPrimary,
   onMakePrimary,
   onRename,
+  onDownload,
   onDelete,
 }: {
   file: ResumeFile;
   isPrimary: boolean;
   onMakePrimary: () => void;
   onRename: (name: string) => void;
+  onDownload: () => void;
   onDelete: () => void;
 }) {
   const [renaming, setRenaming] = useState(false);
