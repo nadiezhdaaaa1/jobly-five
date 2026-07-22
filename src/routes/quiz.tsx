@@ -582,6 +582,16 @@ function QuizPage() {
                     }
                   />
                 )}
+                {key === "axes" && (
+                  <AxesStep
+                    answers={answers}
+                    showScope={showScope}
+                    showSegment={showSegment}
+                    showMotion={showMotion}
+                    onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
+                    onContinue={() => advance("axes", {})}
+                  />
+                )}
                 {key === "level" && (
                   <ExperienceStep
                     answers={answers}
