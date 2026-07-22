@@ -743,7 +743,14 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
     case "role":
       {
         const rs = a.roles && a.roles.length ? a.roles : a.role ? [a.role] : [];
-        return rs.length ? rs.join(", ") : "-";
+        if (!rs.length) return "-";
+        const defs = taxRoleDefs(rs);
+        return rs
+          .map((name) => {
+            const g = defs.find((d) => d.position === name)?.group;
+            return g ? `${name} (${g})` : name;
+          })
+          .join(", ");
       }
     case "stack":
       return a.stackSkills && a.stackSkills.length ? a.stackSkills.join(", ") : "-";
@@ -765,6 +772,7 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
     }
     case "level": {
       const parts: string[] = [];
+      if (a.track) parts.push(a.track === "IC" ? "IC" : a.track === "Mgmt" ? "Management" : "Executive");
       if (a.level) {
         const title = composedTitle(a.field, a.level);
         parts.push(title || a.level);
