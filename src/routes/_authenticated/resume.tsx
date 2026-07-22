@@ -6,8 +6,8 @@ import {
   IconTrash as Trash,
   IconCheck as Check,
   IconX as X,
-  IconSparkles as Sparkles,
 } from "@tabler/icons-react";
+import comingSoonAsset from "@/assets/resume-coming-soon.png.asset.json";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import {
   addResumeFile,
@@ -205,28 +205,34 @@ function ResumeScreen() {
 
 function ComingSoonBanner() {
   return (
-    <aside className="flex items-start gap-4 rounded-[8px] bg-[color:var(--color-surface-2)] px-4 py-4">
-      <span
-        aria-hidden
-        className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[8px] bg-white/60 text-[color:var(--color-green)] sm:flex"
-        style={{ opacity: 0.55 }}
-      >
-        <Sparkles size={22} strokeWidth={1.6} />
-      </span>
-      <div className="min-w-0">
-        <span className="inline-flex items-center rounded-[4px] bg-white/70 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-secondary)]">
+    <aside
+      className="relative flex items-center gap-4 overflow-hidden rounded-[8px] border bg-[color:var(--color-mint)]"
+      style={{
+        borderColor: "var(--color-green)",
+        paddingInline: "20px",
+        paddingBlock: "16px",
+      }}
+    >
+      <div className="min-w-0 flex-1 pr-24 sm:pr-28">
+        <span
+          className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-medium text-white"
+          style={{ background: "var(--color-green)" }}
+        >
           Coming soon
         </span>
-        <h2 className="mt-2 text-[15px] font-semibold text-[color:var(--color-foreground)]">
+        <h2 className="mt-2 text-[14px] font-bold text-[color:var(--color-foreground)]">
           Tailor your resume to a job
         </h2>
-        <p
-          className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]"
-          style={{ fontWeight: 300 }}
-        >
+        <p className="mt-1 text-[12px] text-[color:var(--color-foreground)]">
           One click will adapt your primary resume to a specific opening from your digest.
         </p>
       </div>
+      <img
+        src={comingSoonAsset.url}
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute right-0 bottom-0 h-full w-auto object-contain object-right-bottom"
+      />
     </aside>
   );
 }
