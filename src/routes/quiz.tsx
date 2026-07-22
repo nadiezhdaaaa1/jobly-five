@@ -1839,6 +1839,9 @@ export function ExperienceStep({
             </span>
           ))}
         </div>
+        {yearsHintNote(level, years) && (
+          <div className="mt-2 text-xs text-[#67787C]">{yearsHintNote(level, years)}</div>
+        )}
       </div>
 
       <div className="mt-6">
