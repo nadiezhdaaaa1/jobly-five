@@ -794,10 +794,7 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
         a.salaryMin != null && a.salaryMax != null
           ? `${formatMoney(a.salaryMin)} – ${formatMoney(a.salaryMax)}`
           : "";
-      const extras: string[] = [];
-      if (a.openToRelocate) extras.push("open to relocation");
-      if (a.openToTravel) extras.push("open to travel");
-      return [money, where, ...extras].filter(Boolean).join(" · ");
+      return [money, where].filter(Boolean).join(" · ");
     }
     case "email":
       return a.email ?? "";
