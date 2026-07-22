@@ -154,6 +154,32 @@ function QuizPage() {
   // (we treat it as auto-complete since there's nothing to pick).
   const stackPoolSuppressed = !!stackNote;
 
+  // ---- Axes visibility (Scope / Segment / Motion) --------------------------
+  const scopeAppliesRoles = roleDefs.some(
+    (d) => d.sections?.scope && d.sections.scope.flag !== "na"
+  );
+  const scopeAppliesLevel =
+    !!answers.level && ["Director", "VP", "Exec"].includes(answers.level);
+  const showScope = scopeAppliesRoles || scopeAppliesLevel;
+  const showSegment = roleDefs.some((d) => d.group === "Sales");
+  const showMotion = roleDefs.some(
+    (d) => d.group === "Sales" || d.group === "Marketing"
+  );
+  const showAxes = showScope || showSegment || showMotion;
+  const axesComplete = (() => {
+    if (!showAxes) return true;
+    if (showScope) {
+      const s = answers.scope ?? {};
+      const fields = TAX_AXES.scope.fields ?? [];
+      for (const f of fields) {
+        if (!s[f.key as "orgSize" | "budget" | "stage"]) return false;
+      }
+    }
+    if (showSegment && !answers.segment) return false;
+    if (showMotion && !answers.motion) return false;
+    return true;
+  })();
+
   const stackPoolSet = useMemo(() => new Set(stackPool), [stackPool]);
   const hardPoolSet = useMemo(() => new Set(hardPool), [hardPool]);
   const toolsPoolSet = useMemo(() => new Set(toolsPool), [toolsPool]);
@@ -246,6 +272,7 @@ function QuizPage() {
     hard: sectionComplete("hard"),
     tools: sectionComplete("tools"),
     soft: sectionComplete("soft"),
+    axes: axesComplete,
     level: !!answers.level,
     loc:
       !!answers.workMode &&
@@ -256,6 +283,14 @@ function QuizPage() {
   const isSkillStepHidden = (k: SkillSectionKey): boolean => {
     if (sectionFlag[k] === "na") return true;
     if (k === "stack" && stackPoolSuppressed) return true;
+    return false;
+  };
+
+  const isStepHidden = (k: StepKey): boolean => {
+    if (k === "stack" || k === "hard" || k === "tools" || k === "soft") {
+      return isSkillStepHidden(k as SkillSectionKey);
+    }
+    if (k === "axes") return !showAxes;
     return false;
   };
 
@@ -288,11 +323,7 @@ function QuizPage() {
     let nextIdx = Math.min(idx + 1, STEP_ORDER.length - 1);
     while (
       nextIdx < STEP_ORDER.length - 1 &&
-      (STEP_ORDER[nextIdx] === "stack" ||
-        STEP_ORDER[nextIdx] === "hard" ||
-        STEP_ORDER[nextIdx] === "tools" ||
-        STEP_ORDER[nextIdx] === "soft") &&
-      isSkillStepHidden(STEP_ORDER[nextIdx] as SkillSectionKey)
+      isStepHidden(STEP_ORDER[nextIdx])
     ) {
       nextIdx += 1;
     }
@@ -384,14 +415,9 @@ function QuizPage() {
 
         <ol className="flex flex-col gap-4">
           {STEP_ORDER.map((key) => {
-            // Hide skill sections whose union flag is 'na', and hide the stack
-            // section entirely for roles that carry a `stackNote` (no pool).
-            if (
-              (key === "stack" || key === "hard" || key === "tools" || key === "soft") &&
-              isSkillStepHidden(key as SkillSectionKey)
-            ) {
-              return null;
-            }
+            // Hide skill sections whose union flag is 'na', stack for roles with
+            // a `stackNote`, and axes if none of scope/segment/motion apply.
+            if (isStepHidden(key)) return null;
             const isVisible =
               completed[key] ||
               key === activeStep ||
