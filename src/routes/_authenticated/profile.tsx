@@ -829,12 +829,12 @@ function JobEntry({
           />
         </div>
         <div className="flex items-center gap-2">
-          <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border px-2 text-[13px]" aria-label="From year">
+          <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="From year">
             <option value="">From</option>
             {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
           </select>
           <span className="text-[13px] text-[color:var(--color-text-muted)]">to</span>
-          <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border px-2 text-[13px]" aria-label="To year">
+          <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="To year">
             <option value="">To</option>
             <option value="Present">Present</option>
             {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
@@ -982,7 +982,7 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
       className="flex flex-col gap-2 py-4"
     >
       <div className="grid gap-2 sm:grid-cols-2">
-        <select autoFocus value={degreeType} onChange={(e) => setDegreeType(e.target.value)} className="h-10 rounded-[4px] border px-2 text-[13px]" aria-label="Degree">
+        <select autoFocus value={degreeType} onChange={(e) => setDegreeType(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="Degree">
           <option value="">Degree</option>
           {DEGREE_TYPES.map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
@@ -990,12 +990,12 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
       </div>
       <input aria-label="School" placeholder="School" value={school} onChange={(e) => setSchool(e.target.value)} className="h-10 rounded-[4px] border px-3 text-[13px]" />
       <div className="flex items-center gap-2">
-        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border px-2 text-[13px]" aria-label="From year">
+        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="From year">
           <option value="">From</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <span className="text-[13px] text-[color:var(--color-text-muted)]">to</span>
-        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border px-2 text-[13px]" aria-label="To year">
+        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="To year">
           <option value="">To</option>
           <option value="Present">Present</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
