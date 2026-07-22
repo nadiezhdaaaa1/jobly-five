@@ -23,6 +23,12 @@ import {
   PROFICIENCY_LEVELS,
   RELO_TRAVEL_FIELDS,
 } from "@/lib/quiz-data";
+import {
+  getGroups,
+  getRolesByGroup,
+  searchRoles,
+  type Role as TaxRole,
+} from "@/data/taxonomy";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({
@@ -85,7 +91,9 @@ function QuizPage() {
   const softPoolSet = useMemo(() => new Set(skillsPool.soft), [skillsPool.soft]);
 
   // Role is invalid if any selected role isn't in the current field's role list.
-  const fieldRoles = answers.field ? FIELD_ROLES[answers.field as keyof typeof FIELD_ROLES] : undefined;
+  const fieldRoles = answers.field
+    ? getRolesByGroup(answers.field).map((r) => r.position)
+    : undefined;
   const roleInvalid =
     !!answers.field &&
     rolesList.length > 0 &&
@@ -252,7 +260,7 @@ function QuizPage() {
                     onChange={(field) =>
                       setAnswers((a) => {
                         // Reset roles / skills that no longer fit.
-                        const allowedRoles = FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [];
+                        const allowedRoles = getRolesByGroup(field).map((r) => r.position);
                         const prunedRoles = (a.roles ?? []).filter((r) => allowedRoles.includes(r));
                         return {
                           ...a,
@@ -556,15 +564,16 @@ export function FieldStep({
   submitLabel?: string;
   onCancel?: () => void;
 }) {
+  const groups = getGroups();
   return (
     <div>
-      <StepHeading>What field are you in?</StepHeading>
+      <StepHeading>What's your field?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         This narrows the roles and skills we'll ask about next.
       </p>
       <div className="mt-4">
         <div className="flex flex-wrap gap-2">
-          {FIELDS.map((f) => {
+          {groups.map((f) => {
             const selected = value === f;
             return (
               <button
@@ -623,11 +632,39 @@ export function RoleStep({
   onCancel?: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const roles = field ? FIELD_ROLES[field as keyof typeof FIELD_ROLES] ?? [] : [];
-  const filtered = roles.filter((r) =>
-    r.toLowerCase().includes(query.trim().toLowerCase())
-  );
   const MAX = 3;
+  const q = query.trim();
+  // Default: roles in current field. Search: match across ALL roles.
+  const results: TaxRole[] = q
+    ? searchRoles(q)
+    : field
+    ? getRolesByGroup(field)
+    : [];
+  // Group results by group, sort groups alphabetically, roles A–Z within group.
+  const grouped = useMemo(() => {
+    const map = new Map<string, TaxRole[]>();
+    for (const r of results) {
+      const arr = map.get(r.group) ?? [];
+      arr.push(r);
+      map.set(r.group, arr);
+    }
+    const entries = Array.from(map.entries()).map(
+      ([g, list]) =>
+        [g, list.slice().sort((a, b) => a.position.localeCompare(b.position))] as const
+    );
+    entries.sort((a, b) => a[0].localeCompare(b[0]));
+    return entries;
+  }, [results]);
+
+  // Look up group for any selected role (search may pick roles outside the field).
+  const groupForRole = (position: string) => {
+    for (const [g, list] of grouped) {
+      if (list.some((r) => r.position === position)) return g;
+    }
+    const all = searchRoles(position);
+    return all.find((r) => r.position === position)?.group;
+  };
+
   const toggle = (r: string) => {
     if (value.includes(r)) {
       onChange(value.filter((x) => x !== r));
@@ -635,11 +672,12 @@ export function RoleStep({
       onChange([...value, r]);
     }
   };
+  const atMaxAll = value.length >= MAX;
   return (
     <div>
       <StepHeading>What's your role?</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Pick up to {MAX} roles that fit you best.
+        Pick up to {MAX} roles that fit you best. Search across all roles.
       </p>
 
       <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
@@ -647,7 +685,7 @@ export function RoleStep({
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search roles"
+          placeholder="Search all roles"
           className="h-11 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
         {query && (
@@ -664,65 +702,84 @@ export function RoleStep({
 
       <div className="mt-2 flex items-start justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          {value.map((r) => (
-            <span
-              key={r}
-              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
-            >
-              {r}
-              <button
-                type="button"
-                onClick={() => toggle(r)}
-                aria-label={`Remove ${r}`}
-                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+          {value.map((r) => {
+            const g = groupForRole(r);
+            return (
+              <span
+                key={r}
+                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
               >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))}
+                <span>{r}</span>
+                {g && (
+                  <span className="rounded-[2px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                    {g}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => toggle(r)}
+                  aria-label={`Remove ${r}`}
+                  className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            );
+          })}
         </div>
         <span className="shrink-0 pt-1 text-xs text-[#4B585B]">
           {value.length}/{MAX}
+          {atMaxAll && <span className="ml-1 text-[color:var(--color-text-muted)]">· max 3</span>}
         </span>
       </div>
 
-      <div className="mt-3 max-h-[182px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
-        <div className="flex flex-wrap gap-2">
-          {filtered.map((r) => {
-            const selected = value.includes(r);
-            const atMax = !selected && value.length >= MAX;
-            return (
-              <button
-                key={r}
-                type="button"
-                onClick={() => toggle(r)}
-                disabled={atMax}
-                aria-pressed={selected}
-                className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
-                  selected
-                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
-                    : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
-                )}
-                style={{ padding: "6px 10px 6px 8px", gap: 8 }}
-              >
-                <span
-                  className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
-                    selected
-                      ? "border-[#0E735A] bg-[#0E735A]"
-                      : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
-                  )}
-                >
-                  {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
-                </span>
-                <span>{r}</span>
-              </button>
-            );
-          })}
-          {filtered.length === 0 && (
-            <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
-          )}
+      <div className="mt-3 max-h-[260px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+        {grouped.length === 0 && (
+          <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
+        )}
+        <div className="flex flex-col gap-3">
+          {grouped.map(([g, list]) => (
+            <div key={g}>
+              <div className="mb-1.5 text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                {g}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {list.map((r) => {
+                  const selected = value.includes(r.position);
+                  const atMax = !selected && value.length >= MAX;
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => toggle(r.position)}
+                      disabled={atMax}
+                      aria-pressed={selected}
+                      title={atMax ? "max 3" : undefined}
+                      className={cn(
+                        "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+                        selected
+                          ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                          : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                      )}
+                      style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+                    >
+                      <span
+                        className={cn(
+                          "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+                          selected
+                            ? "border-[#0E735A] bg-[#0E735A]"
+                            : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                        )}
+                      >
+                        {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                      </span>
+                      <span>{r.position}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
