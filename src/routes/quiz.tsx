@@ -2126,6 +2126,129 @@ function EmailStep({
 
 // ---------- Continue button row ----------
 
+export function AxesStep({
+  answers,
+  showScope,
+  showSegment,
+  showMotion,
+  onChange,
+  onContinue,
+  submitLabel,
+  onCancel,
+}: {
+  answers: QuizAnswers;
+  showScope: boolean;
+  showSegment: boolean;
+  showMotion: boolean;
+  onChange: (patch: Partial<QuizAnswers>) => void;
+  onContinue: () => void;
+  submitLabel?: string;
+  onCancel?: () => void;
+}) {
+  const scope = answers.scope ?? {};
+  const scopeFields = TAX_AXES.scope.fields ?? [];
+  const segmentField = TAX_AXES.segment.field;
+  const motionField = TAX_AXES.motion.field;
+
+  const scopeComplete = !showScope || scopeFields.every(
+    (f) => !!scope[f.key as "orgSize" | "budget" | "stage"]
+  );
+  const canContinue =
+    scopeComplete &&
+    (!showSegment || !!answers.segment) &&
+    (!showMotion || !!answers.motion);
+
+  const setScope = (key: string, value: string) =>
+    onChange({ scope: { ...scope, [key]: value } });
+
+  const Row = ({
+    label,
+    options,
+    value,
+    onPick,
+  }: {
+    label: string;
+    options: string[];
+    value?: string;
+    onPick: (v: string) => void;
+  }) => (
+    <div>
+      <div className="text-sm font-light text-[color:var(--color-text-secondary)]">{label}</div>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const selected = value === opt;
+          return (
+            <button
+              key={opt}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onPick(opt)}
+              className={cn(
+                "inline-flex items-center rounded-[4px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                selected
+                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  : "border-[color:var(--color-border)] bg-white hover:border-[color:var(--color-border-strong)]"
+              )}
+              style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+            >
+              <span
+                className={cn(
+                  "grid h-4 w-4 shrink-0 place-items-center rounded-full border",
+                  selected
+                    ? "border-white bg-white"
+                    : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                )}
+              >
+                {selected && <span className="h-2 w-2 rounded-full bg-[#0E735A]" />}
+              </span>
+              <span>{opt}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <StepHeading>Scope & focus</StepHeading>
+      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+        A few details we use to weight matches.
+      </p>
+      <div className="mt-5 flex flex-col gap-5">
+        {showScope &&
+          scopeFields.map((f) => (
+            <Row
+              key={f.key}
+              label={f.label}
+              options={f.options}
+              value={scope[f.key as "orgSize" | "budget" | "stage"]}
+              onPick={(v) => setScope(f.key, v)}
+            />
+          ))}
+        {showSegment && segmentField && (
+          <Row
+            label={segmentField.label}
+            options={segmentField.options}
+            value={answers.segment}
+            onPick={(v) => onChange({ segment: v })}
+          />
+        )}
+        {showMotion && motionField && (
+          <Row
+            label={motionField.label}
+            options={motionField.options}
+            value={answers.motion}
+            onPick={(v) => onChange({ motion: v })}
+          />
+        )}
+      </div>
+      <ContinueRow disabled={!canContinue} onClick={onContinue} label={submitLabel} onCancel={onCancel} />
+    </div>
+  );
+}
+
 function ContinueRow({
   disabled,
   onClick,
