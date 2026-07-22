@@ -662,7 +662,7 @@ function TrackerScreen() {
                 onClick={() => setTab(t)}
                 className={`h-8 w-[120px] rounded-[4px] button-small transition-colors ${
                   tab === t
-                    ? "bg-[color:var(--color-foreground)] text-white"
+                    ? "bg-[color:var(--color-green)] text-white"
                     : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 }`}
               >
