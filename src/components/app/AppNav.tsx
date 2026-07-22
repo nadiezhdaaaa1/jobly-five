@@ -36,14 +36,14 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
         {!pro ? (
           <Link
             to="/settings"
-            className="hidden md:inline-flex relative h-9 w-[120px] items-center overflow-hidden rounded-[4px] bg-[color:var(--color-accent)] pl-4 pr-14 text-[14px] font-medium text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="group hidden md:inline-flex relative h-9 w-[120px] items-center overflow-hidden rounded-[4px] bg-[color:var(--color-accent)] pl-4 pr-14 text-[14px] font-medium text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             <span>Go Pro</span>
             <img
               src={proCubeAsset.url}
               alt=""
               aria-hidden
-              className="pointer-events-none absolute right-0 top-1/2 h-9 w-auto -translate-y-1/2"
+              className="pointer-events-none absolute right-0 top-1/2 h-9 w-auto -translate-y-1/2 transition-transform duration-200 ease-out group-hover:translate-x-1"
             />
           </Link>
         ) : null}
