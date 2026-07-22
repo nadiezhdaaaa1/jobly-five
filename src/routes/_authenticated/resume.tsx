@@ -293,7 +293,7 @@ function UploadCard({
   const showEmptyCopy = !hasAny;
 
   return (
-    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+    <section className="pt-1">
       {!state.consented ? (
         <label className="mb-3 flex cursor-pointer items-start gap-3 text-[13px] text-[color:var(--color-text-secondary)]">
           <input
