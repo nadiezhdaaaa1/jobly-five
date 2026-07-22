@@ -137,8 +137,8 @@ export function InterviewReminderDialog({
           Let's set a reminder for the upcoming interview{jobTitle ? ` — ${jobTitle}` : ""}.
         </p>
         {(() => null)()}
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+          <div className="flex min-w-0 flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
             <span>Date</span>
             <Popover>
               <PopoverTrigger asChild>
