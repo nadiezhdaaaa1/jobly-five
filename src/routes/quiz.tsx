@@ -765,7 +765,10 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
     }
     case "level": {
       const parts: string[] = [];
-      if (a.level) parts.push(a.level);
+      if (a.level) {
+        const title = composedTitle(a.field, a.level);
+        parts.push(title || a.level);
+      }
       if (a.years != null) parts.push(`${formatYears(a.years)}y`);
       if (a.primaryLanguage) parts.push(`${a.primaryLanguage} (Native)`);
       for (const l of a.additionalLanguages ?? []) parts.push(`${l.lang} (${l.level})`);
