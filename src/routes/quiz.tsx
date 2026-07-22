@@ -93,6 +93,7 @@ export const Route = createFileRoute("/quiz")({
 export type StepKey =
   | "field"
   | "role"
+  | "stack"
   | "hard"
   | "tools"
   | "soft"
@@ -102,6 +103,7 @@ export type StepKey =
 export const STEP_ORDER: StepKey[] = [
   "field",
   "role",
+  "stack",
   "hard",
   "tools",
   "soft",
