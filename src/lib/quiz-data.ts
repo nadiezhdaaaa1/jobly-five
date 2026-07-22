@@ -1,10 +1,22 @@
 export const LEVELS = ["Junior", "Mid", "Senior", "Lead"];
+// Base rungs shown in the Experience step. Senior forks into IC/Mgmt tracks.
+export const BASE_LEVELS = ["Junior", "Mid", "Senior"] as const;
+export const IC_LEVELS = ["Staff", "Principal"] as const;
+export const MGMT_LEVELS = ["Lead", "Manager", "Head", "Director", "VP"] as const;
+export const EXEC_LEVELS = ["Exec"] as const;
 
 export const LEVEL_DEFAULT_YEARS: Record<string, number> = {
   Junior: 1,
   Mid: 3,
   Senior: 7,
-  Lead: 12,
+  Staff: 9,
+  Principal: 12,
+  Lead: 8,
+  Manager: 10,
+  Head: 12,
+  Director: 14,
+  VP: 16,
+  Exec: 18,
 };
 
 // ---- Field taxonomy ----
