@@ -866,14 +866,15 @@ function FiltersSidebar({
                 const bucket = y === 0 ? "No experience" : y <= 2 ? "1–2 years" : y <= 5 ? "3–5 years" : y <= 9 ? "6–9 years" : "10 years or more";
                 next.years = [bucket];
               }
-              // English (match primary language into level list; fallback to additionalLanguages English entry)
-              const englishEntry = (q.additionalLanguages ?? []).find((l) => /english/i.test(l.lang));
-              const englishLevel = englishEntry?.level;
-              const matchedEnglish = englishLevel
-                ? ENGLISH_LEVELS.find((l) => l.includes(englishLevel))
-                : q.primaryLanguage && /english/i.test(q.primaryLanguage)
-                  ? "Native speaker"
-                  : undefined;
+              // English level — quiz now stores it directly in primaryLanguage.
+              const pl = q.primaryLanguage ?? "";
+              let matchedEnglish: string | undefined;
+              if (/native/i.test(pl)) matchedEnglish = "Native speaker";
+              else if (/no english/i.test(pl)) matchedEnglish = "No English";
+              else {
+                const cefr = pl.match(/\b([ABC][12])\b/i)?.[1]?.toUpperCase();
+                if (cefr) matchedEnglish = ENGLISH_LEVELS.find((l) => l.endsWith(cefr));
+              }
               if (matchedEnglish) next.english = matchedEnglish;
               // Location / remote
               if (q.workMode === "remote" || q.remote) next.onlyRemote = true;
