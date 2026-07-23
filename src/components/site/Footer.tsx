@@ -1,5 +1,24 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
+import fbIcon from "@/assets/social/fb.svg";
+import inIcon from "@/assets/social/in.svg";
+import xIcon from "@/assets/social/twitter-x.svg";
+import instaIcon from "@/assets/social/insta.svg";
+import ytIcon from "@/assets/social/yt.svg";
+import tikIcon from "@/assets/social/tik.svg";
+import redditIcon from "@/assets/social/reddit.svg";
+import pinterestIcon from "@/assets/social/pinterest.svg";
+
+const SOCIALS: { label: string; href: string; icon: string }[] = [
+  { label: "LinkedIn", href: "https://linkedin.com", icon: inIcon },
+  { label: "X (Twitter)", href: "https://x.com", icon: xIcon },
+  { label: "Instagram", href: "https://instagram.com", icon: instaIcon },
+  { label: "Facebook", href: "https://facebook.com", icon: fbIcon },
+  { label: "YouTube", href: "https://youtube.com", icon: ytIcon },
+  { label: "TikTok", href: "https://tiktok.com", icon: tikIcon },
+  { label: "Reddit", href: "https://reddit.com", icon: redditIcon },
+  { label: "Pinterest", href: "https://pinterest.com", icon: pinterestIcon },
+];
 
 type FooterLink = { label: string; to?: string; href?: string };
 
@@ -44,6 +63,21 @@ export function Footer() {
             <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
               Email-first job discovery platform
             </p>
+            <ul className="mt-4 flex flex-wrap items-center gap-3">
+              {SOCIALS.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.label}
+                    className="inline-flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-70"
+                  >
+                    <img src={s.icon} alt="" width={20} height={20} />
+                  </a>
+                </li>
+              ))}
+            </ul>
             <p className="mt-4 max-w-xs text-xs text-[color:var(--color-text-muted)]">
               NORELIX LIMITED · trading as Jobly
               <br />
