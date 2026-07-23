@@ -224,6 +224,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   <ExternalLink size={14} strokeWidth={1.6} />
                   Open posting to apply
                 </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <Check size={14} strokeWidth={1.6} />
+                  Already applied
+                </button>
               </div>
             ) : null}
           </div>
