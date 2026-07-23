@@ -715,7 +715,7 @@ function FiltersSidebar({
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="flex items-center gap-2 border-b px-4 py-3">
           <select
-            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 button-small"
+            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
             defaultValue=""
           >
             <option value="" disabled>Saved filters</option>
@@ -731,7 +731,7 @@ function FiltersSidebar({
                 english: q.primaryLanguage ?? p.english,
               });
             }}
-            className="inline-flex h-[32px] shrink-0 items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-[32px] shrink-0 items-center rounded-[4px] border px-3 text-[12px] font-normal leading-none text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             Fill from Profile
           </button>
