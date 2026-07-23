@@ -7,7 +7,6 @@ import {
   IconChevronRight,
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
-  IconBan,
   IconThumbDown as ThumbsDown,
   IconPlus,
   IconX as X,
