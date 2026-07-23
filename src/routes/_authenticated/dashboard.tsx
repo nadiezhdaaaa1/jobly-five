@@ -655,17 +655,20 @@ function FiltersSidebar({
   return (
     <aside className="flex flex-col rounded-[6px] border bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <FilterSection title="Saved filters">
-          <select className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]" defaultValue="profile">
-            <option value="profile">Based on profile</option>
-            <option value="custom">Save current as…</option>
-          </select>
-        </FilterSection>
-
         <FilterSection title="Field">
-          <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-1)] border px-2 py-1 text-[12px] font-medium text-[color:var(--color-foreground)]">
-            {p.field} <ChevronDown size={12} strokeWidth={2} />
-          </span>
+          <select
+            className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
+            value={p.field}
+            onChange={(e) => {
+              const nf = e.target.value;
+              const roles = p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
+              set({ field: nf, roles });
+            }}
+          >
+            {FIELDS.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
         </FilterSection>
 
         <FilterSection title="Roles">
@@ -673,28 +676,10 @@ function FiltersSidebar({
             {p.roles.map((r) => (
               <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
             ))}
-            <AddChip options={ROLE_LIB.filter((r) => !p.roles.includes(r))} onAdd={(v) => set({ roles: [...p.roles, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Hard skills">
-          <div className="flex flex-wrap gap-1.5">
-            {p.hard.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ hard: p.hard.filter((x) => x !== r) })} />))}
-            <AddChip options={HARD_LIB.filter((r) => !p.hard.includes(r))} onAdd={(v) => set({ hard: [...p.hard, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Tools">
-          <div className="flex flex-wrap gap-1.5">
-            {p.tools.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ tools: p.tools.filter((x) => x !== r) })} />))}
-            <AddChip options={TOOLS_LIB.filter((r) => !p.tools.includes(r))} onAdd={(v) => set({ tools: [...p.tools, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Soft skills">
-          <div className="flex flex-wrap gap-1.5">
-            {p.soft.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ soft: p.soft.filter((x) => x !== r) })} />))}
-            <AddChip options={SOFT_LIB.filter((r) => !p.soft.includes(r))} onAdd={(v) => set({ soft: [...p.soft, v] })} />
+            <AddChip
+              options={(FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r))}
+              onAdd={(v) => set({ roles: [...p.roles, v] })}
+            />
           </div>
         </FilterSection>
 
@@ -771,6 +756,23 @@ function FiltersSidebar({
               className="w-full accent-[color:var(--color-green)]"
             />
             <span className="w-[42px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
+          </div>
+        </FilterSection>
+
+        <FilterSection title="Salary">
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={10000}
+              step={100}
+              value={p.minSalary}
+              onChange={(e) => set({ minSalary: Number(e.target.value) })}
+              className="w-full accent-[color:var(--color-green)]"
+            />
+            <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
+              ${p.minSalary.toLocaleString()}
+            </span>
           </div>
         </FilterSection>
 
