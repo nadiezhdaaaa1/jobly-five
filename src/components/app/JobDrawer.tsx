@@ -1,12 +1,41 @@
 import { useEffect, useRef, useState } from "react";
-import { IconCalendar as Calendar, IconCheck as Check, IconExternalLink as ExternalLink, IconX as X, IconBolt as Zap } from "@tabler/icons-react";
+import {
+  IconCalendar as Calendar,
+  IconCheck as Check,
+  IconExternalLink as ExternalLink,
+  IconX as X,
+  IconBolt as Zap,
+  IconBookmark as Bookmark,
+  IconFlag as Flag,
+  IconThumbDown as ThumbsDown,
+} from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
-import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import { dateHelpers, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import { MatchLine } from "@/components/app/MatchLine";
 import congratAsset from "@/assets/congrat.png.asset.json";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
+
+function useOutsideClose(open: boolean, onClose: () => void) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    function onDoc(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+  return ref;
+}
 
 function BigRing({ score }: { score: number }) {
   const size = 64;
@@ -34,11 +63,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const status = record.status as JobStatus;
   const panelRef = useRef<HTMLDivElement | null>(null);
   const titleId = `job-drawer-title-${job.id}`;
-  const [notes, setNotesLocal] = useState(record.notes ?? "");
   const [reminderOpen, setReminderOpen] = useState(false);
   const [postingToast, setPostingToast] = useState(false);
-
-  useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
+  const [flagOpen, setFlagOpen] = useState(false);
+  const [dislikeOpen, setDislikeOpen] = useState(false);
+  const [applyOpen, setApplyOpen] = useState(false);
+  const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
+  const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
+  const saved = status === "saved";
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -78,10 +111,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
     if (status !== "applied" && status !== "interview" && status !== "offer" && status !== "rejection") {
       setPostingToast(true);
     }
-  }
-
-  function handleNotesBlur() {
-    if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
   }
 
   const dateLine = (() => {
@@ -158,17 +187,115 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
-          <button
-            type="button"
-            onClick={handleOpenPosting}
-            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            Open posting
-            <ExternalLink size={14} strokeWidth={1.8} />
-          </button>
+          {/* Apply + actions */}
+          <div className="relative mt-4" ref={applyRef}>
+            <button
+              type="button"
+              onClick={() => setApplyOpen((v) => !v)}
+              className="inline-flex h-10 w-full items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Apply
+              <Zap size={14} strokeWidth={2} fill="currentColor" />
+            </button>
+            {applyOpen ? (
+              <div role="menu" className="absolute right-0 top-[44px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
+                  <span>Tailor your resume</span>
+                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
+                </div>
+                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
+                  <span>Generate a cover letter</span>
+                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
+                </div>
+                <div className="border-t" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setApplyOpen(false); handleOpenPosting(); }}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <ExternalLink size={14} strokeWidth={1.6} />
+                  Open posting to apply
+                </button>
+              </div>
+            ) : null}
+          </div>
 
-          <div className="my-5 border-t" />
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <div className="relative" ref={flagRef}>
+              <button
+                type="button"
+                aria-label="Report"
+                onClick={() => setFlagOpen((v) => !v)}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <Flag size={15} strokeWidth={1.6} />
+                Report
+              </button>
+              {flagOpen ? (
+                <div role="menu" className="absolute left-0 top-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                  {["Spam/Scam", "Ghost/Expired", "Duplicate posting"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
 
+            <div className="relative" ref={dislikeRef}>
+              <button
+                type="button"
+                aria-label="Dislike"
+                onClick={() => setDislikeOpen((v) => !v)}
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <ThumbsDown size={15} strokeWidth={1.6} />
+                Dislike
+              </button>
+              {dislikeOpen ? (
+                <div role="menu" className="absolute left-1/2 top-[44px] z-30 min-w-[220px] -translate-x-1/2 overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                  {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              aria-label="Save"
+              aria-pressed={saved}
+              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold transition-colors"
+              style={{
+                borderColor: saved ? "var(--color-green)" : undefined,
+                background: saved ? "var(--color-mint)" : undefined,
+                color: saved ? "var(--color-green)" : "var(--color-text-muted)",
+              }}
+            >
+              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+              {saved ? "Saved" : "Save"}
+            </button>
+          </div>
+
+          {!pro ? (
+            <div className="mt-5" />
+          ) : null}
           {!pro ? (
             <div className="rounded-[6px] border bg-[color:var(--color-mint)]/40 p-4">
               <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
@@ -184,7 +311,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               </Link>
             </div>
           ) : isPipeline ? (
-            <PipelinePanel
+            <div className="mt-5"><PipelinePanel
               status={status}
               dateLine={dateLine}
               reminderIso={record.reminderAt}
@@ -195,41 +322,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               onRemoveReminder={() => setReminder(job.id, null)}
               onRejection={() => setStatus(job.id, "rejection")}
               onOffer={() => setStatus(job.id, "offer")}
-            />
+            /></div>
           ) : isOffer ? (
-            <OfferPanel dateLine={dateLine} onChangeStatus={handleStatus} />
+            <div className="mt-5"><OfferPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
           ) : isRejection ? (
-            <RejectionPanel dateLine={dateLine} onChangeStatus={handleStatus} />
-          ) : (
-            <SaveCta onSave={() => setStatus(job.id, "saved")} />
-          )}
-
-          {/* Notes */}
-          <div className="mt-5">
-            <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotesLocal(e.target.value)}
-              onBlur={handleNotesBlur}
-              rows={5}
-              placeholder="Notes — contacts, salary discussed, next steps…"
-              className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-            />
-          </div>
+            <div className="mt-5"><RejectionPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
+          ) : null}
 
           {/* Footer */}
-          <div className="mt-5 flex items-center justify-between text-[13px]">
-            {isOffer ? (
-              <span />
-            ) : (
-              <button
-                type="button"
-                onClick={() => setStatus(job.id, "reported")}
-                className="font-semibold text-[color:var(--color-danger)] hover:underline"
-              >
-                Report — looks fake or ghost
-              </button>
-            )}
+          <div className="mt-5 flex items-center justify-end text-[13px]">
             {inTracker ? (
               <button
                 type="button"
