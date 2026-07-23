@@ -990,7 +990,7 @@ function FiltersSidebar({
           Apply
         </button>
       </div>
-      </>
+      </div>
       ) : null}
     </aside>
   );
