@@ -393,11 +393,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span
-          className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px]"
+          className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]"
           style={{
             background: direct ? "var(--color-mint)" : "var(--color-surface-2)",
-            color: direct ? "var(--color-green)" : "var(--color-text-muted)",
-            fontWeight: direct ? 600 : 400,
+            color: direct ? "var(--color-green)" : undefined,
           }}
         >
           {direct ? "Direct employer" : "Aggregated"} · {job.board}
