@@ -747,9 +747,17 @@ function FiltersSidebar({
           </button>
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
-            defaultValue=""
+            value=""
+            onChange={(e) => {
+              const id = e.target.value;
+              if (id) onLoadSaved(id);
+              e.currentTarget.value = "";
+            }}
           >
-            <option value="" disabled>Saved filters</option>
+            <option value="" disabled>{saved.length ? "Saved filters" : "No saved filters"}</option>
+            {saved.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
           </select>
           <button
             type="button"
