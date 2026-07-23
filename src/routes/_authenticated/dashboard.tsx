@@ -753,7 +753,7 @@ function FiltersSidebar({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Close filters" : "Open filters"}
-        className={`fixed top-[72px] right-4 z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[color:var(--color-surface-2)] ${open ? "inline-flex lg:hidden" : "inline-flex"}`}
+        className={`fixed top-[72px] right-4 z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[color:var(--color-surface-2)] ${open ? "hidden" : "inline-flex"}`}
       >
         <IconAdjustmentsHorizontal size={22} strokeWidth={1.8} />
         {activeCount > 0 ? (
@@ -782,7 +782,7 @@ function FiltersSidebar({
             type="button"
             onClick={onToggle}
             aria-label="Collapse filters"
-            className="hidden lg:inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconChevronRight size={18} strokeWidth={1.8} />
           </button>
