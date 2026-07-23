@@ -316,7 +316,7 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
 // UI primitives
 // ============================================================
 
-function ScoreRing({ score, size = 64 }: { score: number; size?: number }) {
+function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
   const plan = usePlan();
   if (!isPro(plan)) {
     return (
@@ -484,9 +484,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       >
         <div className="flex w-full items-center gap-4">
           {job.logo ? (
-            <img src={job.logo} alt="" className="h-16 w-16 shrink-0 rounded-[4px] object-cover" />
+            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
           ) : (
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
               {job.company.charAt(0)}
             </div>
           )}
