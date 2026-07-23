@@ -728,22 +728,39 @@ function FiltersSidebar({
     : (FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r));
 
   return (
-    <aside
-      className={`relative lg:sticky lg:top-20 ${open ? "" : ""}`}
-    >
+    <aside className="contents lg:block lg:relative lg:sticky lg:top-20">
+      {/* Desktop toggle (sits on the left border of the panel) */}
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Collapse filters" : "Expand filters"}
-        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute top-3 left-0 z-20 -translate-x-1/2" : ""}`}
+        className={`hidden lg:inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "lg:absolute lg:top-3 lg:left-0 lg:z-20 lg:-translate-x-1/2" : ""}`}
       >
         <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
       </button>
+      {/* Mobile/Tablet floating toggle */}
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-label={open ? "Close filters" : "Open filters"}
+        className="lg:hidden fixed top-[72px] right-4 z-40 inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
+      >
+        <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+      </button>
+      {/* Mobile/Tablet drawer backdrop */}
       {open ? (
-      <div className="flex flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] overflow-hidden lg:max-h-[calc(100vh-6rem)]">
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={onToggle}
+          aria-hidden
+        />
+      ) : null}
+      {open ? (
+      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-l lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="sticky top-0 z-10 flex items-center gap-2 rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
+        <div className="sticky top-0 z-10 flex items-center gap-2 lg:rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
             value=""
