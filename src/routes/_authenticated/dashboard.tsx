@@ -823,7 +823,7 @@ function FiltersSidebar({
             Fill from Profile
           </button>
         </div>
-        <FilterSection title="Field" collapseSignal={collapseSignal}>
+        <FilterSection title="Field" collapseSignal={collapseSignal} dirty={p.field !== FIELD_ANY} onReset={() => set({ field: FIELD_ANY, roles: [] })}>
           <select
             className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
             value={p.field}
@@ -839,7 +839,7 @@ function FiltersSidebar({
           </select>
         </FilterSection>
 
-        <FilterSection title="Roles" collapseSignal={collapseSignal}>
+        <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={p.roles.length > 0} onReset={() => set({ roles: [] })}>
           <div className="flex flex-wrap gap-1.5">
             {p.roles.map((r) => (
               <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
@@ -852,7 +852,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Seniority" collapseSignal={collapseSignal}>
+        <FilterSection title="Seniority" collapseSignal={collapseSignal} dirty={p.seniority.length > 0} onReset={() => set({ seniority: [] })}>
           <div className="flex flex-wrap gap-1.5">
             {SENIORITIES.map((s) => (
               <SelectChip
@@ -865,7 +865,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Experience" collapseSignal={collapseSignal}>
+        <FilterSection title="Experience" collapseSignal={collapseSignal} dirty={p.years.length > 0} onReset={() => set({ years: [] })}>
           <div className="flex flex-wrap gap-1.5">
             {YEAR_CHIPS.map((y) => (
               <SelectChip key={y} label={y} selected={p.years.includes(y)} onClick={() => set({ years: p.years.includes(y) ? p.years.filter((x) => x !== y) : [...p.years, y] })} />
@@ -873,7 +873,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="English" collapseSignal={collapseSignal}>
+        <FilterSection title="English" collapseSignal={collapseSignal} dirty={p.english !== ""} onReset={() => set({ english: "" })}>
           <div className="flex flex-wrap gap-1.5">
             {ENGLISH_LEVELS.map((l) => (
               <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: p.english === l ? "" : l })} />
@@ -881,7 +881,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Location" collapseSignal={collapseSignal}>
+        <FilterSection title="Location" collapseSignal={collapseSignal} dirty={p.onlyRemote || p.locations.length > 0} onReset={() => set({ onlyRemote: false, locations: [] })}>
           <label className="mb-3 flex items-center justify-between text-[13px]">
             <span>Only Remote</span>
             <button type="button" aria-pressed={p.onlyRemote} onClick={() => set({ onlyRemote: !p.onlyRemote })} className="relative h-5 w-9 rounded-full transition-colors" style={{ background: p.onlyRemote ? "var(--color-green)" : "var(--color-border)" }}>
@@ -896,7 +896,7 @@ function FiltersSidebar({
           )}
         </FilterSection>
 
-        <FilterSection title="Sources of search" collapseSignal={collapseSignal}>
+        <FilterSection title="Sources of search" collapseSignal={collapseSignal} dirty={p.sources.length !== ALL_BOARDS.length} onReset={() => set({ sources: [...ALL_BOARDS] as Board[] })}>
           <div className="flex flex-wrap gap-1.5">
             {ALL_BOARDS.map((b) => {
               const selected = p.sources.includes(b);
@@ -918,7 +918,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Min match" collapseSignal={collapseSignal}>
+        <FilterSection title="Min match" collapseSignal={collapseSignal} dirty={p.minMatch !== 50} onReset={() => set({ minMatch: 50 })}>
           <div className="flex items-center gap-3">
             <div className="relative h-8 flex-1">
               <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
@@ -940,7 +940,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Salary" collapseSignal={collapseSignal}>
+        <FilterSection title="Salary" collapseSignal={collapseSignal} dirty={p.minSalary !== 0} onReset={() => set({ minSalary: 0 })}>
           <div className="flex items-center gap-3">
             {(() => {
               const steps = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
@@ -974,7 +974,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Posted within" collapseSignal={collapseSignal}>
+        <FilterSection title="Posted within" collapseSignal={collapseSignal} dirty={p.postedWithin !== "any"} onReset={() => set({ postedWithin: "any" })}>
           <div className="flex flex-wrap gap-1.5">
             {(["any", "24h", "7d", "30d"] as const).map((v) => (
               <SelectChip key={v} label={v === "any" ? "Any time" : v === "24h" ? "24 hours" : v === "7d" ? "7 days" : "30 days"} selected={p.postedWithin === v} onClick={() => set({ postedWithin: v })} />
