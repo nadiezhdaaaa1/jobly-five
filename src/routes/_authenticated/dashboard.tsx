@@ -927,7 +927,7 @@ function FiltersSidebar({
                 className="jobly-range absolute inset-0 w-full"
               />
             </div>
-            <span className="w-[72px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
+            <span className="w-[48px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
           </div>
         </FilterSection>
 
@@ -956,7 +956,7 @@ function FiltersSidebar({
                       className="jobly-range absolute inset-0 w-full"
                     />
                   </div>
-                  <span className="w-[72px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
+                  <span className="w-[48px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
                     {p.minSalary === 0 ? "Off" : `$${(p.minSalary / 1000).toLocaleString()}k`}
                   </span>
                 </>
