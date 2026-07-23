@@ -896,18 +896,27 @@ function FiltersSidebar({
 
         <FilterSection title="Salary" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min={0}
-              max={10000}
-              step={100}
-              value={p.minSalary}
-              onChange={(e) => set({ minSalary: Number(e.target.value) })}
-              className="w-full accent-[color:var(--color-green)]"
-            />
-            <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
-              {p.minSalary === 0 ? "Off" : `$${p.minSalary.toLocaleString()}`}
-            </span>
+            {(() => {
+              const steps = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
+              const idx = Math.max(0, steps.indexOf(p.minSalary));
+              const currentIdx = idx === -1 ? 0 : idx;
+              return (
+                <>
+                  <input
+                    type="range"
+                    min={0}
+                    max={steps.length - 1}
+                    step={1}
+                    value={currentIdx}
+                    onChange={(e) => set({ minSalary: steps[Number(e.target.value)] })}
+                    className="w-full accent-[color:var(--color-green)]"
+                  />
+                  <span className="w-[72px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
+                    {p.minSalary === 0 ? "Off" : `$${(p.minSalary / 1000).toLocaleString()}k`}
+                  </span>
+                </>
+              );
+            })()}
           </div>
         </FilterSection>
 
