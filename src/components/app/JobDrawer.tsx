@@ -383,18 +383,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   );
 }
 
-function SaveCta({ onSave }: { onSave: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onSave}
-      className="inline-flex h-10 w-full items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-    >
-      Save to tracker
-    </button>
-  );
-}
-
 function PipelinePanel({
   status,
   dateLine,
