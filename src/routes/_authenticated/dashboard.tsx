@@ -1050,7 +1050,9 @@ function JobsScreen() {
   const seed = useMemo(() => defaultFilters(), []);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(
+    () => typeof window === "undefined" || window.innerWidth >= 1024,
+  );
   const [collapseSignal, setCollapseSignal] = useState(0);
   const [saved, setSaved] = useState<SavedFilter[]>(() => loadSavedFilters());
   useEffect(() => { persistSavedFilters(saved); }, [saved]);
