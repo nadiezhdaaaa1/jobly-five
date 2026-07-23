@@ -262,8 +262,8 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
       const hasK = /k/i.test(j.salary);
       const scaled = nums.map((n) => (hasK ? n * 1000 : n));
       const maxSal = scaled.length ? Math.max(...scaled) : 0;
-      // Slider is monthly; compare against annualized salary when parseable.
-      if (maxSal > 0 && maxSal < f.minSalary * 12) return false;
+      // Slider is annual; compare against parsed annual salary.
+      if (maxSal > 0 && maxSal < f.minSalary) return false;
     }
     // Loose taxonomy filter: if roles set is non-empty, require some overlap in title/why
     if (f.roles.length) {
@@ -771,10 +771,11 @@ function FiltersSidebar({
                 next.onlyRemote = false;
                 next.locations = [q.location];
               }
-              // Salary — quiz stores annual; slider is monthly ($0–$10k)
+              // Salary — quiz stores annual; slider steps: 0, then 60k → 200k by 10k.
               if (typeof q.salaryMin === "number" && q.salaryMin > 0) {
-                const monthly = q.salaryMin >= 1000 ? Math.round(q.salaryMin / 12) : Math.round((q.salaryMin * 1000) / 12);
-                next.minSalary = Math.max(0, Math.min(10000, Math.round(monthly / 100) * 100));
+                const annual = q.salaryMin >= 1000 ? q.salaryMin : q.salaryMin * 1000;
+                const snapped = annual < 60000 ? 60000 : Math.min(200000, Math.round(annual / 10000) * 10000);
+                next.minSalary = snapped;
               }
               set(next);
             }}
