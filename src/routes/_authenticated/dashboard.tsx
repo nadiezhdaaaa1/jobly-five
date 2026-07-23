@@ -221,24 +221,23 @@ const FIELD_ROLES: Record<string, string[]> = {
   ],
 };
 const FIELDS = Object.keys(FIELD_ROLES);
+const FIELD_ANY = "Any";
+const FIELDS_WITH_ANY = [FIELD_ANY, ...FIELDS];
 
-function seedFromQuiz(quiz: QuizAnswers): FilterState {
-  const field = FIELDS.includes(quiz.field ?? "") ? (quiz.field as string) : "Design";
-  const validRoles = new Set(FIELD_ROLES[field]);
-  const seedRoles = (quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : []).filter((r) => validRoles.has(r));
-  const rolesArr = seedRoles.length ? seedRoles : FIELD_ROLES[field].slice(0, 2);
+// New filter model uses multi-select seniority + defaults per product spec.
+function defaultFilters(): FilterState {
   return {
-    field,
-    roles: rolesArr,
-    seniority: (SENIORITIES as readonly string[]).includes(quiz.level ?? "") ? (quiz.level as Seniority) : "Senior",
-    years: ["3–5 years", "6–9 years"],
-    english: "Upper-intermediate · B2",
+    field: FIELD_ANY,
+    roles: [],
+    seniority: [],
+    years: [],
+    english: "",
     onlyRemote: false,
-    locations: quiz.locations?.length ? quiz.locations : ["State of New York", "New York City, NY"],
-    sources: ALL_BOARDS.filter((b) => b !== "Indeed" && b !== "Wellfound") as Board[],
-    minMatch: 70,
+    locations: [],
+    sources: [...ALL_BOARDS] as Board[],
+    minMatch: 50,
     minSalary: 0,
-    postedWithin: "30d",
+    postedWithin: "any",
   };
 }
 
