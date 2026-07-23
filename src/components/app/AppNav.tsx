@@ -92,11 +92,11 @@ export function MobileTabBar({ active, hasNewDigest = true }: { active: AppTab; 
             <Link
               key={t.key}
               to={t.to}
-              className={`relative flex h-14 flex-col items-center justify-center gap-1 border-t-2 ${isActive ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)]" : "border-transparent text-[color:var(--color-text-muted)]"}`}
+              className={`relative flex h-[68px] flex-col items-center justify-center gap-1.5 border-t-2 pb-1 ${isActive ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)]" : "border-transparent text-[color:var(--color-text-muted)]"}`}
               aria-current={isActive ? "page" : undefined}
             >
               <span className="relative">
-                <Icon size={19} strokeWidth={1.6} />
+                <Icon size={24} strokeWidth={1.6} />
                 {showDot ? (
                   <span
                     className="absolute -right-1 -top-1 h-[7px] w-[7px] rounded-full bg-[color:var(--color-accent)]"
@@ -105,7 +105,7 @@ export function MobileTabBar({ active, hasNewDigest = true }: { active: AppTab; 
                   />
                 ) : null}
               </span>
-              <span className="text-[10px] leading-none">{t.label}</span>
+              <span className="text-[12px] leading-none">{t.label}</span>
             </Link>
           );
         })}
