@@ -399,7 +399,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             color: direct ? "var(--color-green)" : undefined,
           }}
         >
-          {direct ? "Direct employer" : "Aggregated"} · {job.board}
+          {direct ? "Direct employer" : "Aggregated"}
         </span>
 
         <div className="ml-auto flex items-center gap-2">
