@@ -116,6 +116,7 @@ export function MatchLine({
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(segments.length);
+  const [maxLines, setMaxLines] = useState(1);
 
   useLayoutEffect(() => {
     if (wrap) {
@@ -129,20 +130,46 @@ export function MatchLine({
     const compute = () => {
       const cw = container.clientWidth;
       if (!cw) return;
+      const lines = cw < 640 ? 2 : 1;
+      setMaxLines(lines);
       const kids = Array.from(measure.children) as HTMLElement[];
       const reserve = 44; // room for "+ N" chip
-      let last = segments.length;
+      // Group children by row (offsetTop bucket).
+      const rowTops: number[] = [];
+      const rowOf: number[] = [];
+      kids.forEach((c) => {
+        const t = c.offsetTop;
+        let idx = rowTops.findIndex((v) => Math.abs(v - t) < 2);
+        if (idx === -1) {
+          rowTops.push(t);
+          idx = rowTops.length - 1;
+        }
+        rowOf.push(idx);
+      });
+
+      // If everything fits within maxLines rows, show all.
+      if (rowTops.length <= lines) {
+        setVisible(kids.length);
+        return;
+      }
+
+      // Keep only items in rows 0..lines-1.
+      let cutoff = kids.length;
       for (let i = 0; i < kids.length; i++) {
-        const c = kids[i];
-        const right = c.offsetLeft + c.offsetWidth;
-        const isLast = i === kids.length - 1;
-        const budget = isLast ? cw : cw - reserve;
-        if (right > budget) {
-          last = i;
+        if (rowOf[i] > lines - 1) {
+          cutoff = i;
           break;
         }
       }
-      setVisible(last);
+      // Trim from the end of the last kept row to make room for "+ N" chip.
+      const lastRow = lines - 1;
+      while (cutoff > 0 && rowOf[cutoff - 1] === lastRow) {
+        const c = kids[cutoff - 1];
+        const right = c.offsetLeft + c.offsetWidth;
+        if (right + 8 + reserve <= cw) break;
+        cutoff -= 1;
+      }
+      setVisible(cutoff);
     };
 
     compute();
@@ -162,7 +189,7 @@ export function MatchLine({
         <div
           ref={measureRef}
           aria-hidden
-          className="pointer-events-none invisible absolute left-0 top-0 flex items-center gap-x-2 whitespace-nowrap"
+          className="pointer-events-none invisible absolute inset-x-0 top-0 flex flex-wrap items-center gap-x-2 gap-y-2"
         >
           {segments.map((s) => (
             <SegmentView
@@ -176,7 +203,7 @@ export function MatchLine({
       <div
         className={cn(
           "flex items-center gap-x-2",
-          wrap ? "flex-wrap gap-y-2" : "overflow-hidden whitespace-nowrap",
+          wrap || maxLines > 1 ? "flex-wrap gap-y-2" : "overflow-hidden whitespace-nowrap",
         )}
       >
         {shown.map((s, i) => (
