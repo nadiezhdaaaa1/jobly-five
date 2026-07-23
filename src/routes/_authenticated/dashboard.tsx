@@ -499,11 +499,11 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <ScoreRing score={job.score} />
         </div>
         {pro ? (
-          <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{job.why}</p>
+          <p className="mt-5 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{job.why}</p>
         ) : null}
       </button>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-5 flex flex-wrap items-center gap-2">
         <span
           className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]"
           style={{
