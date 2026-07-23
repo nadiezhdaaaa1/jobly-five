@@ -82,6 +82,7 @@ export type Job = {
   description?: DescriptionSection[];
   details?: JobDetails;
   sources?: JobSource[];
+  missingSkills?: string[];
 };
 
 const fallbackCriteria: MatchCriterion[] = [
@@ -144,6 +145,7 @@ export const TODAY_JOBS: Job[] = [
     postedDays: 3,
     initialState: "saved",
     employmentType: "Full-time",
+    missingSkills: ["GraphQL"],
     criteria: [
       { status: "full", text: "Stack: Vue.js, JavaScript — matches your profile" },
       { status: "full", text: "Level: senior — matches" },
@@ -199,6 +201,7 @@ export const TODAY_JOBS: Job[] = [
     why: "Proficient in Angular + TypeScript, senior position, salary fits your expectations",
     source: "aggregated",
     postedDays: 1,
+    missingSkills: ["RxJS", "NgRx"],
     criteria: [
       { status: "full", text: "Stack: TypeScript, Angular — matches your profile" },
       { status: "full", text: "Level: principal — above senior, matches your trajectory" },
@@ -240,6 +243,7 @@ export const TODAY_JOBS: Job[] = [
     why: "Strong React + Redux skills, senior level, salary aligned with your range",
     source: "aggregated",
     postedDays: 4,
+    missingSkills: ["GraphQL"],
     criteria: [
       { status: "full", text: "Stack: React, Redux, TypeScript — matches your profile" },
       { status: "full", text: "Level: senior — matches" },

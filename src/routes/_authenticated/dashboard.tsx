@@ -16,6 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
+import { MatchLine } from "@/components/app/MatchLine";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
@@ -499,7 +500,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <ScoreRing score={job.score} />
         </div>
         {pro ? (
-          <p className="mt-5 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{job.why}</p>
+          <div className="mt-5">
+            <MatchLine job={job} />
+          </div>
         ) : null}
       </button>
 

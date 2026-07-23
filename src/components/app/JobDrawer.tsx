@@ -3,6 +3,7 @@ import { IconCalendar as Calendar, IconCheck as Check, IconExternalLink as Exter
 import type { Job } from "@/lib/jobs-data";
 import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
+import { MatchLine } from "@/components/app/MatchLine";
 import congratAsset from "@/assets/congrat.png.asset.json";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
@@ -152,9 +153,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             {job.company} · {job.location} · {job.salary}
           </div>
           {pro ? (
-            <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              {job.why}
-            </p>
+            <div className="mt-3">
+              <MatchLine job={job} wrap />
+            </div>
           ) : null}
 
           <button
