@@ -641,6 +641,8 @@ function FiltersSidebar({
   onApply,
   onReset,
   onSave,
+  open,
+  onToggle,
 }: {
   pending: FilterState;
   applied: FilterState;
@@ -648,13 +650,29 @@ function FiltersSidebar({
   onApply: () => void;
   onReset: () => void;
   onSave: () => void;
+  open: boolean;
+  onToggle: () => void;
 }) {
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
 
   return (
-    <aside className="flex flex-col rounded-[6px] border bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
+    <aside
+      className={`relative flex flex-col rounded-[6px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border" : ""}`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-label={open ? "Collapse filters" : "Expand filters"}
+        className="absolute z-20 inline-flex h-[32px] -translate-x-1/2 items-center gap-1.5 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
+        style={{ left: 0, top: 24 }}
+      >
+        <IconAdjustmentsHorizontal size={15} strokeWidth={1.8} />
+        Filters
+      </button>
+      {open ? (
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <FilterSection title="Field">
           <select
@@ -803,6 +821,8 @@ function FiltersSidebar({
           Apply
         </button>
       </div>
+      </>
+      ) : null}
     </aside>
   );
 }
