@@ -112,9 +112,6 @@ type PostedRange = "any" | "24h" | "7d" | "30d";
 type FilterState = {
   field: string;
   roles: string[];
-  hard: string[];
-  tools: string[];
-  soft: string[];
   seniority: Seniority | null;
   years: string[]; // year range chips
   english: string;
@@ -122,52 +119,116 @@ type FilterState = {
   locations: string[];
   sources: Board[];
   minMatch: number;
+  minSalary: number;
   postedWithin: PostedRange;
 };
 
 const YEAR_CHIPS = ["No experience", "1–2 years", "3–5 years", "6–9 years", "10 years or more"] as const;
 
-const HARD_LIB = [
-  "End-to-end UX/UI",
-  "Prototyping",
-  "Design Systems",
-  "Component Libraries",
-  "Responsive Layout",
-  "Usability Testing",
-  "React",
-  "TypeScript",
-  "Vue.js",
-  "Angular",
-  "Redux",
-  "GraphQL",
-];
-const TOOLS_LIB = ["Figma", "Adobe XD", "Sketch", "Framer", "Notion", "Jira", "VS Code", "GitHub"];
-const SOFT_LIB = [
-  "Adaptability",
-  "Analytical Thinking",
-  "Attention to Detail",
-  "Collaboration",
-  "Communication",
-  "Creativity",
-];
-const ROLE_LIB = [
-  "Product Designer",
-  "UX Designer",
-  "UI Designer",
-  "Frontend Engineer",
-  "Full-stack Engineer",
-  "Design Systems Engineer",
-  "Interaction Designer",
-];
+// Field → Roles taxonomy (from docs/jobly-roles-and-stacks.md).
+const FIELD_ROLES: Record<string, string[]> = {
+  Engineering: [
+    "Frontend Engineer",
+    "Backend Engineer",
+    "Full-Stack Engineer",
+    "Software Engineer (General)",
+    "Mobile Engineer — iOS",
+    "Mobile Engineer — Android",
+    "Mobile Engineer — Cross-platform",
+    "Web Developer",
+    "Game Developer",
+    "Embedded / Firmware Engineer",
+    "Systems / Low-level Engineer",
+    "Desktop / Enterprise Application Developer",
+  ],
+  "Data & AI / ML": [
+    "Data Analyst",
+    "Data Scientist",
+    "Data Engineer",
+    "Analytics Engineer",
+    "Machine Learning Engineer",
+    "AI / LLM Engineer",
+    "ML / AI Research Scientist",
+    "MLOps Engineer",
+    "Computer Vision Engineer",
+    "NLP Engineer",
+    "BI Developer / Analyst",
+    "Data Architect",
+    "Database Administrator (DBA)",
+  ],
+  "Infrastructure, DevOps & Cloud": [
+    "DevOps Engineer",
+    "Site Reliability Engineer (SRE)",
+    "Platform Engineer",
+    "Cloud Engineer / Architect",
+    "Infrastructure Engineer",
+    "Network Engineer",
+    "Systems Administrator",
+  ],
+  Security: [
+    "Security Engineer",
+    "Application Security (AppSec) Engineer",
+    "Cloud Security Engineer",
+    "Penetration Tester / Red Team",
+    "Security / SOC Analyst",
+    "GRC / Security Compliance",
+    "Incident Response / Threat Intelligence",
+  ],
+  "QA & Testing": ["QA Engineer (Manual)", "QA Automation Engineer", "SDET"],
+  Product: [
+    "Product Manager",
+    "Technical Product Manager",
+    "Growth Product Manager",
+    "AI / ML Product Manager",
+    "Data Product Manager",
+    "Product Owner",
+    "Product Marketing Manager",
+  ],
+  Design: [
+    "Product Designer",
+    "UX Designer",
+    "UI Designer",
+    "UX Researcher",
+    "Interaction Designer",
+    "Design Systems Designer",
+    "UX Engineer / Design Engineer",
+    "Content Designer / UX Writer",
+    "Visual / Graphic Designer",
+    "Motion Designer",
+  ],
+  "Engineering Leadership & Architecture": [
+    "Tech Lead",
+    "Staff / Principal Engineer",
+    "Engineering Manager",
+    "Software / Solutions Architect",
+    "Director / VP Engineering / CTO",
+  ],
+  "Program, Project & Technical-Adjacent": [
+    "Technical Program Manager (TPM)",
+    "Project Manager (Tech)",
+    "Scrum Master / Agile Coach",
+    "Solutions Engineer / Sales Engineer",
+    "Developer Advocate (DevRel)",
+    "Technical Writer",
+    "Business / Systems Analyst",
+  ],
+  "Emerging / Specialized": [
+    "Blockchain / Web3 Developer",
+    "AR / VR / XR Engineer",
+    "Robotics Engineer",
+    "Data Governance / Data Quality Engineer",
+  ],
+};
+const FIELDS = Object.keys(FIELD_ROLES);
 
 function seedFromQuiz(quiz: QuizAnswers): FilterState {
-  const rolesArr = quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : ["Product Designer", "UX Designer"];
+  const field = FIELDS.includes(quiz.field ?? "") ? (quiz.field as string) : "Design";
+  const validRoles = new Set(FIELD_ROLES[field]);
+  const seedRoles = (quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : []).filter((r) => validRoles.has(r));
+  const rolesArr = seedRoles.length ? seedRoles : FIELD_ROLES[field].slice(0, 2);
   return {
-    field: quiz.field ?? "Design",
+    field,
     roles: rolesArr,
-    hard: (quiz.hardSkills ?? []).slice(0, 6),
-    tools: (quiz.tools ?? []).slice(0, 4),
-    soft: (quiz.softSkills ?? []).slice(0, 6),
     seniority: (SENIORITIES as readonly string[]).includes(quiz.level ?? "") ? (quiz.level as Seniority) : "Senior",
     years: ["3–5 years", "6–9 years"],
     english: "Upper-intermediate · B2",
@@ -175,6 +236,7 @@ function seedFromQuiz(quiz: QuizAnswers): FilterState {
     locations: quiz.locations?.length ? quiz.locations : ["State of New York", "New York City, NY"],
     sources: ALL_BOARDS.filter((b) => b !== "Indeed" && b !== "Wellfound") as Board[],
     minMatch: 70,
+    minSalary: 0,
     postedWithin: "30d",
   };
 }
@@ -593,17 +655,20 @@ function FiltersSidebar({
   return (
     <aside className="flex flex-col rounded-[6px] border bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <FilterSection title="Saved filters">
-          <select className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]" defaultValue="profile">
-            <option value="profile">Based on profile</option>
-            <option value="custom">Save current as…</option>
-          </select>
-        </FilterSection>
-
         <FilterSection title="Field">
-          <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-1)] border px-2 py-1 text-[12px] font-medium text-[color:var(--color-foreground)]">
-            {p.field} <ChevronDown size={12} strokeWidth={2} />
-          </span>
+          <select
+            className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
+            value={p.field}
+            onChange={(e) => {
+              const nf = e.target.value;
+              const roles = p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
+              set({ field: nf, roles });
+            }}
+          >
+            {FIELDS.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
         </FilterSection>
 
         <FilterSection title="Roles">
@@ -611,28 +676,10 @@ function FiltersSidebar({
             {p.roles.map((r) => (
               <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
             ))}
-            <AddChip options={ROLE_LIB.filter((r) => !p.roles.includes(r))} onAdd={(v) => set({ roles: [...p.roles, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Hard skills">
-          <div className="flex flex-wrap gap-1.5">
-            {p.hard.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ hard: p.hard.filter((x) => x !== r) })} />))}
-            <AddChip options={HARD_LIB.filter((r) => !p.hard.includes(r))} onAdd={(v) => set({ hard: [...p.hard, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Tools">
-          <div className="flex flex-wrap gap-1.5">
-            {p.tools.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ tools: p.tools.filter((x) => x !== r) })} />))}
-            <AddChip options={TOOLS_LIB.filter((r) => !p.tools.includes(r))} onAdd={(v) => set({ tools: [...p.tools, v] })} />
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Soft skills">
-          <div className="flex flex-wrap gap-1.5">
-            {p.soft.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ soft: p.soft.filter((x) => x !== r) })} />))}
-            <AddChip options={SOFT_LIB.filter((r) => !p.soft.includes(r))} onAdd={(v) => set({ soft: [...p.soft, v] })} />
+            <AddChip
+              options={(FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r))}
+              onAdd={(v) => set({ roles: [...p.roles, v] })}
+            />
           </div>
         </FilterSection>
 
@@ -709,6 +756,23 @@ function FiltersSidebar({
               className="w-full accent-[color:var(--color-green)]"
             />
             <span className="w-[42px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
+          </div>
+        </FilterSection>
+
+        <FilterSection title="Salary">
+          <div className="flex items-center gap-3">
+            <input
+              type="range"
+              min={0}
+              max={10000}
+              step={100}
+              value={p.minSalary}
+              onChange={(e) => set({ minSalary: Number(e.target.value) })}
+              className="w-full accent-[color:var(--color-green)]"
+            />
+            <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
+              ${p.minSalary.toLocaleString()}
+            </span>
           </div>
         </FilterSection>
 
