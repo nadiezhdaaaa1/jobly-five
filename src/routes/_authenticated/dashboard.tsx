@@ -881,15 +881,22 @@ function FiltersSidebar({
 
         <FilterSection title="Min match" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
-            <input
-              type="range"
-              min={0}
-              max={95}
-              step={5}
-              value={p.minMatch}
-              onChange={(e) => set({ minMatch: Number(e.target.value) })}
-              className="w-full accent-[color:var(--color-green)]"
-            />
+            <div className="relative h-8 flex-1">
+              <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+              <div
+                className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
+                style={{ left: "11px", right: `calc(11px + (100% - 22px) * ${1 - p.minMatch / 95})` }}
+              />
+              <input
+                type="range"
+                min={0}
+                max={95}
+                step={5}
+                value={p.minMatch}
+                onChange={(e) => set({ minMatch: Number(e.target.value) })}
+                className="jobly-range absolute inset-0 w-full"
+              />
+            </div>
             <span className="w-[42px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
           </div>
         </FilterSection>
@@ -900,17 +907,25 @@ function FiltersSidebar({
               const steps = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
               const idx = Math.max(0, steps.indexOf(p.minSalary));
               const currentIdx = idx === -1 ? 0 : idx;
+              const maxIdx = steps.length - 1;
               return (
                 <>
-                  <input
-                    type="range"
-                    min={0}
-                    max={steps.length - 1}
-                    step={1}
-                    value={currentIdx}
-                    onChange={(e) => set({ minSalary: steps[Number(e.target.value)] })}
-                    className="w-full accent-[color:var(--color-green)]"
-                  />
+                  <div className="relative h-8 flex-1">
+                    <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
+                    <div
+                      className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
+                      style={{ left: "11px", right: `calc(11px + (100% - 22px) * ${1 - currentIdx / maxIdx})` }}
+                    />
+                    <input
+                      type="range"
+                      min={0}
+                      max={maxIdx}
+                      step={1}
+                      value={currentIdx}
+                      onChange={(e) => set({ minSalary: steps[Number(e.target.value)] })}
+                      className="jobly-range absolute inset-0 w-full"
+                    />
+                  </div>
                   <span className="w-[72px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
                     {p.minSalary === 0 ? "Off" : `$${(p.minSalary / 1000).toLocaleString()}k`}
                   </span>
