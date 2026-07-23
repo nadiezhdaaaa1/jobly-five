@@ -152,9 +152,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             {job.company} · {job.location} · {job.salary}
           </div>
           {pro ? (
-            <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              {job.why}
-            </p>
+            <div className="mt-3">
+              <MatchLine job={job} wrap />
+            </div>
           ) : null}
 
           <button
