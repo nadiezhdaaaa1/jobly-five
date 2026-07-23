@@ -436,7 +436,7 @@ function CompactPipelineRow({ job, status }: { job: EnrichedJob; status: JobStat
       <span className="min-w-0 flex-1 truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
       <Link
         to="/tracker"
-        className="inline-flex h-[30px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
       >
         To tracker
       </Link>
