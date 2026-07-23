@@ -325,11 +325,11 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
         style={{ width: size, height: size, background: "var(--color-surface-2)" }}
         aria-label="Match score locked — upgrade to Pro"
       >
-        <span className="text-[18px]" style={{ fontFamily: "var(--font-sans)", color: "#090B0C" }}>--%</span>
+        <span style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: 1, color: "#090B0C" }}>--%</span>
       </div>
     );
   }
-  const stroke = 5;
+  const stroke = 3;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
@@ -339,7 +339,7 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
         <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
         <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-green)" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
       </svg>
-      <span className="absolute text-[18px]" style={{ fontFamily: "var(--font-display)", color: "#090B0C" }}>{score}%</span>
+      <span className="absolute" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: 1, color: "#090B0C" }}>{score}%</span>
     </div>
   );
 }
