@@ -16,7 +16,6 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
-import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
