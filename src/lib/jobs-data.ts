@@ -82,6 +82,7 @@ export type Job = {
   description?: DescriptionSection[];
   details?: JobDetails;
   sources?: JobSource[];
+  missingSkills?: string[];
 };
 
 const fallbackCriteria: MatchCriterion[] = [
