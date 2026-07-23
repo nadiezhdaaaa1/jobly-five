@@ -425,7 +425,7 @@ function StatusTag({ status }: { status: JobStatus }) {
   const s = map[status];
   if (!s) return null;
   return (
-    <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px] font-semibold" style={{ background: s.bg, color: s.fg }}>{s.label}</span>
+    <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: s.bg, color: s.fg }}>{s.label}</span>
   );
 }
 
@@ -447,11 +447,11 @@ function CompactPipelineRow({ job, status }: { job: EnrichedJob; status: JobStat
 function CompactFeedbackRow({ job, kind }: { job: EnrichedJob; kind: "dismissed" | "reported" }) {
   const text = kind === "reported" ? "Thanks — we'll check this posting." : `${job.title} — disliked`;
   const bg = kind === "reported" ? "var(--color-danger-subtle)" : "var(--color-warning-subtle)";
-  const fg = kind === "reported" ? "var(--color-danger)" : "var(--color-foreground)";
+  const fg = kind === "reported" ? "var(--color-danger)" : "var(--color-warning)";
   return (
     <div className="flex h-[54px] items-center justify-between bg-[color:var(--color-surface-1)] px-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px] font-semibold" style={{ background: bg, color: fg }}>
+        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
           {kind === "reported" ? "Reported" : "Disliked"}
         </span>
         <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{text}</span>
