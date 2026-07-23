@@ -724,12 +724,50 @@ function FiltersSidebar({
             type="button"
             onClick={() => {
               const q = loadQuiz();
-              set({
-                roles: q.roles?.length ? q.roles : p.roles,
-                seniority: q.level ? [q.level as Seniority].filter((s) => SENIORITIES.includes(s)) : p.seniority,
-                locations: q.locations?.length ? q.locations : p.locations,
-                english: q.primaryLanguage ?? p.english,
-              });
+              const next: Partial<FilterState> = {};
+              // Field + Roles
+              const roles = q.roles?.length ? q.roles : q.role ? [q.role] : [];
+              if (roles.length) {
+                next.roles = roles;
+                const owningField = FIELDS.find((f) => roles.some((r) => FIELD_ROLES[f]?.includes(r)));
+                next.field = q.field && FIELDS.includes(q.field) ? q.field : owningField ?? FIELD_ANY;
+              } else if (q.field && FIELDS.includes(q.field)) {
+                next.field = q.field;
+              }
+              // Seniority (single from quiz → array)
+              if (q.level && (SENIORITIES as readonly string[]).includes(q.level)) {
+                next.seniority = [q.level as Seniority];
+              }
+              // Experience years bucket
+              if (typeof q.years === "number") {
+                const y = q.years;
+                const bucket = y === 0 ? "No experience" : y <= 2 ? "1–2 years" : y <= 5 ? "3–5 years" : y <= 9 ? "6–9 years" : "10 years or more";
+                next.years = [bucket];
+              }
+              // English (match primary language into level list; fallback to additionalLanguages English entry)
+              const englishEntry = (q.additionalLanguages ?? []).find((l) => /english/i.test(l.lang));
+              const englishLevel = englishEntry?.level;
+              const matchedEnglish = englishLevel
+                ? ENGLISH_LEVELS.find((l) => l.includes(englishLevel))
+                : q.primaryLanguage && /english/i.test(q.primaryLanguage)
+                  ? "Native speaker"
+                  : undefined;
+              if (matchedEnglish) next.english = matchedEnglish;
+              // Location / remote
+              if (q.workMode === "remote" || q.remote) next.onlyRemote = true;
+              else if (q.locations?.length) {
+                next.onlyRemote = false;
+                next.locations = q.locations;
+              } else if (q.location) {
+                next.onlyRemote = false;
+                next.locations = [q.location];
+              }
+              // Salary — quiz stores annual; slider is monthly ($0–$10k)
+              if (typeof q.salaryMin === "number" && q.salaryMin > 0) {
+                const monthly = q.salaryMin >= 1000 ? Math.round(q.salaryMin / 12) : Math.round((q.salaryMin * 1000) / 12);
+                next.minSalary = Math.max(0, Math.min(10000, Math.round(monthly / 100) * 100));
+              }
+              set(next);
             }}
             className="inline-flex h-[32px] shrink-0 items-center rounded-[4px] border px-3 text-[12px] font-normal leading-none text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
