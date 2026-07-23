@@ -445,7 +445,7 @@ function CompactPipelineRow({ job, status }: { job: EnrichedJob; status: JobStat
 }
 
 function CompactFeedbackRow({ job, kind }: { job: EnrichedJob; kind: "dismissed" | "reported" }) {
-  const text = kind === "reported" ? "Thanks — we'll check this posting." : `${job.title} — disliked`;
+  const text = kind === "reported" ? "Thanks — we'll check this posting." : job.title;
   const bg = kind === "reported" ? "var(--color-danger-subtle)" : "var(--color-warning-subtle)";
   const fg = kind === "reported" ? "var(--color-danger)" : "var(--color-warning)";
   return (
