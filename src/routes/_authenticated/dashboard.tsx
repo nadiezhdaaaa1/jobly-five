@@ -1075,7 +1075,7 @@ function JobsScreen() {
               <div className="divide-y">
                 {shown.length === 0 ? (
                   <div className="p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                    No matches for your current filters. Loosen a filter or reset to your profile defaults.
+                    No matches for your current filters
                   </div>
                 ) : shown.map((j) => (
                   <JobRow key={j.id} job={j} onOpen={() => setOpenJob(j)} />
