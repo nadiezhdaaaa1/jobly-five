@@ -468,9 +468,11 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const state = record.status;
   const saved = state === "saved";
   const [dislikeOpen, setDislikeOpen] = useState(false);
+  const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
   const [toast, setToast] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
 
   const direct = DIRECT_BOARDS.has(job.board);
