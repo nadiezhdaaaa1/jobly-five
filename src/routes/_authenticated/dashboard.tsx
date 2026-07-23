@@ -897,7 +897,7 @@ function FiltersSidebar({
                 className="jobly-range absolute inset-0 w-full"
               />
             </div>
-            <span className="w-[42px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
+            <span className="w-[72px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">{p.minMatch}%</span>
           </div>
         </FilterSection>
 
