@@ -937,7 +937,7 @@ function FiltersSidebar({
         </button>
       </div>
       </>
-      ) : null}
+      )}
     </aside>
   );
 }
