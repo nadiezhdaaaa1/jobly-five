@@ -313,3 +313,30 @@ select::-ms-expand {
     align-items: flex-start;
   }
 }
+
+/* Shared range slider style (matches quiz slider) */
+.jobly-range { pointer-events: none; -webkit-appearance: none; appearance: none; background: transparent; }
+.jobly-range::-webkit-slider-runnable-track { height: 6px; border-radius: 9999px; background: transparent; }
+.jobly-range::-moz-range-track { height: 6px; border-radius: 9999px; background: transparent; }
+.jobly-range::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  height: 22px; width: 22px; border-radius: 9999px;
+  background: var(--color-surface-1);
+  border: 2px solid var(--color-green);
+  box-shadow: 0 0 0 1px var(--color-green);
+  cursor: pointer;
+  margin-top: -8px;
+}
+.jobly-range::-moz-range-thumb {
+  pointer-events: auto;
+  height: 22px; width: 22px; border-radius: 9999px;
+  background: var(--color-surface-1);
+  border: 2px solid var(--color-green);
+  box-shadow: 0 0 0 1px var(--color-green);
+  cursor: pointer;
+}
+.jobly-range:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
