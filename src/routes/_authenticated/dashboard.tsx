@@ -753,7 +753,7 @@ function FiltersSidebar({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Close filters" : "Open filters"}
-        className={`fixed top-[72px] right-4 z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)] ${open ? "inline-flex lg:hidden" : "inline-flex"}`}
+        className={`fixed top-[72px] right-4 z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[color:var(--color-surface-2)] ${open ? "inline-flex lg:hidden" : "inline-flex"}`}
       >
         <IconAdjustmentsHorizontal size={22} strokeWidth={1.8} />
         {activeCount > 0 ? (
