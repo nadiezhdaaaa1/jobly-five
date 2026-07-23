@@ -713,7 +713,7 @@ function FiltersSidebar({
         className="absolute z-20 inline-flex h-[40px] w-[40px] -translate-x-1/2 items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         style={{ left: 0, top: 12 }}
       >
-        <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+        <IconAdjustmentsHorizontal size={16} strokeWidth={1.8} />
       </button>
       {open ? (
       <>
