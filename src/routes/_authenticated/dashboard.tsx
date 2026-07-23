@@ -841,6 +841,7 @@ function JobsScreen() {
   const seed = useMemo(() => seedFromQuiz(quiz), [quiz]);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
+  const [filtersOpen, setFiltersOpen] = useState(true);
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -885,7 +886,7 @@ function JobsScreen() {
             You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
           </div>
         ) : null}
-        <div className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)_304px]">
+        <div className={`grid gap-6 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
           <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
             <TrackerWidget />
             <SalaryTeaser />
@@ -923,6 +924,8 @@ function JobsScreen() {
               onApply={() => setApplied(pending)}
               onReset={() => { setPending(seed); setApplied(seed); }}
               onSave={() => { /* client-side snapshot placeholder */ }}
+              open={filtersOpen}
+              onToggle={() => setFiltersOpen((v) => !v)}
             />
           </div>
         </div>
