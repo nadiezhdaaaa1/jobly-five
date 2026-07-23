@@ -227,7 +227,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 type="button"
                 aria-label="Report"
                 onClick={() => setFlagOpen((v) => !v)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <Flag size={15} strokeWidth={1.6} />
                 Report
@@ -254,7 +254,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 type="button"
                 aria-label="Dislike"
                 onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <ThumbsDown size={15} strokeWidth={1.6} />
                 Dislike
@@ -281,11 +281,11 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               aria-label="Save"
               aria-pressed={saved}
               onClick={() => setStatus(job.id, saved ? "default" : "saved")}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold transition-colors"
+              className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
                 background: saved ? "var(--color-mint)" : undefined,
-                color: saved ? "var(--color-green)" : "var(--color-text-muted)",
+                color: saved ? "var(--color-green)" : "var(--color-foreground)",
               }}
             >
               <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
