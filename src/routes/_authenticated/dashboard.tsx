@@ -715,7 +715,7 @@ function FiltersSidebar({
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="flex items-center gap-2 border-b px-4 py-3">
           <select
-            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[13px]"
+            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 button-small"
             defaultValue=""
           >
             <option value="" disabled>Saved filters</option>
