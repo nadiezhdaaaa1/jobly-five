@@ -10,7 +10,7 @@ import {
   IconThumbDown as ThumbsDown,
 } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
-import { dateHelpers, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import { MatchLine } from "@/components/app/MatchLine";
 import congratAsset from "@/assets/congrat.png.asset.json";
@@ -72,6 +72,13 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const saved = status === "saved";
+  const [notes, setNotesLocal] = useState(record.notes ?? "");
+
+  useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
+
+  function handleNotesBlur() {
+    if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
+  }
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -327,6 +334,20 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="mt-5"><OfferPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
           ) : isRejection ? (
             <div className="mt-5"><RejectionPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
+          ) : null}
+
+          {pro && saved ? (
+            <div className="mt-5">
+              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotesLocal(e.target.value)}
+                onBlur={handleNotesBlur}
+                rows={5}
+                placeholder="Notes — contacts, salary discussed, next steps…"
+                className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              />
+            </div>
           ) : null}
 
           {/* Footer */}
