@@ -68,10 +68,19 @@ function flatten(groups: MatchGroup[]): Segment[] {
   return segs;
 }
 
-function SegmentView({ seg }: { seg: Segment }) {
+function SegmentView({ seg, showBullet }: { seg: Segment; showBullet?: boolean }) {
   const match = seg.tone === "match";
   return (
     <span className="inline-flex shrink-0 items-center gap-2">
+      {showBullet ? (
+        <span
+          aria-hidden
+          className="text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300 }}
+        >
+          •
+        </span>
+      ) : null}
       {seg.label ? (
         <span
           className="text-[13px] text-[color:var(--color-text-secondary)]"
@@ -156,7 +165,11 @@ export function MatchLine({
           className="pointer-events-none invisible absolute left-0 top-0 flex items-center gap-x-2 whitespace-nowrap"
         >
           {segments.map((s) => (
-            <SegmentView key={`m-${s.key}`} seg={s} />
+            <SegmentView
+              key={`m-${s.key}`}
+              seg={s}
+              showBullet={!!s.label && s !== segments[0]}
+            />
           ))}
         </div>
       ) : null}
@@ -166,8 +179,8 @@ export function MatchLine({
           wrap ? "flex-wrap gap-y-2" : "overflow-hidden whitespace-nowrap",
         )}
       >
-        {shown.map((s) => (
-          <SegmentView key={s.key} seg={s} />
+        {shown.map((s, i) => (
+          <SegmentView key={s.key} seg={s} showBullet={!!s.label && i !== 0} />
         ))}
         {hidden > 0 ? (
           <span className="inline-flex shrink-0 items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-secondary)]">
