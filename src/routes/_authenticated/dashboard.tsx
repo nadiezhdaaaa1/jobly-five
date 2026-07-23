@@ -671,6 +671,8 @@ function FiltersSidebar({
   open,
   onToggle,
   collapseSignal,
+  saved,
+  onLoadSaved,
 }: {
   pending: FilterState;
   applied: FilterState;
@@ -681,6 +683,8 @@ function FiltersSidebar({
   open: boolean;
   onToggle: () => void;
   collapseSignal: number;
+  saved: SavedFilter[];
+  onLoadSaved: (id: string) => void;
 }) {
   const dirty = !filterEqual(pending, applied);
   const p = pending;
