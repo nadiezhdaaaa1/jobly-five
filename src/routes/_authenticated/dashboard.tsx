@@ -729,19 +729,19 @@ function FiltersSidebar({
 
   return (
     <aside
-      className={`relative flex flex-col rounded-[8px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border overflow-hidden" : ""}`}
+      className={`relative lg:sticky lg:top-20 ${open ? "" : ""}`}
     >
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Collapse filters" : "Expand filters"}
-        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute top-3 left-0 z-20 -translate-x-1/2" : ""}`}
+        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute -top-4 left-0 z-20 -translate-x-1/2" : ""}`}
       >
         <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
       </button>
       {open ? (
-      <>
+      <div className="flex flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] overflow-hidden lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-2 rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
           <select
