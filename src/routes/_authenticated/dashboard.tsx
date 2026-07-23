@@ -736,7 +736,7 @@ function FiltersSidebar({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Collapse filters" : "Expand filters"}
-        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute -top-4 left-0 z-20 -translate-x-1/2" : ""}`}
+        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute top-3 left-0 z-20 -translate-x-1/2" : ""}`}
       >
         <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
       </button>
