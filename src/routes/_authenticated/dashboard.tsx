@@ -731,29 +731,19 @@ function FiltersSidebar({
     <aside
       className={`relative flex flex-col rounded-[8px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border overflow-hidden" : ""}`}
     >
-      {!open ? (
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-expanded={open}
-          aria-label="Expand filters"
-          className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
-        </button>
-      ) : (
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        aria-label={open ? "Collapse filters" : "Expand filters"}
+        className={`inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] ${open ? "absolute top-3 left-0 z-20 -translate-x-1/2" : ""}`}
+      >
+        <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+      </button>
+      {open ? (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-2 rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-expanded={open}
-            aria-label="Collapse filters"
-            className="inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
-          </button>
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
             value=""
@@ -1001,7 +991,7 @@ function FiltersSidebar({
         </button>
       </div>
       </>
-      )}
+      ) : null}
     </aside>
   );
 }
