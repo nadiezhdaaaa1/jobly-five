@@ -1596,6 +1596,16 @@ export function ExperienceStep({
   submitLabel?: string;
   onCancel?: () => void;
 }) {
+  const ENGLISH_LEVELS = [
+    "Native speaker",
+    "Proficient • C2",
+    "Advanced • C1",
+    "Upper-intermediate • B2",
+    "Intermediate • B1",
+    "Pre-intermediate • A2",
+    "Beginner • A1",
+    "No English",
+  ] as const;
   const level = answers.level;
   const years = answers.years ?? 0;
   const primary = answers.primaryLanguage ?? "Native speaker";
