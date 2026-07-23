@@ -698,7 +698,7 @@ function FiltersSidebar({
 
   return (
     <aside
-      className={`relative flex flex-col rounded-[6px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border" : ""}`}
+      className={`relative flex flex-col rounded-[8px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border overflow-hidden" : ""}`}
     >
       {!open ? (
         <button
@@ -713,7 +713,7 @@ function FiltersSidebar({
       ) : (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3">
+        <div className="sticky top-0 z-10 flex items-center gap-2 rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
           <button
             type="button"
             onClick={onToggle}
@@ -944,7 +944,7 @@ function FiltersSidebar({
         </FilterSection>
       </div>
 
-      <div className="flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3">
+      <div className="sticky bottom-0 z-10 flex items-center gap-2 rounded-b-[8px] border-t bg-[color:var(--color-surface-1)] p-3">
         <button type="button" onClick={onSave} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Save</button>
         <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
         <button
