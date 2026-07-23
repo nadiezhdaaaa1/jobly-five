@@ -782,9 +782,9 @@ function FiltersSidebar({
             type="button"
             onClick={onToggle}
             aria-label="Collapse filters"
-            className="hidden lg:inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="hidden lg:inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
-            <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+            <IconChevronRight size={18} strokeWidth={1.8} />
           </button>
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
