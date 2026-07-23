@@ -673,6 +673,7 @@ function FiltersSidebar({
         Filters
       </button>
       {open ? (
+      <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <FilterSection title="Field">
           <select
