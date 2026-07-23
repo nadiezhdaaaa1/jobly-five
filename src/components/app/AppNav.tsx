@@ -20,7 +20,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
         <div className="flex items-center gap-5">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/dashboard" className="flex items-center gap-3">
           <span
             className="leading-none text-[color:var(--color-green)]"
             style={{ fontFamily: "'Stack Sans Notch', sans-serif", fontSize: 30, fontWeight: 700, letterSpacing: "-0.03em" }}
