@@ -205,13 +205,15 @@ export function useJobRecord(id: string): JobRecord {
 export function useCounts() {
   const get = () => getVersion();
   useSyncExternalStore(subscribe, get, get);
-  let saved = 0, applied = 0, interview = 0;
+  let saved = 0, applied = 0, interview = 0, offer = 0, rejection = 0;
   for (const r of records.values()) {
     if (r.status === "saved") saved++;
     else if (r.status === "applied") applied++;
     else if (r.status === "interview") interview++;
+    else if (r.status === "offer") offer++;
+    else if (r.status === "rejection") rejection++;
   }
-  return { saved, applied, interview };
+  return { saved, applied, interview, offer, rejection };
 }
 
 // Auto-seed on import
