@@ -480,25 +480,27 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         type="button"
         aria-label={`Open details for ${job.title}`}
         onClick={onOpen}
-        className="flex w-full items-start gap-4 text-left"
+        className="w-full text-left"
       >
-        {job.logo ? (
-          <img src={job.logo} alt="" className="h-[52px] w-[52px] shrink-0 rounded-[4px] object-cover" />
-        ) : (
-          <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
-            {job.company.charAt(0)}
+        <div className="flex w-full items-center gap-4">
+          {job.logo ? (
+            <img src={job.logo} alt="" className="h-[52px] w-[52px] shrink-0 rounded-[4px] object-cover" />
+          ) : (
+            <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+              {job.company.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">{job.title}</span>
+            <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              {job.company} · {job.location} · {job.salary}
+            </div>
           </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">{job.title}</span>
-          <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {job.company} · {job.location} · {job.salary}
-          </div>
-          {pro ? (
-            <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{job.why}</p>
-          ) : null}
+          <ScoreRing score={job.score} />
         </div>
-        <ScoreRing score={job.score} />
+        {pro ? (
+          <p className="mt-2 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{job.why}</p>
+        ) : null}
       </button>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
