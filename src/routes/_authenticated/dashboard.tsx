@@ -573,7 +573,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             aria-label="Save"
             aria-pressed={saved}
             onClick={() => setStatus(job.id, saved ? "default" : "saved")}
-            className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors"
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
             style={{
               borderColor: saved ? "var(--color-green)" : undefined,
               background: saved ? "var(--color-mint)" : undefined,
