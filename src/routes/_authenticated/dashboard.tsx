@@ -666,11 +666,10 @@ function FiltersSidebar({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Collapse filters" : "Expand filters"}
-        className="absolute z-20 inline-flex h-[32px] -translate-x-1/2 items-center gap-1.5 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
+        className="absolute z-20 inline-flex h-[32px] w-[32px] -translate-x-1/2 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
         style={{ left: 0, top: 24 }}
       >
         <IconAdjustmentsHorizontal size={15} strokeWidth={1.8} />
-        Filters
       </button>
       {open ? (
       <>
