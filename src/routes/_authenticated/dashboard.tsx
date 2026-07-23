@@ -16,7 +16,6 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
-import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -113,7 +112,7 @@ type PostedRange = "any" | "24h" | "7d" | "30d";
 type FilterState = {
   field: string;
   roles: string[];
-  seniority: Seniority | null;
+  seniority: Seniority[];
   years: string[]; // year range chips
   english: string;
   onlyRemote: boolean;
@@ -221,24 +220,23 @@ const FIELD_ROLES: Record<string, string[]> = {
   ],
 };
 const FIELDS = Object.keys(FIELD_ROLES);
+const FIELD_ANY = "Any";
+const FIELDS_WITH_ANY = [FIELD_ANY, ...FIELDS];
 
-function seedFromQuiz(quiz: QuizAnswers): FilterState {
-  const field = FIELDS.includes(quiz.field ?? "") ? (quiz.field as string) : "Design";
-  const validRoles = new Set(FIELD_ROLES[field]);
-  const seedRoles = (quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : []).filter((r) => validRoles.has(r));
-  const rolesArr = seedRoles.length ? seedRoles : FIELD_ROLES[field].slice(0, 2);
+// New filter model uses multi-select seniority + defaults per product spec.
+function defaultFilters(): FilterState {
   return {
-    field,
-    roles: rolesArr,
-    seniority: (SENIORITIES as readonly string[]).includes(quiz.level ?? "") ? (quiz.level as Seniority) : "Senior",
-    years: ["3–5 years", "6–9 years"],
-    english: "Upper-intermediate · B2",
+    field: FIELD_ANY,
+    roles: [],
+    seniority: [],
+    years: [],
+    english: "",
     onlyRemote: false,
-    locations: quiz.locations?.length ? quiz.locations : ["State of New York", "New York City, NY"],
-    sources: ALL_BOARDS.filter((b) => b !== "Indeed" && b !== "Wellfound") as Board[],
-    minMatch: 70,
+    locations: [],
+    sources: [...ALL_BOARDS] as Board[],
+    minMatch: 50,
     minSalary: 0,
-    postedWithin: "30d",
+    postedWithin: "any",
   };
 }
 
@@ -249,10 +247,23 @@ function filterEqual(a: FilterState, b: FilterState) {
 function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
   return jobs.filter((j) => {
     if (j.score < f.minMatch) return false;
-    if (!f.sources.includes(j.board)) return false;
+    if (f.sources.length && !f.sources.includes(j.board)) return false;
     const postedDaysCap = f.postedWithin === "24h" ? 1 : f.postedWithin === "7d" ? 7 : f.postedWithin === "30d" ? 30 : Infinity;
     if (j.postedDays > postedDaysCap) return false;
     if (f.onlyRemote && !j.remote) return false;
+    if (!f.onlyRemote && f.locations.length) {
+      const hit = f.locations.some((l) => j.location.toLowerCase().includes(l.toLowerCase()));
+      if (!hit) return false;
+    }
+    if (f.seniority.length && !f.seniority.includes(j.seniority)) return false;
+    if (f.minSalary > 0) {
+      const nums = (j.salary.match(/\d[\d,]*/g) ?? []).map((s) => Number(s.replace(/,/g, "")));
+      const hasK = /k/i.test(j.salary);
+      const scaled = nums.map((n) => (hasK ? n * 1000 : n));
+      const maxSal = scaled.length ? Math.max(...scaled) : 0;
+      // Slider is monthly; compare against annualized salary when parseable.
+      if (maxSal > 0 && maxSal < f.minSalary * 12) return false;
+    }
     // Loose taxonomy filter: if roles set is non-empty, require some overlap in title/why
     if (f.roles.length) {
       const hay = `${j.title} ${j.why}`.toLowerCase();
@@ -569,8 +580,12 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 // Filters sidebar
 // ============================================================
 
-function FilterSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+function FilterSection({ title, children, defaultOpen = true, collapseSignal }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number }) {
   const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => {
+    if (collapseSignal === undefined) return;
+    setOpen(false);
+  }, [collapseSignal]);
   return (
     <div className="border-b">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between px-4 py-3 text-left">
@@ -591,21 +606,38 @@ function ProfileChip({ label, onRemove }: { label: string; onRemove: () => void 
   );
 }
 
-function AddChip({ options, onAdd }: { options: string[]; onAdd: (v: string) => void }) {
+function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { label: string; items: string[] }[]; onAdd: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useOutsideClose(open, () => setOpen(false));
-  const filtered = options.filter((o) => o.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  const ql = q.toLowerCase();
+  const filteredGroups = groups
+    ? groups
+        .map((g) => ({ label: g.label, items: g.items.filter((o) => o.toLowerCase().includes(ql)) }))
+        .filter((g) => g.items.length)
+    : null;
+  const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
       <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open ? (
-        <div className="absolute left-0 top-8 z-30 w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+        <div className="absolute left-0 top-8 z-30 w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full border-b bg-transparent px-3 py-2 text-[13px] outline-none" />
-          <div className="max-h-[220px] overflow-y-auto">
-            {filtered.length === 0 ? (
+          <div className="max-h-[260px] overflow-y-auto">
+            {filteredGroups ? (
+              filteredGroups.length === 0 ? (
+                <div className="px-3 py-2 text-[12px] text-[color:var(--color-text-muted)]">No matches</div>
+              ) : filteredGroups.map((g) => (
+                <div key={g.label}>
+                  <div className="bg-[color:var(--color-surface-2)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">{g.label}</div>
+                  {g.items.map((o) => (
+                    <button key={o} type="button" onClick={() => { onAdd(o); setOpen(false); setQ(""); }} className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]">{o}</button>
+                  ))}
+                </div>
+              ))
+            ) : filtered.length === 0 ? (
               <div className="px-3 py-2 text-[12px] text-[color:var(--color-text-muted)]">No matches</div>
             ) : filtered.map((o) => (
               <button key={o} type="button" onClick={() => { onAdd(o); setOpen(false); setQ(""); }} className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]">{o}</button>
@@ -643,6 +675,7 @@ function FiltersSidebar({
   onSave,
   open,
   onToggle,
+  collapseSignal,
 }: {
   pending: FilterState;
   applied: FilterState;
@@ -652,10 +685,21 @@ function FiltersSidebar({
   onSave: () => void;
   open: boolean;
   onToggle: () => void;
+  collapseSignal: number;
 }) {
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
+
+  // When Field=Any, the Roles picker groups options by field. Otherwise it's a
+  // flat list of the current field's roles.
+  const anyField = p.field === FIELD_ANY;
+  const roleGroups = anyField
+    ? FIELDS.map((f) => ({ label: f, items: FIELD_ROLES[f].filter((r) => !p.roles.includes(r)) })).filter((g) => g.items.length)
+    : undefined;
+  const roleOptions = anyField
+    ? FIELDS.flatMap((f) => FIELD_ROLES[f]).filter((r) => !p.roles.includes(r))
+    : (FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r));
 
   return (
     <aside
@@ -674,43 +718,49 @@ function FiltersSidebar({
       {open ? (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <FilterSection title="Field">
+        <FilterSection title="Field" collapseSignal={collapseSignal}>
           <select
             className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
             value={p.field}
             onChange={(e) => {
               const nf = e.target.value;
-              const roles = p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
+              const roles = nf === FIELD_ANY ? p.roles : p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
               set({ field: nf, roles });
             }}
           >
-            {FIELDS.map((f) => (
+            {FIELDS_WITH_ANY.map((f) => (
               <option key={f} value={f}>{f}</option>
             ))}
           </select>
         </FilterSection>
 
-        <FilterSection title="Roles">
+        <FilterSection title="Roles" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {p.roles.map((r) => (
               <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
             ))}
             <AddChip
-              options={(FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r))}
+              options={roleOptions}
+              groups={roleGroups}
               onAdd={(v) => set({ roles: [...p.roles, v] })}
             />
           </div>
         </FilterSection>
 
-        <FilterSection title="Seniority">
+        <FilterSection title="Seniority" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {SENIORITIES.map((s) => (
-              <SelectChip key={s} label={s} selected={p.seniority === s} onClick={() => set({ seniority: p.seniority === s ? null : s })} />
+              <SelectChip
+                key={s}
+                label={s}
+                selected={p.seniority.includes(s)}
+                onClick={() => set({ seniority: p.seniority.includes(s) ? p.seniority.filter((x) => x !== s) : [...p.seniority, s] })}
+              />
             ))}
           </div>
         </FilterSection>
 
-        <FilterSection title="Experience">
+        <FilterSection title="Experience" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {YEAR_CHIPS.map((y) => (
               <SelectChip key={y} label={y} selected={p.years.includes(y)} onClick={() => set({ years: p.years.includes(y) ? p.years.filter((x) => x !== y) : [...p.years, y] })} />
@@ -718,15 +768,15 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="English">
+        <FilterSection title="English" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {ENGLISH_LEVELS.map((l) => (
-              <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: l })} />
+              <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: p.english === l ? "" : l })} />
             ))}
           </div>
         </FilterSection>
 
-        <FilterSection title="Location">
+        <FilterSection title="Location" collapseSignal={collapseSignal}>
           <label className="mb-3 flex items-center justify-between text-[13px]">
             <span>Only Remote</span>
             <button type="button" aria-pressed={p.onlyRemote} onClick={() => set({ onlyRemote: !p.onlyRemote })} className="relative h-5 w-9 rounded-full transition-colors" style={{ background: p.onlyRemote ? "var(--color-green)" : "var(--color-border)" }}>
@@ -741,7 +791,7 @@ function FiltersSidebar({
           )}
         </FilterSection>
 
-        <FilterSection title="Sources of search">
+        <FilterSection title="Sources of search" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {ALL_BOARDS.map((b) => {
               const selected = p.sources.includes(b);
@@ -763,7 +813,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Min match">
+        <FilterSection title="Min match" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -778,7 +828,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Salary">
+        <FilterSection title="Salary" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -790,12 +840,12 @@ function FiltersSidebar({
               className="w-full accent-[color:var(--color-green)]"
             />
             <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
-              ${p.minSalary.toLocaleString()}
+              {p.minSalary === 0 ? "Off" : `$${p.minSalary.toLocaleString()}`}
             </span>
           </div>
         </FilterSection>
 
-        <FilterSection title="Posted within">
+        <FilterSection title="Posted within" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {(["any", "24h", "7d", "30d"] as const).map((v) => (
               <SelectChip key={v} label={v === "any" ? "Any time" : v === "24h" ? "24 hours" : v === "7d" ? "7 days" : "30 days"} selected={p.postedWithin === v} onClick={() => set({ postedWithin: v })} />
@@ -836,11 +886,11 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const quiz = useMemo(() => loadQuiz(), []);
-  const seed = useMemo(() => seedFromQuiz(quiz), [quiz]);
+  const seed = useMemo(() => defaultFilters(), []);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [collapseSignal, setCollapseSignal] = useState(0);
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -921,10 +971,11 @@ function JobsScreen() {
               applied={applied}
               onChange={setPending}
               onApply={() => setApplied(pending)}
-              onReset={() => { setPending(seed); setApplied(seed); }}
+              onReset={() => { setPending(seed); setApplied(seed); setCollapseSignal((n) => n + 1); }}
               onSave={() => { /* client-side snapshot placeholder */ }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
+              collapseSignal={collapseSignal}
             />
           </div>
         </div>
