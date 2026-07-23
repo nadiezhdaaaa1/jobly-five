@@ -608,7 +608,7 @@ function FilterSection({ title, children, dirty, onReset }: { title: string; chi
           <button
             type="button"
             onClick={onReset}
-            className="text-[12px] font-normal leading-none text-[color:var(--color-muted-foreground)] underline underline-offset-2 hover:text-[color:var(--color-foreground)]"
+            className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
           >
             Reset
           </button>
