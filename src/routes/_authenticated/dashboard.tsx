@@ -11,6 +11,7 @@ import {
   IconPlus,
   IconX as X,
   IconBolt as Zap,
+  IconAdjustmentsHorizontal,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
