@@ -712,6 +712,29 @@ function FiltersSidebar({
       {open ? (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="flex items-center gap-2 border-b px-4 py-3">
+          <select
+            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[13px]"
+            defaultValue=""
+          >
+            <option value="" disabled>Saved filters</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              const q = loadQuiz();
+              set({
+                roles: q.roles?.length ? q.roles : p.roles,
+                seniority: q.level ? [q.level as Seniority].filter((s) => SENIORITIES.includes(s)) : p.seniority,
+                locations: q.locations?.length ? q.locations : p.locations,
+                english: q.primaryLanguage ?? p.english,
+              });
+            }}
+            className="inline-flex h-[32px] shrink-0 items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            Fill from Profile
+          </button>
+        </div>
         <FilterSection title="Field" collapseSignal={collapseSignal}>
           <select
             className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
