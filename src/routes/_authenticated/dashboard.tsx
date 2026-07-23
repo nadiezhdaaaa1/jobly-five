@@ -717,7 +717,12 @@ function FiltersSidebar({
         <FilterSection title="Seniority">
           <div className="flex flex-wrap gap-1.5">
             {SENIORITIES.map((s) => (
-              <SelectChip key={s} label={s} selected={p.seniority === s} onClick={() => set({ seniority: p.seniority === s ? null : s })} />
+              <SelectChip
+                key={s}
+                label={s}
+                selected={p.seniority.includes(s)}
+                onClick={() => set({ seniority: p.seniority.includes(s) ? p.seniority.filter((x) => x !== s) : [...p.seniority, s] })}
+              />
             ))}
           </div>
         </FilterSection>
