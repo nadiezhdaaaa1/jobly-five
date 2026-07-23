@@ -386,7 +386,7 @@ function TrackerWidget() {
         {items.map((s, i) => (
           <div
             key={s.l}
-            className={`px-4 py-3 ${i % 2 === 0 ? "border-r" : ""} ${i < 2 ? "border-b" : ""}`}
+            className={`px-4 py-3 ${i % 2 === 0 ? "border-r" : ""} ${i < 2 ? "border-t border-b" : ""}`}
           >
             <div className="text-[26px] leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>{s.n}</div>
             <div className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">{s.l}</div>
