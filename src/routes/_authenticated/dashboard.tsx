@@ -369,15 +369,6 @@ function JobCard({ job, onOpen }: { job: Job; onOpen: () => void }) {
       </button>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {job.source === "direct" ? (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">
-            Direct employer
-          </span>
-        ) : (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-secondary)]">
-            Aggregated
-          </span>
-        )}
         <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]">
           {ago(job.postedDays)}
         </span>
