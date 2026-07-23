@@ -113,7 +113,7 @@ type PostedRange = "any" | "24h" | "7d" | "30d";
 type FilterState = {
   field: string;
   roles: string[];
-  seniority: Seniority | null;
+  seniority: Seniority[];
   years: string[]; // year range chips
   english: string;
   onlyRemote: boolean;
@@ -248,10 +248,23 @@ function filterEqual(a: FilterState, b: FilterState) {
 function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
   return jobs.filter((j) => {
     if (j.score < f.minMatch) return false;
-    if (!f.sources.includes(j.board)) return false;
+    if (f.sources.length && !f.sources.includes(j.board)) return false;
     const postedDaysCap = f.postedWithin === "24h" ? 1 : f.postedWithin === "7d" ? 7 : f.postedWithin === "30d" ? 30 : Infinity;
     if (j.postedDays > postedDaysCap) return false;
     if (f.onlyRemote && !j.remote) return false;
+    if (!f.onlyRemote && f.locations.length) {
+      const hit = f.locations.some((l) => j.location.toLowerCase().includes(l.toLowerCase()));
+      if (!hit) return false;
+    }
+    if (f.seniority.length && !f.seniority.includes(j.seniority)) return false;
+    if (f.minSalary > 0) {
+      const nums = (j.salary.match(/\d[\d,]*/g) ?? []).map((s) => Number(s.replace(/,/g, "")));
+      const hasK = /k/i.test(j.salary);
+      const scaled = nums.map((n) => (hasK ? n * 1000 : n));
+      const maxSal = scaled.length ? Math.max(...scaled) : 0;
+      // Slider is monthly; compare against annualized salary when parseable.
+      if (maxSal > 0 && maxSal < f.minSalary * 12) return false;
+    }
     // Loose taxonomy filter: if roles set is non-empty, require some overlap in title/why
     if (f.roles.length) {
       const hay = `${j.title} ${j.why}`.toLowerCase();
