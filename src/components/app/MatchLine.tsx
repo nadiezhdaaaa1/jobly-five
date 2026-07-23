@@ -175,7 +175,11 @@ export function MatchLine({
     compute();
     const ro = new ResizeObserver(compute);
     ro.observe(container);
-    return () => ro.disconnect();
+    window.addEventListener("resize", compute);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", compute);
+    };
   }, [segments, wrap]);
 
   if (!segments.length) return null;
