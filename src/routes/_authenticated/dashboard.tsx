@@ -713,7 +713,7 @@ function FiltersSidebar({
       ) : (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="flex items-center gap-2 border-b px-4 py-3">
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3">
           <button
             type="button"
             onClick={onToggle}
