@@ -607,21 +607,38 @@ function ProfileChip({ label, onRemove }: { label: string; onRemove: () => void 
   );
 }
 
-function AddChip({ options, onAdd }: { options: string[]; onAdd: (v: string) => void }) {
+function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { label: string; items: string[] }[]; onAdd: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useOutsideClose(open, () => setOpen(false));
-  const filtered = options.filter((o) => o.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  const ql = q.toLowerCase();
+  const filteredGroups = groups
+    ? groups
+        .map((g) => ({ label: g.label, items: g.items.filter((o) => o.toLowerCase().includes(ql)) }))
+        .filter((g) => g.items.length)
+    : null;
+  const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
       <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open ? (
-        <div className="absolute left-0 top-8 z-30 w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+        <div className="absolute left-0 top-8 z-30 w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full border-b bg-transparent px-3 py-2 text-[13px] outline-none" />
-          <div className="max-h-[220px] overflow-y-auto">
-            {filtered.length === 0 ? (
+          <div className="max-h-[260px] overflow-y-auto">
+            {filteredGroups ? (
+              filteredGroups.length === 0 ? (
+                <div className="px-3 py-2 text-[12px] text-[color:var(--color-text-muted)]">No matches</div>
+              ) : filteredGroups.map((g) => (
+                <div key={g.label}>
+                  <div className="bg-[color:var(--color-surface-2)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">{g.label}</div>
+                  {g.items.map((o) => (
+                    <button key={o} type="button" onClick={() => { onAdd(o); setOpen(false); setQ(""); }} className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]">{o}</button>
+                  ))}
+                </div>
+              ))
+            ) : filtered.length === 0 ? (
               <div className="px-3 py-2 text-[12px] text-[color:var(--color-text-muted)]">No matches</div>
             ) : filtered.map((o) => (
               <button key={o} type="button" onClick={() => { onAdd(o); setOpen(false); setQ(""); }} className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]">{o}</button>
