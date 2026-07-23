@@ -887,11 +887,11 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const quiz = useMemo(() => loadQuiz(), []);
-  const seed = useMemo(() => seedFromQuiz(quiz), [quiz]);
+  const seed = useMemo(() => defaultFilters(), []);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [collapseSignal, setCollapseSignal] = useState(0);
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -972,10 +972,11 @@ function JobsScreen() {
               applied={applied}
               onChange={setPending}
               onApply={() => setApplied(pending)}
-              onReset={() => { setPending(seed); setApplied(seed); }}
+              onReset={() => { setPending(seed); setApplied(seed); setCollapseSignal((n) => n + 1); }}
               onSave={() => { /* client-side snapshot placeholder */ }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
+              collapseSignal={collapseSignal}
             />
           </div>
         </div>
