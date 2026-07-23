@@ -700,20 +700,29 @@ function FiltersSidebar({
     <aside
       className={`relative flex flex-col rounded-[6px] bg-[color:var(--color-surface-1)] lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] ${open ? "border" : ""}`}
     >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        aria-label={open ? "Collapse filters" : "Expand filters"}
-        className="absolute z-20 inline-flex h-[40px] w-[40px] -translate-x-1/2 items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        style={{ left: 0, top: 12 }}
-      >
-        <IconAdjustmentsHorizontal size={16} strokeWidth={1.8} />
-      </button>
-      {open ? (
+      {!open ? (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-label="Expand filters"
+          className="inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+        </button>
+      ) : (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="flex items-center gap-2 border-b px-4 py-3">
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-expanded={open}
+            aria-label="Collapse filters"
+            className="inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+          </button>
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
             defaultValue=""
@@ -928,7 +937,7 @@ function FiltersSidebar({
         </button>
       </div>
       </>
-      ) : null}
+      )}
     </aside>
   );
 }
