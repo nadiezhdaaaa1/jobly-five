@@ -98,31 +98,7 @@ function ensure(id: string): JobRecord {
 function seedFrom(jobs: Job[], extras: Seed[] = []) {
   for (const j of jobs) {
     if (!records.has(j.id)) {
-      const r: JobRecord = { status: (j.initialState as JobStatus) ?? "default", notes: "" };
-      if (r.status === "saved") r.savedAt = today(-2);
-      if (r.status === "applied") {
-        r.savedAt = today(-3);
-        r.appliedAt = today(-1);
-      }
-      if (r.status === "interview") {
-        r.savedAt = today(-6);
-        r.appliedAt = today(-4);
-        r.interviewAt = today(-1);
-      }
-      if (r.status === "offer") {
-        r.savedAt = today(-14);
-        r.appliedAt = today(-10);
-        r.interviewAt = today(-5);
-        r.offerAt = today(0);
-      }
-      if (r.status === "rejection") {
-        r.savedAt = today(-10);
-        r.appliedAt = today(-7);
-        r.rejectionAt = today(0);
-      }
-      const rem = REMINDER_SEEDS[j.id];
-      if (rem && r.status === "interview") r.reminderAt = rem;
-      records.set(j.id, r);
+      records.set(j.id, { status: "default", notes: "" });
     }
   }
   for (const s of extras) {
