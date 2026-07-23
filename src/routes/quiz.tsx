@@ -1598,7 +1598,7 @@ export function ExperienceStep({
 }) {
   const level = answers.level;
   const years = answers.years ?? 0;
-  const primary = answers.primaryLanguage ?? "English";
+  const primary = answers.primaryLanguage ?? "Native speaker";
   const extras: AdditionalLanguage[] = answers.additionalLanguages ?? [];
   const [pendingLang, setPendingLang] = useState<string>("");
   const [pendingLevel, setPendingLevel] = useState<ProficiencyLevel>("B2");
@@ -1624,9 +1624,9 @@ export function ExperienceStep({
     ? "Mgmt"
     : answers.track;
 
-  // Initialize primary language default on mount.
+  // Initialize English level default on mount.
   useEffect(() => {
-    if (!answers.primaryLanguage) onChange({ primaryLanguage: "English" });
+    if (!answers.primaryLanguage) onChange({ primaryLanguage: "Native speaker" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1656,8 +1656,8 @@ export function ExperienceStep({
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
 
-  const usedLangs = new Set([primary, ...extras.map((e) => e.lang)]);
-  const availableLangs = POPULAR_LANGUAGES.filter((l) => !usedLangs.has(l));
+  const usedLangs = new Set(extras.map((e) => e.lang));
+  const availableLangs = POPULAR_LANGUAGES.filter((l) => l !== "English" && !usedLangs.has(l));
   const addExtra = () => {
     if (!pendingLang) return;
     onChange({
@@ -1862,22 +1862,16 @@ export function ExperienceStep({
       </div>
 
       <div className="mt-6">
-        <label className="block text-sm font-light text-[#090B0C]">Primary language</label>
+        <label className="block text-sm font-light text-[#090B0C]">English level</label>
         <div className="mt-2">
           <select
             value={primary}
-            onChange={(ev) => {
-              const lang = ev.target.value;
-              onChange({
-                primaryLanguage: lang,
-                additionalLanguages: extras.filter((e) => e.lang !== lang),
-              });
-            }}
+            onChange={(ev) => onChange({ primaryLanguage: ev.target.value })}
             className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-            aria-label="Select primary language"
+            aria-label="Select English level"
           >
-            {POPULAR_LANGUAGES.map((lang) => (
-              <option key={lang} value={lang}>{lang}</option>
+            {ENGLISH_LEVELS.map((lvl) => (
+              <option key={lvl} value={lvl}>{lvl}</option>
             ))}
           </select>
         </div>
