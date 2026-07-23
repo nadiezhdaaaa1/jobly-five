@@ -20,6 +20,7 @@ import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import { loadQuiz } from "@/lib/quiz-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
