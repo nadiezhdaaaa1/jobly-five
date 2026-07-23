@@ -884,7 +884,7 @@ function FiltersSidebar({
             <input
               type="range"
               min={0}
-              max={100}
+              max={95}
               step={5}
               value={p.minMatch}
               onChange={(e) => set({ minMatch: Number(e.target.value) })}
