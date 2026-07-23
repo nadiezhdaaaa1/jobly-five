@@ -256,7 +256,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       type="button"
                       role="menuitem"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); }}
+                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); onClose(); }}
                     >
                       {label}
                     </button>
@@ -283,7 +283,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       type="button"
                       role="menuitem"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
+                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
                     >
                       {label}
                     </button>
