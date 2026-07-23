@@ -69,8 +69,9 @@ function ProfileScreen() {
   useEffect(() => setQuiz(loadQuiz()), []);
 
   const email = user?.email ?? "serhii@example.com";
-  const displayName = quiz.email ? "Serhii Kovalenko" : "Serhii Kovalenko";
-  const [name, setName] = useState(displayName);
+  const [name, setName] = useState("");
+  const [nameSaving, setNameSaving] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarPath, setAvatarPath] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -83,11 +84,17 @@ function ProfileScreen() {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, display_name")
         .eq("id", user.id)
         .maybeSingle();
+      if (!active) return;
+      const fallback =
+        (user.user_metadata?.full_name as string | undefined) ??
+        (user.user_metadata?.name as string | undefined) ??
+        (user.email ? user.email.split("@")[0] : "");
+      setName(data?.display_name ?? fallback ?? "");
       const path = data?.avatar_url ?? null;
-      if (!active || !path) return;
+      if (!path) return;
       setAvatarPath(path);
       const { data: signed } = await supabase.storage
         .from("avatars")
@@ -98,6 +105,32 @@ function ProfileScreen() {
       active = false;
     };
   }, [user]);
+
+  async function saveName() {
+    if (!user) return;
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setNameError("Name can't be empty.");
+      return;
+    }
+    setNameSaving(true);
+    setNameError(null);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: trimmed })
+        .eq("id", user.id);
+      if (error) throw error;
+      setName(trimmed);
+      setEditing(null);
+      showSaved("identity");
+      window.setTimeout(() => identityPencilRef.current?.focus(), 0);
+    } catch (err) {
+      setNameError(err instanceof Error ? err.message : "Save failed.");
+    } finally {
+      setNameSaving(false);
+    }
+  }
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -246,9 +279,7 @@ function ProfileScreen() {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  setEditing(null);
-                  showSaved("identity");
-                  window.setTimeout(() => identityPencilRef.current?.focus(), 0);
+                  void saveName();
                 }}
                 className="flex flex-wrap items-center gap-2"
               >
@@ -259,17 +290,19 @@ function ProfileScreen() {
                   onChange={(e) => setName(e.target.value)}
                   className="h-10 min-w-0 flex-1 rounded-[4px] border px-3 text-[15px] sm:flex-none sm:w-64"
                 />
-                <button type="submit" className="h-10 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">Save</button>
+                <button type="submit" disabled={nameSaving} className="h-10 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-60">{nameSaving ? "Saving…" : "Save"}</button>
                 <button
                   type="button"
                   onClick={() => {
                     setEditing(null);
+                    setNameError(null);
                     window.setTimeout(() => identityPencilRef.current?.focus(), 0);
                   }}
                   className="h-10 rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   Cancel
                 </button>
+                {nameError ? <div className="basis-full text-[12px] text-[color:var(--color-danger)]">{nameError}</div> : null}
               </form>
             ) : (
               <div>
