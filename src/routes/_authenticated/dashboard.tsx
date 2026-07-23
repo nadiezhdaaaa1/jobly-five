@@ -915,7 +915,7 @@ function FiltersSidebar({
               <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
               <div
                 className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
-                style={{ left: "11px", right: `calc(11px + (100% - 22px) * ${1 - p.minMatch / 95})` }}
+                style={{ left: "0px", right: `calc(11px + (100% - 22px) * ${1 - p.minMatch / 95})` }}
               />
               <input
                 type="range"
@@ -944,7 +944,7 @@ function FiltersSidebar({
                     <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
                     <div
                       className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-green)]"
-                      style={{ left: "11px", right: `calc(11px + (100% - 22px) * ${1 - currentIdx / maxIdx})` }}
+                      style={{ left: "0px", right: `calc(11px + (100% - 22px) * ${1 - currentIdx / maxIdx})` }}
                     />
                     <input
                       type="range"
