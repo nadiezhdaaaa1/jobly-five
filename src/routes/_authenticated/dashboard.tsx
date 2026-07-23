@@ -606,6 +606,38 @@ function DigestWall({ onOpen }: { onOpen: (job: Job) => void }) {
   const allDays = useMemo(() => getDigestDays(), []);
   const [visibleCount, setVisibleCount] = useState(2);
   const sentinel = useRef<HTMLDivElement | null>(null);
+  const { user } = useAuth();
+  const [displayName, setDisplayName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setDisplayName(null);
+      return;
+    }
+    let cancelled = false;
+    supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return;
+        setDisplayName(data?.display_name ?? null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const firstName = (() => {
+    const source =
+      displayName ||
+      (user?.user_metadata?.full_name as string | undefined) ||
+      (user?.user_metadata?.name as string | undefined) ||
+      user?.email?.split("@")[0] ||
+      "";
+    return source.trim().split(/\s+/)[0] ?? "";
+  })();
 
   useEffect(() => {
     if (visibleCount >= allDays.length) return;
@@ -626,7 +658,7 @@ function DigestWall({ onOpen }: { onOpen: (job: Job) => void }) {
   return (
     <section>
       <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
-        Good morning, Serhii
+        {firstName ? `Good morning, ${firstName}` : "Good morning"}
       </h1>
       <p className="mt-1 text-[14px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
         Latest digest arrived{" "}
