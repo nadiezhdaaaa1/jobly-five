@@ -729,6 +729,7 @@ function FiltersSidebar({
   saved: SavedFilter[];
   onLoadSaved: (id: string) => void;
 }) {
+  const activeCount = activeFilterCount(applied);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
@@ -761,9 +762,17 @@ function FiltersSidebar({
         onClick={onToggle}
         aria-expanded={open}
         aria-label={open ? "Close filters" : "Open filters"}
-        className="lg:hidden fixed top-[72px] right-4 z-40 inline-flex h-[32px] w-[32px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
+        className="lg:hidden fixed top-[72px] right-4 z-40 inline-flex h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-sm hover:bg-[color:var(--color-surface-2)]"
       >
-        <IconAdjustmentsHorizontal size={18} strokeWidth={1.8} />
+        <IconAdjustmentsHorizontal size={22} strokeWidth={1.8} />
+        {activeCount > 0 ? (
+          <span
+            aria-label={`${activeCount} active filters`}
+            className="absolute -bottom-1 -left-1 inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-full bg-[color:var(--color-accent)] px-1 text-[11px] font-semibold leading-none text-[color:var(--color-on-accent)] ring-2 ring-[color:var(--color-background)]"
+          >
+            {activeCount}
+          </span>
+        ) : null}
       </button>
       {/* Mobile/Tablet drawer backdrop */}
       {open ? (
