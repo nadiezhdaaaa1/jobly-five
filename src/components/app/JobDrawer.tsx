@@ -434,6 +434,7 @@ function PipelinePanel({
   ];
   return (
     <div className="flex flex-col gap-4">
+      {status === "saved" ? null : (
       <div className="grid grid-cols-2 gap-2">
         <button
           type="button"
@@ -451,6 +452,8 @@ function PipelinePanel({
           <Zap size={13} strokeWidth={2} fill="currentColor" />
         </button>
       </div>
+      )}
+      {status === "saved" ? null : (
       <div>
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</div>
         <div className="mt-2 grid grid-cols-3 gap-1 rounded-[4px] border p-1">
@@ -470,6 +473,7 @@ function PipelinePanel({
           ))}
         </div>
       </div>
+      )}
       <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
 
       {status === "interview" ? (
