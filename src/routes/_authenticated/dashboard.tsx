@@ -124,6 +124,24 @@ type FilterState = {
   postedWithin: PostedRange;
 };
 
+type SavedFilter = { id: string; name: string; filters: FilterState };
+const SAVED_FILTERS_KEY = "jobly.savedFilters.v1";
+function loadSavedFilters(): SavedFilter[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(SAVED_FILTERS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as SavedFilter[]) : [];
+  } catch {
+    return [];
+  }
+}
+function persistSavedFilters(list: SavedFilter[]) {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(SAVED_FILTERS_KEY, JSON.stringify(list)); } catch { /* ignore */ }
+}
+
 const YEAR_CHIPS = ["No experience", "1–2 years", "3–5 years", "6–9 years", "10 years or more"] as const;
 
 // Field → Roles taxonomy (from docs/jobly-roles-and-stacks.md).
@@ -671,6 +689,8 @@ function FiltersSidebar({
   open,
   onToggle,
   collapseSignal,
+  saved,
+  onLoadSaved,
 }: {
   pending: FilterState;
   applied: FilterState;
@@ -681,6 +701,8 @@ function FiltersSidebar({
   open: boolean;
   onToggle: () => void;
   collapseSignal: number;
+  saved: SavedFilter[];
+  onLoadSaved: (id: string) => void;
 }) {
   const dirty = !filterEqual(pending, applied);
   const p = pending;
@@ -725,9 +747,17 @@ function FiltersSidebar({
           </button>
           <select
             className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
-            defaultValue=""
+            value=""
+            onChange={(e) => {
+              const id = e.target.value;
+              if (id) onLoadSaved(id);
+              e.currentTarget.value = "";
+            }}
           >
-            <option value="" disabled>Saved filters</option>
+            <option value="" disabled>{saved.length ? "Saved filters" : "No saved filters"}</option>
+            {saved.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
           </select>
           <button
             type="button"
@@ -981,6 +1011,8 @@ function JobsScreen() {
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [collapseSignal, setCollapseSignal] = useState(0);
+  const [saved, setSaved] = useState<SavedFilter[]>(() => loadSavedFilters());
+  useEffect(() => { persistSavedFilters(saved); }, [saved]);
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -1062,10 +1094,24 @@ function JobsScreen() {
               onChange={setPending}
               onApply={() => setApplied(pending)}
               onReset={() => { setPending(seed); setApplied(seed); setCollapseSignal((n) => n + 1); }}
-              onSave={() => { /* client-side snapshot placeholder */ }}
+              onSave={() => {
+                const name = window.prompt("Name this filter", `Filter ${saved.length + 1}`)?.trim();
+                if (!name) return;
+                const entry: SavedFilter = {
+                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : String(Date.now()),
+                  name,
+                  filters: pending,
+                };
+                setSaved((list) => [...list, entry]);
+              }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
               collapseSignal={collapseSignal}
+              saved={saved}
+              onLoadSaved={(id) => {
+                const s = saved.find((x) => x.id === id);
+                if (s) setPending(s.filters);
+              }}
             />
           </div>
         </div>
