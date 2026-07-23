@@ -659,6 +659,7 @@ function FiltersSidebar({
   onSave,
   open,
   onToggle,
+  collapseSignal,
 }: {
   pending: FilterState;
   applied: FilterState;
@@ -668,10 +669,21 @@ function FiltersSidebar({
   onSave: () => void;
   open: boolean;
   onToggle: () => void;
+  collapseSignal: number;
 }) {
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
+
+  // When Field=Any, the Roles picker groups options by field. Otherwise it's a
+  // flat list of the current field's roles.
+  const anyField = p.field === FIELD_ANY;
+  const roleGroups = anyField
+    ? FIELDS.map((f) => ({ label: f, items: FIELD_ROLES[f].filter((r) => !p.roles.includes(r)) })).filter((g) => g.items.length)
+    : undefined;
+  const roleOptions = anyField
+    ? FIELDS.flatMap((f) => FIELD_ROLES[f]).filter((r) => !p.roles.includes(r))
+    : (FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r));
 
   return (
     <aside
@@ -690,35 +702,36 @@ function FiltersSidebar({
       {open ? (
       <>
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <FilterSection title="Field">
+        <FilterSection title="Field" collapseSignal={collapseSignal}>
           <select
             className="w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1.5 text-[13px]"
             value={p.field}
             onChange={(e) => {
               const nf = e.target.value;
-              const roles = p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
+              const roles = nf === FIELD_ANY ? p.roles : p.roles.filter((r) => FIELD_ROLES[nf]?.includes(r));
               set({ field: nf, roles });
             }}
           >
-            {FIELDS.map((f) => (
+            {FIELDS_WITH_ANY.map((f) => (
               <option key={f} value={f}>{f}</option>
             ))}
           </select>
         </FilterSection>
 
-        <FilterSection title="Roles">
+        <FilterSection title="Roles" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {p.roles.map((r) => (
               <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
             ))}
             <AddChip
-              options={(FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r))}
+              options={roleOptions}
+              groups={roleGroups}
               onAdd={(v) => set({ roles: [...p.roles, v] })}
             />
           </div>
         </FilterSection>
 
-        <FilterSection title="Seniority">
+        <FilterSection title="Seniority" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {SENIORITIES.map((s) => (
               <SelectChip
@@ -731,7 +744,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Experience">
+        <FilterSection title="Experience" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {YEAR_CHIPS.map((y) => (
               <SelectChip key={y} label={y} selected={p.years.includes(y)} onClick={() => set({ years: p.years.includes(y) ? p.years.filter((x) => x !== y) : [...p.years, y] })} />
@@ -739,15 +752,15 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="English">
+        <FilterSection title="English" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {ENGLISH_LEVELS.map((l) => (
-              <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: l })} />
+              <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: p.english === l ? "" : l })} />
             ))}
           </div>
         </FilterSection>
 
-        <FilterSection title="Location">
+        <FilterSection title="Location" collapseSignal={collapseSignal}>
           <label className="mb-3 flex items-center justify-between text-[13px]">
             <span>Only Remote</span>
             <button type="button" aria-pressed={p.onlyRemote} onClick={() => set({ onlyRemote: !p.onlyRemote })} className="relative h-5 w-9 rounded-full transition-colors" style={{ background: p.onlyRemote ? "var(--color-green)" : "var(--color-border)" }}>
@@ -762,7 +775,7 @@ function FiltersSidebar({
           )}
         </FilterSection>
 
-        <FilterSection title="Sources of search">
+        <FilterSection title="Sources of search" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {ALL_BOARDS.map((b) => {
               const selected = p.sources.includes(b);
@@ -784,7 +797,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Min match">
+        <FilterSection title="Min match" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -799,7 +812,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Salary">
+        <FilterSection title="Salary" collapseSignal={collapseSignal}>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -811,12 +824,12 @@ function FiltersSidebar({
               className="w-full accent-[color:var(--color-green)]"
             />
             <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
-              ${p.minSalary.toLocaleString()}
+              {p.minSalary === 0 ? "Off" : `$${p.minSalary.toLocaleString()}`}
             </span>
           </div>
         </FilterSection>
 
-        <FilterSection title="Posted within">
+        <FilterSection title="Posted within" collapseSignal={collapseSignal}>
           <div className="flex flex-wrap gap-1.5">
             {(["any", "24h", "7d", "30d"] as const).map((v) => (
               <SelectChip key={v} label={v === "any" ? "Any time" : v === "24h" ? "24 hours" : v === "7d" ? "7 days" : "30 days"} selected={p.postedWithin === v} onClick={() => set({ postedWithin: v })} />
