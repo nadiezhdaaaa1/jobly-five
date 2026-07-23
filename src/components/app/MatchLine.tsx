@@ -130,7 +130,7 @@ export function MatchLine({
     const compute = () => {
       const cw = container.clientWidth;
       if (!cw) return;
-      const lines = cw < 640 ? 2 : 1;
+      const lines = typeof window !== "undefined" && window.innerWidth < 768 ? 2 : 1;
       setMaxLines(lines);
       const kids = Array.from(measure.children) as HTMLElement[];
       const reserve = 44; // room for "+ N" chip
