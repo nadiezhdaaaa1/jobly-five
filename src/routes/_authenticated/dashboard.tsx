@@ -401,9 +401,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         >
           {direct ? "Direct employer" : "Aggregated"} · {job.board}
         </span>
-        <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]">
-          {ago(job.postedDays)}
-        </span>
 
         <div className="ml-auto flex items-center gap-2">
           <div className="relative" ref={dislikeRef}>
