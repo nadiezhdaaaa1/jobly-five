@@ -4,6 +4,7 @@ import {
   IconBookmark as Bookmark,
   IconChevronDown as ChevronDown,
   IconChevronUp as ChevronUp,
+  IconChevronRight,
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
   IconBan,
