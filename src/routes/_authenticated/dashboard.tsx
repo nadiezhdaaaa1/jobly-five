@@ -1011,6 +1011,8 @@ function JobsScreen() {
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [collapseSignal, setCollapseSignal] = useState(0);
+  const [saved, setSaved] = useState<SavedFilter[]>(() => loadSavedFilters());
+  useEffect(() => { persistSavedFilters(saved); }, [saved]);
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -1092,10 +1094,24 @@ function JobsScreen() {
               onChange={setPending}
               onApply={() => setApplied(pending)}
               onReset={() => { setPending(seed); setApplied(seed); setCollapseSignal((n) => n + 1); }}
-              onSave={() => { /* client-side snapshot placeholder */ }}
+              onSave={() => {
+                const name = window.prompt("Name this filter", `Filter ${saved.length + 1}`)?.trim();
+                if (!name) return;
+                const entry: SavedFilter = {
+                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : String(Date.now()),
+                  name,
+                  filters: pending,
+                };
+                setSaved((list) => [...list, entry]);
+              }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
               collapseSignal={collapseSignal}
+              saved={saved}
+              onLoadSaved={(id) => {
+                const s = saved.find((x) => x.id === id);
+                if (s) setPending(s.filters);
+              }}
             />
           </div>
         </div>
