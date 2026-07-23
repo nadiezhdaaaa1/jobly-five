@@ -581,8 +581,12 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 // Filters sidebar
 // ============================================================
 
-function FilterSection({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+function FilterSection({ title, children, defaultOpen = true, collapseSignal }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number }) {
   const [open, setOpen] = useState(defaultOpen);
+  useEffect(() => {
+    if (collapseSignal === undefined) return;
+    setOpen(false);
+  }, [collapseSignal]);
   return (
     <div className="border-b">
       <button type="button" onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between px-4 py-3 text-left">
