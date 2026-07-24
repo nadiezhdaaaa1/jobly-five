@@ -276,7 +276,7 @@ function KanbanCard({
         ) : status === "saved" ? (
           <>
             <div className="relative" ref={flagRef}>
-              <IconBtn label="Report" onClick={() => setFlagOpen((v) => !v)}>
+              <IconBtn label="Report" noBorder onClick={() => setFlagOpen((v) => !v)}>
                 <Flag size={16} strokeWidth={1.6} />
               </IconBtn>
               {flagOpen ? (
@@ -288,7 +288,7 @@ function KanbanCard({
               ) : null}
             </div>
             <div className="relative" ref={dislikeRef}>
-              <IconBtn label="Dislike" onClick={() => setDislikeOpen((v) => !v)}>
+              <IconBtn label="Dislike" noBorder onClick={() => setDislikeOpen((v) => !v)}>
                 <ThumbsDown size={16} strokeWidth={1.6} />
               </IconBtn>
               {dislikeOpen ? (
