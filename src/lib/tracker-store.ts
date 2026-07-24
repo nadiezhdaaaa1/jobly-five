@@ -415,6 +415,27 @@ export function getJobRecord(id: string): JobRecord {
   return ensure(id);
 }
 
+// Reminder-conflict helper — returns ids of other tracker records whose
+// reminder falls on the same wall-clock minute as `iso`. Used by the
+// reminder dialogs to warn (not block) the user about overlapping reminders.
+export function findReminderConflicts(iso: string, excludeId?: string): string[] {
+  if (!iso) return [];
+  const target = minuteKey(iso);
+  const out: string[] = [];
+  for (const [id, r] of records) {
+    if (id === excludeId) continue;
+    if (!r.reminderAt) continue;
+    if (r.archived) continue;
+    if (minuteKey(r.reminderAt) === target) out.push(id);
+  }
+  return out;
+}
+
+function minuteKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${d.getHours()}-${d.getMinutes()}`;
+}
+
 // Hooks
 export function useJobRecord(id: string): JobRecord {
   const get = () => {

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { IconX as X, IconCalendar } from "@tabler/icons-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { findReminderConflicts } from "@/lib/tracker-store";
+import { getDbJobById } from "@/lib/jobs-store";
 
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function formatUS(d: Date) {
@@ -73,12 +75,14 @@ export function InterviewReminderDialog({
   open,
   initialIso,
   jobTitle,
+  jobId,
   onSave,
   onCancel,
 }: {
   open: boolean;
   initialIso?: string | null;
   jobTitle?: string;
+  jobId?: string;
   onSave: (iso: string) => void;
   onCancel: () => void;
 }) {
@@ -114,6 +118,14 @@ export function InterviewReminderDialog({
     const iso = new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString();
     onSave(iso);
   };
+
+  // Compute the ISO for the currently selected date+time to check conflicts.
+  const currentIso = (() => {
+    const [y, m, d] = date.split("-").map(Number);
+    const [hh, mm] = time.split(":").map(Number);
+    return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString();
+  })();
+  const conflicts = findReminderConflicts(currentIso, jobId);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true">
@@ -173,6 +185,24 @@ export function InterviewReminderDialog({
             <TimePickerAmPm value={time} onChange={setTime} />
           </div>
         </div>
+        {conflicts.length > 0 ? (
+          <div
+            className="mt-3 rounded-[4px] border px-3 py-2 text-[12px]"
+            style={{ background: "#FFEDD4", borderColor: "#FDBA74", color: "#9A3412" }}
+          >
+            <div style={{ fontWeight: 600 }}>Heads up — reminder conflict</div>
+            <div style={{ fontWeight: 300 }}>
+              You already have a reminder at this time for{" "}
+              {conflicts
+                .map((id) => {
+                  const j = getDbJobById(id);
+                  return j ? `${j.title} · ${j.company}` : id;
+                })
+                .join("; ")}
+              . You can still save it.
+            </div>
+          </div>
+        ) : null}
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"

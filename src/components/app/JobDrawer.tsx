@@ -609,6 +609,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
       <InterviewReminderDialog
         open={reminderOpen}
+        jobId={job.id}
         jobTitle={job.title}
         initialIso={record.reminderAt}
         onCancel={() => setReminderOpen(false)}
@@ -623,6 +624,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
       {pending?.target === "interview" ? (
         <InterviewTransitionDialog
           open
+          jobId={job.id}
           initialStage={record.interviewStage}
           initialReminderIso={record.reminderAt}
           onCancel={cancelPending}
@@ -649,6 +651,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
       {pending?.target === "offer" ? (
         <OfferTransitionDialog
           open
+          jobId={job.id}
           initialStage={record.offerStatus}
           initialReminderIso={record.reminderAt}
           initialDetails={record.offerDetails}

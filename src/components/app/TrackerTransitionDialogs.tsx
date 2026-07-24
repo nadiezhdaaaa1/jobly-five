@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { IconX as X, IconCalendar } from "@tabler/icons-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { findReminderConflicts } from "@/lib/tracker-store";
+import { getDbJobById } from "@/lib/jobs-store";
 
 export const INTERVIEW_STAGES = [
   "Recruiter screen",
@@ -127,9 +129,11 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
 function ReminderInline({
   reminderIso,
   onChange,
+  jobId,
 }: {
   reminderIso: string | null;
   onChange: (iso: string | null) => void;
+  jobId?: string;
 }) {
   const enabled = !!reminderIso;
   const initial = reminderIso ? partsFromIso(reminderIso) : { date: defaultDate(), time: "14:00" };
@@ -151,6 +155,8 @@ function ReminderInline({
     setTime(nt);
     onChange(isoFrom(nd, nt));
   };
+
+  const conflicts = enabled ? findReminderConflicts(isoFrom(date, time), jobId) : [];
 
   return (
     <div>
@@ -210,6 +216,24 @@ function ReminderInline({
           </div>
         </div>
       ) : null}
+      {enabled && conflicts.length > 0 ? (
+        <div
+          className="mt-3 rounded-[4px] border px-3 py-2 text-[12px]"
+          style={{ background: "#FFEDD4", borderColor: "#FDBA74", color: "#9A3412" }}
+        >
+          <div style={{ fontWeight: 600 }}>Heads up — reminder conflict</div>
+          <div style={{ fontWeight: 300 }}>
+            You already have a reminder at this time for{" "}
+            {conflicts
+              .map((id) => {
+                const j = getDbJobById(id);
+                return j ? `${j.title} · ${j.company}` : id;
+              })
+              .join("; ")}
+            . You can still save it.
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -239,12 +263,14 @@ export function InterviewTransitionDialog({
   open,
   initialStage,
   initialReminderIso,
+  jobId,
   onCancel,
   onSave,
 }: {
   open: boolean;
   initialStage?: string;
   initialReminderIso?: string;
+  jobId?: string;
   onCancel: () => void;
   onSave: (payload: { stage: string; reminderIso: string | null }) => void;
 }) {
@@ -272,7 +298,7 @@ export function InterviewTransitionDialog({
           ))}
         </select>
       </div>
-      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} />
+      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
     </DialogShell>
   );
 }
@@ -319,6 +345,7 @@ export function OfferTransitionDialog({
   initialStage,
   initialReminderIso,
   initialDetails,
+  jobId,
   onCancel,
   onSave,
 }: {
@@ -326,6 +353,7 @@ export function OfferTransitionDialog({
   initialStage?: string;
   initialReminderIso?: string;
   initialDetails?: string;
+  jobId?: string;
   onCancel: () => void;
   onSave: (payload: { stage: string; reminderIso: string | null; details: string }) => void;
 }) {
@@ -353,7 +381,7 @@ export function OfferTransitionDialog({
           ))}
         </select>
       </div>
-      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} />
+      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
       <div className="flex flex-col gap-1">
         <span className="text-[12px] text-[color:var(--color-text-muted)]">Offer details</span>
         <textarea
