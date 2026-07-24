@@ -754,7 +754,7 @@ function TrackerScreen() {
           <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
             Tracker
           </h1>
-          <div className="flex items-center gap-4" style={{ height: 24 }}>
+          <div className="flex items-center gap-6" style={{ height: 24 }}>
             <label className="flex cursor-pointer items-center gap-2">
               <Toggle checked={showArchived} onChange={setShowArchived} label="Show archived" />
               <span className="text-[14px]" style={{ color: MUTED_TEXT }}>Show archived</span>
