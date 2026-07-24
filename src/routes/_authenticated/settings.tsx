@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlan, setPlan, type Plan } from "@/lib/plan-store";
