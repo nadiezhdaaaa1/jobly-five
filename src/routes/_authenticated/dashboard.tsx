@@ -935,7 +935,7 @@ function FiltersSidebar({
         </FilterSection>
 
         <FilterSection title="Min match" collapseSignal={collapseSignal} dirty={p.minMatch !== 50} onReset={() => set({ minMatch: 50 })}>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 -mb-4">
             <div className="relative h-8 flex-1">
               <div className="absolute left-[11px] right-[11px] top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-[color:var(--color-surface-2)]" />
               <div
