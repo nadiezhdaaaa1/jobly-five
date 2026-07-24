@@ -25,7 +25,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
-import { useBlockedCompanies } from "@/lib/blocked-companies-store";
+import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -605,13 +605,17 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </button>
             {dislikeOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                {["Not relevant to my role", "Wrong seniority", "Compensation too low"].map((label) => (
+                {["Not relevant to my role", "Wrong seniority", "Compensation too low", "Don't recommend the company"].map((label) => (
                   <button
                     key={label}
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => { setDigestSession(job.id, "disliked"); setDislikeOpen(false); }}
+                    onClick={() => {
+                      if (label === "Don't recommend the company") blockCompany(job.company);
+                      setDigestSession(job.id, "disliked");
+                      setDislikeOpen(false);
+                    }}
                   >
                     {label}
                   </button>
