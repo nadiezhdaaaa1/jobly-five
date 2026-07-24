@@ -604,14 +604,16 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </button>
           ) : null}
           <div className="relative" ref={flagRef}>
-            <button
-              type="button"
-              aria-label="Report"
-              onClick={() => setFlagOpen((v) => !v)}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <Flag size={15} strokeWidth={1.6} />
-            </button>
+            <IconTooltip label="Report">
+              <button
+                type="button"
+                aria-label="Report"
+                onClick={() => setFlagOpen((v) => !v)}
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <Flag size={15} strokeWidth={1.6} />
+              </button>
+            </IconTooltip>
             {flagOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Spam/Scam", "Ghost/Expired", "Duplicate posting"].map((label) => (
@@ -630,14 +632,16 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           </div>
 
           <div className="relative -ml-1" ref={dislikeRef}>
-            <button
-              type="button"
-              aria-label="Dislike"
-              onClick={() => setDislikeOpen((v) => !v)}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <ThumbsDown size={15} strokeWidth={1.6} />
-            </button>
+            <IconTooltip label="Dislike">
+              <button
+                type="button"
+                aria-label="Dislike"
+                onClick={() => setDislikeOpen((v) => !v)}
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <ThumbsDown size={15} strokeWidth={1.6} />
+              </button>
+            </IconTooltip>
             {dislikeOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Not relevant to my role", "Wrong seniority", "Compensation too low", "Don't recommend the company"].map((label) => (
@@ -659,20 +663,22 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             ) : null}
           </div>
 
-          <button
-            type="button"
-            aria-label="Save"
-            aria-pressed={saved}
-            onClick={() => setStatus(job.id, saved ? "default" : "saved")}
-            className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
-            style={{
-              borderColor: saved ? "var(--color-green)" : undefined,
-              background: saved ? "var(--color-mint)" : undefined,
-              color: saved ? "var(--color-green)" : "var(--color-text-muted)",
-            }}
-          >
-            <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
-          </button>
+          <IconTooltip label={saved ? "Saved" : "Save"}>
+            <button
+              type="button"
+              aria-label="Save"
+              aria-pressed={saved}
+              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
+              style={{
+                borderColor: saved ? "var(--color-green)" : undefined,
+                background: saved ? "var(--color-mint)" : undefined,
+                color: saved ? "var(--color-green)" : "var(--color-text-muted)",
+              }}
+            >
+              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+            </button>
+          </IconTooltip>
 
           <button
             type="button"
