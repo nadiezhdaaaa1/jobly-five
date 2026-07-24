@@ -586,43 +586,13 @@ export function skillsForRoles(roles: string[], _field?: string) {
 }
 
 // ---- US locations ----
-export const USA_LOCATIONS = [
-  "New York City, NY","Los Angeles, CA","San Francisco, CA","Chicago, IL","Houston, TX",
-  "Dallas, TX","Austin, TX","Seattle, WA","Boston, MA","Denver, CO","Atlanta, GA","Miami, FL",
-  "Phoenix, AZ","Philadelphia, PA","Portland, OR","San Diego, CA","San Jose, CA","Washington, DC",
-  "Nashville, TN","Detroit, MI","Minneapolis, MN","Raleigh, NC","Charlotte, NC","Salt Lake City, UT",
-  "Tampa, FL","Orlando, FL","Kansas City, MO","St. Louis, MO","Indianapolis, IN","Columbus, OH",
-  "Cleveland, OH","Cincinnati, OH","Pittsburgh, PA","Baltimore, MD","Milwaukee, WI","Sacramento, CA",
-  "Riverside, CA","Las Vegas, NV","Albuquerque, NM","Oklahoma City, OK","Tulsa, OK","Memphis, TN",
-  "Louisville, KY","Birmingham, AL","Richmond, VA","New Orleans, LA","Buffalo, NY","Rochester, NY",
-  "Providence, RI","Hartford, CT","Boise, ID","Madison, WI","Des Moines, IA","Omaha, NE",
-];
-
-const STATE_NAMES: Record<string, string> = {
-  AL:"Alabama",AK:"Alaska",AZ:"Arizona",AR:"Arkansas",CA:"California",CO:"Colorado",CT:"Connecticut",
-  DE:"Delaware",FL:"Florida",GA:"Georgia",HI:"Hawaii",ID:"Idaho",IL:"Illinois",IN:"Indiana",IA:"Iowa",
-  KS:"Kansas",KY:"Kentucky",LA:"Louisiana",ME:"Maine",MD:"Maryland",MA:"Massachusetts",MI:"Michigan",
-  MN:"Minnesota",MS:"Mississippi",MO:"Missouri",MT:"Montana",NE:"Nebraska",NV:"Nevada",NH:"New Hampshire",
-  NJ:"New Jersey",NM:"New Mexico",NY:"New York",NC:"North Carolina",ND:"North Dakota",OH:"Ohio",
-  OK:"Oklahoma",OR:"Oregon",PA:"Pennsylvania",RI:"Rhode Island",SC:"South Carolina",SD:"South Dakota",
-  TN:"Tennessee",TX:"Texas",UT:"Utah",VT:"Vermont",VA:"Virginia",WA:"Washington",WV:"West Virginia",
-  WI:"Wisconsin",WY:"Wyoming",DC:"District of Columbia",
-};
-
-export const CITIES_BY_STATE: Record<string, string[]> = (() => {
-  const map: Record<string, string[]> = {};
-  for (const loc of USA_LOCATIONS) {
-    const m = loc.match(/^(.*),\s*([A-Z]{2})$/);
-    if (!m) continue;
-    const [, city, code] = m;
-    (map[code] ||= []).push(city);
-  }
-  return map;
-})();
-
-export const US_STATES: { code: string; name: string }[] = Object.keys(CITIES_BY_STATE)
-  .sort()
-  .map((code) => ({ code, name: STATE_NAMES[code] ?? code }));
+export {
+  ALL_CITY_LABELS as USA_LOCATIONS,
+  CITIES_BY_STATE,
+  US_STATES,
+  TOP100_CITY_LABELS,
+  US_CITY_DATA,
+} from "./us-cities";
 
 // ---- Languages ----
 export const POPULAR_LANGUAGES = [
