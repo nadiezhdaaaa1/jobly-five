@@ -260,11 +260,12 @@ export function setStatus(id: string, next: JobStatus) {
   if (next === "applied") r.appliedAt ??= today();
   if (next === "interview") {
     r.interviewAt ??= today();
-    if (!r.interviewStage) r.interviewStage = "Pre-screen";
+    // Do not auto-assign a default interview stage — the transition dialog
+    // (or the user editing the drawer) records the real stage explicitly.
   }
   if (next === "offer") {
     r.offerAt ??= today();
-    if (!r.offerStatus) r.offerStatus = "Waiting for my reply";
+    // Same rationale: leave offerStatus unset until the user picks one.
   }
   if (next === "rejection") r.rejectionAt ??= today();
   // History: only log meaningful transitions between tracker columns / saved.
@@ -327,10 +328,11 @@ export function setInterviewStage(id: string, stage: string) {
   const prev = r.interviewStage;
   if (prev === stage) return;
   r.interviewStage = stage;
+  // Only record when the user actually changes an existing stage. The
+  // initial pick during a transition is already implied by the "Moved to
+  // Interview" entry, so we skip logging when there was no prior stage.
   if (prev) {
     logHistory(r, "interview_stage", `Interview stage changed from ${prev} to ${stage}`);
-  } else {
-    logHistory(r, "interview_stage", `Interview stage set to ${stage}`);
   }
   sync(id);
   emit();
@@ -343,8 +345,6 @@ export function setOfferStatus(id: string, offerStatus: string) {
   r.offerStatus = offerStatus;
   if (prev) {
     logHistory(r, "offer_stage", `Offer stage changed from ${prev} to ${offerStatus}`);
-  } else {
-    logHistory(r, "offer_stage", `Offer stage set to ${offerStatus}`);
   }
   sync(id);
   emit();
