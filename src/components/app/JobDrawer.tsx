@@ -472,7 +472,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 </div>
               ) : null}
 
-              {/* Reminder */}
+              {/* Reminder — only for Interview and Offer */}
+              {status === "interview" || status === "offer" ? (
               <div>
                 <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
                 {record.reminderAt ? (
@@ -500,6 +501,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   </button>
                 )}
               </div>
+              ) : null}
 
               {/* Documents used */}
               {(status === "applied" || status === "interview" || status === "offer" || status === "rejection") &&
