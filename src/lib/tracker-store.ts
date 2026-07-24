@@ -26,6 +26,9 @@ export type JobRecord = {
   offerStatus?: string;
   movedAt?: string; // last status change timestamp — used to order within columns
   lastStatus?: JobStatus; // preserved column for archived cards ("Show archived" restore-in-place)
+  // Documents used when marking applied (Apply modal). Shown on Applied cards.
+  appliedResumeName?: string;
+  appliedCoverLetterName?: string;
 };
 
 type Seed = {
