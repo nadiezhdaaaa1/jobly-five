@@ -816,7 +816,7 @@ function FiltersSidebar({
         />
       ) : null}
       {open ? (
-      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-l lg:max-h-[calc(100vh-6rem)]">
+      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-l lg:max-h-[calc(100vh-6rem)] lg:shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-2 lg:rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
           {/* Desktop-only inline toggle inside sticky header */}
