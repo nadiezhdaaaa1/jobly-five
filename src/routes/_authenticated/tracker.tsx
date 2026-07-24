@@ -450,8 +450,7 @@ function KanbanColumn({
   onDragStartJob,
   onDragEnd,
   onArchive,
-  onRequestInterviewReminder,
-  onRequestApplyToast,
+  onRequestApply,
   onMoveTo,
   onMailShareToast,
   archivedView,
@@ -466,8 +465,7 @@ function KanbanColumn({
   onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
   onArchive: (jobId: string) => void;
-  onRequestInterviewReminder: (jobId: string) => void;
-  onRequestApplyToast: (jobId: string) => void;
+  onRequestApply: (jobId: string) => void;
   onMoveTo: (jobId: string, target: ColumnKey) => void;
   onMailShareToast: () => void;
   archivedView: boolean;
@@ -527,8 +525,7 @@ function KanbanColumn({
             }}
             onDragEnd={onDragEnd}
             onArchive={() => onArchive(job.id)}
-            onRequestInterviewReminder={() => onRequestInterviewReminder(job.id)}
-            onRequestApplyToast={() => onRequestApplyToast(job.id)}
+            onRequestApply={() => onRequestApply(job.id)}
             onMoveTo={(t) => onMoveTo(job.id, t)}
             onMailShareToast={onMailShareToast}
             archivedView={archivedView}
