@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IconX as X, IconCalendar } from "@tabler/icons-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { findReminderConflicts, dateHelpers } from "@/lib/tracker-store";
+import { findReminderConflicts } from "@/lib/tracker-store";
 import { getDbJobById } from "@/lib/jobs-store";
 
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
