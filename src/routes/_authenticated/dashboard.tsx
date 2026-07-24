@@ -895,17 +895,34 @@ function FiltersSidebar({
             Fill from Profile
           </button>
         </div>
-        <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={p.roles.length > 0} onReset={() => set({ roles: [] })}>
-          <div className="flex flex-wrap gap-1.5">
-            {p.roles.map((r) => (
-              <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
-            ))}
-            <AddChip
-              options={roleOptions}
-              groups={roleGroups}
-              onAdd={(v) => set({ roles: [...p.roles, v] })}
-            />
-          </div>
+        <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={profileRoles.length > 0 && p.roles.length !== profileRoles.length} onReset={() => set({ roles: [...profileRoles] })}>
+          {profileRoles.length === 0 ? (
+            <p className="text-[12px] text-[color:var(--color-text-muted)]">
+              Add roles in your{" "}
+              <Link to="/profile" className="font-semibold text-[color:var(--color-green)] hover:underline">profile</Link>
+              {" "}to filter by role.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {profileRoles.map((r) => {
+                const selected = p.roles.includes(r);
+                return (
+                  <SelectChip
+                    key={r}
+                    label={r}
+                    selected={selected}
+                    onClick={() =>
+                      set({
+                        roles: selected
+                          ? p.roles.filter((x) => x !== r)
+                          : [...p.roles, r],
+                      })
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
         </FilterSection>
 
         <FilterSection title="Min match" collapseSignal={collapseSignal} dirty={p.minMatch !== 50} onReset={() => set({ minMatch: 50 })}>
