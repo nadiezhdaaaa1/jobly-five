@@ -26,6 +26,9 @@ export type JobRecord = {
   offerStatus?: string;
   movedAt?: string; // last status change timestamp — used to order within columns
   lastStatus?: JobStatus; // preserved column for archived cards ("Show archived" restore-in-place)
+  // Documents used when marking applied (Apply modal). Shown on Applied cards.
+  appliedResumeName?: string;
+  appliedCoverLetterName?: string;
 };
 
 type Seed = {
@@ -194,6 +197,20 @@ export function setStatus(id: string, next: JobStatus) {
   }
   if (next === "rejection") r.rejectionAt ??= today();
   void prev;
+  emit();
+}
+
+export function markApplied(
+  id: string,
+  meta: { resumeName?: string; coverLetterName?: string } = {},
+) {
+  const r = ensure(id);
+  r.status = "applied";
+  r.appliedAt ??= today();
+  r.movedAt = today();
+  if (r.archived) r.archived = false;
+  if (meta.resumeName) r.appliedResumeName = meta.resumeName;
+  if (meta.coverLetterName) r.appliedCoverLetterName = meta.coverLetterName;
   emit();
 }
 

@@ -17,12 +17,14 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { MatchLine } from "@/components/app/MatchLine";
+import { ApplyModal } from "@/components/app/ApplyModal";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, type JobStatus } from "@/lib/tracker-store";
-import { loadQuiz } from "@/lib/quiz-store";
+import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -262,6 +264,44 @@ function defaultFilters(): FilterState {
   };
 }
 
+const SALARY_STEPS = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
+function nearestSalaryStep(v: number): number {
+  let best = SALARY_STEPS[0];
+  let d = Infinity;
+  for (const s of SALARY_STEPS) {
+    const nd = Math.abs(v - s);
+    if (nd < d) { d = nd; best = s; }
+  }
+  return best;
+}
+
+function yearsToChip(y: number): (typeof YEAR_CHIPS)[number] | null {
+  if (y <= 0) return "No experience";
+  if (y <= 2) return "1–2 years";
+  if (y <= 5) return "3–5 years";
+  if (y <= 9) return "6–9 years";
+  return "10 years or more";
+}
+
+function defaultsFromQuiz(q: QuizAnswers): FilterState {
+  const base = defaultFilters();
+  const roles = q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  const locs = q.locations ?? [];
+  const onlyRemote = locs.length === 0;
+  const minSalary = typeof q.salaryMin === "number" ? nearestSalaryStep(q.salaryMin < 1000 ? q.salaryMin * 1000 : q.salaryMin) : 0;
+  const english = q.primaryLanguage ?? "";
+  const yearChip = typeof q.years === "number" ? yearsToChip(q.years) : null;
+  return {
+    ...base,
+    roles,
+    onlyRemote,
+    locations: locs,
+    minSalary,
+    english,
+    years: yearChip ? [yearChip] : [],
+  };
+}
+
 function filterEqual(a: FilterState, b: FilterState) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
@@ -447,19 +487,29 @@ function CompactPipelineRow({ job, status }: { job: EnrichedJob; status: JobStat
   );
 }
 
-function CompactFeedbackRow({ job, kind }: { job: EnrichedJob; kind: "dismissed" | "reported" }) {
-  const text = kind === "reported" ? "Thanks — we'll check this posting." : job.title;
-  const bg = kind === "reported" ? "var(--color-danger-subtle)" : "var(--color-warning-subtle)";
-  const fg = kind === "reported" ? "var(--color-danger)" : "var(--color-warning)";
+function CompactSessionRow({ job, kind }: { job: EnrichedJob; kind: DigestSessionState }) {
+  const label = kind === "applied" ? "Applied" : kind === "disliked" ? "Disliked" : "Reported";
+  const bg =
+    kind === "applied" ? "var(--color-mint)" :
+    kind === "reported" ? "var(--color-danger-subtle)" :
+    "var(--color-warning-subtle)";
+  const fg =
+    kind === "applied" ? "var(--color-green)" :
+    kind === "reported" ? "var(--color-danger)" :
+    "var(--color-warning)";
   return (
-    <div className="flex h-[54px] items-center justify-between bg-[color:var(--color-surface-1)] px-4">
+    <div className="flex h-[54px] items-center justify-between rounded-[6px] bg-[color:var(--color-surface-2)] px-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
-          {kind === "reported" ? "Reported" : "Disliked"}
+        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[13px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
+          {label}
         </span>
-        <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{text}</span>
+        <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{job.title}</span>
       </div>
-      <button type="button" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={() => setStatus(job.id, "default")}>Undo</button>
+      {kind === "applied" ? (
+        <Link to="/tracker" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">View in Tracker</Link>
+      ) : (
+        <button type="button" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={() => clearDigestSession(job.id)}>Undo</button>
+      )}
     </div>
   );
 }
@@ -473,10 +523,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [toast, setToast] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
 
   const direct = DIRECT_BOARDS.has(job.board);
 
@@ -537,7 +585,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); }}
+                    onClick={() => { setDigestSession(job.id, "reported"); setFlagOpen(false); }}
                   >
                     {label}
                   </button>
@@ -557,13 +605,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </button>
             {dislikeOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
+                {["Not relevant to my role", "Wrong seniority", "Compensation too low"].map((label) => (
                   <button
                     key={label}
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
+                    onClick={() => { setDigestSession(job.id, "disliked"); setDislikeOpen(false); }}
                   >
                     {label}
                   </button>
@@ -587,73 +635,30 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
           </button>
 
-          <div className="relative" ref={applyRef}>
-            <button
-              type="button"
-              onClick={() => setApplyOpen((v) => !v)}
-              className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Apply
-              <Zap size={13} strokeWidth={2} fill="currentColor" />
-            </button>
-            {applyOpen ? (
-              <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Tailor your resume</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Generate a cover letter</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="border-t" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { window.open(job.postingUrl ?? "#", "_blank"); setApplyOpen(false); setToast(true); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <ExternalLink size={14} strokeWidth={1.6} />
-                  Open posting to apply
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <Check size={14} strokeWidth={1.6} />
-                  Already applied
-                </button>
-              </div>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            onClick={() => setApplyOpen(true)}
+            className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          >
+            Apply
+            <Zap size={13} strokeWidth={2} fill="currentColor" />
+          </button>
         </div>
       </div>
 
-      {toast ? (
-        <div
-          className="fixed inset-x-0 bottom-24 z-50 mx-auto flex w-fit items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px]"
-          style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-          role="status"
-        >
-          <span>Did you apply to {job.title}?</span>
-          <button type="button" className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]" onClick={() => { setStatus(job.id, "applied"); setToast(false); }}>Yes, mark as applied</button>
-          <button type="button" className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-text-secondary)]" onClick={() => setToast(false)}>Not yet</button>
-        </div>
-      ) : null}
+      <ApplyModal
+        job={job}
+        open={applyOpen}
+        onClose={() => setApplyOpen(false)}
+        onApplied={() => setDigestSession(job.id, "applied")}
+      />
     </article>
   );
 }
 
 function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
-  const record = useJobRecord(job.id);
-  const s = record.status;
-  if (s === "reported") return <CompactFeedbackRow job={job} kind="reported" />;
-  if (s === "dismissed") return <CompactFeedbackRow job={job} kind="dismissed" />;
-  if (s === "applied" || s === "interview" || s === "offer" || s === "rejection") {
-    return <CompactPipelineRow job={job} status={s} />;
-  }
+  const session = useDigestSession(job.id);
+  if (session) return <CompactSessionRow job={job} kind={session} />;
   return <FullJobCard job={job} onOpen={onOpen} />;
 }
 

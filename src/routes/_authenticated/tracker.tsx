@@ -14,6 +14,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import proCube from "@/assets/pro-cube.png.asset.json";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
+import { FollowUpDialog } from "@/components/app/ApplyModal";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
   archiveJob,
@@ -185,6 +186,7 @@ function KanbanCard({
   const [applyOpen, setApplyOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
@@ -197,6 +199,7 @@ function KanbanCard({
   const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
 
   return (
+    <>
     <article
       ref={articleRef as React.RefObject<HTMLElement>}
       draggable={draggable}
@@ -307,7 +310,7 @@ function KanbanCard({
             </IconBtn>
             <div className="ml-auto flex items-center gap-1">
               {status === "applied" ? (
-                <IconBtn label="Send a follow-up" onClick={() => onMailShareToast?.()}>
+                <IconBtn label="Send a follow-up" onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
                   <MailShare size={16} strokeWidth={1.6} />
                 </IconBtn>
               ) : null}
@@ -349,6 +352,8 @@ function KanbanCard({
         )}
       </div>
     </article>
+    <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
+    </>
   );
 }
 
