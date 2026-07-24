@@ -629,7 +629,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             ) : null}
           </div>
 
-          <div className="relative" ref={dislikeRef}>
+          <div className="relative -ml-1" ref={dislikeRef}>
             <button
               type="button"
               aria-label="Dislike"

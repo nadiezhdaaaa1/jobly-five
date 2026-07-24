@@ -287,7 +287,7 @@ function KanbanCard({
                 </MenuPop>
               ) : null}
             </div>
-            <div className="relative" ref={dislikeRef}>
+            <div className="relative -ml-1" ref={dislikeRef}>
               <IconBtn label="Dislike" noBorder onClick={() => setDislikeOpen((v) => !v)}>
                 <ThumbsDown size={16} strokeWidth={1.6} />
               </IconBtn>
