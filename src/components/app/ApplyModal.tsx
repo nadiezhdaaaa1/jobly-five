@@ -105,12 +105,28 @@ export function ApplyModal({
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-[520px] rounded-[8px] p-5">
         <DialogTitle className="sr-only">Apply to {job.title}</DialogTitle>
-        <div className="min-w-0">
-          <div className="truncate text-[16px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
-            {job.title}
-          </div>
-          <div className="mt-0.5 truncate text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {job.company} · {job.location}
+        <div className="flex min-w-0 items-center gap-3">
+          {job.logo ? (
+            <img
+              src={job.logo}
+              alt={`${job.company} logo`}
+              className="h-10 w-10 shrink-0 rounded-[6px] border object-cover"
+            />
+          ) : (
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[6px] border bg-[color:var(--color-surface-2)] text-[13px] font-semibold text-[color:var(--color-text-secondary)]"
+              aria-hidden
+            >
+              {job.company.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0">
+            <div className="truncate text-[16px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
+              {job.title}
+            </div>
+            <div className="mt-0.5 truncate text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              {job.company} · {job.location}
+            </div>
           </div>
         </div>
 
