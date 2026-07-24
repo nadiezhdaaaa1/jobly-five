@@ -1034,7 +1034,11 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const seed = useMemo(() => defaultFilters(), []);
+  const profileRoles = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
+  const seed = useMemo(() => ({ ...defaultFilters(), roles: [...profileRoles] }), [profileRoles]);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(
