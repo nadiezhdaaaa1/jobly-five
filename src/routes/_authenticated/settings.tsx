@@ -430,54 +430,160 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const [freq, setFreq] = useState<"daily" | "weekdays" | "weekly">(pro ? "daily" : "weekly");
-  useEffect(() => {
-    if (!pro && freq !== "weekly") setFreq("weekly");
-  }, [pro, freq]);
-  const [toggles, setToggles] = useState({
-    digest: true,
+  const [freq, setFreq] = useState<"daily" | "weekly">(pro ? "daily" : "weekly");
+  useEffect(() => { if (!pro && freq !== "weekly") setFreq("weekly"); }, [pro, freq]);
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    digest_ready: true,
+    hi_alerts: true,
+    weekly_report: true,
+    tuned: true,
     interview: true,
     followup: true,
+    stale: true,
+    gmail: true,
     product: false,
+    reengage: true,
   });
-  const rows: { key: keyof typeof toggles; label: string; caption: string }[] = [
-    { key: "digest", label: "New digest is ready", caption: "Email you when a fresh batch of matches is out." },
-    { key: "interview", label: "Interview reminders", caption: "The day of and an hour before." },
-    { key: "followup", label: "Follow-up nudges", caption: "Gentle nudge if applications go quiet." },
-    { key: "product", label: "Product updates", caption: "Occasional updates on new Jobly features." },
+  const groups: { label: string; rows: { key: string; label: string; caption?: string }[] }[] = [
+    {
+      label: "Digest & matches",
+      rows: [
+        { key: "digest_ready", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
+        { key: "hi_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
+        { key: "weekly_report", label: "Weekly search report", caption: "Your week in numbers — matches, applied, replies." },
+        { key: "tuned", label: `"We tuned your digest"`, caption: "When your feedback changes what you see." },
+      ],
+    },
+    {
+      label: "Applications & tracker",
+      rows: [
+        { key: "interview", label: "Interview reminders & prep", caption: "The day before, plus your prep pack." },
+        { key: "followup", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
+        { key: "stale", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
+        { key: "gmail", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
+      ],
+    },
+    {
+      label: "Account & lifecycle",
+      rows: [
+        { key: "product", label: "Product updates & tips" },
+        { key: "reengage", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
+      ],
+    },
   ];
+
   return (
     <Card title="Notifications">
+      <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        Choose what lands in your inbox. We only email what's useful — no spam.
+      </p>
       <div>
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Digest frequency</div>
-        <div className="mt-2">
-          <select
-            value={freq}
-            onChange={(e) => setFreq(e.target.value as "daily" | "weekdays" | "weekly")}
-            className="w-full max-w-xs rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2 text-[14px] text-[color:var(--color-foreground)]"
-          >
-            <option value="daily" disabled={!pro}>Daily{!pro ? " (Pro)" : ""}</option>
-            <option value="weekdays" disabled={!pro}>Weekdays only{!pro ? " (Pro)" : ""}</option>
-            <option value="weekly">Weekly</option>
-          </select>
-          {!pro ? (
-            <div className="mt-2 text-[12px] text-[color:var(--color-text-muted)]">Daily and Weekdays only are Pro features.</div>
-          ) : null}
+        <div className="mt-2 flex flex-col gap-2">
+          <RadioRow
+            checked={freq === "daily"}
+            disabled={!pro}
+            onChange={() => pro && setFreq("daily")}
+            label={<span className="flex items-center gap-2">Daily{!pro ? <span className="rounded-[4px] bg-[color:var(--color-mint)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--color-green)]">Pro</span> : null}</span>}
+          />
+          <RadioRow
+            checked={freq === "weekly"}
+            onChange={() => setFreq("weekly")}
+            label="Weekly"
+          />
         </div>
+        <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+          Quiet hours 9pm–7am · pause anytime under "Found a job?"
+        </p>
       </div>
-      <div className="mt-5 divide-y">
-        {rows.map((r) => (
-          <div key={r.key} className="flex items-start justify-between gap-4 py-3">
-            <div className="min-w-0">
-              <div className="text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 400 }}>{r.label}</div>
-              <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
+
+      <div className="mt-6 flex flex-col gap-5">
+        {groups.map((g) => (
+          <div key={g.label}>
+            <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]" style={{ fontWeight: 600 }}>
+              {g.label}
             </div>
-            <Toggle
-              on={toggles[r.key]}
-              onChange={(v) => setToggles((t) => ({ ...t, [r.key]: v }))}
-              label={r.label}
-            />
+            <div className="mt-2 divide-y">
+              {g.rows.map((r) => (
+                <div key={r.key} className="flex items-start justify-between gap-4 py-3">
+                  <div className="min-w-0">
+                    <div className="text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 600 }}>{r.label}</div>
+                    {r.caption ? (
+                      <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
+                    ) : null}
+                  </div>
+                  <Toggle
+                    on={!!toggles[r.key]}
+                    onChange={(v) => setToggles((t) => ({ ...t, [r.key]: v }))}
+                    label={typeof r.label === "string" ? r.label : r.key}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+        ))}
+      </div>
+
+      <div className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        <span className="font-semibold">Always on:</span> account & security (verify, sign-in, password), billing & receipts (trial, renewal, cancellation, failed payment), and data & legal (export, deletion). These are required and only sent when necessary.
+      </div>
+    </Card>
+  );
+}
+
+function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
+  const list = useBlockedCompanies();
+  const [value, setValue] = useState("");
+  function submit() {
+    const v = value.trim();
+    if (!v) return;
+    if (list.some((c) => c.toLowerCase() === v.toLowerCase())) {
+      onFlash(`${v} is already blocked.`);
+      setValue("");
+      return;
+    }
+    blockCompany(v);
+    onFlash(`Blocked ${v}.`);
+    setValue("");
+  }
+  return (
+    <Card title="Blocked companies">
+      <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        Never show jobs from these employers — current employer, past ones, agencies you'd rather skip.
+      </p>
+      <div className="flex items-center gap-2">
+        <input
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } }}
+          placeholder="Company name (e.g. Acme Corp)"
+          className="h-10 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+        />
+        <button
+          type="button"
+          onClick={submit}
+          className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Block company
+        </button>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {list.length === 0 ? (
+          <p className="text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            No blocked companies yet.
+          </p>
+        ) : list.map((c) => (
+          <span key={c} className="inline-flex items-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
+            {c}
+            <button
+              type="button"
+              aria-label={`Unblock ${c}`}
+              onClick={() => { unblockCompany(c); onFlash(`Unblocked ${c}.`); }}
+              className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <IconX size={12} strokeWidth={1.8} />
+            </button>
+          </span>
         ))}
       </div>
     </Card>
