@@ -761,8 +761,8 @@ function TrackerScreen() {
               <span className="text-[14px]" style={{ color: MUTED_TEXT }}>Show archived</span>
             </label>
             <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
-            <span className="text-[16px] font-light" style={{ color: META_GREY }}>
-              {total} application{total === 1 ? "" : "s"}
+            <span className="text-[14px] font-light" style={{ color: META_GREY }}>
+              <span style={{ color: DARK }}>{total}</span> application{total === 1 ? "" : "s"}
             </span>
           </div>
         </div>
