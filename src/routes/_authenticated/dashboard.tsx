@@ -265,11 +265,12 @@ function filterEqual(a: FilterState, b: FilterState) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function activeFilterCount(f: FilterState): number {
+function activeFilterCount(f: FilterState, profileRoles: string[] = []): number {
   const d = defaultFilters();
   let n = 0;
   if (f.field !== d.field) n++;
-  if (f.roles.length) n++;
+  if (profileRoles.length > 0 && f.roles.length !== profileRoles.length) n++;
+  else if (profileRoles.length === 0 && f.roles.length) n++;
   if (f.seniority.length) n++;
   if (f.years.length) n++;
   if (f.english) n++;
@@ -772,7 +773,12 @@ function FiltersSidebar({
   saved: SavedFilter[];
   onLoadSaved: (id: string) => void;
 }) {
-  const activeCount = activeFilterCount(applied);
+  // profileRoles computed below; use it for accurate active count
+  const profileRolesForCount = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
+  const activeCount = activeFilterCount(applied, profileRolesForCount);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
@@ -1033,7 +1039,11 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const seed = useMemo(() => defaultFilters(), []);
+  const profileRoles = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
+  const seed = useMemo(() => ({ ...defaultFilters(), roles: [...profileRoles] }), [profileRoles]);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
   const [filtersOpen, setFiltersOpen] = useState(
