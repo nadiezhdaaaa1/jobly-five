@@ -200,6 +200,20 @@ export function setStatus(id: string, next: JobStatus) {
   emit();
 }
 
+export function markApplied(
+  id: string,
+  meta: { resumeName?: string; coverLetterName?: string } = {},
+) {
+  const r = ensure(id);
+  r.status = "applied";
+  r.appliedAt ??= today();
+  r.movedAt = today();
+  if (r.archived) r.archived = false;
+  if (meta.resumeName) r.appliedResumeName = meta.resumeName;
+  if (meta.coverLetterName) r.appliedCoverLetterName = meta.coverLetterName;
+  emit();
+}
+
 export function archiveJob(id: string) {
   const r = ensure(id);
   r.lastStatus = r.status;
