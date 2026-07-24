@@ -342,7 +342,7 @@ function KanbanCard({
                   aria-haspopup="menu"
                   aria-expanded={moveOpen}
                   onClick={() => setMoveOpen((v) => !v)}
-                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-white px-2 text-[12px]"
+                  className="inline-flex h-[30px] w-full items-center justify-between gap-1 rounded-[4px] border bg-white px-2 text-[12px]"
                   style={{ borderColor: BORDER_LIGHT, color: DARK, minWidth: 91 }}
                 >
                   Move to
