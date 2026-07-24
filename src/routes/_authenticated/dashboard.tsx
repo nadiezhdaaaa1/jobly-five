@@ -764,7 +764,7 @@ function SelectChip({ label, selected, onClick }: { label: string; selected: boo
       className="inline-flex h-[28px] items-center rounded-[4px] px-2.5 text-[12px] font-medium transition-colors"
       style={
         selected
-          ? { background: "var(--color-accent)", color: "var(--color-on-accent)" }
+          ? { background: "var(--color-green)", color: "#fff" }
           : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }
       }
     >
