@@ -777,15 +777,12 @@ function FiltersSidebar({
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
 
-  // When Field=Any, the Roles picker groups options by field. Otherwise it's a
-  // flat list of the current field's roles.
-  const anyField = p.field === FIELD_ANY;
-  const roleGroups = anyField
-    ? FIELDS.map((f) => ({ label: f, items: FIELD_ROLES[f].filter((r) => !p.roles.includes(r)) })).filter((g) => g.items.length)
-    : undefined;
-  const roleOptions = anyField
-    ? FIELDS.flatMap((f) => FIELD_ROLES[f]).filter((r) => !p.roles.includes(r))
-    : (FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r));
+  // Roles universe comes from the user's profile (quiz). The filter can only
+  // toggle which of those roles are active — never add/remove them here.
+  const profileRoles = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
 
   return (
     <aside className="contents lg:block lg:relative lg:sticky lg:top-20">
@@ -898,17 +895,34 @@ function FiltersSidebar({
             Fill from Profile
           </button>
         </div>
-        <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={p.roles.length > 0} onReset={() => set({ roles: [] })}>
-          <div className="flex flex-wrap gap-1.5">
-            {p.roles.map((r) => (
-              <ProfileChip key={r} label={r} onRemove={() => set({ roles: p.roles.filter((x) => x !== r) })} />
-            ))}
-            <AddChip
-              options={roleOptions}
-              groups={roleGroups}
-              onAdd={(v) => set({ roles: [...p.roles, v] })}
-            />
-          </div>
+        <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={profileRoles.length > 0 && p.roles.length !== profileRoles.length} onReset={() => set({ roles: [...profileRoles] })}>
+          {profileRoles.length === 0 ? (
+            <p className="text-[12px] text-[color:var(--color-text-muted)]">
+              Add roles in your{" "}
+              <Link to="/profile" className="font-semibold text-[color:var(--color-green)] hover:underline">profile</Link>
+              {" "}to filter by role.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {profileRoles.map((r) => {
+                const selected = p.roles.includes(r);
+                return (
+                  <SelectChip
+                    key={r}
+                    label={r}
+                    selected={selected}
+                    onClick={() =>
+                      set({
+                        roles: selected
+                          ? p.roles.filter((x) => x !== r)
+                          : [...p.roles, r],
+                      })
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
         </FilterSection>
 
         <FilterSection title="Min match" collapseSignal={collapseSignal} dirty={p.minMatch !== 50} onReset={() => set({ minMatch: 50 })}>
