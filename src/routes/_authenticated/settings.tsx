@@ -575,14 +575,16 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
         ) : list.map((c) => (
           <span key={c} className="inline-flex items-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
             {c}
-            <button
-              type="button"
-              aria-label={`Unblock ${c}`}
-              onClick={() => { unblockCompany(c); onFlash(`Unblocked ${c}.`); }}
-              className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <IconX size={12} strokeWidth={1.8} />
-            </button>
+            <IconTooltip label={`Unblock ${c}`}>
+              <button
+                type="button"
+                aria-label={`Unblock ${c}`}
+                onClick={() => { unblockCompany(c); onFlash(`Unblocked ${c}.`); }}
+                className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <IconX size={12} strokeWidth={1.8} />
+              </button>
+            </IconTooltip>
           </span>
         ))}
       </div>
@@ -743,14 +745,16 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
           onChange={(e) => onChange(e.target.value)}
           className={`h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-10 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)] ${error ? "border-[color:var(--color-danger)]" : ""}`}
         />
-        <button
-          type="button"
-          onClick={onToggle}
-          aria-label={show ? "Hide password" : "Show password"}
-          className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          {show ? <IconEyeOff size={15} strokeWidth={1.6} /> : <IconEye size={15} strokeWidth={1.6} />}
-        </button>
+        <IconTooltip label={show ? "Hide password" : "Show password"}>
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={show ? "Hide password" : "Show password"}
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            {show ? <IconEyeOff size={15} strokeWidth={1.6} /> : <IconEye size={15} strokeWidth={1.6} />}
+          </button>
+        </IconTooltip>
       </div>
       {error ? <span className="text-[12px] text-[color:var(--color-danger)]">{error}</span> : hint ? <span>{hint}</span> : null}
     </label>
