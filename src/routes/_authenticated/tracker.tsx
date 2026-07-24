@@ -516,7 +516,7 @@ function KanbanColumn({
         />
       </button>
       {/* Cards */}
-      <div className={`flex-col px-1 ${collapsed ? "hidden lg:flex" : "flex"}`} style={{ gap: 4, display: undefined }}>
+      <div className={`flex-col px-1 ${collapsed ? "hidden lg:flex" : "flex"}`} style={{ gap: 4 }}>
         {isDropTarget ? (
           <div
             className="rounded-[8px] border-2 border-dashed"
