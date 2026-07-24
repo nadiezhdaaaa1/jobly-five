@@ -243,7 +243,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
-          {(status === "default" || status === "saved") ? (
+          {!inTracker || status === "saved" ? (
           <>
           {/* Apply */}
           <div className="mt-4">
