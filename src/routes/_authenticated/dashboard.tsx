@@ -26,6 +26,7 @@ import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
+import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
