@@ -6,7 +6,7 @@ import proCubeAsset from "@/assets/pro2.png.asset.json";
 export type AppTab = "digest" | "tracker" | "resume" | "profile" | "settings";
 
 const TABS: Array<{ key: AppTab; label: string; icon: typeof IconBriefcase2; to: string }> = [
-  { key: "digest", label: "Jobs", icon: IconBriefcase2, to: "/dashboard" },
+  { key: "digest", label: "Digest", icon: IconBriefcase2, to: "/dashboard" },
   { key: "tracker", label: "Tracker", icon: IconTarget, to: "/tracker" },
   { key: "resume", label: "Resume", icon: IconFileDescription, to: "/resume" },
   { key: "profile", label: "Profile", icon: IconUserSquare, to: "/profile" },
