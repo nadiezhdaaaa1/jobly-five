@@ -454,6 +454,8 @@ function KanbanColumn({
   onMoveTo,
   onMailShareToast,
   archivedView,
+  collapsed,
+  onToggleCollapse,
 }: {
   status: ColumnKey;
   jobs: { job: Job; rec: JobRecord }[];
@@ -469,11 +471,12 @@ function KanbanColumn({
   onMoveTo: (jobId: string, target: ColumnKey) => void;
   onMailShareToast: () => void;
   archivedView: boolean;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
 }) {
   return (
     <div
-      className="flex shrink-0 flex-col"
-      style={{ width: 224 }}
+      className="flex w-full min-w-0 flex-col lg:w-[224px] lg:shrink-0"
       onDragOver={(e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
@@ -485,7 +488,13 @@ function KanbanColumn({
       }}
     >
       {/* Header: 44px */}
-      <div className="flex items-center gap-2 px-1" style={{ height: 44 }}>
+      <button
+        type="button"
+        onClick={onToggleCollapse}
+        className="flex w-full items-center gap-2 px-1 lg:pointer-events-none"
+        style={{ height: 44 }}
+        aria-expanded={!collapsed}
+      >
         <span className="text-[16px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "24px" }}>
           {COLUMN_TITLE[status]}
         </span>
@@ -495,9 +504,19 @@ function KanbanColumn({
         >
           {jobs.length}
         </span>
-      </div>
+        <ChevronDown
+          size={16}
+          strokeWidth={1.8}
+          className="ml-auto lg:hidden"
+          style={{
+            color: MUTED_TEXT,
+            transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
+            transition: "transform 150ms",
+          }}
+        />
+      </button>
       {/* Cards */}
-      <div className="flex flex-col px-1" style={{ gap: 4 }}>
+      <div className={`flex-col px-1 ${collapsed ? "hidden lg:flex" : "flex"}`} style={{ gap: 4 }}>
         {isDropTarget ? (
           <div
             className="rounded-[8px] border-2 border-dashed"
@@ -553,6 +572,9 @@ function TrackerScreen() {
   >(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<ColumnKey, boolean>>({
+    saved: false, applied: false, interview: false, rejection: false, offer: false,
+  });
 
   if (!isPro(plan)) {
     return (
@@ -676,8 +698,8 @@ function TrackerScreen() {
         </div>
 
         {/* Board */}
-        <div className="mt-6 -mx-6 overflow-x-auto px-6">
-          <div className="flex" style={{ gap: 8, minWidth: 1152 }}>
+        <div className="mt-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-2">
             {COLUMN_ORDER.map((k) => (
               <KanbanColumn
                 key={k}
@@ -698,6 +720,8 @@ function TrackerScreen() {
                 onMoveTo={(id, target) => requestMove(id, target)}
                 onMailShareToast={() => showToast("Follow-up email drafted (demo)")}
                 archivedView={showArchived}
+                collapsed={collapsed[k]}
+                onToggleCollapse={() => setCollapsed((s) => ({ ...s, [k]: !s[k] }))}
               />
             ))}
           </div>
