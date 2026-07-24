@@ -79,6 +79,11 @@ import {
   type AchievementBlockKey,
   type CoverLetter,
 } from "@/lib/profile-store";
+import {
+  deleteSavedFilter,
+  renameSavedFilter,
+  useSavedFilters,
+} from "@/lib/saved-filters-store";
 
 const TAB_KEYS = [
   "preferences",
@@ -87,6 +92,7 @@ const TAB_KEYS = [
   "portfolio",
   "achievements",
   "experience",
+  "searches",
 ] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
@@ -97,6 +103,7 @@ const TAB_LABELS: Record<TabKey, string> = {
   portfolio: "Portfolio & links",
   achievements: "Achievements",
   experience: "Experience",
+  searches: "Saved searches",
 };
 
 const searchSchema = z.object({
