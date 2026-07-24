@@ -13,6 +13,8 @@ import type { Job } from "@/lib/jobs-data";
 import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import { MatchLine } from "@/components/app/MatchLine";
+import { ApplyModal } from "@/components/app/ApplyModal";
+import { setDigestSession } from "@/lib/digest-session-store";
 import congratAsset from "@/assets/congrat.png.asset.json";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
@@ -70,7 +72,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [applyOpen, setApplyOpen] = useState(false);
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const saved = status === "saved";
   const [notes, setNotesLocal] = useState(record.notes ?? "");
 
@@ -194,48 +195,23 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
-          {/* Apply + actions */}
-          <div className="relative mt-4" ref={applyRef}>
+          {/* Apply */}
+          <div className="mt-4">
             <button
               type="button"
-              onClick={() => setApplyOpen((v) => !v)}
+              onClick={() => setApplyOpen(true)}
               className="inline-flex h-10 w-full items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Apply
               <Zap size={14} strokeWidth={2} fill="currentColor" />
             </button>
-            {applyOpen ? (
-              <div role="menu" className="absolute right-0 top-[44px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Tailor your resume</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Generate a cover letter</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="border-t" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setApplyOpen(false); handleOpenPosting(); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <ExternalLink size={14} strokeWidth={1.6} />
-                  Open posting to apply
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <Check size={14} strokeWidth={1.6} />
-                  Already applied
-                </button>
-              </div>
-            ) : null}
           </div>
+          <ApplyModal
+            job={job}
+            open={applyOpen}
+            onClose={() => setApplyOpen(false)}
+            onApplied={() => { setDigestSession(job.id, "applied"); onClose(); }}
+          />
 
           <div className="mt-3 grid grid-cols-3 gap-2">
             <div className="relative" ref={flagRef}>
