@@ -13,14 +13,23 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import proCube from "@/assets/pro-cube.png.asset.json";
-import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
-import { FollowUpDialog } from "@/components/app/ApplyModal";
+import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
+import {
+  InterviewTransitionDialog,
+  OfferTransitionDialog,
+  RejectedTransitionDialog,
+} from "@/components/app/TrackerTransitionDialogs";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
   archiveJob,
   dateHelpers,
   getJobRecord,
+  markApplied,
   restoreArchived,
+  setInterviewStage,
+  setOfferStatus,
+  setRejectionDetails,
+  setOfferDetails,
   setReminder as storeSetReminder,
   setStatus,
   useJobRecord,
@@ -164,8 +173,7 @@ function KanbanCard({
   onDragStart,
   onDragEnd,
   onArchive,
-  onRequestInterviewReminder,
-  onRequestApplyToast,
+  onRequestApply,
   onMoveTo,
   onMailShareToast,
   archivedView,
@@ -175,19 +183,16 @@ function KanbanCard({
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
   onArchive: () => void;
-  onRequestInterviewReminder?: () => void;
-  onRequestApplyToast?: () => void;
+  onRequestApply: () => void;
   onMoveTo: (target: ColumnKey) => void;
   onMailShareToast?: () => void;
   archivedView: boolean;
 }) {
   const record = useJobRecord(job.id);
   const status = (record.archived ? record.lastStatus : record.status) as ColumnKey;
-  const [applyOpen, setApplyOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const [isDragging, setIsDragging] = useState(false);
@@ -197,6 +202,8 @@ function KanbanCard({
   const draggable = !isArchived;
 
   const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
+  // Suppress unused-var warning; kept for API symmetry
+  void onMailShareToast;
 
   return (
     <>
@@ -277,30 +284,15 @@ function KanbanCard({
             <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
               <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
             </IconBtn>
-            <div className="relative flex-1" ref={applyRef}>
-              <button
-                type="button"
-                aria-haspopup="menu"
-                aria-expanded={applyOpen}
-                onClick={() => setApplyOpen((v) => !v)}
-                className="flex h-[30px] w-full items-center justify-center gap-1 rounded-[4px] text-[12px]"
-                style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
-              >
-                Apply
-                <Zap size={14} strokeWidth={2} fill="currentColor" />
-              </button>
-              {applyOpen ? (
-                <MenuPop align="right">
-                  <MenuItem onClick={() => { window.open(job.postingUrl ?? "#", "_blank"); setApplyOpen(false); onRequestApplyToast?.(); }}>
-                    <ExternalLink size={14} strokeWidth={1.6} />
-                    Open posting to apply
-                  </MenuItem>
-                  <MenuItem onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}>
-                    Already applied
-                  </MenuItem>
-                </MenuPop>
-              ) : null}
-            </div>
+            <button
+              type="button"
+              onClick={onRequestApply}
+              className="flex h-[30px] flex-1 items-center justify-center gap-1 rounded-[4px] text-[12px]"
+              style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
+            >
+              Apply
+              <Zap size={14} strokeWidth={2} fill="currentColor" />
+            </button>
           </>
         ) : (
           // Applied / Interview / Rejected / Offer
@@ -333,12 +325,7 @@ function KanbanCard({
                         key={k}
                         onClick={() => {
                           setMoveOpen(false);
-                          if (k === "interview") {
-                            setStatus(job.id, "interview");
-                            onRequestInterviewReminder?.();
-                          } else {
-                            setStatus(job.id, k);
-                          }
+                          onMoveTo(k);
                         }}
                       >
                         {COLUMN_TITLE[k]}
