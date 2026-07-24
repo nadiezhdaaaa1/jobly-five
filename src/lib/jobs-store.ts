@@ -3,38 +3,31 @@ import { supabase } from "@/integrations/supabase/client";
 import { loadQuiz } from "./quiz-store";
 import { computeMatch, rolesOverlap, type DbJob } from "./match";
 import type { Job, JobSource, Source, DescriptionSection } from "./jobs-data";
-import AetherForge from "@/assets/logos-fake/AetherForge.jpg.asset.json";
-import CircuitLeaf from "@/assets/logos-fake/CircuitLeaf.jpg.asset.json";
-import CloudMosaic from "@/assets/logos-fake/CloudMosaic.jpg.asset.json";
-import CoreSignal from "@/assets/logos-fake/CoreSignal.jpg.asset.json";
-import GraphLink from "@/assets/logos-fake/GraphLink.jpg.asset.json";
-import HexaCore from "@/assets/logos-fake/HexaCore.jpg.asset.json";
-import LayerDock from "@/assets/logos-fake/LayerDock.jpg.asset.json";
-import LoopNest from "@/assets/logos-fake/LoopNest.jpg.asset.json";
-import LumaCross from "@/assets/logos-fake/LumaCross.jpg.asset.json";
-import Nexagon from "@/assets/logos-fake/Nexagon.jpg.asset.json";
-import NodeBloom from "@/assets/logos-fake/NodeBloom.jpg.asset.json";
-import OrbitScale from "@/assets/logos-fake/OrbitScale.jpg.asset.json";
-import PrismFlow from "@/assets/logos-fake/PrismFlow.jpg.asset.json";
-import PulseArc from "@/assets/logos-fake/PulseArc.jpg.asset.json";
-import QuantumKnot from "@/assets/logos-fake/QuantumKnot.jpg.asset.json";
-import ShieldByte from "@/assets/logos-fake/ShieldByte.jpg.asset.json";
-import SignalMint from "@/assets/logos-fake/SignalMint.jpg.asset.json";
-import StackRise from "@/assets/logos-fake/StackRise.jpg.asset.json";
-import StreamNova from "@/assets/logos-fake/StreamNova.jpg.asset.json";
-import VertexIQ from "@/assets/logos-fake/VertexIQ.jpg.asset.json";
 
-const LOGOS: string[] = [
-  AetherForge.url, CircuitLeaf.url, CloudMosaic.url, CoreSignal.url, GraphLink.url,
-  HexaCore.url, LayerDock.url, LoopNest.url, LumaCross.url, Nexagon.url,
-  NodeBloom.url, OrbitScale.url, PrismFlow.url, PulseArc.url, QuantumKnot.url,
-  ShieldByte.url, SignalMint.url, StackRise.url, StreamNova.url, VertexIQ.url,
-];
+// Eagerly import every fake-company logo pointer. Keys are like
+// "/src/assets/logos-fake/Actuari.jpg.asset.json".
+const LOGO_MODULES = import.meta.glob<{ default: { url: string } }>(
+  "@/assets/logos-fake/*.asset.json",
+  { eager: true },
+);
+
+const LOGO_BY_NAME = new Map<string, string>();
+const LOGO_URLS: string[] = [];
+for (const [path, mod] of Object.entries(LOGO_MODULES)) {
+  const url = mod.default.url;
+  const file = path.split("/").pop() ?? "";
+  const name = file.replace(/\.jpg\.asset\.json$/i, "");
+  LOGO_BY_NAME.set(name.toLowerCase(), url);
+  LOGO_URLS.push(url);
+}
 
 function pickLogo(company: string): string {
+  const key = company.trim().toLowerCase();
+  const direct = LOGO_BY_NAME.get(key) ?? LOGO_BY_NAME.get(key.replace(/\s+/g, "_"));
+  if (direct) return direct;
   let h = 0;
   for (let i = 0; i < company.length; i++) h = (h * 31 + company.charCodeAt(i)) >>> 0;
-  return LOGOS[h % LOGOS.length];
+  return LOGO_URLS[h % LOGO_URLS.length];
 }
 
 const DIRECT_SOURCES = new Set(["greenhouse", "lever", "ashby", "workable"]);
