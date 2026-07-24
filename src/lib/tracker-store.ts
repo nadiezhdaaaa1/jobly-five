@@ -239,7 +239,9 @@ function seedOnce() {
 }
 
 export function seedTracker(allJobs: Job[]) {
+  historyPaused = true;
   seedFrom(allJobs, []);
+  historyPaused = false;
   emit();
 }
 
