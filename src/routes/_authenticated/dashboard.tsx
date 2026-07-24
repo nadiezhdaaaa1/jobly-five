@@ -756,12 +756,13 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   );
 }
 
-function SelectChip({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+function SelectChip({ label, selected, onClick, disabled }: { label: string; selected: boolean; onClick: () => void; disabled?: boolean }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex h-[28px] items-center rounded-[4px] px-2.5 text-[12px] font-medium transition-colors"
+      disabled={disabled}
+      className="inline-flex h-[28px] items-center rounded-[4px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
       style={
         selected
           ? { background: "var(--color-green)", color: "#fff" }
@@ -882,11 +883,13 @@ function FiltersSidebar({
             <div className="flex flex-wrap gap-1.5">
               {profileRoles.map((r) => {
                 const selected = p.roles.includes(r);
+                const lastOne = selected && p.roles.length === 1;
                 return (
                   <SelectChip
                     key={r}
                     label={r}
                     selected={selected}
+                    disabled={lastOne}
                     onClick={() =>
                       set({
                         roles: selected
