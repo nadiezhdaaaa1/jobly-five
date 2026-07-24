@@ -1127,7 +1127,7 @@ function JobsScreen() {
             You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
           </div>
         ) : null}
-        <div className={`grid gap-6 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
+        <div className={`grid gap-6 lg:gap-10 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
           <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
             <TrackerWidget />
             <SalaryTeaser />
