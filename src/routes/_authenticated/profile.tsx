@@ -257,14 +257,16 @@ function ProfileScreen() {
               >
                 {name || "—"}
               </h1>
-              <button
-                type="button"
-                onClick={() => setNameOpen(true)}
-                aria-label="Edit name"
-                className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <Pencil size={15} strokeWidth={1.6} />
-              </button>
+              <IconTooltip label="Edit name">
+                <button
+                  type="button"
+                  onClick={() => setNameOpen(true)}
+                  aria-label="Edit name"
+                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <Pencil size={15} strokeWidth={1.6} />
+                </button>
+              </IconTooltip>
             </div>
             <div className="truncate text-[13px] text-[color:var(--color-text-muted)]">{email}</div>
           </div>
@@ -726,14 +728,16 @@ function PreferencesTab({
                   {row.value || "Not set"}
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setEditing(row.key)}
-                aria-label={`Edit ${row.label}`}
-                className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <Pencil size={15} strokeWidth={1.6} />
-              </button>
+              <IconTooltip label={`Edit ${row.label}`}>
+                <button
+                  type="button"
+                  onClick={() => setEditing(row.key)}
+                  aria-label={`Edit ${row.label}`}
+                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <Pencil size={15} strokeWidth={1.6} />
+                </button>
+              </IconTooltip>
             </div>
           ))}
       </div>
@@ -1228,17 +1232,23 @@ function CoverEditor({
           ].map(([I, cmd, label]) => {
             const Icon = I as typeof Bold;
             return (
-              <button key={cmd as string} type="button" aria-label={label as string} onClick={() => exec(cmd as string)} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
-                <Icon size={15} strokeWidth={1.8} />
-              </button>
+              <IconTooltip key={cmd as string} label={label as string}>
+                <button type="button" aria-label={label as string} onClick={() => exec(cmd as string)} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+                  <Icon size={15} strokeWidth={1.8} />
+                </button>
+              </IconTooltip>
             );
           })}
-          <button type="button" aria-label="Link" onClick={() => { const url = window.prompt("Link URL"); if (url) exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
-            <LinkIcon size={15} strokeWidth={1.8} />
-          </button>
-          <button type="button" aria-label="Clear formatting" onClick={() => exec("removeFormat")} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
-            <ClearFmt size={15} strokeWidth={1.8} />
-          </button>
+          <IconTooltip label="Link">
+            <button type="button" aria-label="Link" onClick={() => { const url = window.prompt("Link URL"); if (url) exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+              <LinkIcon size={15} strokeWidth={1.8} />
+            </button>
+          </IconTooltip>
+          <IconTooltip label="Clear formatting">
+            <button type="button" aria-label="Clear formatting" onClick={() => exec("removeFormat")} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+              <ClearFmt size={15} strokeWidth={1.8} />
+            </button>
+          </IconTooltip>
         </div>
         <div
           ref={ref}
@@ -1778,14 +1788,16 @@ function JobEntry({
             </p>
           ) : null}
         </div>
-        <button
-          type="button"
-          aria-label="Edit"
-          onClick={onEdit}
-          className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Pencil size={15} strokeWidth={1.6} />
-        </button>
+        <IconTooltip label="Edit">
+          <button
+            type="button"
+            aria-label="Edit"
+            onClick={onEdit}
+            className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <Pencil size={15} strokeWidth={1.6} />
+          </button>
+        </IconTooltip>
       </div>
     );
   }
@@ -1816,8 +1828,8 @@ function JobEntry({
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <div className="ml-auto flex items-center gap-1">
-          <button type="button" aria-label="Move up" disabled={index === 0} onClick={() => reorderExperience(entry.id, -1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowUp size={14} /></button>
-          <button type="button" aria-label="Move down" disabled={index === total - 1} onClick={() => reorderExperience(entry.id, 1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowDown size={14} /></button>
+          <IconTooltip label="Move up"><button type="button" aria-label="Move up" disabled={index === 0} onClick={() => reorderExperience(entry.id, -1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowUp size={14} /></button></IconTooltip>
+          <IconTooltip label="Move down"><button type="button" aria-label="Move down" disabled={index === total - 1} onClick={() => reorderExperience(entry.id, 1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowDown size={14} /></button></IconTooltip>
         </div>
       </div>
       <textarea aria-label="Responsibilities and achievements" placeholder="What you did and what it changed" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} className="w-full rounded-[4px] border p-3 text-[13px]" />
@@ -2011,9 +2023,11 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
             {entry.years ? <span className="text-[13px] text-[color:var(--color-text-muted)]">· {entry.years}</span> : null}
           </div>
         </div>
-        <button type="button" aria-label="Edit" onClick={onEdit} className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-          <Pencil size={15} strokeWidth={1.6} />
-        </button>
+        <IconTooltip label="Edit">
+          <button type="button" aria-label="Edit" onClick={onEdit} className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+            <Pencil size={15} strokeWidth={1.6} />
+          </button>
+        </IconTooltip>
       </div>
     );
   }
