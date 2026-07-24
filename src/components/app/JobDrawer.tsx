@@ -1,21 +1,40 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  IconCalendar as Calendar,
-  IconCheck as Check,
-  IconExternalLink as ExternalLink,
   IconX as X,
   IconBolt as Zap,
   IconBookmark as Bookmark,
   IconFlag as Flag,
   IconThumbDown as ThumbsDown,
+  IconCalendar as Calendar,
+  IconMailShare as MailShare,
+  IconFileText as FileText,
 } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
-import { dateHelpers, setNotes as storeSetNotes, setReminder, setStatus, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import {
+  dateHelpers,
+  markApplied,
+  setInterviewStage,
+  setNotes as storeSetNotes,
+  setOfferDetails,
+  setOfferStatus,
+  setRejectionDetails,
+  setReminder,
+  setStatus,
+  useJobRecord,
+  type JobStatus,
+} from "@/lib/tracker-store";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
+import {
+  InterviewTransitionDialog,
+  OfferTransitionDialog,
+  RejectedTransitionDialog,
+  INTERVIEW_STAGES,
+  OFFER_STAGES,
+} from "@/components/app/TrackerTransitionDialogs";
+import { JobHistory } from "@/components/app/JobHistory";
 import { MatchLine } from "@/components/app/MatchLine";
-import { ApplyModal } from "@/components/app/ApplyModal";
+import { ApplyModal, FollowUpDialog } from "@/components/app/ApplyModal";
 import { setDigestSession } from "@/lib/digest-session-store";
-import congratAsset from "@/assets/congrat.png.asset.json";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
 
@@ -66,19 +85,35 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const titleId = `job-drawer-title-${job.id}`;
   const [reminderOpen, setReminderOpen] = useState(false);
-  const [postingToast, setPostingToast] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [pending, setPending] = useState<
+    | { target: "interview" | "rejection" | "offer"; source: JobStatus }
+    | null
+  >(null);
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const saved = status === "saved";
   const [notes, setNotesLocal] = useState(record.notes ?? "");
+  const [rejectionDraft, setRejectionDraft] = useState(record.rejectionDetails ?? "");
+  const [offerDraft, setOfferDraft] = useState(record.offerDetails ?? "");
 
   useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
+  useEffect(() => setRejectionDraft(record.rejectionDetails ?? ""), [job.id, record.rejectionDetails]);
+  useEffect(() => setOfferDraft(record.offerDetails ?? ""), [job.id, record.offerDetails]);
 
   function handleNotesBlur() {
     if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
+  }
+  function handleRejectionBlur() {
+    if (rejectionDraft !== (record.rejectionDetails ?? "")) setRejectionDetails(job.id, rejectionDraft);
+  }
+  function handleOfferBlur() {
+    if (offerDraft !== (record.offerDetails ?? "")) setOfferDetails(job.id, offerDraft);
   }
 
   useEffect(() => {
@@ -100,25 +135,36 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
   const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-  const isPipeline = status === "saved" || status === "applied" || status === "interview";
-  const isOffer = status === "offer";
-  const isRejection = status === "rejection";
-  const inTracker = status !== "default" && status !== "dismissed" && status !== "reported";
+  const inTracker = status === "saved" || status === "applied" || status === "interview" || status === "offer" || status === "rejection";
+  const columns: JobStatus[] = ["saved", "applied", "interview", "offer", "rejection"];
+  const columnLabel: Record<string, string> = {
+    saved: "Saved",
+    applied: "Applied",
+    interview: "Interview",
+    offer: "Offers",
+    rejection: "Rejected",
+  };
 
-  function handleStatus(next: JobStatus) {
-    if (next === "interview") {
-      setStatus(job.id, "interview");
-      setReminderOpen(true);
+  function requestMoveTo(target: JobStatus) {
+    setMoveOpen(false);
+    if (target === status) return;
+    if (target === "applied") {
+      setApplyOpen(true);
       return;
     }
-    setStatus(job.id, next);
+    if (target === "saved") {
+      setStatus(job.id, "saved");
+      return;
+    }
+    setPending({ target: target as "interview" | "rejection" | "offer", source: status });
   }
 
-  function handleOpenPosting() {
-    window.open(job.postingUrl ?? "#", "_blank");
-    if (status !== "applied" && status !== "interview" && status !== "offer" && status !== "rejection") {
-      setPostingToast(true);
+  function cancelPending() {
+    if (pending) {
+      const rec = record;
+      if (rec.status !== pending.source) setStatus(job.id, pending.source);
     }
+    setPending(null);
   }
 
   const dateLine = (() => {
@@ -130,6 +176,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   })();
 
   const reminderToday = record.reminderAt ? dateHelpers.isSameLocalDay(record.reminderAt) : false;
+  const moveOptions = useMemo(() => columns.filter((c) => c !== status), [status]);
+  void moveOptions;
 
   return (
     <div className="fixed inset-0 z-50" role="presentation">
@@ -210,7 +258,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             job={job}
             open={applyOpen}
             onClose={() => setApplyOpen(false)}
-            onApplied={() => { setDigestSession(job.id, "applied"); onClose(); }}
+            onApplied={({ resumeName, coverLetterName }) => {
+              setDigestSession(job.id, "applied");
+              markApplied(job.id, { resumeName, coverLetterName });
+              // Keep drawer open so user can see the applied state; close only if not in tracker.
+              if (!inTracker) onClose();
+            }}
           />
 
           <div className="mt-3 grid grid-cols-3 gap-2">
@@ -302,23 +355,168 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 Go Pro
               </Link>
             </div>
-          ) : isPipeline ? (
-            <div className="mt-5"><PipelinePanel
-              status={status}
-              dateLine={dateLine}
-              reminderIso={record.reminderAt}
-              reminderToday={reminderToday}
-              onStatus={handleStatus}
-              onSetReminder={() => setReminderOpen(true)}
-              onEditReminder={() => setReminderOpen(true)}
-              onRemoveReminder={() => setReminder(job.id, null)}
-              onRejection={() => setStatus(job.id, "rejection")}
-              onOffer={() => setStatus(job.id, "offer")}
-            /></div>
-          ) : isOffer ? (
-            <div className="mt-5"><OfferPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
-          ) : isRejection ? (
-            <div className="mt-5"><RejectionPanel dateLine={dateLine} onChangeStatus={handleStatus} /></div>
+          ) : inTracker ? (
+            <div className="mt-6 flex flex-col gap-5">
+              {/* Status */}
+              <div>
+                <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</div>
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <span
+                    className="inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] font-semibold"
+                    style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
+                  >
+                    {columnLabel[status]}
+                  </span>
+                  <div className="relative" ref={moveRef}>
+                    <button
+                      type="button"
+                      aria-haspopup="menu"
+                      aria-expanded={moveOpen}
+                      onClick={() => setMoveOpen((v) => !v)}
+                      className="inline-flex h-9 items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                    >
+                      Move to
+                    </button>
+                    {moveOpen ? (
+                      <div
+                        role="menu"
+                        className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                        style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+                      >
+                        {moveOptions.map((k) => (
+                          <button
+                            key={k}
+                            type="button"
+                            role="menuitem"
+                            className="flex w-full items-center px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                            onClick={() => requestMoveTo(k)}
+                          >
+                            {columnLabel[k]}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
+              </div>
+
+              {/* Stage block */}
+              {status === "interview" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Interview stage</div>
+                  <select
+                    className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    value={record.interviewStage ?? INTERVIEW_STAGES[0]}
+                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
+                  >
+                    {INTERVIEW_STAGES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              {status === "offer" ? (
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
+                    <select
+                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      value={record.offerStatus ?? OFFER_STAGES[0]}
+                      onChange={(e) => setOfferStatus(job.id, e.target.value)}
+                    >
+                      {OFFER_STAGES.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
+                    <textarea
+                      value={offerDraft}
+                      onChange={(e) => setOfferDraft(e.target.value)}
+                      onBlur={handleOfferBlur}
+                      rows={4}
+                      placeholder="Comp, deadline, notes (optional)"
+                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    />
+                  </div>
+                </div>
+              ) : null}
+              {status === "rejection" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Rejection details</div>
+                  <textarea
+                    value={rejectionDraft}
+                    onChange={(e) => setRejectionDraft(e.target.value)}
+                    onBlur={handleRejectionBlur}
+                    rows={4}
+                    placeholder="What happened? (optional)"
+                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  />
+                </div>
+              ) : null}
+
+              {/* Reminder */}
+              <div>
+                <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
+                {record.reminderAt ? (
+                  <div
+                    className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
+                      reminderToday ? "bg-[#FFEDD4]" : "bg-[color:var(--color-surface-2)]"
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
+                      <Calendar size={14} strokeWidth={1.8} />
+                      {dateHelpers.shortDateTime(record.reminderAt)}
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <button className="text-[12px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={() => setReminderOpen(true)}>Edit</button>
+                      <button className="text-[12px] text-[color:var(--color-text-muted)] hover:underline" onClick={() => setReminder(job.id, null)}>Remove</button>
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setReminderOpen(true)}
+                    className="mt-2 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+                  >
+                    Set a reminder
+                  </button>
+                )}
+              </div>
+
+              {/* Documents used */}
+              {(status === "applied" || status === "interview" || status === "offer" || status === "rejection") &&
+              (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Documents used</div>
+                  <div className="mt-2 flex flex-col gap-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                    <span className="inline-flex items-center gap-2">
+                      <FileText size={14} strokeWidth={1.6} />
+                      Resume: {record.appliedResumeName ?? "—"}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <FileText size={14} strokeWidth={1.6} />
+                      Cover letter: {record.appliedCoverLetterName ?? "—"}
+                    </span>
+                  </div>
+                  {status === "applied" ? (
+                    <button
+                      type="button"
+                      onClick={() => setFollowUpOpen(true)}
+                      className="mt-3 inline-flex h-9 items-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                    >
+                      <MailShare size={14} strokeWidth={1.6} />
+                      Generate follow-up letter
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {/* History — must be the last block */}
+              <JobHistory history={record.history} />
+            </div>
           ) : null}
 
           {pro && saved ? (
@@ -357,216 +555,55 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         onCancel={() => setReminderOpen(false)}
         onSave={(iso) => {
           setReminder(job.id, iso);
-          setStatus(job.id, "interview");
           setReminderOpen(false);
         }}
       />
 
-      {postingToast ? (
-        <div
-          role="status"
-          className="fixed inset-x-0 bottom-6 z-[70] mx-auto flex w-fit items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px]"
-          style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-        >
-          <span>Did you apply to {job.title}?</span>
-          <button
-            type="button"
-            onClick={() => { setStatus(job.id, "applied"); setPostingToast(false); }}
-            className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-          >
-            Yes, mark as applied
-          </button>
-          <button
-            type="button"
-            onClick={() => setPostingToast(false)}
-            className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-text-secondary)]"
-          >
-            Not yet
-          </button>
-        </div>
-      ) : null}
-    </div>
-  );
-}
+      <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
 
-function PipelinePanel({
-  status,
-  dateLine,
-  reminderIso,
-  reminderToday,
-  onStatus,
-  onSetReminder,
-  onEditReminder,
-  onRemoveReminder,
-  onRejection,
-  onOffer,
-}: {
-  status: JobStatus;
-  dateLine: string;
-  reminderIso?: string;
-  reminderToday: boolean;
-  onStatus: (s: JobStatus) => void;
-  onSetReminder: () => void;
-  onEditReminder: () => void;
-  onRemoveReminder: () => void;
-  onRejection: () => void;
-  onOffer: () => void;
-}) {
-  const tabs: { key: JobStatus; label: string }[] = [
-    { key: "saved", label: "Saved" },
-    { key: "applied", label: "Applied" },
-    { key: "interview", label: "Interview" },
-  ];
-  return (
-    <div className="flex flex-col gap-4">
-      {status === "saved" ? null : (
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={onRejection}
-          className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Rejection
-        </button>
-        <button
-          type="button"
-          onClick={onOffer}
-          className="inline-flex h-10 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-        >
-          Received offer
-          <Zap size={13} strokeWidth={2} fill="currentColor" />
-        </button>
-      </div>
-      )}
-      {status === "saved" ? null : (
-      <div>
-        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</div>
-        <div className="mt-2 grid grid-cols-3 gap-1 rounded-[4px] border p-1">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => onStatus(t.key)}
-              className={`h-8 rounded-[4px] text-[13px] font-semibold transition-colors ${
-                t.key === status
-                  ? "bg-[color:var(--color-green)] text-white"
-                  : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      )}
-      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
-
-      {status === "interview" ? (
-        <div>
-          <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Interview reminder</div>
-          {reminderIso ? (
-            <div
-              className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
-                reminderToday ? "bg-[#FFEDD4]" : "bg-[color:var(--color-surface-2)]"
-              }`}
-            >
-              <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
-                <Calendar size={14} strokeWidth={1.8} />
-                {dateHelpers.shortDateTime(reminderIso)}
-              </span>
-              <span className="flex items-center gap-3">
-                <button className="text-[12px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={onEditReminder}>Edit</button>
-                <button className="text-[12px] text-[color:var(--color-text-muted)] hover:underline" onClick={onRemoveReminder}>Remove</button>
-              </span>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={onSetReminder}
-              className="mt-2 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-            >
-              Set a reminder
-            </button>
-          )}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function OfferPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="relative overflow-hidden rounded-[8px] border border-[color:var(--color-accent)] bg-[color:var(--color-mint)] p-4">
-        <div
-          className="relative z-10 text-[color:var(--color-foreground)]"
-          style={{ fontSize: 13, fontWeight: 300 }}
-        >
-          Congratulations on the offer!
-        </div>
-        <img
-          src={congratAsset.url}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2"
-          style={{ height: "100%", width: "auto" }}
+      {pending?.target === "interview" ? (
+        <InterviewTransitionDialog
+          open
+          initialStage={record.interviewStage}
+          initialReminderIso={record.reminderAt}
+          onCancel={cancelPending}
+          onSave={({ stage, reminderIso }) => {
+            setStatus(job.id, "interview");
+            setInterviewStage(job.id, stage);
+            setReminder(job.id, reminderIso);
+            setPending(null);
+          }}
         />
-      </div>
-      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
-      <ChangeStatusLink onChange={onChangeStatus} />
-    </div>
-  );
-}
-
-function RejectionPanel({ dateLine, onChangeStatus }: { dateLine: string; onChangeStatus: (s: JobStatus) => void }) {
-  return (
-    <div className="flex flex-col gap-3">
-      <div className="rounded-[8px] p-4" style={{ background: "#FFE2E2" }}>
-        <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>Rejection</div>
-        <p className="mt-1 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          The right offer is close. Check the latest digest for more great opportunities.
-        </p>
-      </div>
-      <div className="text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
-      <ChangeStatusLink onChange={onChangeStatus} />
-    </div>
-  );
-}
-
-function ChangeStatusLink({ onChange }: { onChange: (s: JobStatus) => void }) {
-  const [open, setOpen] = useState(false);
-  const opts: { key: JobStatus; label: string }[] = [
-    { key: "applied", label: "Applied" },
-    { key: "interview", label: "Interview" },
-    { key: "offer", label: "Received offer" },
-    { key: "rejection", label: "Rejection" },
-  ];
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="text-[13px] text-[color:var(--color-text-muted)] hover:underline"
-      >
-        Change status
-      </button>
-      {open ? (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {opts.map((o) => (
-            <button
-              key={o.key}
-              type="button"
-              onClick={() => { onChange(o.key); setOpen(false); }}
-              className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
       ) : null}
+      {pending?.target === "rejection" ? (
+        <RejectedTransitionDialog
+          open
+          initialDetails={record.rejectionDetails}
+          onCancel={cancelPending}
+          onSave={({ details }) => {
+            setStatus(job.id, "rejection");
+            if (details) setRejectionDetails(job.id, details);
+            setPending(null);
+          }}
+        />
+      ) : null}
+      {pending?.target === "offer" ? (
+        <OfferTransitionDialog
+          open
+          initialStage={record.offerStatus}
+          initialReminderIso={record.reminderAt}
+          initialDetails={record.offerDetails}
+          onCancel={cancelPending}
+          onSave={({ stage, reminderIso, details }) => {
+            setStatus(job.id, "offer");
+            setOfferStatus(job.id, stage);
+            setReminder(job.id, reminderIso);
+            if (details) setOfferDetails(job.id, details);
+            setPending(null);
+          }}
+        />
+      ) : null}
+
     </div>
   );
 }
-
-// Silence unused import warning if any (Check kept for potential future use)
-void Check;

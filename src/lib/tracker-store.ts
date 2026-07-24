@@ -29,6 +29,29 @@ export type JobRecord = {
   // Documents used when marking applied (Apply modal). Shown on Applied cards.
   appliedResumeName?: string;
   appliedCoverLetterName?: string;
+  // Free-form details captured at Rejection / Offer transitions and editable in the drawer.
+  rejectionDetails?: string;
+  offerDetails?: string;
+  // Reverse-chronological activity log (newest first).
+  history?: HistoryEntry[];
+};
+
+export type HistoryKind =
+  | "status"
+  | "interview_stage"
+  | "offer_stage"
+  | "reminder"
+  | "applied"
+  | "saved"
+  | "notes"
+  | "rejection_details"
+  | "offer_details";
+
+export type HistoryEntry = {
+  id: string;
+  at: string; // ISO
+  kind: HistoryKind;
+  description: string;
 };
 
 type Seed = {
@@ -78,12 +101,55 @@ function shortDateTime(iso?: string) {
   return `${date} · ${time}`;
 }
 
+// "Jul 23 • 04:32 PM" for history entries.
+function shortDateTimeAmpm(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const date = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const time = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+  return `${date} • ${time}`;
+}
+
+// "Jul 25 · 2:45 PM" for reminder timestamps referenced inside history descriptions.
+function reminderPhrase(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const date = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+  return `${date} · ${time}`;
+}
+
 function isSameLocalDay(iso: string, ref = new Date()) {
   const d = new Date(iso);
   return d.getFullYear() === ref.getFullYear() && d.getMonth() === ref.getMonth() && d.getDate() === ref.getDate();
 }
 
-export const dateHelpers = { shortDate, shortDateTime, isSameLocalDay };
+export const dateHelpers = { shortDate, shortDateTime, shortDateTimeAmpm, reminderPhrase, isSameLocalDay };
+
+const STATUS_LABELS: Record<JobStatus, string> = {
+  default: "Removed",
+  saved: "Saved",
+  applied: "Applied",
+  interview: "Interview",
+  offer: "Offers",
+  rejection: "Rejected",
+  dismissed: "Dismissed",
+  reported: "Reported",
+};
+
+let historyPaused = false;
+let historySeq = 0;
+function logHistory(r: JobRecord, kind: HistoryKind, description: string) {
+  if (historyPaused) return;
+  if (!r.history) r.history = [];
+  historySeq++;
+  r.history.unshift({
+    id: `${Date.now()}-${historySeq}`,
+    at: new Date().toISOString(),
+    kind,
+    description,
+  });
+}
 
 // ---- store ----
 
@@ -173,7 +239,9 @@ function seedOnce() {
 }
 
 export function seedTracker(allJobs: Job[]) {
+  historyPaused = true;
   seedFrom(allJobs, []);
+  historyPaused = false;
   emit();
 }
 
@@ -181,6 +249,7 @@ export function seedTracker(allJobs: Job[]) {
 export function setStatus(id: string, next: JobStatus) {
   const r = ensure(id);
   const prev = r.status;
+  if (prev === next) return;
   r.status = next;
   r.movedAt = today();
   // Clearing the archived flag on any explicit re-status (e.g. Restore)
@@ -196,7 +265,15 @@ export function setStatus(id: string, next: JobStatus) {
     if (!r.offerStatus) r.offerStatus = "Waiting for my reply";
   }
   if (next === "rejection") r.rejectionAt ??= today();
-  void prev;
+  // History: only log meaningful transitions between tracker columns / saved.
+  const trackerCols: JobStatus[] = ["saved", "applied", "interview", "offer", "rejection"];
+  if (next === "saved" && !trackerCols.includes(prev)) {
+    logHistory(r, "saved", "Saved");
+  } else if (prev === "saved" && next === "default") {
+    logHistory(r, "saved", "Unsaved");
+  } else if (trackerCols.includes(prev) && trackerCols.includes(next)) {
+    logHistory(r, "status", `Moved from ${STATUS_LABELS[prev]} to ${STATUS_LABELS[next]}`);
+  }
   emit();
 }
 
@@ -205,12 +282,20 @@ export function markApplied(
   meta: { resumeName?: string; coverLetterName?: string } = {},
 ) {
   const r = ensure(id);
+  const prev = r.status;
   r.status = "applied";
   r.appliedAt ??= today();
   r.movedAt = today();
   if (r.archived) r.archived = false;
   if (meta.resumeName) r.appliedResumeName = meta.resumeName;
   if (meta.coverLetterName) r.appliedCoverLetterName = meta.coverLetterName;
+  const parts: string[] = [];
+  if (meta.resumeName) parts.push(`resume: ${meta.resumeName}`);
+  if (meta.coverLetterName) parts.push(`cover letter: ${meta.coverLetterName}`);
+  const suffix = parts.length ? ` (${parts.join(", ")})` : "";
+  if (prev !== "applied") {
+    logHistory(r, "applied", `Applied${suffix}`);
+  }
   emit();
 }
 
@@ -233,20 +318,65 @@ export function restoreArchived(id: string) {
 
 export function setInterviewStage(id: string, stage: string) {
   const r = ensure(id);
+  const prev = r.interviewStage;
+  if (prev === stage) return;
   r.interviewStage = stage;
+  if (prev) {
+    logHistory(r, "interview_stage", `Interview stage changed from ${prev} to ${stage}`);
+  } else {
+    logHistory(r, "interview_stage", `Interview stage set to ${stage}`);
+  }
   emit();
 }
 
 export function setOfferStatus(id: string, offerStatus: string) {
   const r = ensure(id);
+  const prev = r.offerStatus;
+  if (prev === offerStatus) return;
   r.offerStatus = offerStatus;
+  if (prev) {
+    logHistory(r, "offer_stage", `Offer stage changed from ${prev} to ${offerStatus}`);
+  } else {
+    logHistory(r, "offer_stage", `Offer stage set to ${offerStatus}`);
+  }
   emit();
 }
 
 export function setReminder(id: string, iso: string | null) {
   const r = ensure(id);
-  if (iso) r.reminderAt = iso;
-  else delete r.reminderAt;
+  const prev = r.reminderAt;
+  if (iso) {
+    r.reminderAt = iso;
+    if (!prev) logHistory(r, "reminder", `Reminder was set on ${reminderPhrase(iso)}`);
+    else if (prev !== iso) logHistory(r, "reminder", `Reminder changed to ${reminderPhrase(iso)}`);
+  } else {
+    if (prev) {
+      delete r.reminderAt;
+      logHistory(r, "reminder", `Reminder was removed`);
+    } else {
+      delete r.reminderAt;
+    }
+  }
+  emit();
+}
+
+export function setRejectionDetails(id: string, details: string) {
+  const r = ensure(id);
+  const prev = r.rejectionDetails ?? "";
+  const next = details ?? "";
+  if (prev === next) return;
+  r.rejectionDetails = next;
+  logHistory(r, "rejection_details", prev ? `Rejection details updated` : `Rejection details added`);
+  emit();
+}
+
+export function setOfferDetails(id: string, details: string) {
+  const r = ensure(id);
+  const prev = r.offerDetails ?? "";
+  const next = details ?? "";
+  if (prev === next) return;
+  r.offerDetails = next;
+  logHistory(r, "offer_details", prev ? `Offer details updated` : `Offer details added`);
   emit();
 }
 
@@ -297,5 +427,7 @@ export function useCounts() {
 }
 
 // Auto-seed on import
+historyPaused = true;
 seedFrom([...TODAY_JOBS, ...YESTERDAY_JOBS]);
 seedOnce();
+historyPaused = false;

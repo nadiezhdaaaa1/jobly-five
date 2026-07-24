@@ -13,14 +13,23 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import proCube from "@/assets/pro-cube.png.asset.json";
-import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
-import { FollowUpDialog } from "@/components/app/ApplyModal";
+import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
+import {
+  InterviewTransitionDialog,
+  OfferTransitionDialog,
+  RejectedTransitionDialog,
+} from "@/components/app/TrackerTransitionDialogs";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
   archiveJob,
   dateHelpers,
   getJobRecord,
+  markApplied,
   restoreArchived,
+  setInterviewStage,
+  setOfferStatus,
+  setRejectionDetails,
+  setOfferDetails,
   setReminder as storeSetReminder,
   setStatus,
   useJobRecord,
@@ -164,8 +173,7 @@ function KanbanCard({
   onDragStart,
   onDragEnd,
   onArchive,
-  onRequestInterviewReminder,
-  onRequestApplyToast,
+  onRequestApply,
   onMoveTo,
   onMailShareToast,
   archivedView,
@@ -175,19 +183,16 @@ function KanbanCard({
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
   onArchive: () => void;
-  onRequestInterviewReminder?: () => void;
-  onRequestApplyToast?: () => void;
+  onRequestApply: () => void;
   onMoveTo: (target: ColumnKey) => void;
   onMailShareToast?: () => void;
   archivedView: boolean;
 }) {
   const record = useJobRecord(job.id);
   const status = (record.archived ? record.lastStatus : record.status) as ColumnKey;
-  const [applyOpen, setApplyOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const [isDragging, setIsDragging] = useState(false);
@@ -197,6 +202,8 @@ function KanbanCard({
   const draggable = !isArchived;
 
   const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
+  // Suppress unused-var warning; kept for API symmetry
+  void onMailShareToast;
 
   return (
     <>
@@ -277,30 +284,15 @@ function KanbanCard({
             <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
               <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
             </IconBtn>
-            <div className="relative flex-1" ref={applyRef}>
-              <button
-                type="button"
-                aria-haspopup="menu"
-                aria-expanded={applyOpen}
-                onClick={() => setApplyOpen((v) => !v)}
-                className="flex h-[30px] w-full items-center justify-center gap-1 rounded-[4px] text-[12px]"
-                style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
-              >
-                Apply
-                <Zap size={14} strokeWidth={2} fill="currentColor" />
-              </button>
-              {applyOpen ? (
-                <MenuPop align="right">
-                  <MenuItem onClick={() => { window.open(job.postingUrl ?? "#", "_blank"); setApplyOpen(false); onRequestApplyToast?.(); }}>
-                    <ExternalLink size={14} strokeWidth={1.6} />
-                    Open posting to apply
-                  </MenuItem>
-                  <MenuItem onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}>
-                    Already applied
-                  </MenuItem>
-                </MenuPop>
-              ) : null}
-            </div>
+            <button
+              type="button"
+              onClick={onRequestApply}
+              className="flex h-[30px] flex-1 items-center justify-center gap-1 rounded-[4px] text-[12px]"
+              style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
+            >
+              Apply
+              <Zap size={14} strokeWidth={2} fill="currentColor" />
+            </button>
           </>
         ) : (
           // Applied / Interview / Rejected / Offer
@@ -333,12 +325,7 @@ function KanbanCard({
                         key={k}
                         onClick={() => {
                           setMoveOpen(false);
-                          if (k === "interview") {
-                            setStatus(job.id, "interview");
-                            onRequestInterviewReminder?.();
-                          } else {
-                            setStatus(job.id, k);
-                          }
+                          onMoveTo(k);
                         }}
                       >
                         {COLUMN_TITLE[k]}
@@ -463,8 +450,7 @@ function KanbanColumn({
   onDragStartJob,
   onDragEnd,
   onArchive,
-  onRequestInterviewReminder,
-  onRequestApplyToast,
+  onRequestApply,
   onMoveTo,
   onMailShareToast,
   archivedView,
@@ -479,8 +465,7 @@ function KanbanColumn({
   onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
   onArchive: (jobId: string) => void;
-  onRequestInterviewReminder: (jobId: string) => void;
-  onRequestApplyToast: (jobId: string) => void;
+  onRequestApply: (jobId: string) => void;
   onMoveTo: (jobId: string, target: ColumnKey) => void;
   onMailShareToast: () => void;
   archivedView: boolean;
@@ -540,8 +525,7 @@ function KanbanColumn({
             }}
             onDragEnd={onDragEnd}
             onArchive={() => onArchive(job.id)}
-            onRequestInterviewReminder={() => onRequestInterviewReminder(job.id)}
-            onRequestApplyToast={() => onRequestApplyToast(job.id)}
+            onRequestApply={() => onRequestApply(job.id)}
             onMoveTo={(t) => onMoveTo(job.id, t)}
             onMailShareToast={onMailShareToast}
             archivedView={archivedView}
@@ -562,8 +546,11 @@ function TrackerScreen() {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState<ColumnKey | null>(null);
   const [dragHeight, setDragHeight] = useState<number>(0);
-  const [reminderJobId, setReminderJobId] = useState<string | null>(null);
-  const [applyToast, setApplyToast] = useState<Job | null>(null);
+  const [applyJob, setApplyJob] = useState<Job | null>(null);
+  const [pending, setPending] = useState<
+    | { jobId: string; target: "interview" | "rejection" | "offer"; source: JobStatus }
+    | null
+  >(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
@@ -621,18 +608,46 @@ function TrackerScreen() {
     return byMovedDesc(a, b);
   });
 
+  // Dispatcher: any move (drag OR "Move to") funnels through here.
+  // Applied is routed to the ApplyModal (unless already applied via Apply modal itself).
+  // Interview / Rejected / Offer open their transition popups; cancel reverts.
+  function requestMove(jobId: string, target: ColumnKey) {
+    const rec = getJobRecord(jobId);
+    const source = (rec.archived ? rec.lastStatus ?? "default" : rec.status) as JobStatus;
+    if (source === target) return;
+    if (target === "saved" || target === "applied") {
+      if (target === "applied") {
+        const job = allJobs.find((j) => j.id === jobId);
+        if (job) setApplyJob(job);
+        return;
+      }
+      setStatus(jobId, "saved");
+      return;
+    }
+    setPending({ jobId, target: target as "interview" | "rejection" | "offer", source });
+  }
+
   function handleDrop(target: ColumnKey) {
     setDragOver(null);
-    if (!draggingId) return;
-    if (target === "interview") {
-      setStatus(draggingId, "interview");
-      setReminderJobId(draggingId);
-    } else {
-      setStatus(draggingId, target);
-    }
+    const id = draggingId;
     setDraggingId(null);
     setDragHeight(0);
+    if (!id) return;
+    requestMove(id, target);
   }
+
+  function cancelPending() {
+    // Revert: if a move already committed the status change, put it back.
+    if (pending) {
+      const rec = getJobRecord(pending.jobId);
+      if (rec.status !== pending.source) {
+        setStatus(pending.jobId, pending.source);
+      }
+    }
+    setPending(null);
+  }
+
+  const pendingJob = pending ? allJobs.find((j) => j.id === pending.jobId) ?? null : null;
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -676,16 +691,11 @@ function TrackerScreen() {
                 onDragStartJob={(id, h) => { setDraggingId(id); setDragHeight(h); }}
                 onDragEnd={() => { setDraggingId(null); setDragOver(null); setDragHeight(0); }}
                 onArchive={(id) => archiveJob(id)}
-                onRequestInterviewReminder={setReminderJobId}
-                onRequestApplyToast={(id) => { const j = allJobs.find((x) => x.id === id); if (j) setApplyToast(j); }}
-                onMoveTo={(id, target) => {
-                  if (target === "interview") {
-                    setStatus(id, "interview");
-                    setReminderJobId(id);
-                  } else {
-                    setStatus(id, target);
-                  }
+                onRequestApply={(id) => {
+                  const j = allJobs.find((x) => x.id === id);
+                  if (j) setApplyJob(j);
                 }}
+                onMoveTo={(id, target) => requestMove(id, target)}
                 onMailShareToast={() => showToast("Follow-up email drafted (demo)")}
                 archivedView={showArchived}
               />
@@ -698,40 +708,60 @@ function TrackerScreen() {
 
       {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
 
-      <InterviewReminderDialog
-        open={reminderJobId !== null}
-        jobTitle={reminderJobId ? allJobs.find((j) => j.id === reminderJobId)?.title : undefined}
-        initialIso={reminderJobId ? getJobRecord(reminderJobId).reminderAt : undefined}
-        onCancel={() => setReminderJobId(null)}
-        onSave={(iso) => {
-          if (reminderJobId) {
-            storeSetReminder(reminderJobId, iso);
-            setStatus(reminderJobId, "interview");
-          }
-          setReminderJobId(null);
-        }}
-      />
+      {applyJob ? (
+        <ApplyModal
+          job={applyJob}
+          open={applyJob !== null}
+          onClose={() => setApplyJob(null)}
+          onApplied={({ resumeName, coverLetterName }) => {
+            markApplied(applyJob.id, { resumeName, coverLetterName });
+          }}
+        />
+      ) : null}
 
-      {applyToast ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true">
-          <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={() => setApplyToast(null)} aria-hidden />
-          <div className="relative z-10 w-[92%] max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-            <h2 className="text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-              Did you apply to {applyToast.title}?
-            </h2>
-            <p className="mt-2 text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              Let us know so we can move it to Applied on your tracker.
-            </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <button type="button" className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]" onClick={() => { setStatus(applyToast.id, "applied"); setApplyToast(null); }}>
-                Yes, mark as applied
-              </button>
-              <button type="button" className="h-11 w-full rounded-[4px] border px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]" onClick={() => setApplyToast(null)}>
-                Not yet
-              </button>
-            </div>
-          </div>
-        </div>
+      {pendingJob && pending?.target === "interview" ? (
+        <InterviewTransitionDialog
+          open
+          initialStage={getJobRecord(pending.jobId).interviewStage}
+          initialReminderIso={getJobRecord(pending.jobId).reminderAt}
+          onCancel={cancelPending}
+          onSave={({ stage, reminderIso }) => {
+            setStatus(pending.jobId, "interview");
+            setInterviewStage(pending.jobId, stage);
+            storeSetReminder(pending.jobId, reminderIso);
+            setPending(null);
+          }}
+        />
+      ) : null}
+
+      {pendingJob && pending?.target === "rejection" ? (
+        <RejectedTransitionDialog
+          open
+          initialDetails={getJobRecord(pending.jobId).rejectionDetails}
+          onCancel={cancelPending}
+          onSave={({ details }) => {
+            setStatus(pending.jobId, "rejection");
+            if (details) setRejectionDetails(pending.jobId, details);
+            setPending(null);
+          }}
+        />
+      ) : null}
+
+      {pendingJob && pending?.target === "offer" ? (
+        <OfferTransitionDialog
+          open
+          initialStage={getJobRecord(pending.jobId).offerStatus}
+          initialReminderIso={getJobRecord(pending.jobId).reminderAt}
+          initialDetails={getJobRecord(pending.jobId).offerDetails}
+          onCancel={cancelPending}
+          onSave={({ stage, reminderIso, details }) => {
+            setStatus(pending.jobId, "offer");
+            setOfferStatus(pending.jobId, stage);
+            storeSetReminder(pending.jobId, reminderIso);
+            if (details) setOfferDetails(pending.jobId, details);
+            setPending(null);
+          }}
+        />
       ) : null}
 
       {toast ? (
