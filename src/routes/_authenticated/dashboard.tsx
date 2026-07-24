@@ -265,11 +265,12 @@ function filterEqual(a: FilterState, b: FilterState) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function activeFilterCount(f: FilterState): number {
+function activeFilterCount(f: FilterState, profileRoles: string[] = []): number {
   const d = defaultFilters();
   let n = 0;
   if (f.field !== d.field) n++;
-  if (f.roles.length) n++;
+  if (profileRoles.length > 0 && f.roles.length !== profileRoles.length) n++;
+  else if (profileRoles.length === 0 && f.roles.length) n++;
   if (f.seniority.length) n++;
   if (f.years.length) n++;
   if (f.english) n++;
