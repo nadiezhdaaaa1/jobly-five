@@ -19,6 +19,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import { MatchLine } from "@/components/app/MatchLine";
 import { ApplyModal } from "@/components/app/ApplyModal";
 import { useJobs } from "@/lib/jobs-store";
