@@ -4,7 +4,8 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
-import { getAllJobs, type Job } from "@/lib/jobs-data";
+import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
+import type { Job } from "@/lib/jobs-data";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -15,8 +16,6 @@ export const Route = createFileRoute("/matches")({
   }),
   component: MatchesPage,
 });
-
-const MOCK_JOBS: Job[] = getAllJobs().slice(0, 5);
 
 function ago(days: number) {
   if (days <= 0) return "Posted today";
@@ -34,7 +33,11 @@ function MatchesPage() {
 
   useEffect(() => {
     setAnswers(loadQuiz());
+    void loadJobs();
   }, []);
+
+  const matched = useMatchedJobs(70);
+  const topJobs = matched.slice(0, 5);
 
   async function handleGoogle() {
     setSubmitting(true);
@@ -87,9 +90,13 @@ function MatchesPage() {
         </div>
 
         <ol className="mt-6 flex flex-col gap-3">
-          {MOCK_JOBS.map((j) => (
-            <JobCard key={j.id} job={j} />
-          ))}
+          {topJobs.length === 0 ? (
+            <li className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 text-[13px] text-[color:var(--color-text-muted)]">
+              Finding your best matches…
+            </li>
+          ) : (
+            topJobs.map((j) => <JobCard key={j.id} job={j} />)
+          )}
         </ol>
 
         <section className="mt-10 rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 sm:p-8">

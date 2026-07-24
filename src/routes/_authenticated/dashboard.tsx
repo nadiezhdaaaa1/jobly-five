@@ -18,7 +18,8 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { MatchLine } from "@/components/app/MatchLine";
 import { ApplyModal } from "@/components/app/ApplyModal";
-import { getAllJobs, type Job } from "@/lib/jobs-data";
+import { useJobs } from "@/lib/jobs-store";
+import type { Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -1101,7 +1102,8 @@ function JobsScreen() {
     return s.trim().split(/\s+/)[0] ?? "";
   })();
 
-  const allJobs = useMemo(() => getAllJobs().map(enrich), []);
+  const { jobs: allJobsRaw, loaded } = useJobs();
+  const allJobs = useMemo(() => allJobsRaw.map(enrich), [allJobsRaw]);
   const blocked = useBlockedCompanies();
   const hiddenIds = useTrackerHiddenIds();
   const visible = useMemo(() => {
@@ -1151,7 +1153,11 @@ function JobsScreen() {
             </p>
 
             <div className="mt-6 flex flex-col gap-3">
-              {shown.length === 0 ? (
+              {!loaded && allJobs.length === 0 ? (
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                  Loading jobs…
+                </div>
+              ) : shown.length === 0 ? (
                 <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
                   No matches for your current filters
                 </div>

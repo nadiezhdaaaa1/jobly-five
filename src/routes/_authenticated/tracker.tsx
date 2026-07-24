@@ -20,7 +20,8 @@ import {
   OfferTransitionDialog,
   RejectedTransitionDialog,
 } from "@/components/app/TrackerTransitionDialogs";
-import { getAllJobs, type Job } from "@/lib/jobs-data";
+import { useJobs } from "@/lib/jobs-store";
+import type { Job } from "@/lib/jobs-data";
 import {
   archiveJob,
   dateHelpers,
@@ -626,7 +627,7 @@ function KanbanColumn({
 function TrackerScreen() {
   const plan = usePlan();
   useTrackerVersion();
-  const allJobs = useMemo(() => getAllJobs(), []);
+  const { jobs: allJobs } = useJobs();
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState<ColumnKey | null>(null);
