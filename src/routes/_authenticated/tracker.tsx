@@ -327,7 +327,7 @@ function KanbanCard({
         ) : (
           // Applied / Interview / Rejected / Offer
           <>
-            <IconBtn label="Archive" onClick={() => setConfirmArchiveOpen(true)}>
+            <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
               <X size={16} strokeWidth={1.8} />
             </IconBtn>
             <div className="ml-auto flex items-center gap-1">
