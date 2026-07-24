@@ -816,17 +816,8 @@ function FiltersSidebar({
       <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:border-0 lg:bg-transparent lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:bg-[color:var(--color-background)] lg:px-0">
-          {/* Desktop-only inline toggle inside sticky header */}
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label="Collapse filters"
-            className="inline-flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            <IconChevronRight size={18} strokeWidth={1.8} />
-          </button>
           <select
-            className="h-[32px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-normal leading-none"
+            className="h-[40px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] font-normal leading-none"
             value=""
             onChange={(e) => {
               const id = e.target.value;
@@ -839,60 +830,14 @@ function FiltersSidebar({
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
+          {/* Desktop-only inline toggle inside sticky header, right-aligned */}
           <button
             type="button"
-            onClick={() => {
-              const q = loadQuiz();
-              const next: Partial<FilterState> = {};
-              // Field + Roles
-              const roles = q.roles?.length ? q.roles : q.role ? [q.role] : [];
-              if (roles.length) {
-                next.roles = roles;
-                const owningField = FIELDS.find((f) => roles.some((r) => FIELD_ROLES[f]?.includes(r)));
-                next.field = q.field && FIELDS.includes(q.field) ? q.field : owningField ?? FIELD_ANY;
-              } else if (q.field && FIELDS.includes(q.field)) {
-                next.field = q.field;
-              }
-              // Seniority (single from quiz → array)
-              if (q.level && (SENIORITIES as readonly string[]).includes(q.level)) {
-                next.seniority = [q.level as Seniority];
-              }
-              // Experience years bucket
-              if (typeof q.years === "number") {
-                const y = q.years;
-                const bucket = y === 0 ? "No experience" : y <= 2 ? "1–2 years" : y <= 5 ? "3–5 years" : y <= 9 ? "6–9 years" : "10 years or more";
-                next.years = [bucket];
-              }
-              // English level — quiz now stores it directly in primaryLanguage.
-              const pl = q.primaryLanguage ?? "";
-              let matchedEnglish: string | undefined;
-              if (/native/i.test(pl)) matchedEnglish = "Native speaker";
-              else if (/no english/i.test(pl)) matchedEnglish = "No English";
-              else {
-                const cefr = pl.match(/\b([ABC][12])\b/i)?.[1]?.toUpperCase();
-                if (cefr) matchedEnglish = ENGLISH_LEVELS.find((l) => l.endsWith(cefr));
-              }
-              if (matchedEnglish) next.english = matchedEnglish;
-              // Location / remote
-              if (q.workMode === "remote" || q.remote) next.onlyRemote = true;
-              else if (q.locations?.length) {
-                next.onlyRemote = false;
-                next.locations = q.locations;
-              } else if (q.location) {
-                next.onlyRemote = false;
-                next.locations = [q.location];
-              }
-              // Salary — quiz stores annual; slider steps: 0, then 60k → 200k by 10k.
-              if (typeof q.salaryMin === "number" && q.salaryMin > 0) {
-                const annual = q.salaryMin >= 1000 ? q.salaryMin : q.salaryMin * 1000;
-                const snapped = annual < 60000 ? 60000 : Math.min(200000, Math.round(annual / 10000) * 10000);
-                next.minSalary = snapped;
-              }
-              set(next);
-            }}
-            className="inline-flex h-[32px] shrink-0 items-center rounded-[4px] border px-3 text-[12px] font-normal leading-none text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            onClick={onToggle}
+            aria-label="Collapse filters"
+            className="inline-flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
-            Fill from Profile
+            <IconChevronRight size={20} strokeWidth={1.8} />
           </button>
         </div>
         <FilterSection title="Roles" collapseSignal={collapseSignal} dirty={profileRoles.length > 0 && p.roles.length !== profileRoles.length} onReset={() => set({ roles: [...profileRoles] })}>
