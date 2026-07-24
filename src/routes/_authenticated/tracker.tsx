@@ -14,6 +14,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import proCube from "@/assets/pro-cube.png.asset.json";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
+import { FollowUpDialog } from "@/components/app/ApplyModal";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
   archiveJob,
