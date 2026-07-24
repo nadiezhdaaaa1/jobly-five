@@ -135,19 +135,20 @@ function IconBtn({
     ? { background: "#D8FBEF", borderColor: "#0E735A", color: "#0E735A" }
     : { borderColor: noBorder ? "transparent" : BORDER_LIGHT, color: danger ? "#D00D01" : MUTED_TEXT };
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick?.(e);
-      }}
-      className={cls}
-      style={style}
-    >
-      {children}
-    </button>
+    <IconTooltip label={label}>
+      <button
+        type="button"
+        aria-label={label}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.(e);
+        }}
+        className={cls}
+        style={style}
+      >
+        {children}
+      </button>
+    </IconTooltip>
   );
 }
 
