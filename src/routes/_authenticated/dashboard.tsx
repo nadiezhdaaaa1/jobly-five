@@ -585,7 +585,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           {direct ? "Direct employer" : "Aggregated"}
         </span>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1">
           {pro ? (
             <button
               type="button"
