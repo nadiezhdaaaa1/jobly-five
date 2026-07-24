@@ -662,6 +662,18 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   return <FullJobCard job={job} onOpen={onOpen} />;
 }
 
+function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
+  const session = useDigestSession(job.id);
+  const wrap = session
+    ? "rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
+    : "rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]";
+  return (
+    <div className={wrap}>
+      <JobRow job={job} onOpen={onOpen} />
+    </div>
+  );
+}
+
 // ============================================================
 // Filters sidebar
 // ============================================================
