@@ -209,27 +209,8 @@ export function ApplyModal({
         </div>
 
         {/* Actions */}
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row">
-          <button
-            type="button"
-            onClick={commitApplied}
-            className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            I already applied
-          </button>
-          <button
-            type="button"
-            onClick={handleApplyOnSite}
-            className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-          >
-            <ExternalLink size={14} strokeWidth={1.8} />
-            Apply on company site
-            <Zap size={13} strokeWidth={2} fill="currentColor" />
-          </button>
-        </div>
-
         {askReturn ? (
-          <div className="mt-4 flex items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-surface-2)] p-3">
+          <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-surface-2)] p-3">
             <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Did you apply?</div>
             <div className="flex gap-2">
               <button
@@ -248,7 +229,26 @@ export function ApplyModal({
               </button>
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={commitApplied}
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              I already applied
+            </button>
+            <button
+              type="button"
+              onClick={handleApplyOnSite}
+              className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              <ExternalLink size={14} strokeWidth={1.8} />
+              Apply on company site
+              <Zap size={13} strokeWidth={2} fill="currentColor" />
+            </button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
