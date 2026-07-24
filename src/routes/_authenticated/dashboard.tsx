@@ -697,13 +697,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 }
 
 function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
-  const record = useJobRecord(job.id);
-  const s = record.status;
-  if (s === "reported") return <CompactFeedbackRow job={job} kind="reported" />;
-  if (s === "dismissed") return <CompactFeedbackRow job={job} kind="dismissed" />;
-  if (s === "applied" || s === "interview" || s === "offer" || s === "rejection") {
-    return <CompactPipelineRow job={job} status={s} />;
-  }
+  const session = useDigestSession(job.id);
+  if (session) return <CompactSessionRow job={job} kind={session} />;
   return <FullJobCard job={job} onOpen={onOpen} />;
 }
 
