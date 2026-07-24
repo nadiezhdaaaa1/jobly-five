@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { IconListDetails, IconTarget, IconFileDescription, IconUserSquare, IconSettings } from "@tabler/icons-react";
+import { IconBriefcase2, IconTarget, IconFileDescription, IconUserSquare, IconSettings } from "@tabler/icons-react";
 import { usePlan, isPro } from "@/lib/plan-store";
 import proCubeAsset from "@/assets/pro2.png.asset.json";
 
 export type AppTab = "digest" | "tracker" | "resume" | "profile" | "settings";
 
-const TABS: Array<{ key: AppTab; label: string; icon: typeof IconListDetails; to: string }> = [
-  { key: "digest", label: "Jobs", icon: IconListDetails, to: "/dashboard" },
+const TABS: Array<{ key: AppTab; label: string; icon: typeof IconBriefcase2; to: string }> = [
+  { key: "digest", label: "Jobs", icon: IconBriefcase2, to: "/dashboard" },
   { key: "tracker", label: "Tracker", icon: IconTarget, to: "/tracker" },
   { key: "resume", label: "Resume", icon: IconFileDescription, to: "/resume" },
   { key: "profile", label: "Profile", icon: IconUserSquare, to: "/profile" },
