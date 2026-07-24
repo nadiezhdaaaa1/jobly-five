@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import type { Job } from "@/lib/jobs-data";
 
 export type JobStatus =
@@ -483,7 +484,7 @@ function toRow(userId: string, jobId: string, r: JobRecord) {
     applied_cover_letter_name: r.appliedCoverLetterName ?? null,
     rejection_details: r.rejectionDetails ?? null,
     offer_details: r.offerDetails ?? null,
-    history: (r.history ?? []) as unknown as object,
+    history: (r.history ?? []) as unknown as Json,
   };
 }
 
