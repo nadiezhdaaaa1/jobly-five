@@ -717,6 +717,22 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useOutsideClose(open, () => setOpen(false));
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const r = btnRef.current?.getBoundingClientRect();
+      if (r) setPos({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [open]);
   const ql = q.toLowerCase();
   const filteredGroups = groups
     ? groups
@@ -726,11 +742,11 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
-      <button type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
+      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
-      {open ? (
-        <div className="absolute right-0 top-8 z-30 w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+      {open && pos ? createPortal(
+        <div className="fixed z-[100] w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: pos.top, right: pos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }} ref={ref as unknown as React.RefObject<HTMLDivElement>}>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full border-b bg-transparent px-3 py-2 text-[13px] outline-none" />
           <div className="max-h-[260px] overflow-y-auto">
             {filteredGroups ? (
@@ -750,7 +766,8 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
               <button key={o} type="button" onClick={() => { onAdd(o); setOpen(false); setQ(""); }} className="block w-full px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]">{o}</button>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body
       ) : null}
     </span>
   );
