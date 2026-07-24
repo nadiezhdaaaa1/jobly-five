@@ -226,11 +226,10 @@ function KanbanCard({
         onDragEnd?.(e);
       }}
       onClick={onOpen}
-      className={`group relative cursor-pointer rounded-[8px] border bg-white transition-shadow ${isDragging ? "hidden" : ""}`}
+      className={`group relative cursor-pointer rounded-[8px] border bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color] hover:border-[#D0D6D8] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)] ${isDragging ? "hidden" : ""}`}
       style={{
         borderColor: BORDER_LIGHT,
         padding: 13,
-        boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)",
         opacity: isArchived && archivedView ? 0.55 : 1,
       }}
     >
