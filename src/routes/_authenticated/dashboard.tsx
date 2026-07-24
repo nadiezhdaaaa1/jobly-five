@@ -1069,7 +1069,13 @@ function JobsScreen() {
   })();
 
   const allJobs = useMemo(() => getAllJobs().map(enrich), []);
-  const visible = useMemo(() => applyFilters(allJobs, applied), [allJobs, applied]);
+  const blocked = useBlockedCompanies();
+  const visible = useMemo(() => {
+    const list = applyFilters(allJobs, applied);
+    if (!blocked.length) return list;
+    const set = new Set(blocked.map((c) => c.toLowerCase()));
+    return list.filter((j) => !set.has(j.company.toLowerCase()));
+  }, [allJobs, applied, blocked]);
 
   // Lazy loading
   const [count, setCount] = useState(15);
