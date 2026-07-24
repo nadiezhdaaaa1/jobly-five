@@ -546,7 +546,7 @@ function KanbanColumn({
 }) {
   return (
     <div
-      className="flex w-full min-w-0 flex-col lg:w-[224px] lg:shrink-0"
+      className="flex w-full min-w-0 flex-col lg:flex-1 lg:basis-0"
       onDragOver={(e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
@@ -769,7 +769,7 @@ function TrackerScreen() {
 
         {/* Board */}
         <div className="mt-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:gap-2">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-4">
             {COLUMN_ORDER.map((k) => (
               <KanbanColumn
                 key={k}
