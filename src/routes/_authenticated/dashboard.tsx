@@ -678,6 +678,12 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </div>
       </div>
 
+      {pro && detailsOpen ? (
+        <div className="mt-5 border-t border-[color:var(--color-border)] pt-5">
+          <MatchLine job={job} wrap />
+        </div>
+      ) : null}
+
       <ApplyModal
         job={job}
         open={applyOpen}
