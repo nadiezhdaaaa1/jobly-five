@@ -198,43 +198,35 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 }
 
 function JobCard({ job }: { job: Job }) {
+  const direct = job.source === "direct";
   return (
-    <li className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
-      <div className="flex w-full items-start gap-3">
-        {job.logo ? (
-          <img src={job.logo} alt={`${job.company} logo`} className="h-10 w-10 shrink-0 rounded-[4px] object-cover" />
-        ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[14px] font-semibold text-white">
-            {job.company.charAt(0)}
+    <li className="rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+      <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
+        <div className="flex w-full items-center gap-4">
+          {job.logo ? (
+            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+              {job.company.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
+            <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              {job.company} · {job.location} · {job.salary}
+            </div>
           </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">
-            {job.title}
-          </span>
-          <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {job.company} · {job.location} · {job.salary}
-          </div>
-          <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            {job.why}
-          </p>
+          <ScoreRing score={job.score} />
         </div>
-        <ScoreRing score={job.score} />
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {job.source === "direct" ? (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[12px] text-[color:var(--color-green)]">
-            Direct employer
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span
+            className="text-[12px] text-[color:var(--color-text-muted)]"
+            style={{ fontWeight: 300, lineHeight: 1.5 }}
+          >
+            {direct ? "Direct employer" : "Aggregated"}
           </span>
-        ) : (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-secondary)]">
-            Aggregated
-          </span>
-        )}
-        <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[12px] text-[color:var(--color-text-muted)]">
-          {ago(job.postedDays)}
-        </span>
-      </div>
+        </div>
+      </article>
     </li>
   );
 }
