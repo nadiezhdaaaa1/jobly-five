@@ -816,9 +816,9 @@ function FiltersSidebar({
         />
       ) : null}
       {open ? (
-      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-l lg:max-h-[calc(100vh-6rem)] lg:shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:border-0 lg:bg-transparent lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="sticky top-0 z-10 flex items-center gap-2 lg:rounded-t-[8px] border-b bg-[color:var(--color-surface-1)] px-4 py-3">
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:bg-[color:var(--color-background)] lg:px-0">
           {/* Desktop-only inline toggle inside sticky header */}
           <button
             type="button"
@@ -1042,7 +1042,7 @@ function FiltersSidebar({
         </FilterSection>
       </div>
 
-      <div className="sticky bottom-0 z-10 flex items-center gap-2 rounded-b-[8px] border-t bg-[color:var(--color-surface-1)] p-3">
+      <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:bg-[color:var(--color-background)] lg:px-0">
         <button type="button" onClick={onSave} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Save</button>
         <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
         <button
