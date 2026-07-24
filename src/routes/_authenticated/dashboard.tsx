@@ -377,7 +377,7 @@ function TrackerWidget() {
     { n: c.rejection, l: "Rejected" },
   ];
   return (
-    <aside className="rounded-[6px] border bg-[color:var(--color-surface-1)]">
+    <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
       <div className="flex items-center justify-between px-4 pt-4">
         <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Tracker</h3>
         <Link to="/tracker" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">Open</Link>
