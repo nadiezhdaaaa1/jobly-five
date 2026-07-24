@@ -12,6 +12,7 @@ import {
 import type { Job } from "@/lib/jobs-data";
 import {
   dateHelpers,
+  archiveJob,
   markApplied,
   setInterviewStage,
   setNotes as storeSetNotes,
@@ -23,6 +24,7 @@ import {
   useJobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import {
   InterviewTransitionDialog,
@@ -90,6 +92,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [applyOpen, setApplyOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   const [pending, setPending] = useState<
     | { target: "interview" | "rejection" | "offer"; source: JobStatus }
     | null
@@ -341,12 +344,23 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           </div>
           </>
           ) : (
-            <div className="mt-4">
+            <div className="mt-4 flex items-center gap-2">
+              {status === "applied" || status === "interview" || status === "offer" || status === "rejection" ? (
+                <button
+                  type="button"
+                  aria-label="Archive job"
+                  onClick={() => setArchiveOpen(true)}
+                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <X size={15} strokeWidth={1.8} />
+                  Archive job
+                </button>
+              ) : null}
               <a
                 href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Open original job posting
               </a>
@@ -551,20 +565,42 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
-          {/* Footer */}
-          <div className="mt-5 flex items-center justify-end text-[13px]">
-            {inTracker ? (
-              <button
-                type="button"
-                onClick={() => setStatus(job.id, "default")}
-                className="text-[color:var(--color-text-muted)] hover:underline"
-              >
-                Remove from tracker
-              </button>
-            ) : <span />}
-          </div>
         </div>
       </div>
+
+      <Dialog open={archiveOpen} onOpenChange={(o) => !o && setArchiveOpen(false)}>
+        <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+          <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+            Are you sure?
+          </DialogTitle>
+          <p className="mt-2 text-[13px] font-light" style={{ color: "var(--color-text-muted)", lineHeight: "20px" }}>
+            Remove <span style={{ color: "var(--color-foreground)" }}>{job.title}</span> at{" "}
+            <span style={{ color: "var(--color-foreground)" }}>{job.company}</span> from{" "}
+            {columnLabel[status] ?? status}? You can restore it later from Archived.
+          </p>
+          <div className="mt-5 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setArchiveOpen(false)}
+              className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px] text-[color:var(--color-foreground)]"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setArchiveOpen(false);
+                archiveJob(job.id);
+                onClose();
+              }}
+              className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
+              style={{ background: "#D00D01" }}
+            >
+              Remove
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <InterviewReminderDialog
         open={reminderOpen}
