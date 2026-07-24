@@ -661,7 +661,7 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function FilterSection({ title, children, dirty, onReset }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number; dirty?: boolean; onReset?: () => void }) {
   return (
     <div>
-      <div className="flex items-center justify-between px-4 lg:px-0 pt-3 pb-2">
+      <div className="flex items-center justify-between px-4 lg:px-1 pt-3 pb-2">
         <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{title}</span>
         {dirty && onReset ? (
           <button
@@ -673,7 +673,7 @@ function FilterSection({ title, children, dirty, onReset }: { title: string; chi
           </button>
         ) : null}
       </div>
-      <div className="px-4 lg:px-0 pb-4">{children}</div>
+      <div className="px-4 lg:px-1 pb-4">{children}</div>
     </div>
   );
 }
@@ -1127,7 +1127,7 @@ function JobsScreen() {
             You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
           </div>
         ) : null}
-        <div className={`grid gap-6 lg:gap-10 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
+        <div className={`grid gap-6 lg:gap-8 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
           <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
             <TrackerWidget />
             <SalaryTeaser />
