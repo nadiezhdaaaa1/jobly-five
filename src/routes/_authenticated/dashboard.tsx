@@ -529,7 +529,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const direct = DIRECT_BOARDS.has(job.board);
 
   return (
-    <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:bg-[color:var(--color-surface-2)]/40">
+    <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
       <button
         type="button"
         aria-label={`Open details for ${job.title}`}
