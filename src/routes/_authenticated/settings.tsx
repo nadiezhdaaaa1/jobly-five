@@ -385,7 +385,7 @@ function BillingCard({ plan }: { plan: Plan }) {
     return (
       <Card title="Billing & payment">
         <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          No billing yet. Upgrade to Pro to see invoices here.
+          No billing yet. Start a Pro trial to see invoices here.
         </p>
       </Card>
     );
