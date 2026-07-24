@@ -572,6 +572,9 @@ function TrackerScreen() {
   >(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<ColumnKey, boolean>>({
+    saved: false, applied: false, interview: false, rejection: false, offer: false,
+  });
 
   if (!isPro(plan)) {
     return (
@@ -695,8 +698,8 @@ function TrackerScreen() {
         </div>
 
         {/* Board */}
-        <div className="mt-6 -mx-6 overflow-x-auto px-6">
-          <div className="flex" style={{ gap: 8, minWidth: 1152 }}>
+        <div className="mt-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-2">
             {COLUMN_ORDER.map((k) => (
               <KanbanColumn
                 key={k}
@@ -717,6 +720,8 @@ function TrackerScreen() {
                 onMoveTo={(id, target) => requestMove(id, target)}
                 onMailShareToast={() => showToast("Follow-up email drafted (demo)")}
                 archivedView={showArchived}
+                collapsed={collapsed[k]}
+                onToggleCollapse={() => setCollapsed((s) => ({ ...s, [k]: !s[k] }))}
               />
             ))}
           </div>
