@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { IconX as X, IconCalendar } from "@tabler/icons-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { findReminderConflicts, dateHelpers } from "@/lib/tracker-store";
+import { getDbJobById } from "@/lib/jobs-store";
 
 const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function formatUS(d: Date) {
@@ -73,12 +75,14 @@ export function InterviewReminderDialog({
   open,
   initialIso,
   jobTitle,
+  jobId,
   onSave,
   onCancel,
 }: {
   open: boolean;
   initialIso?: string | null;
   jobTitle?: string;
+  jobId?: string;
   onSave: (iso: string) => void;
   onCancel: () => void;
 }) {
@@ -114,6 +118,14 @@ export function InterviewReminderDialog({
     const iso = new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString();
     onSave(iso);
   };
+
+  // Compute the ISO for the currently selected date+time to check conflicts.
+  const currentIso = (() => {
+    const [y, m, d] = date.split("-").map(Number);
+    const [hh, mm] = time.split(":").map(Number);
+    return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString();
+  })();
+  const conflicts = findReminderConflicts(currentIso, jobId);
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true">
