@@ -1,47 +1,7 @@
-export type Source = "direct" | "aggregated";
-import AetherForge from "@/assets/logos-fake/AetherForge.jpg.asset.json";
-import CircuitLeaf from "@/assets/logos-fake/CircuitLeaf.jpg.asset.json";
-import CloudMosaic from "@/assets/logos-fake/CloudMosaic.jpg.asset.json";
-import CoreSignal from "@/assets/logos-fake/CoreSignal.jpg.asset.json";
-import GraphLink from "@/assets/logos-fake/GraphLink.jpg.asset.json";
-import HexaCore from "@/assets/logos-fake/HexaCore.jpg.asset.json";
-import LayerDock from "@/assets/logos-fake/LayerDock.jpg.asset.json";
-import LoopNest from "@/assets/logos-fake/LoopNest.jpg.asset.json";
-import LumaCross from "@/assets/logos-fake/LumaCross.jpg.asset.json";
-import Nexagon from "@/assets/logos-fake/Nexagon.jpg.asset.json";
-import NodeBloom from "@/assets/logos-fake/NodeBloom.jpg.asset.json";
-import OrbitScale from "@/assets/logos-fake/OrbitScale.jpg.asset.json";
-import PrismFlow from "@/assets/logos-fake/PrismFlow.jpg.asset.json";
-import PulseArc from "@/assets/logos-fake/PulseArc.jpg.asset.json";
-import QuantumKnot from "@/assets/logos-fake/QuantumKnot.jpg.asset.json";
-import ShieldByte from "@/assets/logos-fake/ShieldByte.jpg.asset.json";
-import SignalMint from "@/assets/logos-fake/SignalMint.jpg.asset.json";
-import StackRise from "@/assets/logos-fake/StackRise.jpg.asset.json";
-import StreamNova from "@/assets/logos-fake/StreamNova.jpg.asset.json";
-import VertexIQ from "@/assets/logos-fake/VertexIQ.jpg.asset.json";
+// Types for the app-wide Job model. The catalog itself lives in the database
+// and is loaded through `src/lib/jobs-store.ts`.
 
-const LOGO: Record<string, string> = {
-  AetherForge: AetherForge.url,
-  CircuitLeaf: CircuitLeaf.url,
-  CloudMosaic: CloudMosaic.url,
-  CoreSignal: CoreSignal.url,
-  GraphLink: GraphLink.url,
-  HexaCore: HexaCore.url,
-  LayerDock: LayerDock.url,
-  LoopNest: LoopNest.url,
-  LumaCross: LumaCross.url,
-  Nexagon: Nexagon.url,
-  NodeBloom: NodeBloom.url,
-  OrbitScale: OrbitScale.url,
-  PrismFlow: PrismFlow.url,
-  PulseArc: PulseArc.url,
-  QuantumKnot: QuantumKnot.url,
-  ShieldByte: ShieldByte.url,
-  SignalMint: SignalMint.url,
-  StackRise: StackRise.url,
-  StreamNova: StreamNova.url,
-  VertexIQ: VertexIQ.url,
-};
+export type Source = "direct" | "aggregated";
 
 export type CardState =
   | "default"
@@ -84,8 +44,6 @@ export type Job = {
   sources?: JobSource[];
   missingSkills?: string[];
 };
-
-const fallbackCriteria: MatchCriterion[] = [
   { status: "full", text: "Stack: React, TypeScript — matches your profile" },
   { status: "full", text: "Level: senior — matches" },
   { status: "partial", text: "Salary near your $100–160K+ range" },
