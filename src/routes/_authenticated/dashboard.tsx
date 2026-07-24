@@ -394,7 +394,7 @@ function TrackerWidget() {
           </div>
         ))}
       </div>
-      <div className="border-t px-4 py-3" style={{ background: "var(--color-mint)" }}>
+      <div className="border-t px-4 py-3">
         <div className="text-[26px] leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>{c.offer}</div>
         <div className="mt-1 text-[11px] text-[color:var(--color-green)] font-semibold">Offers</div>
       </div>
