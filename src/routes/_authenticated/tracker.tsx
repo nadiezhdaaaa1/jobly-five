@@ -14,6 +14,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import proCube from "@/assets/pro-cube.png.asset.json";
 import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   InterviewTransitionDialog,
   OfferTransitionDialog,
@@ -195,6 +196,7 @@ function KanbanCard({
   const [flagOpen, setFlagOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
