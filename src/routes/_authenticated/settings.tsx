@@ -80,83 +80,215 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [period, setPeriod] = useState<"monthly" | "6mo" | "annual">("annual");
+  const [switchOpen, setSwitchOpen] = useState<null | "monthly" | "6mo" | "annual">(null);
 
-  const summary =
-    plan === "pro"
-      ? "Daily digest · match scores · application tracker · renews Aug 20, 2026"
-      : plan === "paused"
-      ? "Paused for 6 months — digests off, Pro data preserved"
-      : "Weekly digest · top 5 matches";
+  const proSummary = "Daily digest · match scores · application tracker";
+  const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026 · started with a 14-day free trial";
+  const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
+  const freeSummary = "Weekly digest · match scores · basic tracker";
+
+  const priceRows: Record<"monthly" | "6mo" | "annual", { price: string; billed: string; save?: string }> = {
+    monthly: { price: "$9.99", billed: "Billed monthly" },
+    "6mo": { price: "$7.99", billed: "Billed $47.94 every 6 months", save: "Save 20%" },
+    annual: { price: "$5.99", billed: "Billed $71.88 per year", save: "Save 40%" },
+  };
 
   return (
     <Card title="Plan">
+      {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <PlanBadge plan={plan} />
           </div>
-          <p className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {summary}
+          <p className="mt-2 text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
+            {plan === "free" ? freeSummary : proSummary}
+          </p>
+          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            {plan === "pro" ? proBilling : plan === "paused" ? pausedLine : "Free plan — no billing"}
           </p>
         </div>
         <div className="shrink-0 flex flex-col items-stretch gap-2">
-          {plan === "free" ? (
+          {plan === "pro" ? (
             <button
               type="button"
-              onClick={() => setUpgradeOpen(true)}
-              className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              onClick={() => setCancelStep(1)}
+              className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
-              Upgrade to Pro — $9.99/mo
+              Cancel subscription
             </button>
-          ) : (
+          ) : null}
+          {plan === "paused" ? (
             <>
-              {plan === "paused" ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPlan("pro");
-                    onFlash("Pro resumed.");
-                  }}
-                  className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-                >
-                  Unpause
-                </button>
-              ) : null}
               <button
                 type="button"
-                onClick={() => setCancelStep(plan === "paused" ? 2 : 1)}
+                onClick={() => { setPlan("pro"); onFlash("Welcome back — your matches start arriving tomorrow morning."); }}
+                className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              >
+                Restart my search
+              </button>
+              <button
+                type="button"
+                onClick={() => setCancelStep(2)}
                 className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Cancel subscription
               </button>
             </>
-          )}
+          ) : null}
         </div>
       </div>
-      {plan === "free" ? (
-        <p className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">3-day free trial</p>
-      ) : null}
-      <p className="mt-4 text-[11px] text-[color:var(--color-text-muted)]">
+
+      {/* Two plan cards */}
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        {/* Free card */}
+        <div className="rounded-[8px] border p-4">
+          <div className="flex items-baseline justify-between">
+            <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Free</div>
+            <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
+          </div>
+          <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            The essentials to job-hunt cleanly.
+          </p>
+          <ul className="mt-3 space-y-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300, lineHeight: 1.9 }}>
+            <li>Weekly job digest</li>
+            <li>Match score on every job</li>
+            <li>Basic tracker (Saved · Applied · Interview)</li>
+            <li>1 résumé, 1 cover-letter template</li>
+            <li>Report ghost / scam jobs</li>
+          </ul>
+          <div className="mt-4">
+            {plan === "free" ? (
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] font-semibold text-[color:var(--color-text-secondary)]">
+                Current plan
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setCancelStep(plan === "paused" ? 2 : 1)}
+                className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Downgrade to Free
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Pro card */}
+        <div
+          className={`relative rounded-[8px] p-4 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
+          style={{ borderColor: "var(--color-green)" }}
+        >
+          {(plan === "pro" || plan === "paused") ? (
+            <span
+              className="absolute -top-2 right-3 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-on-accent)]"
+            >
+              Current plan
+            </span>
+          ) : null}
+          <div className="flex items-baseline justify-between">
+            <div className="text-[15px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
+          </div>
+
+          {/* Billing period switcher */}
+          <div className="mt-3 inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] p-1">
+            {(["monthly", "6mo", "annual"] as const).map((p) => {
+              const active = period === p;
+              const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => {
+                    if (plan === "pro" && p !== period) { setSwitchOpen(p); return; }
+                    setPeriod(p);
+                  }}
+                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "bg-[color:var(--color-accent)] text-[color:var(--color-on-accent)] font-semibold" : "text-[color:var(--color-text-secondary)]"}`}
+                >
+                  {label}
+                  {p === "annual" && !active ? (
+                    <span className="ml-1 rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
+                      Best value
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-3 flex items-baseline gap-2">
+            <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-sans)" }}>
+              {priceRows[period].price}
+            </span>
+            <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
+            {priceRows[period].save ? (
+              <span className="ml-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+                {priceRows[period].save}
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            {priceRows[period].billed}
+          </p>
+
+          <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
+          <ul className="mt-1 space-y-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300, lineHeight: 1.9 }}>
+            <li>Daily digest + instant high-match alerts</li>
+            <li>Full "why this match" + "raise your %"</li>
+            <li>Customizable tracker pipeline (unlimited stages)</li>
+            <li>Up to 5 cover-letter templates (rich text)</li>
+            <li>Screening answers + 1-click apply extension</li>
+            <li>CV, portfolio & achievements PDF</li>
+            <li>Gmail auto-status, follow-ups, interview prep</li>
+            <li>Source filters + blocked companies</li>
+            <li>Priority support</li>
+          </ul>
+
+          <div className="mt-4">
+            {plan === "free" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => { setPlan("pro"); onFlash("Welcome to Pro — your 14-day trial has started."); }}
+                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                >
+                  Start 14-day free trial
+                </button>
+                <p className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">Cancel anytime before it ends — no charge.</p>
+              </>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Coming soon + info box */}
+      <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+        <span className="font-semibold">Coming soon (Pro):</span> tailor résumé to a job · ATS check · AI cover letter per job.
+      </p>
+      <div className="mt-3 flex items-start gap-2 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        <IconInfoCircle size={14} strokeWidth={1.6} className="mt-0.5 shrink-0" />
+        <span>
+          You see the monthly price, but pay for the period up front. <span className="font-semibold">Cancel or pause anytime</span> — found a job? Pause billing for 6 months. We email a reminder 7 days before any renewal.
+        </span>
+      </div>
+      <p className="mt-3 text-[11px] text-[color:var(--color-text-muted)]">
         Payments aren't live in this preview — plan changes are simulated.
       </p>
 
+      {/* Cancel Step 1 (only from active Pro) */}
       {cancelStep === 1 ? (
         <Modal onClose={() => setCancelStep(0)} title="Found a job?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            If you did, pause Pro instead. We'll turn off digests for 6 months and keep your data — no emails while paused.
+            Congrats! Pause Pro for 6 months instead — no emails, no charges, everything saved exactly as you left it.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => {
-                setPlan("paused");
-                setCancelStep(0);
-                onFlash("Pro paused for 6 months.");
-              }}
+              onClick={() => { setPlan("paused"); setCancelStep(0); onFlash("Pro paused for 6 months."); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
-              Yes — pause instead
+              Pause Pro for 6 months
             </button>
             <button
               type="button"
@@ -169,24 +301,38 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
-      {cancelStep === 2 ? (
-        <Modal onClose={() => setCancelStep(0)} title="Downgrade to Free?">
+      {/* Cancel Step 2 — differs by plan state */}
+      {cancelStep === 2 && plan === "paused" ? (
+        <Modal onClose={() => setCancelStep(0)} title="Are you sure?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You'll lose match scores, the daily digest, and the tracker at the end of the period.
+            Your pause will end and you'll move to Free immediately. Your tracker and profile are kept.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => {
-                setPlan("free");
-                setCancelStep(0);
-                onFlash("Downgraded to Free.");
-              }}
-              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              onClick={() => { setPlan("paused"); setCancelStep(0); }}
+              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Keep my pause
+            </button>
+            <button
+              type="button"
+              onClick={() => { setPlan("free"); setCancelStep(0); onFlash("Subscription canceled — moved to Free."); }}
+              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
-              Downgrade to Free
+              Cancel subscription
             </button>
+          </div>
+        </Modal>
+      ) : null}
+
+      {cancelStep === 2 && plan !== "paused" ? (
+        <Modal onClose={() => setCancelStep(0)} title="Cancel your Pro subscription?">
+          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            You'll keep Pro until <b>Aug 20, 2026</b>, then move to Free. No more charges. You can resume anytime.
+          </p>
+          <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => setCancelStep(0)}
@@ -194,33 +340,38 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             >
               Keep Pro
             </button>
+            <button
+              type="button"
+              onClick={() => { setPlan("free"); setCancelStep(0); onFlash("Pro canceled — access until Aug 20."); }}
+              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              style={{ borderColor: "#D00D01" }}
+            >
+              Cancel subscription
+            </button>
           </div>
         </Modal>
       ) : null}
 
-      {upgradeOpen ? (
-        <Modal onClose={() => setUpgradeOpen(false)} title="Start your 3-day Pro trial">
+      {/* Period-switch confirm */}
+      {switchOpen ? (
+        <Modal onClose={() => setSwitchOpen(null)} title="Switch billing period?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            No card needed in this preview — you can cancel any time.
+            Switch to {switchOpen === "monthly" ? "monthly" : switchOpen === "6mo" ? "6-month" : "annual"} billing at the next renewal?
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => {
-                setPlan("pro");
-                setUpgradeOpen(false);
-                onFlash("Welcome to Pro.");
-              }}
+              onClick={() => { setPeriod(switchOpen); onFlash("Billing period updated."); setSwitchOpen(null); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
-              Start free trial
+              Confirm
             </button>
             <button
               type="button"
-              onClick={() => setUpgradeOpen(false)}
+              onClick={() => setSwitchOpen(null)}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
-              Not now
+              Cancel
             </button>
           </div>
         </Modal>
