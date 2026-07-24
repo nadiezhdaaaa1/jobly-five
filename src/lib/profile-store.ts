@@ -52,6 +52,7 @@ export type ApplyMode = "blocks" | "pdf";
 
 export type ProfileExtras = {
   coverLetters: CoverLetter[];
+  defaultCoverLetterId: string | null;
   links: LinkRow[];
   socials: SocialRow[];
   portfolioFile: PortfolioFile | null;
@@ -89,6 +90,7 @@ function seed(): ProfileExtras {
           "<p>Hi {hiring manager},</p><p>The {role} at {company} caught my eye — early stage is where I do my best work. Happy to share a portfolio and past 0→1 stories.</p>",
       },
     ],
+    defaultCoverLetterId: null,
     links: [],
     socials: [{ id: uid(), network: "LinkedIn", url: "" }],
     portfolioFile: null,
@@ -194,6 +196,14 @@ export function duplicateCoverLetter(id: string): boolean {
 
 export function deleteCoverLetter(id: string) {
   state = { ...state, coverLetters: state.coverLetters.filter((c) => c.id !== id) };
+  if (state.defaultCoverLetterId === id) {
+    state = { ...state, defaultCoverLetterId: null };
+  }
+  emit();
+}
+
+export function setDefaultCoverLetter(id: string | null) {
+  state = { ...state, defaultCoverLetterId: id };
   emit();
 }
 
