@@ -2,11 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IconBookmark as Bookmark,
-  IconCalendar as Calendar,
-  IconCheck as Check,
   IconChevronDown as ChevronDown,
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
+  IconMailShare as MailShare,
   IconThumbDown as ThumbsDown,
   IconX as X,
   IconBolt as Zap,
@@ -17,14 +16,16 @@ import proCube from "@/assets/pro-cube.png.asset.json";
 import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import {
+  archiveJob,
   dateHelpers,
+  getJobRecord,
+  restoreArchived,
   setReminder as storeSetReminder,
   setStatus,
   useJobRecord,
   type JobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
-import { useSyncExternalStore } from "react";
 import { usePlan, isPro } from "@/lib/plan-store";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
@@ -37,63 +38,44 @@ export const Route = createFileRoute("/_authenticated/tracker")({
   component: TrackerScreen,
 });
 
-// ---------- Bridge: subscribe all cards to store updates ----------
-
-// Small helper hook: subscribe to any store change so re-renders happen when
-// job statuses/reminders change from anywhere (drawer, digest, this screen).
+// Screen-wide subscription: re-render on any store change.
 function useTrackerVersion() {
-  // Piggyback on useJobRecord for a sentinel id; but simpler: reuse the store's
-  // subscribe path via a tiny custom hook.
-  useJobRecord("__sentinel__");
+  useJobRecord("__version__");
 }
 
-// ---------- UI atoms ----------
+type ColumnKey = "saved" | "applied" | "interview" | "rejection" | "offer";
+const COLUMN_ORDER: ColumnKey[] = ["saved", "applied", "interview", "rejection", "offer"];
+const COLUMN_TITLE: Record<ColumnKey, string> = {
+  saved: "Saved",
+  applied: "Applied",
+  interview: "Interview",
+  rejection: "Rejected",
+  offer: "Offers",
+};
 
-function CompanySquare({ name, logo, size = 40 }: { name: string; logo?: string; size?: number }) {
+const CHIP_ORANGE = "#FFEDD4";
+const BORDER_LIGHT = "#E3E7E8";
+const META_GREY = "#67787C";
+const DARK = "#090B0C";
+const MUTED_TEXT = "#4B585B";
+
+function CompanyLogo({ name, logo }: { name: string; logo?: string }) {
   if (logo) {
     return (
       <img
         src={logo}
         alt={`${name} logo`}
-        className="shrink-0 rounded-[4px] object-cover"
-        style={{ width: size, height: size }}
+        className="h-7 w-7 shrink-0 rounded-[4px] object-cover"
       />
     );
   }
   return (
     <div
-      className="flex shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] font-semibold text-white"
-      style={{ width: size, height: size, fontSize: size >= 40 ? 16 : 13 }}
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[12px] font-semibold text-white"
       aria-hidden
     >
       {name.charAt(0).toUpperCase()}
     </div>
-  );
-}
-
-function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
-  const stroke = 4;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
-  return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
-      </svg>
-      <span className="absolute text-[14px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
-        {score}%
-      </span>
-    </div>
-  );
-}
-
-function CountTag({ n }: { n: number }) {
-  return (
-    <span className="inline-flex min-w-[22px] items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-[1px] text-[12px] text-[color:var(--color-text-secondary)]">
-      {n}
-    </span>
   );
 }
 
@@ -117,409 +99,447 @@ function useOutsideClose(open: boolean, onClose: () => void) {
   return ref;
 }
 
-// ---------- Card ----------
-
-type Regime = "saved" | "applied-interview" | "offer" | "rejection";
-
-function statusLabel(s: JobStatus): string {
-  switch (s) {
-    case "saved": return "Saved";
-    case "applied": return "Applied";
-    case "interview": return "Interview";
-    case "offer": return "Offer";
-    case "rejection": return "Rejection";
-    default: return "";
-  }
+function IconBtn({
+  label,
+  onClick,
+  active,
+  danger,
+  children,
+}: {
+  label: string;
+  onClick?: (e: React.MouseEvent) => void;
+  active?: boolean;
+  danger?: boolean;
+  children: React.ReactNode;
+}) {
+  const base = "flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] border p-[7px] transition-colors";
+  const cls = active
+    ? `${base}`
+    : `${base} bg-white hover:bg-[color:var(--color-surface-2)]`;
+  const style: React.CSSProperties = active
+    ? { background: "#D8FBEF", borderColor: "#0E735A", color: "#0E735A" }
+    : { borderColor: BORDER_LIGHT, color: danger ? "#D00D01" : MUTED_TEXT };
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(e);
+      }}
+      className={cls}
+      style={style}
+    >
+      {children}
+    </button>
+  );
 }
 
-function JobCard({
+function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      onClick={() => onChange(!checked)}
+      className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+      style={{ background: checked ? "#0E735A" : "#E3E7E8" }}
+    >
+      <span
+        className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+        style={{ transform: `translateX(${checked ? 18 : 2}px)` }}
+      />
+    </button>
+  );
+}
+
+// ---------- Card ----------
+
+function KanbanCard({
   job,
-  regime,
   onOpen,
   onDragStart,
   onDragEnd,
+  onArchive,
   onRequestInterviewReminder,
   onRequestApplyToast,
+  onMoveTo,
+  onMailShareToast,
+  archivedView,
 }: {
   job: Job;
-  regime: Regime;
   onOpen: () => void;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
+  onArchive: () => void;
   onRequestInterviewReminder?: () => void;
   onRequestApplyToast?: () => void;
+  onMoveTo: (target: ColumnKey) => void;
+  onMailShareToast?: () => void;
+  archivedView: boolean;
 }) {
   const record = useJobRecord(job.id);
-  const [dislikeOpen, setDislikeOpen] = useState(false);
+  const status = (record.archived ? record.lastStatus : record.status) as ColumnKey;
   const [applyOpen, setApplyOpen] = useState(false);
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const [dislikeOpen, setDislikeOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
-  const statusRef = useOutsideClose(statusOpen, () => setStatusOpen(false));
-
-  const dim = regime === "rejection";
-  const draggable = regime === "saved" || regime === "applied-interview";
+  const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
+  const [isDragging, setIsDragging] = useState(false);
   const articleRef = useRef<HTMLElement | null>(null);
 
-  // Status dropdown options for anything past Saved
-  const statusOptions: JobStatus[] = ["applied", "interview", "offer", "rejection"];
+  const isArchived = !!record.archived;
+  const draggable = !isArchived;
 
-  function handleStatusChange(next: JobStatus) {
-    setStatusOpen(false);
-    if (next === "interview") {
-      setStatus(job.id, "interview");
-      onRequestInterviewReminder?.();
-      return;
-    }
-    setStatus(job.id, next);
-  }
-
-  function currentStatusLabel() {
-    if (regime === "offer") return "Offer";
-    if (regime === "rejection") return "Rejection";
-    return statusLabel(record.status);
-  }
-
-  // Reminder chip (Interview cards only)
-  const isInterview = record.status === "interview";
-  const reminderIso = isInterview ? record.reminderAt : undefined;
-  const reminderToday = reminderIso ? dateHelpers.isSameLocalDay(reminderIso) : false;
+  const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
 
   return (
     <article
       ref={articleRef as React.RefObject<HTMLElement>}
       draggable={draggable}
       onDragStart={(e) => {
-        // Set a lightweight drag image so the browser doesn't render the
-        // whole card (which can look broken with popovers open).
-        if (articleRef.current) {
-          e.dataTransfer.setDragImage(articleRef.current, 16, 16);
-        }
+        if (articleRef.current) e.dataTransfer.setDragImage(articleRef.current, 16, 16);
         onDragStart?.(e);
-        // Hide the source card after the drag image is captured so only
-        // the drag preview remains visible while dragging.
         setTimeout(() => setIsDragging(true), 0);
       }}
       onDragEnd={(e) => {
         setIsDragging(false);
         onDragEnd?.(e);
       }}
-      className={`group relative rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${draggable ? "cursor-grab active:cursor-grabbing" : ""} ${isDragging ? "hidden" : ""}`}
+      onClick={onOpen}
+      className={`group relative cursor-pointer rounded-[8px] border bg-white transition-shadow ${isDragging ? "hidden" : ""}`}
+      style={{
+        borderColor: BORDER_LIGHT,
+        padding: 13,
+        boxShadow: "0px 1px 4px 0px rgba(0,0,0,0.08)",
+        opacity: isArchived && archivedView ? 0.55 : 1,
+      }}
     >
-      <button
-        type="button"
-        onClick={onOpen}
-        aria-label={`Open details for ${job.title}`}
-        className={`flex w-full items-start gap-3 text-left ${dim ? "opacity-70" : ""}`}
-      >
-        <CompanySquare name={job.company} logo={job.logo} />
-        <div className="min-w-0 flex-1">
-          <span className="block text-[15px] font-semibold leading-snug text-[color:var(--color-foreground)] group-hover:underline">
+      <div className="flex flex-col" style={{ gap: 8 }}>
+        {/* Row 1: logo + score */}
+        <div className="flex items-start justify-between gap-2">
+          <CompanyLogo name={job.company} logo={job.logo} />
+          <div className="text-right leading-none">
+            <span
+              className="text-[20px]"
+              style={{ fontFamily: "var(--font-display)", color: "#0E735A", lineHeight: "28px" }}
+            >
+              {job.score}
+            </span>
+            <span className="text-[16px]" style={{ color: META_GREY, lineHeight: "24px" }}>%</span>
+          </div>
+        </div>
+        {/* Row 2: title + meta */}
+        <div className="min-w-0">
+          <div className="text-[16px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "24px" }}>
             {job.title}
-          </span>
-          <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          </div>
+          <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px", marginTop: 4 }}>
             {job.company} · {job.location}
           </div>
         </div>
-        <div className="text-right">
-          <span className="text-[20px] font-semibold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>
-            {job.score}
-          </span>
-          <span className="text-[14px] text-[color:var(--color-green)]">%</span>
-        </div>
-      </button>
+        {/* Row 3: per-status content */}
+        <Row3 status={status} record={record} />
+      </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {/* Left: state-dependent tag */}
-        {regime === "saved" ? (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)]">
-            Saved {dateHelpers.shortDate(record.savedAt)}
-          </span>
-        ) : null}
-        {regime === "applied-interview" && record.status === "applied" ? (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)]">
-            Applied {dateHelpers.shortDate(record.appliedAt)}
-          </span>
-        ) : null}
-        {regime === "applied-interview" && record.status === "interview" && reminderIso ? (
-          <span
-            className={`inline-flex items-center gap-1 rounded-[4px] px-2 py-1 text-[12px] ${
-              reminderToday ? "text-[color:var(--color-foreground)]" : "bg-[color:var(--color-surface-2)] text-[color:var(--color-text-secondary)]"
-            }`}
-            style={reminderToday ? { background: "#FFEDD4" } : undefined}
+      {/* Footer controls */}
+      <div className="mt-4 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+        {isArchived ? (
+          <button
+            type="button"
+            className="text-[13px] font-semibold hover:underline"
+            style={{ color: "#0E735A" }}
+            onClick={() => restoreArchived(job.id)}
           >
-            <Calendar size={12} strokeWidth={1.8} />
-            {dateHelpers.shortDateTime(reminderIso)}
-          </span>
-        ) : null}
-        {regime === "offer" ? (
-          <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
-            Received {dateHelpers.shortDate(record.offerAt)}
-          </span>
-        ) : null}
-        {regime === "rejection" ? (
-          <span className="inline-flex items-center rounded-[4px] px-2 py-1 text-[12px] font-semibold" style={{ background: "#FFE2E2", color: "#D00D01" }}>
-            Received {dateHelpers.shortDate(record.rejectionAt)}
-          </span>
-        ) : null}
-
-        <div className="ml-auto flex items-center gap-2">
-          {/* Left icon-button: thumbs-down for Saved / Default, X otherwise */}
-          {regime === "saved" ? (
+            Restore
+          </button>
+        ) : status === "saved" ? (
+          <>
             <div className="relative" ref={dislikeRef}>
-              <button
-                type="button"
-                aria-label="Dislike or report"
-                aria-haspopup="menu"
-                aria-expanded={dislikeOpen}
-                onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <ThumbsDown size={15} strokeWidth={1.6} />
-              </button>
+              <IconBtn label="Report or dislike" onClick={() => setDislikeOpen((v) => !v)}>
+                <Flag size={16} strokeWidth={1.6} />
+              </IconBtn>
               {dislikeOpen ? (
-                <div
-                  role="menu"
-                  className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                  style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                >
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
-                  >
-                    <ThumbsDown size={15} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
-                    Dislike — not a good match
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setStatus(job.id, "reported"); setDislikeOpen(false); }}
-                  >
-                    <Flag size={15} strokeWidth={1.6} />
-                    Report — looks fake or ghost
-                  </button>
-                </div>
+                <MenuPop>
+                  <MenuItem onClick={() => { setStatus(job.id, "reported"); archiveJob(job.id); setDislikeOpen(false); }}>Report — looks fake or ghost</MenuItem>
+                </MenuPop>
               ) : null}
             </div>
-          ) : (
-            <div className="relative" ref={dislikeRef}>
+            <IconBtn label="Dislike" onClick={() => { setStatus(job.id, "dismissed"); archiveJob(job.id); }}>
+              <ThumbsDown size={16} strokeWidth={1.6} />
+            </IconBtn>
+            <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
+              <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
+            </IconBtn>
+            <div className="relative flex-1" ref={applyRef}>
               <button
                 type="button"
-                aria-label="Remove or report"
                 aria-haspopup="menu"
-                aria-expanded={dislikeOpen}
-                onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                aria-expanded={applyOpen}
+                onClick={() => setApplyOpen((v) => !v)}
+                className="flex h-[30px] w-full items-center justify-center gap-1 rounded-[4px] text-[12px]"
+                style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
               >
-                <X size={15} strokeWidth={1.6} />
+                Apply
+                <Zap size={14} strokeWidth={2} fill="currentColor" />
               </button>
-              {dislikeOpen ? (
-                <div
-                  role="menu"
-                  className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                  style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                >
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => { setStatus(job.id, "default"); setDislikeOpen(false); }}
-                  >
-                    <X size={15} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
-                    Remove from tracker
-                  </button>
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setStatus(job.id, "reported"); setDislikeOpen(false); }}
-                  >
-                    <Flag size={15} strokeWidth={1.6} />
-                    Report — looks fake or ghost
-                  </button>
-                </div>
+              {applyOpen ? (
+                <MenuPop align="right">
+                  <MenuItem onClick={() => { window.open(job.postingUrl ?? "#", "_blank"); setApplyOpen(false); onRequestApplyToast?.(); }}>
+                    <ExternalLink size={14} strokeWidth={1.6} />
+                    Open posting to apply
+                  </MenuItem>
+                  <MenuItem onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}>
+                    Already applied
+                  </MenuItem>
+                </MenuPop>
               ) : null}
             </div>
-          )}
-
-          {/* Right control(s) */}
-          {regime === "saved" ? (
-            <>
-              <button
-                type="button"
-                aria-label="Save the opening"
-                title="Save the opening"
-                aria-pressed
-                onClick={() => setStatus(job.id, "default")}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <Bookmark
-                  size={15}
-                  strokeWidth={1.6}
-                  className="text-[color:var(--color-foreground)]"
-                  fill="var(--color-accent)"
-                />
-              </button>
-              <div className="relative" ref={applyRef}>
+          </>
+        ) : (
+          // Applied / Interview / Rejected / Offer
+          <>
+            <IconBtn label="Archive" onClick={onArchive}>
+              <X size={16} strokeWidth={1.8} />
+            </IconBtn>
+            <div className="ml-auto flex items-center gap-1">
+              {status === "applied" ? (
+                <IconBtn label="Send a follow-up" onClick={() => onMailShareToast?.()}>
+                  <MailShare size={16} strokeWidth={1.6} />
+                </IconBtn>
+              ) : null}
+              <div className="relative" ref={moveRef}>
                 <button
                   type="button"
                   aria-haspopup="menu"
-                  aria-expanded={applyOpen}
-                  onClick={() => setApplyOpen((v) => !v)}
-                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                  aria-expanded={moveOpen}
+                  onClick={() => setMoveOpen((v) => !v)}
+                  className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-white px-2 text-[12px]"
+                  style={{ borderColor: BORDER_LIGHT, color: DARK, minWidth: 91 }}
                 >
-                  Apply
-                  <Zap size={13} strokeWidth={2} fill="currentColor" />
+                  Move to
+                  <ChevronDown size={13} strokeWidth={2} />
                 </button>
-                {applyOpen ? (
-                  <div
-                    role="menu"
-                    className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                    style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                  >
-                    <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                      <span>Tailor your resume</span>
-                      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                      <span>Generate a cover letter</span>
-                      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                    </div>
-                    <div className="border-t" />
-                    <button
-                      type="button"
-                      role="menuitem"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                      onClick={() => {
-                        window.open(job.postingUrl ?? "#", "_blank");
-                        setApplyOpen(false);
-                        onRequestApplyToast?.();
-                      }}
-                    >
-                      <ExternalLink size={14} strokeWidth={1.6} />
-                      Open posting to apply
-                    </button>
-                  </div>
+                {moveOpen ? (
+                  <MenuPop align="right" minWidth={200}>
+                    {moveOptions.map((k) => (
+                      <MenuItem
+                        key={k}
+                        onClick={() => {
+                          setMoveOpen(false);
+                          if (k === "interview") {
+                            setStatus(job.id, "interview");
+                            onRequestInterviewReminder?.();
+                          } else {
+                            setStatus(job.id, k);
+                          }
+                        }}
+                      >
+                        {COLUMN_TITLE[k]}
+                      </MenuItem>
+                    ))}
+                  </MenuPop>
                 ) : null}
               </div>
-            </>
-          ) : (
-            // Status dropdown for Applied / Interview / Offer / Rejection
-            <div className="relative" ref={statusRef}>
-              <button
-                type="button"
-                aria-haspopup="menu"
-                aria-expanded={statusOpen}
-                onClick={() => setStatusOpen((v) => !v)}
-                className="inline-flex h-[30px] items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                {currentStatusLabel()}
-                <ChevronDown size={13} strokeWidth={2} />
-              </button>
-              {statusOpen ? (
-                <div
-                  role="menu"
-                  className="absolute right-0 top-[34px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                  style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                >
-                  {statusOptions.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      role="menuitem"
-                      onClick={() => handleStatusChange(s)}
-                      className={`flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)] ${
-                        record.status === s ? "font-semibold text-[color:var(--color-green)]" : ""
-                      }`}
-                    >
-                      {s === "offer" ? "Received offer" : statusLabel(s)}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </article>
   );
 }
 
-// ---------- Kanban column ----------
+function Row3({ status, record }: { status: ColumnKey; record: JobRecord }) {
+  if (status === "saved") {
+    return (
+      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
+        Saved {dateHelpers.shortDate(record.savedAt)}
+      </div>
+    );
+  }
+  if (status === "applied") {
+    return (
+      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
+        Applied {dateHelpers.shortDate(record.appliedAt)}
+      </div>
+    );
+  }
+  if (status === "rejection") {
+    return (
+      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
+        Rejected on {dateHelpers.shortDate(record.rejectionAt)}
+      </div>
+    );
+  }
+  if (status === "interview") {
+    return (
+      <div className="flex flex-wrap gap-1">
+        {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
+        {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+      </div>
+    );
+  }
+  // offer
+  return (
+    <div className="flex flex-wrap gap-1">
+      {record.offerStatus ? <Chip>{record.offerStatus}</Chip> : null}
+      {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+    </div>
+  );
+}
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-flex items-center text-[12px] font-light"
+      style={{
+        background: CHIP_ORANGE,
+        color: DARK,
+        padding: "4px 6px",
+        borderRadius: 4,
+        lineHeight: "16px",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function MenuPop({
+  children,
+  align = "left",
+  minWidth = 220,
+}: {
+  children: React.ReactNode;
+  align?: "left" | "right";
+  minWidth?: number;
+}) {
+  return (
+    <div
+      role="menu"
+      className="absolute top-[34px] z-30 overflow-hidden rounded-[6px] border bg-white"
+      style={{
+        boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+        minWidth,
+        [align === "right" ? "right" : "left"]: 0,
+      } as React.CSSProperties}
+    >
+      {children}
+    </div>
+  );
+}
+
+function MenuItem({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      onClick={onClick}
+      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+    >
+      {children}
+    </button>
+  );
+}
+
+// ---------- Column ----------
 
 function KanbanColumn({
-  title,
   status,
   jobs,
   isDropTarget,
   placeholderHeight,
-  onDragOver,
+  onDragEnter,
   onDrop,
   onOpen,
   onDragStartJob,
   onDragEnd,
+  onArchive,
   onRequestInterviewReminder,
   onRequestApplyToast,
+  onMoveTo,
+  onMailShareToast,
+  archivedView,
 }: {
-  title: string;
-  status: JobStatus;
-  jobs: Job[];
+  status: ColumnKey;
+  jobs: { job: Job; rec: JobRecord }[];
   isDropTarget: boolean;
   placeholderHeight: number;
-  onDragOver: (e: React.DragEvent) => void;
+  onDragEnter: () => void;
   onDrop: () => void;
   onOpen: (j: Job) => void;
   onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
+  onArchive: (jobId: string) => void;
   onRequestInterviewReminder: (jobId: string) => void;
   onRequestApplyToast: (jobId: string) => void;
+  onMoveTo: (jobId: string, target: ColumnKey) => void;
+  onMailShareToast: () => void;
+  archivedView: boolean;
 }) {
-  const regime: Regime = status === "saved" ? "saved" : "applied-interview";
   return (
     <div
-      className="flex min-w-0 flex-col"
+      className="flex shrink-0 flex-col"
+      style={{ width: 224 }}
       onDragOver={(e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
-        onDragOver(e);
+        onDragEnter();
       }}
-      onDrop={(e) => { e.preventDefault(); onDrop(); }}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop();
+      }}
     >
-      <div className="mb-3 flex items-center gap-2 px-1">
-        <span className="text-[15px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>{title}</span>
-        <CountTag n={jobs.length} />
+      {/* Header: 44px */}
+      <div className="flex items-center gap-2 px-1" style={{ height: 44 }}>
+        <span className="text-[20px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "28px" }}>
+          {COLUMN_TITLE[status]}
+        </span>
+        <span
+          className="inline-flex items-center justify-center text-[14px]"
+          style={{ width: 24, height: 24, background: "#F1F3F3", borderRadius: 4, color: MUTED_TEXT }}
+        >
+          {jobs.length}
+        </span>
       </div>
-      <div className="flex flex-col gap-2">
+      {/* Cards */}
+      <div className="flex flex-col px-1" style={{ gap: 4 }}>
         {isDropTarget ? (
           <div
-            className="rounded-[6px] border-2 border-dashed"
-            style={{ borderColor: "var(--color-border-strong)", height: placeholderHeight || 96 }}
+            className="rounded-[8px] border-2 border-dashed"
+            style={{ borderColor: "#D0D6D8", height: placeholderHeight || 96 }}
           />
         ) : null}
         {jobs.length === 0 && !isDropTarget ? (
-          <div className="rounded-[6px] border border-dashed p-6 text-center text-[13px] text-[color:var(--color-text-muted)]" style={{ borderColor: "var(--color-border-strong)" }}>
+          <div
+            className="rounded-[8px] border border-dashed p-4 text-center text-[12px]"
+            style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
+          >
             Nothing here yet
           </div>
         ) : null}
-        {jobs.map((j) => (
-          <JobCard
-            key={j.id}
-            job={j}
-            regime={regime}
-            onOpen={() => onOpen(j)}
+        {jobs.map(({ job }) => (
+          <KanbanCard
+            key={job.id}
+            job={job}
+            onOpen={() => onOpen(job)}
             onDragStart={(e) => {
-              e.dataTransfer.setData("text/plain", j.id);
+              e.dataTransfer.setData("text/plain", job.id);
               e.dataTransfer.effectAllowed = "move";
               const h = (e.currentTarget as HTMLElement).getBoundingClientRect().height;
-              onDragStartJob(j.id, h);
+              onDragStartJob(job.id, h);
             }}
             onDragEnd={onDragEnd}
-            onRequestInterviewReminder={() => onRequestInterviewReminder(j.id)}
-            onRequestApplyToast={() => onRequestApplyToast(j.id)}
+            onArchive={() => onArchive(job.id)}
+            onRequestInterviewReminder={() => onRequestInterviewReminder(job.id)}
+            onRequestApplyToast={() => onRequestApplyToast(job.id)}
+            onMoveTo={(t) => onMoveTo(job.id, t)}
+            onMailShareToast={onMailShareToast}
+            archivedView={archivedView}
           />
         ))}
       </div>
@@ -529,42 +549,32 @@ function KanbanColumn({
 
 // ---------- Screen ----------
 
-type Tab = "ongoing" | "offers" | "rejections";
-
 function TrackerScreen() {
   const plan = usePlan();
   useTrackerVersion();
   const allJobs = useMemo(() => getAllJobs(), []);
-  const [tab, setTab] = useState<Tab>("ongoing");
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOver, setDragOver] = useState<JobStatus | null>(null);
+  const [dragOver, setDragOver] = useState<ColumnKey | null>(null);
   const [dragHeight, setDragHeight] = useState<number>(0);
   const [reminderJobId, setReminderJobId] = useState<string | null>(null);
   const [applyToast, setApplyToast] = useState<Job | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
+
   if (!isPro(plan)) {
     return (
       <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
         <AppHeader active="tracker" />
         <main className="mx-auto max-w-[720px] px-6 pb-24 pt-12">
           <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-8 text-center">
-            <img
-              src={proCube.url}
-              alt=""
-              aria-hidden
-              className="mx-auto h-32 w-32 object-contain"
-            />
+            <img src={proCube.url} alt="" aria-hidden className="mx-auto h-32 w-32 object-contain" />
             <span className="mt-4 inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-3 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">Pro</span>
-            <h1 className="mt-3 text-[24px]" style={{ fontFamily: "var(--font-display)" }}>
-              Track every application in one place
-            </h1>
+            <h1 className="mt-3 text-[24px]" style={{ fontFamily: "var(--font-display)" }}>Track every application in one place</h1>
             <p className="mx-auto mt-2 max-w-[440px] text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              Kanban board for Saved, Applied, Interviews, Offers, and Rejections. Interview reminders included. Available on Pro.
+              Kanban board for Saved, Applied, Interview, Rejected, and Offers — with reminders. Available on Pro.
             </p>
-            <Link
-              to="/settings"
-              className="mt-5 inline-flex h-11 items-center rounded-[4px] bg-[color:var(--color-accent)] px-5 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
+            <Link to="/settings" className="mt-5 inline-flex h-11 items-center rounded-[4px] bg-[color:var(--color-accent)] px-5 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">
               Upgrade to Pro — $9.99/mo
             </Link>
             <div className="mt-2 text-[11px] text-[color:var(--color-text-muted)]">3-day free trial</div>
@@ -575,49 +585,38 @@ function TrackerScreen() {
     );
   }
 
-  // Compute buckets from the shared store on each render. useTrackerVersion()
-  // above ensures we re-render on every store emit, so a plain (non-memoized)
-  // computation stays in sync with status changes from drag-and-drop.
-  const buckets: Record<JobStatus, { job: Job; rec: JobRecord }[]> = {
-    default: [], saved: [], applied: [], interview: [], offer: [], rejection: [], dismissed: [], reported: [],
+  // Bucket jobs
+  const buckets: Record<ColumnKey, { job: Job; rec: JobRecord }[]> = {
+    saved: [], applied: [], interview: [], rejection: [], offer: [],
   };
+  let total = 0;
   for (const j of allJobs) {
-    const rec = readRecord(j.id);
-    buckets[rec.status].push({ job: j, rec });
+    const rec = getJobRecord(j.id);
+    if (rec.archived) {
+      if (showArchived && rec.lastStatus && (COLUMN_ORDER as string[]).includes(rec.lastStatus)) {
+        buckets[rec.lastStatus as ColumnKey].push({ job: j, rec });
+      }
+      continue;
+    }
+    if ((COLUMN_ORDER as string[]).includes(rec.status)) {
+      buckets[rec.status as ColumnKey].push({ job: j, rec });
+      total++;
+    }
   }
-  const sortDesc = (key: keyof JobRecord) =>
-    (a: { rec: JobRecord }, x: { rec: JobRecord }) => {
-      const av = (a.rec[key] as string | undefined) ?? "";
-      const xv = (x.rec[key] as string | undefined) ?? "";
-      return xv.localeCompare(av);
-    };
-  buckets.saved.sort(sortDesc("savedAt"));
-  buckets.applied.sort(sortDesc("appliedAt"));
-  // Interview: soonest upcoming reminder first; cards without a reminder go to the bottom,
-  // ordered by most recently moved into Interview.
-  buckets.interview.sort((a, x) => {
-    const ar = a.rec.reminderAt;
-    const xr = x.rec.reminderAt;
-    if (ar && xr) return ar.localeCompare(xr);
+  // Sort: newest movedAt first per column
+  const byMovedDesc = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
+    (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
+  for (const k of COLUMN_ORDER) buckets[k].sort(byMovedDesc);
+  // Interview: soonest upcoming reminder first
+  buckets.interview.sort((a, b) => {
+    const ar = a.rec.reminderAt, br = b.rec.reminderAt;
+    if (ar && br) return ar.localeCompare(br);
     if (ar) return -1;
-    if (xr) return 1;
-    return (x.rec.interviewAt ?? "").localeCompare(a.rec.interviewAt ?? "");
+    if (br) return 1;
+    return byMovedDesc(a, b);
   });
-  buckets.offer.sort(sortDesc("offerAt"));
-  buckets.rejection.sort(sortDesc("rejectionAt"));
 
-  const totalInTracker =
-    buckets.saved.length + buckets.applied.length + buckets.interview.length + buckets.offer.length + buckets.rejection.length;
-
-  const savedJobs = buckets.saved.map((x) => x.job);
-  const appliedJobs = buckets.applied.map((x) => x.job);
-  const interviewJobs = buckets.interview.map((x) => x.job);
-  const offerJobs = buckets.offer.map((x) => x.job);
-  const rejectionJobs = buckets.rejection.map((x) => x.job);
-
-  const boardEmpty = savedJobs.length + appliedJobs.length + interviewJobs.length === 0;
-
-  function handleDrop(target: JobStatus) {
+  function handleDrop(target: ColumnKey) {
     setDragOver(null);
     if (!draggingId) return;
     if (target === "interview") {
@@ -630,135 +629,74 @@ function TrackerScreen() {
     setDragHeight(0);
   }
 
-  const handleDragStart = (id: string, height: number) => {
-    setDraggingId(id);
-    setDragHeight(height);
-  };
-  const handleDragEnd = () => {
-    setDraggingId(null);
-    setDragOver(null);
-    setDragHeight(0);
+  const showToast = (msg: string) => {
+    setToast(msg);
+    window.setTimeout(() => setToast(null), 2000);
   };
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="tracker" />
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
-        {/* Header */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
-              Tracker
-            </h1>
-            <span className="text-[13px] text-[color:var(--color-text-muted)]">
-              {totalInTracker} application{totalInTracker === 1 ? "" : "s"}
+        {/* Header row */}
+        <div className="flex flex-wrap items-center justify-between gap-4" style={{ minHeight: 36 }}>
+          <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
+            Tracker
+          </h1>
+          <div className="flex items-center gap-4" style={{ height: 24 }}>
+            <label className="flex cursor-pointer items-center gap-2">
+              <Toggle checked={showArchived} onChange={setShowArchived} label="Show archived" />
+              <span className="text-[14px]" style={{ color: MUTED_TEXT }}>Show archived</span>
+            </label>
+            <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
+            <span className="text-[16px] font-light" style={{ color: META_GREY }}>
+              {total} application{total === 1 ? "" : "s"}
             </span>
-          </div>
-          <div className="flex w-full sm:inline-flex sm:w-auto rounded-[4px] border bg-[color:var(--color-surface-1)] p-1">
-            {(["ongoing", "offers", "rejections"] as Tab[]).map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTab(t)}
-                className={`h-8 flex-1 sm:w-[120px] sm:flex-none rounded-[4px] button-small transition-colors ${
-                  tab === t
-                    ? "bg-[color:var(--color-green)] text-white"
-                    : "text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                }`}
-              >
-                {t === "ongoing" ? "Ongoing" : t === "offers" ? "Offers" : "Rejections"}
-              </button>
-            ))}
           </div>
         </div>
 
-        {tab === "ongoing" ? (
-          boardEmpty ? (
-            <EmptyBoard />
-          ) : (
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Board */}
+        <div className="mt-6 -mx-6 overflow-x-auto px-6">
+          <div className="flex" style={{ gap: 8, minWidth: 1152 }}>
+            {COLUMN_ORDER.map((k) => (
               <KanbanColumn
-                title="Saved"
-                status="saved"
-                jobs={savedJobs}
-                isDropTarget={dragOver === "saved" && draggingId !== null}
+                key={k}
+                status={k}
+                jobs={buckets[k]}
+                isDropTarget={dragOver === k && draggingId !== null}
                 placeholderHeight={dragHeight}
-                onDragOver={() => setDragOver("saved")}
-                onDrop={() => handleDrop("saved")}
+                onDragEnter={() => setDragOver(k)}
+                onDrop={() => handleDrop(k)}
                 onOpen={setOpenJob}
-                onDragStartJob={handleDragStart}
-                onDragEnd={handleDragEnd}
+                onDragStartJob={(id, h) => { setDraggingId(id); setDragHeight(h); }}
+                onDragEnd={() => { setDraggingId(null); setDragOver(null); setDragHeight(0); }}
+                onArchive={(id) => archiveJob(id)}
                 onRequestInterviewReminder={setReminderJobId}
-                onRequestApplyToast={(id) => {
-                  const j = allJobs.find((x) => x.id === id);
-                  if (j) setApplyToast(j);
+                onRequestApplyToast={(id) => { const j = allJobs.find((x) => x.id === id); if (j) setApplyToast(j); }}
+                onMoveTo={(id, target) => {
+                  if (target === "interview") {
+                    setStatus(id, "interview");
+                    setReminderJobId(id);
+                  } else {
+                    setStatus(id, target);
+                  }
                 }}
+                onMailShareToast={() => showToast("Follow-up email drafted (demo)")}
+                archivedView={showArchived}
               />
-              <KanbanColumn
-                title="Applied"
-                status="applied"
-                jobs={appliedJobs}
-                isDropTarget={dragOver === "applied" && draggingId !== null}
-                placeholderHeight={dragHeight}
-                onDragOver={() => setDragOver("applied")}
-                onDrop={() => handleDrop("applied")}
-                onOpen={setOpenJob}
-                onDragStartJob={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onRequestInterviewReminder={setReminderJobId}
-                onRequestApplyToast={(id) => {
-                  const j = allJobs.find((x) => x.id === id);
-                  if (j) setApplyToast(j);
-                }}
-              />
-              <KanbanColumn
-                title="Interview"
-                status="interview"
-                jobs={interviewJobs}
-                isDropTarget={dragOver === "interview" && draggingId !== null}
-                placeholderHeight={dragHeight}
-                onDragOver={() => setDragOver("interview")}
-                onDrop={() => handleDrop("interview")}
-                onOpen={setOpenJob}
-                onDragStartJob={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onRequestInterviewReminder={setReminderJobId}
-                onRequestApplyToast={(id) => {
-                  const j = allJobs.find((x) => x.id === id);
-                  if (j) setApplyToast(j);
-                }}
-              />
-            </div>
-          )
-        ) : tab === "offers" ? (
-          <GridSection
-            title="Received offers"
-            jobs={offerJobs}
-            regime="offer"
-            onOpen={setOpenJob}
-            onRequestInterviewReminder={setReminderJobId}
-          />
-        ) : (
-          <GridSection
-            title="Rejections"
-            jobs={rejectionJobs}
-            regime="rejection"
-            onOpen={setOpenJob}
-            onRequestInterviewReminder={setReminderJobId}
-          />
-        )}
+            ))}
+          </div>
+        </div>
       </main>
 
       <MobileTabBar active="tracker" />
 
-      {openJob ? (
-        <JobDrawer job={openJob} onClose={() => setOpenJob(null)} />
-      ) : null}
+      {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
 
       <InterviewReminderDialog
         open={reminderJobId !== null}
         jobTitle={reminderJobId ? allJobs.find((j) => j.id === reminderJobId)?.title : undefined}
-        initialIso={reminderJobId ? readRecord(reminderJobId).reminderAt : undefined}
+        initialIso={reminderJobId ? getJobRecord(reminderJobId).reminderAt : undefined}
         onCancel={() => setReminderJobId(null)}
         onSave={(iso) => {
           if (reminderJobId) {
@@ -772,122 +710,30 @@ function TrackerScreen() {
       {applyToast ? (
         <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true">
           <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={() => setApplyToast(null)} aria-hidden />
-          <div
-            role="status"
-            className="relative z-10 w-[92%] max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
-            style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-          >
-            <h2
-              className="text-[18px] font-semibold text-[color:var(--color-foreground)]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+          <div className="relative z-10 w-[92%] max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+            <h2 className="text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
               Did you apply to {applyToast.title}?
             </h2>
             <p className="mt-2 text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               Let us know so we can move it to Applied on your tracker.
             </p>
             <div className="mt-5 flex flex-col gap-2">
-              <button
-                type="button"
-                className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-                onClick={() => { setStatus(applyToast.id, "applied"); setApplyToast(null); }}
-              >
+              <button type="button" className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]" onClick={() => { setStatus(applyToast.id, "applied"); setApplyToast(null); }}>
                 Yes, mark as applied
               </button>
-              <button
-                type="button"
-                className="h-11 w-full rounded-[4px] border px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                onClick={() => setApplyToast(null)}
-              >
+              <button type="button" className="h-11 w-full rounded-[4px] border px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]" onClick={() => setApplyToast(null)}>
                 Not yet
               </button>
             </div>
           </div>
         </div>
       ) : null}
+
+      {toast ? (
+        <div className="fixed bottom-6 left-1/2 z-[80] -translate-x-1/2 rounded-[6px] bg-[color:var(--color-foreground)] px-4 py-2 text-[13px] text-white shadow-lg">
+          {toast}
+        </div>
+      ) : null}
     </div>
   );
 }
-
-function GridSection({
-  title,
-  jobs,
-  regime,
-  onOpen,
-  onRequestInterviewReminder,
-}: {
-  title: string;
-  jobs: Job[];
-  regime: Regime;
-  onOpen: (j: Job) => void;
-  onRequestInterviewReminder: (id: string) => void;
-}) {
-  return (
-    <section>
-      <div className="mb-4 flex items-center gap-2">
-        <h2 className="text-[18px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>{title}</h2>
-        <CountTag n={jobs.length} />
-      </div>
-      {jobs.length === 0 ? (
-        <div className="rounded-[6px] border border-dashed p-10 text-center text-[13px] text-[color:var(--color-text-muted)]" style={{ borderColor: "var(--color-border-strong)" }}>
-          Nothing here yet
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((j) => (
-            <JobCard
-              key={j.id}
-              job={j}
-              regime={regime}
-              onOpen={() => onOpen(j)}
-              onRequestInterviewReminder={() => onRequestInterviewReminder(j.id)}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-function EmptyBoard() {
-  return (
-    <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-[8px] border bg-[color:var(--color-surface-1)] p-10 text-center">
-      <div className="text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-        Nothing tracked yet
-      </div>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        Save a job from your digest and it appears here.
-      </p>
-      <Link
-        to="/dashboard"
-        className="mt-1 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 py-2 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-      >
-        Open digest
-      </Link>
-    </div>
-  );
-}
-
-// ---------- Store bridge ----------
-// Read a record without subscribing per-id (we already have a screen-wide
-// version subscription via useTrackerVersion). We import the hook only to
-// force a subscription; the actual lookup uses the module-level helper.
-import { getJobRecord as _getJobRecord } from "@/lib/tracker-store";
-
-function readRecord(id: string): JobRecord {
-  return _getJobRecord(id);
-}
-
-// Screen-wide subscription: re-render on any store change. Store exposes a
-// per-id useJobRecord hook that internally subscribes to the global version,
-// so calling it with a sentinel id gives us the same signal.
-function useVersion() {
-  // useJobRecord already re-renders on every store emit. Re-use it as the
-  // version signal by reading the sentinel record's identity.
-  const r = useJobRecord("__version__");
-  return r; // returned value unused; identity changes on each version bump
-}
-
-// Suppress unused React import for useSyncExternalStore (kept for future).
-void useSyncExternalStore;
-void Check;
