@@ -7,6 +7,7 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -41,8 +42,17 @@ function MatchesPage() {
   const topJobs = matched.slice(0, 5);
 
   async function handleGoogle() {
+    setError(null);
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/dashboard`,
+    });
+    if (result.error) {
+      setError(result.error.message || "Google sign-in failed. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+    if (result.redirected) return;
     navigate({ to: "/dashboard" });
   }
 
