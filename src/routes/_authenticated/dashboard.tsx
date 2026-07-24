@@ -292,7 +292,10 @@ function defaultsFromQuiz(q: QuizAnswers): FilterState {
   const locs = q.locations ?? [];
   const onlyRemote = locs.length === 0;
   const minSalary = typeof q.salaryMin === "number" ? nearestSalaryStep(q.salaryMin < 1000 ? q.salaryMin * 1000 : q.salaryMin) : 0;
-  const english = q.primaryLanguage ?? "";
+  const rawEnglish = q.primaryLanguage ?? "";
+  // Quiz stores English levels with a bullet (•); the filter uses a middle dot (·).
+  const normalizedEnglish = rawEnglish.replace(/\s•\s/g, " · ");
+  const english = (ENGLISH_LEVELS as readonly string[]).includes(normalizedEnglish) ? normalizedEnglish : "";
   const yearChip = typeof q.years === "number" ? yearsToChip(q.years) : null;
   const seniority = levelToSeniority(q.level);
   return {
