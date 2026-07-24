@@ -561,7 +561,7 @@ function KanbanColumn({
       <button
         type="button"
         onClick={onToggleCollapse}
-        className="flex w-full items-center gap-2 px-1 lg:pointer-events-none"
+        className="flex w-full items-center gap-2 lg:pointer-events-none"
         style={{ height: 44 }}
         aria-expanded={!collapsed}
       >
@@ -586,7 +586,7 @@ function KanbanColumn({
         />
       </button>
       {/* Cards */}
-      <div className={`flex-col px-1 ${collapsed ? "hidden lg:flex" : "flex"}`} style={{ gap: 4 }}>
+      <div className={`flex-col ${collapsed ? "hidden lg:flex" : "flex"}`} style={{ gap: 4 }}>
         {isDropTarget ? (
           <div
             className="rounded-[8px] border-2 border-dashed"
