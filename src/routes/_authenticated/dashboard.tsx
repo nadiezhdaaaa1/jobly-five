@@ -577,7 +577,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </div>
       </button>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <span
           className="text-[12px] text-[color:var(--color-text-muted)]"
           style={{ fontWeight: 300, lineHeight: 1.5 }}
