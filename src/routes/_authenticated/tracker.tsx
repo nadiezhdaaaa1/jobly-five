@@ -332,7 +332,7 @@ function KanbanCard({
             </IconBtn>
             <div className="ml-auto flex items-center gap-1">
               {status === "applied" ? (
-                <IconBtn label="Send a follow-up" onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
+                <IconBtn label="Send a follow-up" noBorder onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
                   <MailShare size={16} strokeWidth={1.6} />
                 </IconBtn>
               ) : null}
