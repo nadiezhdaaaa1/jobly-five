@@ -14,6 +14,7 @@ import {
   dateHelpers,
   markApplied,
   setInterviewStage,
+  setNotes as storeSetNotes,
   setOfferDetails,
   setOfferStatus,
   setRejectionDetails,
