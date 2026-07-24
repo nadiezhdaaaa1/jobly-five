@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { IconBriefcase2, IconTarget, IconFileDescription, IconUserSquare, IconSettings } from "@tabler/icons-react";
+import { IconBriefcase2, IconTarget, IconUserSquare, IconSettings } from "@tabler/icons-react";
 import { usePlan, isPro } from "@/lib/plan-store";
 import proCubeAsset from "@/assets/pro2.png.asset.json";
 
@@ -8,7 +8,6 @@ export type AppTab = "digest" | "tracker" | "resume" | "profile" | "settings";
 const TABS: Array<{ key: AppTab; label: string; icon: typeof IconBriefcase2; to: string }> = [
   { key: "digest", label: "Digest", icon: IconBriefcase2, to: "/dashboard" },
   { key: "tracker", label: "Tracker", icon: IconTarget, to: "/tracker" },
-  { key: "resume", label: "Resume", icon: IconFileDescription, to: "/resume" },
   { key: "profile", label: "Profile", icon: IconUserSquare, to: "/profile" },
   { key: "settings", label: "Settings", icon: IconSettings, to: "/settings" },
 ];
@@ -83,7 +82,7 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
 export function MobileTabBar({ active, hasNewDigest = true }: { active: AppTab; hasNewDigest?: boolean }) {
   return (
     <nav className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-5">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-4">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = t.key === active;
