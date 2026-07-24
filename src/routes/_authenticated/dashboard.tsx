@@ -284,6 +284,7 @@ function activeFilterCount(f: FilterState, profileRoles: string[] = []): number 
 
 function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
   return jobs.filter((j) => {
+    // Blocked companies filter (managed in Settings)
     if (j.score < f.minMatch) return false;
     if (f.sources.length && !f.sources.includes(j.board)) return false;
     const postedDaysCap = f.postedWithin === "24h" ? 1 : f.postedWithin === "7d" ? 7 : f.postedWithin === "30d" ? 30 : Infinity;
