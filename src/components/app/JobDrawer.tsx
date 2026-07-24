@@ -531,22 +531,23 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 </div>
               ) : null}
 
+              {/* Notes — Saved and all tracked statuses (not default) */}
+              {pro ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotesLocal(e.target.value)}
+                    onBlur={handleNotesBlur}
+                    rows={5}
+                    placeholder="Notes — contacts, salary discussed, next steps…"
+                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  />
+                </div>
+              ) : null}
+
               {/* History — must be the last block */}
               <JobHistory history={record.history} />
-            </div>
-          ) : null}
-
-          {pro && saved ? (
-            <div className="mt-5">
-              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotesLocal(e.target.value)}
-                onBlur={handleNotesBlur}
-                rows={5}
-                placeholder="Notes — contacts, salary discussed, next steps…"
-                className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-              />
             </div>
           ) : null}
 
