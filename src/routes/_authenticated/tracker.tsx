@@ -37,6 +37,7 @@ import {
   type JobStatus,
 } from "@/lib/tracker-store";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { blockCompany } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: () => ({
@@ -191,9 +192,11 @@ function KanbanCard({
   const record = useJobRecord(job.id);
   const status = (record.archived ? record.lastStatus : record.status) as ColumnKey;
   const [dislikeOpen, setDislikeOpen] = useState(false);
+  const [flagOpen, setFlagOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
+  const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const [isDragging, setIsDragging] = useState(false);
   const articleRef = useRef<HTMLElement | null>(null);
@@ -268,19 +271,40 @@ function KanbanCard({
           </button>
         ) : status === "saved" ? (
           <>
-            <div className="relative" ref={dislikeRef}>
-              <IconBtn label="Report or dislike" onClick={() => setDislikeOpen((v) => !v)}>
+            <div className="relative" ref={flagRef}>
+              <IconBtn label="Report" onClick={() => setFlagOpen((v) => !v)}>
                 <Flag size={16} strokeWidth={1.6} />
               </IconBtn>
-              {dislikeOpen ? (
+              {flagOpen ? (
                 <MenuPop>
-                  <MenuItem onClick={() => { setStatus(job.id, "reported"); archiveJob(job.id); setDislikeOpen(false); }}>Report — looks fake or ghost</MenuItem>
+                  {["Spam/Scam", "Ghost/Expired", "Duplicate posting"].map((label) => (
+                    <MenuItem key={label} danger onClick={() => { setStatus(job.id, "reported"); archiveJob(job.id); setFlagOpen(false); }}>{label}</MenuItem>
+                  ))}
                 </MenuPop>
               ) : null}
             </div>
-            <IconBtn label="Dislike" onClick={() => { setStatus(job.id, "dismissed"); archiveJob(job.id); }}>
-              <ThumbsDown size={16} strokeWidth={1.6} />
-            </IconBtn>
+            <div className="relative" ref={dislikeRef}>
+              <IconBtn label="Dislike" onClick={() => setDislikeOpen((v) => !v)}>
+                <ThumbsDown size={16} strokeWidth={1.6} />
+              </IconBtn>
+              {dislikeOpen ? (
+                <MenuPop>
+                  {["Not relevant to my role", "Wrong seniority", "Compensation too low", "Don't recommend the company"].map((label) => (
+                    <MenuItem
+                      key={label}
+                      onClick={() => {
+                        if (label === "Don't recommend the company") blockCompany(job.company);
+                        setStatus(job.id, "dismissed");
+                        archiveJob(job.id);
+                        setDislikeOpen(false);
+                      }}
+                    >
+                      {label}
+                    </MenuItem>
+                  ))}
+                </MenuPop>
+              ) : null}
+            </div>
             <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
               <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
             </IconBtn>
@@ -424,13 +448,17 @@ function MenuPop({
   );
 }
 
-function MenuItem({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+function MenuItem({ children, onClick, danger }: { children: React.ReactNode; onClick: () => void; danger?: boolean }) {
   return (
     <button
       type="button"
       role="menuitem"
       onClick={onClick}
-      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+      className={
+        danger
+          ? "flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+          : "flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+      }
     >
       {children}
     </button>
