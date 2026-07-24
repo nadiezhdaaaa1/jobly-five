@@ -506,8 +506,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       {dateHelpers.shortDateTime(record.reminderAt)}
                     </span>
                     <span className="flex items-center gap-3">
-                      <button className="text-[12px] font-semibold text-[#C2410C] hover:underline" onClick={() => setReminderOpen(true)}>Edit</button>
-                      <button className="text-[12px] font-semibold text-[#C2410C] hover:underline" onClick={() => setReminder(job.id, null)}>Remove</button>
+                      <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminderOpen(true)}>Edit</button>
+                      <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminder(job.id, null)}>Remove</button>
                     </span>
                   </div>
                 ) : (
