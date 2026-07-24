@@ -420,18 +420,13 @@ export function getJobRecord(id: string): JobRecord {
 // reminder dialogs to warn (not block) the user about overlapping reminders.
 export function findReminderConflicts(iso: string, excludeId?: string): string[] {
   if (!iso) return [];
-  const target = iso.slice(0, 16); // YYYY-MM-DDTHH:MM in local ISO
-  const targetMs = new Date(iso).getTime();
+  const target = minuteKey(iso);
   const out: string[] = [];
   for (const [id, r] of records) {
     if (id === excludeId) continue;
     if (!r.reminderAt) continue;
     if (r.archived) continue;
-    // Compare to the minute (ignore seconds).
-    const otherMs = new Date(r.reminderAt).getTime();
-    if (Math.abs(otherMs - targetMs) < 60_000 && r.reminderAt.slice(0, 16) === target || minuteKey(r.reminderAt) === minuteKey(iso)) {
-      out.push(id);
-    }
+    if (minuteKey(r.reminderAt) === target) out.push(id);
   }
   return out;
 }
