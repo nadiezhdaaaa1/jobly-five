@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconLoader2 as Loader2 } from "@tabler/icons-react";
+import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
+import { MatchLine } from "@/components/app/MatchLine";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -199,6 +200,7 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 
 function JobCard({ job }: { job: Job }) {
   const direct = job.source === "direct";
+  const [detailsOpen, setDetailsOpen] = useState(false);
   return (
     <li className="rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
       <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
@@ -225,7 +227,21 @@ function JobCard({ job }: { job: Job }) {
           >
             {direct ? "Direct employer" : "Aggregated"}
           </span>
+          <button
+            type="button"
+            onClick={() => setDetailsOpen((v) => !v)}
+            aria-expanded={detailsOpen}
+            className="ml-auto inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+          >
+            {detailsOpen ? "Hide details" : "Match details"}
+            {detailsOpen ? <ChevronUp size={14} strokeWidth={2} /> : <ChevronDown size={14} strokeWidth={2} />}
+          </button>
         </div>
+        {detailsOpen ? (
+          <div className="mt-5 border-t border-[color:var(--color-border)] pt-5">
+            <MatchLine job={job} wrap />
+          </div>
+        ) : null}
       </article>
     </li>
   );
