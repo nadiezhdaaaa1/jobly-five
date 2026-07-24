@@ -68,6 +68,7 @@ const COLUMN_TITLE: Record<ColumnKey, string> = {
 };
 
 const CHIP_ORANGE = "#FFEDD4";
+const CHIP_MINT = "#E6F4EA";
 const BORDER_LIGHT = "#E3E7E8";
 const META_GREY = "#67787C";
 const DARK = "#090B0C";
@@ -442,18 +443,18 @@ function Row3({ status, record }: { status: ColumnKey; record: JobRecord }) {
   // offer
   return (
     <div className="flex flex-wrap gap-1">
-      {record.offerStatus ? <Chip>{record.offerStatus}</Chip> : null}
-      {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+      {record.offerStatus ? <Chip tone="mint">{record.offerStatus}</Chip> : null}
+      {record.reminderAt ? <Chip tone="mint">{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
     </div>
   );
 }
 
-function Chip({ children }: { children: React.ReactNode }) {
+function Chip({ children, tone = "orange" }: { children: React.ReactNode; tone?: "orange" | "mint" }) {
   return (
     <span
       className="inline-flex items-center text-[12px] font-light"
       style={{
-        background: CHIP_ORANGE,
+        background: tone === "mint" ? CHIP_MINT : CHIP_ORANGE,
         color: DARK,
         padding: "4px 6px",
         borderRadius: 4,
