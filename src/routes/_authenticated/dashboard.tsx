@@ -132,23 +132,7 @@ type FilterState = {
   postedWithin: PostedRange;
 };
 
-type SavedFilter = { id: string; name: string; filters: FilterState };
-const SAVED_FILTERS_KEY = "jobly.savedFilters.v1";
-function loadSavedFilters(): SavedFilter[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(SAVED_FILTERS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as SavedFilter[]) : [];
-  } catch {
-    return [];
-  }
-}
-function persistSavedFilters(list: SavedFilter[]) {
-  if (typeof window === "undefined") return;
-  try { window.localStorage.setItem(SAVED_FILTERS_KEY, JSON.stringify(list)); } catch { /* ignore */ }
-}
+type SavedFilterEntry = SavedFilter<FilterState>;
 
 const YEAR_CHIPS = ["No experience", "1–2 years", "3–5 years", "6–9 years", "10 years or more"] as const;
 
