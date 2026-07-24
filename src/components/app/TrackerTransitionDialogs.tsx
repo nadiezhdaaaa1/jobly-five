@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { IconX as X } from "@tabler/icons-react";
-import { InterviewReminderDialog } from "@/components/app/InterviewReminderDialog";
-import { dateHelpers } from "@/lib/tracker-store";
+import { IconX as X, IconCalendar } from "@tabler/icons-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 export const INTERVIEW_STAGES = [
   "Recruiter screen",
@@ -68,6 +68,62 @@ const selectCls =
 const textareaCls =
   "w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
 
+const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function pad(n: number) { return n < 10 ? `0${n}` : `${n}`; }
+function formatUS(d: Date) {
+  return `${MONTHS_SHORT[d.getMonth()]} ${pad(d.getDate())} ${d.getFullYear()}`;
+}
+function defaultDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 3);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+function isoFrom(date: string, time: string) {
+  const [y, m, d] = date.split("-").map(Number);
+  const [hh, mm] = time.split(":").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1, hh ?? 0, mm ?? 0).toISOString();
+}
+function partsFromIso(iso: string) {
+  const d = new Date(iso);
+  return {
+    date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    time: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
+  };
+}
+
+function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [hhStr, mmStr] = value.split(":");
+  const h24 = Number(hhStr ?? "0") || 0;
+  const mm = Number(mmStr ?? "0") || 0;
+  const period: "AM" | "PM" = h24 >= 12 ? "PM" : "AM";
+  const h12 = ((h24 + 11) % 12) + 1;
+  const emit = (nh12: number, nmm: number, np: "AM" | "PM") => {
+    let nh24 = nh12 % 12;
+    if (np === "PM") nh24 += 12;
+    onChange(`${pad(nh24)}:${pad(nmm)}`);
+  };
+  const cls =
+    "h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+  return (
+    <div className="flex items-center gap-1">
+      <select aria-label="Hour" value={h12} onChange={(e) => emit(Number(e.target.value), mm, period)} className={`${cls} w-[72px]`}>
+        {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+          <option key={h} value={h}>{pad(h)}</option>
+        ))}
+      </select>
+      <select aria-label="Minute" value={mm} onChange={(e) => emit(h12, Number(e.target.value), period)} className={`${cls} w-[72px]`}>
+        {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
+          <option key={m} value={m}>{pad(m)}</option>
+        ))}
+      </select>
+      <select aria-label="AM or PM" value={period} onChange={(e) => emit(h12, mm, e.target.value as "AM" | "PM")} className={`${cls} w-[76px]`}>
+        <option value="AM">AM</option>
+        <option value="PM">PM</option>
+      </select>
+    </div>
+  );
+}
+
 function ReminderInline({
   reminderIso,
   onChange,
@@ -75,8 +131,26 @@ function ReminderInline({
   reminderIso: string | null;
   onChange: (iso: string | null) => void;
 }) {
-  const [pickerOpen, setPickerOpen] = useState(false);
   const enabled = !!reminderIso;
+  const initial = reminderIso ? partsFromIso(reminderIso) : { date: defaultDate(), time: "14:00" };
+  const [date, setDate] = useState(initial.date);
+  const [time, setTime] = useState(initial.time);
+
+  useEffect(() => {
+    if (reminderIso) {
+      const p = partsFromIso(reminderIso);
+      setDate(p.date);
+      setTime(p.time);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reminderIso]);
+
+  const commit = (nd: string, nt: string) => {
+    setDate(nd);
+    setTime(nt);
+    onChange(isoFrom(nd, nt));
+  };
+
   return (
     <div>
       <label className="flex cursor-pointer items-center gap-2">
@@ -84,7 +158,7 @@ function ReminderInline({
           type="checkbox"
           checked={enabled}
           onChange={(e) => {
-            if (e.target.checked) setPickerOpen(true);
+            if (e.target.checked) onChange(isoFrom(date, time));
             else onChange(null);
           }}
           className="h-4 w-4 rounded border"
@@ -92,36 +166,44 @@ function ReminderInline({
         />
         <span className="text-[13px] text-[color:var(--color-foreground)]">Set a reminder?</span>
       </label>
-      {enabled && reminderIso ? (
-        <div className="mt-2 flex items-center justify-between rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[13px]">
-          <span className="text-[color:var(--color-foreground)]">{dateHelpers.shortDateTime(reminderIso)}</span>
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="text-[12px] font-semibold text-[color:var(--color-green)] hover:underline"
-              onClick={() => setPickerOpen(true)}
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              className="text-[12px] text-[color:var(--color-text-muted)] hover:underline"
-              onClick={() => onChange(null)}
-            >
-              Remove
-            </button>
+      {enabled ? (
+        <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3">
+          <div className="flex min-w-0 flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Date</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="flex h-10 items-center justify-between gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-left text-[14px] text-[color:var(--color-foreground)] outline-none hover:bg-[color:var(--color-surface-2)] focus-visible:border-[color:var(--color-accent)]"
+                >
+                  <span>{(() => { const [y,m,d] = date.split("-").map(Number); return formatUS(new Date(y, (m??1)-1, d??1)); })()}</span>
+                  <IconCalendar size={16} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                className="z-[70] w-auto rounded-[8px] border bg-[color:var(--color-surface-1)] p-0"
+                style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+              >
+                <Calendar
+                  mode="single"
+                  selected={(() => { const [y,m,d] = date.split("-").map(Number); return new Date(y, (m??1)-1, d??1); })()}
+                  onSelect={(d) => { if (d) commit(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time); }}
+                  initialFocus
+                  className="pointer-events-auto p-3"
+                  classNames={{
+                    today: "rounded-md [&_button]:!bg-[color:var(--color-green,#0E735A)] [&_button]:!text-white",
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Time</span>
+            <TimePickerAmPm value={time} onChange={(t) => commit(date, t)} />
           </div>
         </div>
       ) : null}
-      <InterviewReminderDialog
-        open={pickerOpen}
-        initialIso={reminderIso ?? undefined}
-        onCancel={() => setPickerOpen(false)}
-        onSave={(iso) => {
-          onChange(iso);
-          setPickerOpen(false);
-        }}
-      />
     </div>
   );
 }
