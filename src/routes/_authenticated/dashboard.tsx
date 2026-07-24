@@ -608,7 +608,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               type="button"
               aria-label="Report"
               onClick={() => setFlagOpen((v) => !v)}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <Flag size={15} strokeWidth={1.6} />
             </button>
@@ -634,7 +634,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               type="button"
               aria-label="Dislike"
               onClick={() => setDislikeOpen((v) => !v)}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <ThumbsDown size={15} strokeWidth={1.6} />
             </button>
