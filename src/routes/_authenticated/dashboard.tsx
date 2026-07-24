@@ -17,12 +17,14 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { MatchLine } from "@/components/app/MatchLine";
+import { ApplyModal } from "@/components/app/ApplyModal";
 import { getAllJobs, type Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, type JobStatus } from "@/lib/tracker-store";
-import { loadQuiz } from "@/lib/quiz-store";
+import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -259,6 +261,44 @@ function defaultFilters(): FilterState {
     minMatch: 50,
     minSalary: 0,
     postedWithin: "any",
+  };
+}
+
+const SALARY_STEPS = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
+function nearestSalaryStep(v: number): number {
+  let best = SALARY_STEPS[0];
+  let d = Infinity;
+  for (const s of SALARY_STEPS) {
+    const nd = Math.abs(v - s);
+    if (nd < d) { d = nd; best = s; }
+  }
+  return best;
+}
+
+function yearsToChip(y: number): (typeof YEAR_CHIPS)[number] | null {
+  if (y <= 0) return "No experience";
+  if (y <= 2) return "1–2 years";
+  if (y <= 5) return "3–5 years";
+  if (y <= 9) return "6–9 years";
+  return "10 years or more";
+}
+
+function defaultsFromQuiz(q: QuizAnswers): FilterState {
+  const base = defaultFilters();
+  const roles = q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  const locs = q.locations ?? [];
+  const onlyRemote = locs.length === 0;
+  const minSalary = typeof q.salaryMin === "number" ? nearestSalaryStep(q.salaryMin < 1000 ? q.salaryMin * 1000 : q.salaryMin) : 0;
+  const english = q.primaryLanguage ?? "";
+  const yearChip = typeof q.years === "number" ? yearsToChip(q.years) : null;
+  return {
+    ...base,
+    roles,
+    onlyRemote,
+    locations: locs,
+    minSalary,
+    english,
+    years: yearChip ? [yearChip] : [],
   };
 }
 
