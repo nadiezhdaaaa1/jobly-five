@@ -529,7 +529,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const direct = DIRECT_BOARDS.has(job.board);
 
   return (
-    <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:bg-[color:var(--color-surface-2)]/40">
+    <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
       <button
         type="button"
         aria-label={`Open details for ${job.title}`}
@@ -669,8 +669,8 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
   const wrap = session
-    ? "rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
-    : "rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]";
+    ? "rounded-[8px] border border-[#D0D6D8] bg-[color:var(--color-surface-1)] transition-shadow"
+    : "rounded-[8px] border border-[#D0D6D8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-shadow hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]";
   return (
     <div className={wrap}>
       <JobRow job={job} onOpen={onOpen} />
