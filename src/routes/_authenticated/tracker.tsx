@@ -323,7 +323,7 @@ function KanbanCard({
         ) : (
           // Applied / Interview / Rejected / Offer
           <>
-            <IconBtn label="Archive" onClick={onArchive}>
+            <IconBtn label="Archive" onClick={() => setConfirmArchiveOpen(true)}>
               <X size={16} strokeWidth={1.8} />
             </IconBtn>
             <div className="ml-auto flex items-center gap-1">
@@ -366,6 +366,42 @@ function KanbanCard({
       </div>
     </article>
     <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
+    <Dialog open={confirmArchiveOpen} onOpenChange={(o) => !o && setConfirmArchiveOpen(false)}>
+      <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+        <DialogTitle
+          className="text-[16px] font-semibold"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Are you sure?
+        </DialogTitle>
+        <p className="mt-2 text-[13px] font-light" style={{ color: MUTED_TEXT, lineHeight: "20px" }}>
+          Remove <span style={{ color: DARK }}>{job.title}</span> at{" "}
+          <span style={{ color: DARK }}>{job.company}</span> from{" "}
+          {COLUMN_TITLE[status]}? You can restore it later from Archived.
+        </p>
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => setConfirmArchiveOpen(false)}
+            className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px]"
+            style={{ borderColor: BORDER_LIGHT, color: DARK }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmArchiveOpen(false);
+              onArchive();
+            }}
+            className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
+            style={{ background: "#D00D01" }}
+          >
+            Remove
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }
