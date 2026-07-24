@@ -1141,18 +1141,18 @@ function JobsScreen() {
               Your latest digest arrived <span className="font-semibold text-[color:var(--color-text-secondary)]">Today at 9:02</span>
             </p>
 
-            <div className="mt-6 overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]">
-              <div className="divide-y">
-                {shown.length === 0 ? (
-                  <div className="p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                    No matches for your current filters
-                  </div>
-                ) : shown.map((j) => (
-                  <JobRow key={j.id} job={j} onOpen={() => setOpenJob(j)} />
-                ))}
-              </div>
+            <div className="mt-6 flex flex-col gap-3">
+              {shown.length === 0 ? (
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                  No matches for your current filters
+                </div>
+              ) : shown.map((j) => (
+                <div key={j.id} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                  <JobRow job={j} onOpen={() => setOpenJob(j)} />
+                </div>
+              ))}
               {count < visible.length ? (
-                <div ref={sentinel} className="border-t px-4 py-4 text-center text-[12px] text-[color:var(--color-text-muted)]">Loading more…</div>
+                <div ref={sentinel} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-4 text-center text-[12px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">Loading more…</div>
               ) : null}
             </div>
           </div>
