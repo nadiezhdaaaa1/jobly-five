@@ -58,14 +58,14 @@ const SENIORITIES = ["Junior", "Middle", "Senior", "Lead", "Exec"] as const;
 type Seniority = (typeof SENIORITIES)[number];
 
 const ENGLISH_LEVELS = [
-  "No English",
-  "Elementary · A1",
-  "Pre-intermediate · A2",
-  "Intermediate · B1",
-  "Upper-intermediate · B2",
-  "Advanced · C1",
-  "Proficient · C2",
   "Native speaker",
+  "Proficient · C2",
+  "Advanced · C1",
+  "Upper-intermediate · B2",
+  "Intermediate · B1",
+  "Pre-intermediate · A2",
+  "Elementary · A1",
+  "No English",
 ] as const;
 
 function inferSeniority(title: string): Seniority {
