@@ -185,6 +185,7 @@ function KanbanCard({
   const [applyOpen, setApplyOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
   const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
