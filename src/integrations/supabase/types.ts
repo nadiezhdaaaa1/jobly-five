@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      cities: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          label: string
+          state_code: string
+          state_name: string
+          top100: boolean
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+          label: string
+          state_code: string
+          state_name: string
+          top100?: boolean
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          label?: string
+          state_code?: string
+          state_name?: string
+          top100?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

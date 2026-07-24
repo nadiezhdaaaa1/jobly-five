@@ -26,6 +26,7 @@ import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
+import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -973,7 +974,17 @@ function FiltersSidebar({
           {!p.onlyRemote && (
             <div className="flex flex-wrap gap-1.5">
               {p.locations.map((r) => (<ProfileChip key={r} label={r} onRemove={() => set({ locations: p.locations.filter((x) => x !== r) })} />))}
-              <AddChip options={["Remote (US)", "New York City, NY", "State of New York", "San Francisco, CA", "Los Angeles, CA"].filter((r) => !p.locations.includes(r))} onAdd={(v) => set({ locations: [...p.locations, v] })} />
+              <AddChip
+                groups={[
+                  { label: "Remote", items: ["Remote (US)"] },
+                  { label: "States", items: US_CITY_DATA.map((s) => `State of ${s.name}`) },
+                  { label: "Cities", items: ALL_CITY_LABELS },
+                ]
+                  .map((g) => ({ label: g.label, items: g.items.filter((i) => !p.locations.includes(i)) }))
+                  .filter((g) => g.items.length)}
+                options={[]}
+                onAdd={(v) => set({ locations: [...p.locations, v] })}
+              />
             </div>
           )}
         </FilterSection>
