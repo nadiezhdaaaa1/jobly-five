@@ -816,6 +816,7 @@ function TrackerScreen() {
       {pendingJob && pending?.target === "interview" ? (
         <InterviewTransitionDialog
           open
+          jobId={pending.jobId}
           initialStage={getJobRecord(pending.jobId).interviewStage}
           initialReminderIso={getJobRecord(pending.jobId).reminderAt}
           onCancel={cancelPending}
@@ -844,6 +845,7 @@ function TrackerScreen() {
       {pendingJob && pending?.target === "offer" ? (
         <OfferTransitionDialog
           open
+          jobId={pending.jobId}
           initialStage={getJobRecord(pending.jobId).offerStatus}
           initialReminderIso={getJobRecord(pending.jobId).reminderAt}
           initialDetails={getJobRecord(pending.jobId).offerDetails}
