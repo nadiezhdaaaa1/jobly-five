@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import proCube from "@/assets/pro-cube.png.asset.json";
 import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -135,19 +136,20 @@ function IconBtn({
     ? { background: "#D8FBEF", borderColor: "#0E735A", color: "#0E735A" }
     : { borderColor: noBorder ? "transparent" : BORDER_LIGHT, color: danger ? "#D00D01" : MUTED_TEXT };
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick?.(e);
-      }}
-      className={cls}
-      style={style}
-    >
-      {children}
-    </button>
+    <IconTooltip label={label}>
+      <button
+        type="button"
+        aria-label={label}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick?.(e);
+        }}
+        className={cls}
+        style={style}
+      >
+        {children}
+      </button>
+    </IconTooltip>
   );
 }
 

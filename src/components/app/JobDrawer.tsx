@@ -35,6 +35,7 @@ import {
 } from "@/components/app/TrackerTransitionDialogs";
 import { JobHistory } from "@/components/app/JobHistory";
 import { MatchLine } from "@/components/app/MatchLine";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal, FollowUpDialog } from "@/components/app/ApplyModal";
 import { setDigestSession } from "@/lib/digest-session-store";
 import { Link } from "@tanstack/react-router";
@@ -205,14 +206,18 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         <style>{`@keyframes job-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
 
         {/* Sticky close */}
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="sticky top-4 z-20 float-right mr-4 mt-4 flex h-8 w-8 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <X size={16} strokeWidth={1.6} />
-        </button>
+        <div className="sticky top-4 z-20 float-right mr-4 mt-4">
+          <IconTooltip label="Close" side="left">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <X size={16} strokeWidth={1.6} />
+            </button>
+          </IconTooltip>
+        </div>
 
         <div className="px-5 pb-8 pt-5">
           {/* Identity block */}
