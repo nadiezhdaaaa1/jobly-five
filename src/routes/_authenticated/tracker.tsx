@@ -12,6 +12,7 @@ import {
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import proCube from "@/assets/pro-cube.png.asset.json";
 import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
