@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { IconCheck, IconEye, IconEyeOff, IconLock, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlan, setPlan, type Plan } from "@/lib/plan-store";
+import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -26,10 +27,13 @@ function SettingsScreen() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="settings" />
-      <main className="mx-auto max-w-[720px] px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-[760px] px-4 py-8 sm:px-6">
         <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
           Settings
         </h1>
+        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          Plan, billing, notifications, blocked companies, security and account.
+        </p>
         {flash ? (
           <div className="mt-4 rounded-[6px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
             {flash}
@@ -40,6 +44,7 @@ function SettingsScreen() {
           <PlanCard plan={plan} onFlash={flashMsg} />
           <BillingCard plan={plan} />
           <NotificationsCard plan={plan} />
+          <BlockedCompaniesCard onFlash={flashMsg} />
           <SecurityCard onFlash={flashMsg} />
           <DangerZoneCard onFlash={flashMsg} />
         </div>
