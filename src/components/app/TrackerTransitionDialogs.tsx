@@ -135,6 +135,7 @@ function ReminderInline({
   const initial = reminderIso ? partsFromIso(reminderIso) : { date: defaultDate(), time: "14:00" };
   const [date, setDate] = useState(initial.date);
   const [time, setTime] = useState(initial.time);
+  const [dateOpen, setDateOpen] = useState(false);
 
   useEffect(() => {
     if (reminderIso) {
@@ -170,7 +171,7 @@ function ReminderInline({
         <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] gap-3">
           <div className="flex min-w-0 flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
             <span>Date</span>
-            <Popover>
+            <Popover open={dateOpen} onOpenChange={setDateOpen}>
               <PopoverTrigger asChild>
                 <button
                   type="button"
@@ -188,7 +189,12 @@ function ReminderInline({
                 <Calendar
                   mode="single"
                   selected={(() => { const [y,m,d] = date.split("-").map(Number); return new Date(y, (m??1)-1, d??1); })()}
-                  onSelect={(d) => { if (d) commit(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time); }}
+                  onSelect={(d) => {
+                    if (d) {
+                      commit(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time);
+                      setDateOpen(false);
+                    }
+                  }}
                   initialFocus
                   className="pointer-events-auto p-3"
                   classNames={{
