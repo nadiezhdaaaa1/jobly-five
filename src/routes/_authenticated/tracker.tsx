@@ -117,21 +117,23 @@ function IconBtn({
   onClick,
   active,
   danger,
+  noBorder,
   children,
 }: {
   label: string;
   onClick?: (e: React.MouseEvent) => void;
   active?: boolean;
   danger?: boolean;
+  noBorder?: boolean;
   children: React.ReactNode;
 }) {
-  const base = "flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] border p-[7px] transition-colors";
+  const base = `flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] ${noBorder && !active ? "" : "border"} p-[7px] transition-colors`;
   const cls = active
     ? `${base}`
     : `${base} bg-white hover:bg-[color:var(--color-surface-2)]`;
   const style: React.CSSProperties = active
     ? { background: "#D8FBEF", borderColor: "#0E735A", color: "#0E735A" }
-    : { borderColor: BORDER_LIGHT, color: danger ? "#D00D01" : MUTED_TEXT };
+    : { borderColor: noBorder ? "transparent" : BORDER_LIGHT, color: danger ? "#D00D01" : MUTED_TEXT };
   return (
     <button
       type="button"
