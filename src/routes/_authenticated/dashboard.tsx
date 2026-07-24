@@ -16,6 +16,8 @@ import {
   IconCheck as Check,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { MatchLine } from "@/components/app/MatchLine";
 import { ApplyModal } from "@/components/app/ApplyModal";
@@ -1143,6 +1145,8 @@ function JobsScreen() {
   );
   const [collapseSignal, setCollapseSignal] = useState(0);
   const saved = useSavedFilters<FilterState>();
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveName, setSaveName] = useState("");
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -1234,9 +1238,8 @@ function JobsScreen() {
               onApply={() => setApplied(pending)}
               onReset={() => { setPending(seed); setApplied(seed); setCollapseSignal((n) => n + 1); }}
               onSave={() => {
-                const name = window.prompt("Name this filter", `Filter ${saved.length + 1}`)?.trim();
-                if (!name) return;
-                addSavedFilter(name, pending);
+                setSaveName(`Filter ${saved.length + 1}`);
+                setSaveOpen(true);
               }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
@@ -1252,6 +1255,55 @@ function JobsScreen() {
       </main>
       <MobileTabBar active="digest" />
       {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Save search filter</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const name = saveName.trim();
+              if (!name) return;
+              addSavedFilter(name, pending);
+              setSaveOpen(false);
+            }}
+            className="flex flex-col gap-4"
+          >
+            <div className="flex flex-col gap-2">
+              <label className="text-[13px] font-medium text-[color:var(--color-foreground)]">Name</label>
+              <Input
+                autoFocus
+                value={saveName}
+                onChange={(e) => setSaveName(e.target.value)}
+                placeholder="Filter name"
+                maxLength={60}
+              />
+            </div>
+            <DialogFooter>
+              <button
+                type="button"
+                onClick={() => setSaveOpen(false)}
+                className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!saveName.trim()}
+                className="inline-flex h-[34px] items-center rounded-[4px] px-3 button-small"
+                style={{
+                  background: saveName.trim() ? "var(--color-accent)" : "var(--color-surface-2)",
+                  color: saveName.trim() ? "var(--color-on-accent)" : "var(--color-text-muted)",
+                  cursor: saveName.trim() ? "pointer" : "not-allowed",
+                }}
+              >
+                Save
+              </button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
