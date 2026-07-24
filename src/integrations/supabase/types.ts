@@ -44,6 +44,81 @@ export type Database = {
         }
         Relationships: []
       }
+      jobs: {
+        Row: {
+          company: string | null
+          company_domain: string | null
+          company_sector: string | null
+          created_at: string
+          english_level: string | null
+          group: string | null
+          hard_skills: string[]
+          id: string
+          location: string | null
+          min_years_experience: number | null
+          posted_days_ago: number | null
+          role_ids: string[]
+          roles: string[]
+          salary_max: number | null
+          salary_min: number | null
+          seniority: string | null
+          soft_skills: string[]
+          source: string | null
+          stack: string[]
+          title: string
+          tools: string[]
+          work_mode: string | null
+        }
+        Insert: {
+          company?: string | null
+          company_domain?: string | null
+          company_sector?: string | null
+          created_at?: string
+          english_level?: string | null
+          group?: string | null
+          hard_skills?: string[]
+          id: string
+          location?: string | null
+          min_years_experience?: number | null
+          posted_days_ago?: number | null
+          role_ids?: string[]
+          roles?: string[]
+          salary_max?: number | null
+          salary_min?: number | null
+          seniority?: string | null
+          soft_skills?: string[]
+          source?: string | null
+          stack?: string[]
+          title: string
+          tools?: string[]
+          work_mode?: string | null
+        }
+        Update: {
+          company?: string | null
+          company_domain?: string | null
+          company_sector?: string | null
+          created_at?: string
+          english_level?: string | null
+          group?: string | null
+          hard_skills?: string[]
+          id?: string
+          location?: string | null
+          min_years_experience?: number | null
+          posted_days_ago?: number | null
+          role_ids?: string[]
+          roles?: string[]
+          salary_max?: number | null
+          salary_min?: number | null
+          seniority?: string | null
+          soft_skills?: string[]
+          source?: string | null
+          stack?: string[]
+          title?: string
+          tools?: string[]
+          work_mode?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -70,6 +145,89 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      user_job_state: {
+        Row: {
+          applied_at: string | null
+          applied_cover_letter_name: string | null
+          applied_resume_name: string | null
+          archived: boolean
+          created_at: string
+          history: Json
+          interview_at: string | null
+          interview_stage: string | null
+          job_id: string
+          last_status: Database["public"]["Enums"]["job_status"] | null
+          moved_at: string | null
+          notes: string
+          offer_at: string | null
+          offer_details: string | null
+          offer_status: string | null
+          rejection_at: string | null
+          rejection_details: string | null
+          reminder_at: string | null
+          saved_at: string | null
+          status: Database["public"]["Enums"]["job_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          applied_at?: string | null
+          applied_cover_letter_name?: string | null
+          applied_resume_name?: string | null
+          archived?: boolean
+          created_at?: string
+          history?: Json
+          interview_at?: string | null
+          interview_stage?: string | null
+          job_id: string
+          last_status?: Database["public"]["Enums"]["job_status"] | null
+          moved_at?: string | null
+          notes?: string
+          offer_at?: string | null
+          offer_details?: string | null
+          offer_status?: string | null
+          rejection_at?: string | null
+          rejection_details?: string | null
+          reminder_at?: string | null
+          saved_at?: string | null
+          status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          applied_at?: string | null
+          applied_cover_letter_name?: string | null
+          applied_resume_name?: string | null
+          archived?: boolean
+          created_at?: string
+          history?: Json
+          interview_at?: string | null
+          interview_stage?: string | null
+          job_id?: string
+          last_status?: Database["public"]["Enums"]["job_status"] | null
+          moved_at?: string | null
+          notes?: string
+          offer_at?: string | null
+          offer_details?: string | null
+          offer_status?: string | null
+          rejection_at?: string | null
+          rejection_details?: string | null
+          reminder_at?: string | null
+          saved_at?: string | null
+          status?: Database["public"]["Enums"]["job_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_job_state_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -101,6 +259,15 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      job_status:
+        | "default"
+        | "saved"
+        | "applied"
+        | "interview"
+        | "offer"
+        | "rejection"
+        | "dismissed"
+        | "reported"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -229,6 +396,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      job_status: [
+        "default",
+        "saved",
+        "applied",
+        "interview",
+        "offer",
+        "rejection",
+        "dismissed",
+        "reported",
+      ],
     },
   },
 } as const
