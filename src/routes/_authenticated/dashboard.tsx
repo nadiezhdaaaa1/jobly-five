@@ -661,7 +661,7 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function FilterSection({ title, children, dirty, onReset }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number; dirty?: boolean; onReset?: () => void }) {
   return (
     <div>
-      <div className="flex items-center justify-between px-4 pt-3 pb-2">
+      <div className="flex items-center justify-between px-4 lg:px-0 pt-3 pb-2">
         <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{title}</span>
         {dirty && onReset ? (
           <button
@@ -673,7 +673,7 @@ function FilterSection({ title, children, dirty, onReset }: { title: string; chi
           </button>
         ) : null}
       </div>
-      <div className="px-4 pb-4">{children}</div>
+      <div className="px-4 lg:px-0 pb-4">{children}</div>
     </div>
   );
 }
