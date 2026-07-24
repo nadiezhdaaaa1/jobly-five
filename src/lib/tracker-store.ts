@@ -426,6 +426,21 @@ export function useCounts() {
   return { saved, applied, interview, offer, rejection };
 }
 
+// IDs of jobs that live in the tracker beyond the "Saved" column
+// (Applied / Interview / Offer / Rejection). These should be excluded
+// from the Digest wall — only Saved tracker jobs continue to appear there.
+export function useTrackerHiddenIds(): Set<string> {
+  const get = () => getVersion();
+  useSyncExternalStore(subscribe, get, get);
+  const set = new Set<string>();
+  for (const [id, r] of records) {
+    if (r.status === "applied" || r.status === "interview" || r.status === "offer" || r.status === "rejection") {
+      set.add(id);
+    }
+  }
+  return set;
+}
+
 // Auto-seed on import
 historyPaused = true;
 seedFrom([...TODAY_JOBS, ...YESTERDAY_JOBS]);
