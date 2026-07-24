@@ -339,7 +339,22 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
     if (j.postedDays > postedDaysCap) return false;
     if (f.onlyRemote && !j.remote) return false;
     if (!f.onlyRemote && f.locations.length) {
-      const hit = f.locations.some((l) => j.location.toLowerCase().includes(l.toLowerCase()));
+      const jobLoc = j.location.toLowerCase();
+      const hit = f.locations.some((l) => {
+        const stateMatch = /^state of (.+)$/i.exec(l);
+        if (stateMatch) {
+          const stateName = stateMatch[1].trim().toLowerCase();
+          const entry = US_CITY_DATA.find((s) => s.name.toLowerCase() === stateName);
+          if (!entry) return false;
+          const code = entry.code.toLowerCase();
+          // Match ", CA" suffix or bare state name in location string
+          return (
+            new RegExp(`,\\s*${code}\\b`).test(jobLoc) ||
+            jobLoc.includes(entry.name.toLowerCase())
+          );
+        }
+        return jobLoc.includes(l.toLowerCase());
+      });
       if (!hit) return false;
     }
     if (f.seniority.length && !f.seniority.includes(j.seniority)) return false;
