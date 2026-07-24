@@ -338,6 +338,9 @@ function ProfileScreen() {
                 onToast={toast.show}
               />
             )}
+            {tab === "searches" && (
+              <SavedSearchesTab onToast={toast.show} />
+            )}
           </div>
 
           {/* Right sidebar */}
