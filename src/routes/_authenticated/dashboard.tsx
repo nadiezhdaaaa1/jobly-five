@@ -29,6 +29,11 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
+import {
+  addSavedFilter,
+  useSavedFilters,
+  type SavedFilter,
+} from "@/lib/saved-filters-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -132,23 +137,7 @@ type FilterState = {
   postedWithin: PostedRange;
 };
 
-type SavedFilter = { id: string; name: string; filters: FilterState };
-const SAVED_FILTERS_KEY = "jobly.savedFilters.v1";
-function loadSavedFilters(): SavedFilter[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(SAVED_FILTERS_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as SavedFilter[]) : [];
-  } catch {
-    return [];
-  }
-}
-function persistSavedFilters(list: SavedFilter[]) {
-  if (typeof window === "undefined") return;
-  try { window.localStorage.setItem(SAVED_FILTERS_KEY, JSON.stringify(list)); } catch { /* ignore */ }
-}
+type SavedFilterEntry = SavedFilter<FilterState>;
 
 const YEAR_CHIPS = ["No experience", "1–2 years", "3–5 years", "6–9 years", "10 years or more"] as const;
 
@@ -829,7 +818,7 @@ function FiltersSidebar({
   open: boolean;
   onToggle: () => void;
   collapseSignal: number;
-  saved: SavedFilter[];
+  saved: SavedFilterEntry[];
   onLoadSaved: (id: string) => void;
 }) {
   // profileRoles computed below; use it for accurate active count
@@ -1121,8 +1110,7 @@ function JobsScreen() {
     () => typeof window === "undefined" || window.innerWidth >= 1024,
   );
   const [collapseSignal, setCollapseSignal] = useState(0);
-  const [saved, setSaved] = useState<SavedFilter[]>(() => loadSavedFilters());
-  useEffect(() => { persistSavedFilters(saved); }, [saved]);
+  const saved = useSavedFilters<FilterState>();
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -1216,12 +1204,7 @@ function JobsScreen() {
               onSave={() => {
                 const name = window.prompt("Name this filter", `Filter ${saved.length + 1}`)?.trim();
                 if (!name) return;
-                const entry: SavedFilter = {
-                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : String(Date.now()),
-                  name,
-                  filters: pending,
-                };
-                setSaved((list) => [...list, entry]);
+                addSavedFilter(name, pending);
               }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}

@@ -79,6 +79,11 @@ import {
   type AchievementBlockKey,
   type CoverLetter,
 } from "@/lib/profile-store";
+import {
+  deleteSavedFilter,
+  renameSavedFilter,
+  useSavedFilters,
+} from "@/lib/saved-filters-store";
 
 const TAB_KEYS = [
   "preferences",
@@ -87,6 +92,7 @@ const TAB_KEYS = [
   "portfolio",
   "achievements",
   "experience",
+  "searches",
 ] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
@@ -97,6 +103,7 @@ const TAB_LABELS: Record<TabKey, string> = {
   portfolio: "Portfolio & links",
   achievements: "Achievements",
   experience: "Experience",
+  searches: "Saved searches",
 };
 
 const searchSchema = z.object({
@@ -330,6 +337,9 @@ function ProfileScreen() {
                 resume={resume}
                 onToast={toast.show}
               />
+            )}
+            {tab === "searches" && (
+              <SavedSearchesTab onToast={toast.show} />
             )}
           </div>
 
@@ -1827,6 +1837,147 @@ function JobEntry({
         </div>
       </div>
     </form>
+  );
+}
+
+// ==========================================================================
+// TAB 7 — Saved searches
+// ==========================================================================
+
+function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
+  const saved = useSavedFilters();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [confirmDel, setConfirmDel] = useState<string | null>(null);
+
+  const startEdit = (id: string, current: string) => {
+    setEditingId(id);
+    setDraftName(current);
+  };
+
+  const commitRename = (id: string) => {
+    const next = draftName.trim();
+    if (!next) {
+      setEditingId(null);
+      return;
+    }
+    renameSavedFilter(id, next);
+    setEditingId(null);
+    onToast("Saved search renamed");
+  };
+
+  return (
+    <>
+      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        The filter sets you saved from your digest. Rename them to remember what each one is for, or
+        delete the ones you no longer use.
+      </p>
+
+      <CardBig>
+        <header className="flex items-center gap-2">
+          <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Saved searches</h2>
+          <span className="text-[12px] text-[color:var(--color-text-muted)]">
+            {saved.length} saved
+          </span>
+        </header>
+
+        {saved.length === 0 ? (
+          <p className="mt-3 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            You haven't saved any filter sets yet. Open the Digest, tune your filters, and use
+            "Save filter" to store them here.
+          </p>
+        ) : (
+          <ul className="mt-3 flex flex-col divide-y divide-[color:var(--color-border)]">
+            {saved.map((s) => {
+              const editing = editingId === s.id;
+              const asking = confirmDel === s.id;
+              return (
+                <li key={s.id} className="flex flex-wrap items-center gap-3 py-3">
+                  <div className="min-w-0 flex-1">
+                    {editing ? (
+                      <input
+                        autoFocus
+                        value={draftName}
+                        onChange={(e) => setDraftName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitRename(s.id);
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                        className="h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+                        aria-label="Search name"
+                      />
+                    ) : (
+                      <div className="min-w-0 truncate text-[14px] text-[color:var(--color-foreground)]">
+                        {s.name}
+                      </div>
+                    )}
+                  </div>
+                  {asking ? (
+                    <div className="flex items-center gap-2 text-[12px]">
+                      <span>Delete this search?</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          deleteSavedFilter(s.id);
+                          setConfirmDel(null);
+                          onToast("Saved search deleted");
+                        }}
+                        className="rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDel(null)}
+                        className="rounded-[4px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      >
+                        Keep
+                      </button>
+                    </div>
+                  ) : editing ? (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => commitRename(s.id)}
+                        className="inline-flex h-9 items-center gap-1 rounded-[4px] bg-[color:var(--color-foreground)] px-3 text-[13px] font-medium text-[color:var(--color-background)]"
+                      >
+                        <Check size={14} strokeWidth={2} /> Save
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingId(null)}
+                        className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(s.id, s.name)}
+                        aria-label="Rename search"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      >
+                        <Pencil size={15} strokeWidth={1.6} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDel(s.id)}
+                        aria-label="Delete search"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      >
+                        <Trash size={15} strokeWidth={1.6} />
+                      </button>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </CardBig>
+    </>
   );
 }
 
