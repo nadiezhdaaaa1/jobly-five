@@ -218,8 +218,8 @@ function ReminderInline({
       ) : null}
       {enabled && conflicts.length > 0 ? (
         <div
-          className="mt-3 rounded-[4px] border px-3 py-2 text-[12px]"
-          style={{ background: "#FFEDD4", borderColor: "#FDBA74", color: "#9A3412" }}
+          className="mt-3 rounded-[4px] px-3 py-2 text-[12px]"
+          style={{ background: "#FFE2E2", color: "#D00D01" }}
         >
           <div style={{ fontWeight: 600 }}>Heads up — reminder conflict</div>
           <div style={{ fontWeight: 300 }}>
