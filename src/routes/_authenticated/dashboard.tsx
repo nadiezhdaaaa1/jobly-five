@@ -1029,11 +1029,11 @@ function FiltersSidebar({
                   type="button"
                   onClick={() => set({ sources: selected ? p.sources.filter((x) => x !== b) : [...p.sources, b] })}
                   className="inline-flex h-[28px] items-center gap-1 rounded-[4px] px-2.5 text-[12px] font-medium"
-                  style={selected ? { background: "var(--color-accent)", color: "var(--color-on-accent)" } : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }}
+                  style={selected ? { background: "var(--color-green)", color: "#fff" } : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }}
                 >
                   {b}
                   {DIRECT_BOARDS.has(b) ? (
-                    <span className="ml-1 rounded-[3px] px-1 text-[10px]" style={{ background: selected ? "rgba(255,255,255,.25)" : "var(--color-mint)", color: selected ? "inherit" : "var(--color-green)" }}>Direct</span>
+                    <span className="ml-1 rounded-[3px] px-1 text-[10px]" style={{ background: selected ? "rgba(255,255,255,.25)" : "var(--color-mint)", color: selected ? "#fff" : "var(--color-green)" }}>Direct</span>
                   ) : null}
                 </button>
               );
