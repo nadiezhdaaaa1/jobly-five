@@ -773,7 +773,12 @@ function FiltersSidebar({
   saved: SavedFilter[];
   onLoadSaved: (id: string) => void;
 }) {
-  const activeCount = activeFilterCount(applied);
+  // profileRoles computed below; use it for accurate active count
+  const profileRolesForCount = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
+  const activeCount = activeFilterCount(applied, profileRolesForCount);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
