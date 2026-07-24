@@ -24,6 +24,7 @@ import {
   IconClearFormatting as ClearFmt,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
