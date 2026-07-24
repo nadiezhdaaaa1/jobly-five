@@ -1204,12 +1204,7 @@ function JobsScreen() {
               onSave={() => {
                 const name = window.prompt("Name this filter", `Filter ${saved.length + 1}`)?.trim();
                 if (!name) return;
-                const entry: SavedFilter = {
-                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : String(Date.now()),
-                  name,
-                  filters: pending,
-                };
-                setSaved((list) => [...list, entry]);
+                addSavedFilter(name, pending);
               }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
