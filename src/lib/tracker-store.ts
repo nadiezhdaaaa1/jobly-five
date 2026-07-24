@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { TODAY_JOBS, YESTERDAY_JOBS, type Job } from "@/lib/jobs-data";
+import { supabase } from "@/integrations/supabase/client";
+import type { Job } from "@/lib/jobs-data";
 
 export type JobStatus =
   | "default"
@@ -274,6 +275,7 @@ export function setStatus(id: string, next: JobStatus) {
   } else if (trackerCols.includes(prev) && trackerCols.includes(next)) {
     logHistory(r, "status", `Moved from ${STATUS_LABELS[prev]} to ${STATUS_LABELS[next]}`);
   }
+  sync(id);
   emit();
 }
 
@@ -296,6 +298,7 @@ export function markApplied(
   if (prev !== "applied") {
     logHistory(r, "applied", `Applied${suffix}`);
   }
+  sync(id);
   emit();
 }
 
@@ -304,6 +307,7 @@ export function archiveJob(id: string) {
   r.lastStatus = r.status;
   r.archived = true;
   r.status = "default";
+  sync(id);
   emit();
 }
 
@@ -313,6 +317,7 @@ export function restoreArchived(id: string) {
   r.status = (r.lastStatus ?? "saved") as JobStatus;
   r.archived = false;
   r.movedAt = today();
+  sync(id);
   emit();
 }
 
@@ -326,6 +331,7 @@ export function setInterviewStage(id: string, stage: string) {
   } else {
     logHistory(r, "interview_stage", `Interview stage set to ${stage}`);
   }
+  sync(id);
   emit();
 }
 
@@ -339,6 +345,7 @@ export function setOfferStatus(id: string, offerStatus: string) {
   } else {
     logHistory(r, "offer_stage", `Offer stage set to ${offerStatus}`);
   }
+  sync(id);
   emit();
 }
 
@@ -357,6 +364,7 @@ export function setReminder(id: string, iso: string | null) {
       delete r.reminderAt;
     }
   }
+  sync(id);
   emit();
 }
 
@@ -367,6 +375,7 @@ export function setRejectionDetails(id: string, details: string) {
   if (prev === next) return;
   r.rejectionDetails = next;
   logHistory(r, "rejection_details", prev ? `Rejection details updated` : `Rejection details added`);
+  sync(id);
   emit();
 }
 
@@ -377,12 +386,14 @@ export function setOfferDetails(id: string, details: string) {
   if (prev === next) return;
   r.offerDetails = next;
   logHistory(r, "offer_details", prev ? `Offer details updated` : `Offer details added`);
+  sync(id);
   emit();
 }
 
 export function setNotes(id: string, notes: string) {
   const r = ensure(id);
   r.notes = notes;
+  sync(id);
   emit();
 }
 
@@ -395,6 +406,7 @@ export function removeFromTracker(id: string) {
   delete r.offerAt;
   delete r.rejectionAt;
   delete r.reminderAt;
+  sync(id);
   emit();
 }
 
@@ -441,8 +453,111 @@ export function useTrackerHiddenIds(): Set<string> {
   return set;
 }
 
-// Auto-seed on import
-historyPaused = true;
-seedFrom([...TODAY_JOBS, ...YESTERDAY_JOBS]);
-seedOnce();
-historyPaused = false;
+// The tracker is now hydrated from `public.user_job_state` after sign-in.
+// See `hydrateTrackerFromDb` below. No auto-seed at module load.
+void seedOnce;
+
+// ---------- Supabase sync ----------
+
+let currentUserId: string | null = null;
+let syncEnabled = false;
+
+function toRow(userId: string, jobId: string, r: JobRecord) {
+  return {
+    user_id: userId,
+    job_id: jobId,
+    status: r.status,
+    archived: !!r.archived,
+    last_status: r.lastStatus ?? null,
+    saved_at: r.savedAt ?? null,
+    applied_at: r.appliedAt ?? null,
+    interview_at: r.interviewAt ?? null,
+    offer_at: r.offerAt ?? null,
+    rejection_at: r.rejectionAt ?? null,
+    reminder_at: r.reminderAt ?? null,
+    moved_at: r.movedAt ?? null,
+    notes: r.notes ?? "",
+    interview_stage: r.interviewStage ?? null,
+    offer_status: r.offerStatus ?? null,
+    applied_resume_name: r.appliedResumeName ?? null,
+    applied_cover_letter_name: r.appliedCoverLetterName ?? null,
+    rejection_details: r.rejectionDetails ?? null,
+    offer_details: r.offerDetails ?? null,
+    history: (r.history ?? []) as unknown as object,
+  };
+}
+
+function sync(jobId: string) {
+  if (!syncEnabled || !currentUserId) return;
+  const r = records.get(jobId);
+  if (!r) return;
+  const row = toRow(currentUserId, jobId, r);
+  void supabase
+    .from("user_job_state")
+    .upsert(row, { onConflict: "user_id,job_id" })
+    .then((res) => {
+      if (res.error) console.error("tracker sync failed", res.error);
+    });
+}
+
+function rowToRecord(row: Record<string, unknown>): JobRecord {
+  return {
+    status: (row.status as JobStatus) ?? "default",
+    notes: (row.notes as string) ?? "",
+    archived: !!row.archived,
+    lastStatus: (row.last_status as JobStatus | null) ?? undefined,
+    savedAt: (row.saved_at as string | null) ?? undefined,
+    appliedAt: (row.applied_at as string | null) ?? undefined,
+    interviewAt: (row.interview_at as string | null) ?? undefined,
+    offerAt: (row.offer_at as string | null) ?? undefined,
+    rejectionAt: (row.rejection_at as string | null) ?? undefined,
+    reminderAt: (row.reminder_at as string | null) ?? undefined,
+    movedAt: (row.moved_at as string | null) ?? undefined,
+    interviewStage: (row.interview_stage as string | null) ?? undefined,
+    offerStatus: (row.offer_status as string | null) ?? undefined,
+    appliedResumeName: (row.applied_resume_name as string | null) ?? undefined,
+    appliedCoverLetterName: (row.applied_cover_letter_name as string | null) ?? undefined,
+    rejectionDetails: (row.rejection_details as string | null) ?? undefined,
+    offerDetails: (row.offer_details as string | null) ?? undefined,
+    history: (row.history as HistoryEntry[] | null) ?? [],
+  };
+}
+
+let hydratePromise: Promise<void> | null = null;
+let hydratedUserId: string | null = null;
+
+export async function hydrateTrackerFromDb(userId: string): Promise<void> {
+  if (hydratedUserId === userId) return;
+  if (hydratePromise) return hydratePromise;
+  hydratePromise = (async () => {
+    syncEnabled = false;
+    currentUserId = userId;
+    // Reset local state so old (unauthed) map doesn't leak between users
+    records.clear();
+    const { data, error } = await supabase
+      .from("user_job_state")
+      .select("*")
+      .eq("user_id", userId);
+    if (!error && data) {
+      for (const row of data as Record<string, unknown>[]) {
+        records.set(row.job_id as string, rowToRecord(row));
+      }
+    }
+    hydratedUserId = userId;
+    syncEnabled = true;
+    emit();
+  })();
+  try {
+    await hydratePromise;
+  } finally {
+    hydratePromise = null;
+  }
+}
+
+export function resetTrackerForSignOut() {
+  syncEnabled = false;
+  currentUserId = null;
+  hydratedUserId = null;
+  records.clear();
+  emit();
+}
