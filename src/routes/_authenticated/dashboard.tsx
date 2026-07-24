@@ -593,7 +593,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               aria-expanded={detailsOpen}
               className="mr-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
             >
-              {detailsOpen ? "Hide match details" : "Match details"}
+              {detailsOpen ? "Hide details" : "Match details"}
               {detailsOpen ? (
                 <ChevronUp size={14} strokeWidth={2} />
               ) : (
