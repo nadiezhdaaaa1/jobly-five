@@ -29,6 +29,11 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
+import {
+  addSavedFilter,
+  useSavedFilters,
+  type SavedFilter,
+} from "@/lib/saved-filters-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -813,7 +818,7 @@ function FiltersSidebar({
   open: boolean;
   onToggle: () => void;
   collapseSignal: number;
-  saved: SavedFilter[];
+  saved: SavedFilterEntry[];
   onLoadSaved: (id: string) => void;
 }) {
   // profileRoles computed below; use it for accurate active count
@@ -1105,8 +1110,7 @@ function JobsScreen() {
     () => typeof window === "undefined" || window.innerWidth >= 1024,
   );
   const [collapseSignal, setCollapseSignal] = useState(0);
-  const [saved, setSaved] = useState<SavedFilter[]>(() => loadSavedFilters());
-  useEffect(() => { persistSavedFilters(saved); }, [saved]);
+  const saved = useSavedFilters<FilterState>();
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
