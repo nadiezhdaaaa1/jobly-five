@@ -730,7 +730,7 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open ? (
-        <div className="absolute left-0 top-8 z-30 w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+        <div className="absolute right-0 top-8 z-30 w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full border-b bg-transparent px-3 py-2 text-[13px] outline-none" />
           <div className="max-h-[260px] overflow-y-auto">
             {filteredGroups ? (
