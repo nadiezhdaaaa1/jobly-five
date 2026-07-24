@@ -20,9 +20,21 @@ export type JobRecord = {
   rejectionAt?: string;
   reminderAt?: string; // ISO datetime
   notes: string;
+  // Kanban v3 additions
+  archived?: boolean;
+  interviewStage?: string;
+  offerStatus?: string;
+  movedAt?: string; // last status change timestamp — used to order within columns
+  lastStatus?: JobStatus; // preserved column for archived cards ("Show archived" restore-in-place)
 };
 
-type Seed = { id: string; status: JobStatus; reminderAt?: string };
+type Seed = {
+  id: string;
+  status: JobStatus;
+  reminderAt?: string;
+  interviewStage?: string;
+  offerStatus?: string;
+};
 
 function today(offset = 0) {
   const d = new Date();
@@ -37,11 +49,16 @@ function todayAt(offsetDays: number, hours: number, minutes: number) {
   return d.toISOString();
 }
 
-// Interview-reminder demo seeds: today (orange chip), upcoming (neutral),
-// and one interview with no reminder to cover all three visual states.
-const REMINDER_SEEDS: Record<string, string> = {
-  y2: todayAt(0, 14, 45),
-  "d3-4": todayAt(2, 11, 0),
+// Interview / offer demo seeds keyed by job id — applied when seedFrom
+// promotes a job to its initialState.
+const INTERVIEW_SEEDS: Record<string, { stage: string; reminderAt?: string }> = {
+  y2: { stage: "Recruiter screen", reminderAt: todayAt(0, 14, 45) },
+  "d3-4": { stage: "Technical", reminderAt: todayAt(2, 11, 0) },
+  "d4-4": { stage: "Pre-screen", reminderAt: todayAt(4, 10, 30) },
+};
+const OFFER_SEEDS: Record<string, string> = {
+  t3: "Waiting for my reply",
+  "d4-5": "Negotiating",
 };
 
 function shortDate(iso?: string) {
@@ -98,7 +115,33 @@ function ensure(id: string): JobRecord {
 function seedFrom(jobs: Job[], extras: Seed[] = []) {
   for (const j of jobs) {
     if (!records.has(j.id)) {
-      records.set(j.id, { status: "default", notes: "" });
+      const initial = (j.initialState ?? "default") as JobStatus;
+      const rec: JobRecord = { status: initial, notes: "" };
+      const now = today();
+      if (initial === "saved") rec.savedAt = today(-2);
+      if (initial === "applied") {
+        rec.appliedAt = today(-1);
+      }
+      if (initial === "interview") {
+        rec.appliedAt = today(-3);
+        rec.interviewAt = today(-1);
+        const iseed = INTERVIEW_SEEDS[j.id];
+        if (iseed) {
+          rec.interviewStage = iseed.stage;
+          if (iseed.reminderAt) rec.reminderAt = iseed.reminderAt;
+        } else {
+          rec.interviewStage = "Pre-screen";
+        }
+      }
+      if (initial === "offer") {
+        rec.appliedAt = today(-6);
+        rec.interviewAt = today(-3);
+        rec.offerAt = today(0);
+        rec.offerStatus = OFFER_SEEDS[j.id] ?? "Waiting for my reply";
+      }
+      if (initial === "rejection") rec.rejectionAt = today(-1);
+      rec.movedAt = now;
+      records.set(j.id, rec);
     }
   }
   for (const s of extras) {
@@ -109,8 +152,12 @@ function seedFrom(jobs: Job[], extras: Seed[] = []) {
     if (s.status === "interview") {
       r.appliedAt ??= today(-3);
       r.interviewAt ??= today(-1);
+      if (s.interviewStage) r.interviewStage = s.interviewStage;
     }
-    if (s.status === "offer") r.offerAt ??= today(0);
+    if (s.status === "offer") {
+      r.offerAt ??= today(0);
+      if (s.offerStatus) r.offerStatus = s.offerStatus;
+    }
     if (s.status === "rejection") r.rejectionAt ??= today(0);
     if (s.reminderAt) r.reminderAt = s.reminderAt;
   }
@@ -130,12 +177,52 @@ export function seedTracker(allJobs: Job[]) {
 // Actions
 export function setStatus(id: string, next: JobStatus) {
   const r = ensure(id);
+  const prev = r.status;
   r.status = next;
+  r.movedAt = today();
+  // Clearing the archived flag on any explicit re-status (e.g. Restore)
+  if (r.archived && next !== "default") r.archived = false;
   if (next === "saved") r.savedAt ??= today();
   if (next === "applied") r.appliedAt ??= today();
-  if (next === "interview") r.interviewAt ??= today();
-  if (next === "offer") r.offerAt ??= today();
+  if (next === "interview") {
+    r.interviewAt ??= today();
+    if (!r.interviewStage) r.interviewStage = "Pre-screen";
+  }
+  if (next === "offer") {
+    r.offerAt ??= today();
+    if (!r.offerStatus) r.offerStatus = "Waiting for my reply";
+  }
   if (next === "rejection") r.rejectionAt ??= today();
+  void prev;
+  emit();
+}
+
+export function archiveJob(id: string) {
+  const r = ensure(id);
+  r.lastStatus = r.status;
+  r.archived = true;
+  r.status = "default";
+  emit();
+}
+
+export function restoreArchived(id: string) {
+  const r = ensure(id);
+  if (!r.archived) return;
+  r.status = (r.lastStatus ?? "saved") as JobStatus;
+  r.archived = false;
+  r.movedAt = today();
+  emit();
+}
+
+export function setInterviewStage(id: string, stage: string) {
+  const r = ensure(id);
+  r.interviewStage = stage;
+  emit();
+}
+
+export function setOfferStatus(id: string, offerStatus: string) {
+  const r = ensure(id);
+  r.offerStatus = offerStatus;
   emit();
 }
 
