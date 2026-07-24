@@ -294,6 +294,7 @@ function defaultsFromQuiz(q: QuizAnswers): FilterState {
   const minSalary = typeof q.salaryMin === "number" ? nearestSalaryStep(q.salaryMin < 1000 ? q.salaryMin * 1000 : q.salaryMin) : 0;
   const english = q.primaryLanguage ?? "";
   const yearChip = typeof q.years === "number" ? yearsToChip(q.years) : null;
+  const seniority = levelToSeniority(q.level);
   return {
     ...base,
     roles,
@@ -302,7 +303,18 @@ function defaultsFromQuiz(q: QuizAnswers): FilterState {
     minSalary,
     english,
     years: yearChip ? [yearChip] : [],
+    seniority: seniority ? [seniority] : [],
   };
+}
+
+function levelToSeniority(level: string | undefined): Seniority | null {
+  if (!level) return null;
+  if (level === "Junior") return "Junior";
+  if (level === "Mid") return "Middle";
+  if (level === "Senior" || level === "Staff" || level === "Principal") return "Senior";
+  if (["Lead", "Manager", "Head", "Director", "VP"].includes(level)) return "Lead";
+  if (level === "Exec") return "Exec";
+  return null;
 }
 
 function filterEqual(a: FilterState, b: FilterState) {
