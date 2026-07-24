@@ -44,8 +44,18 @@ function toJob(db: DbJob): Job {
   const src = (db.source ?? "").toLowerCase();
   const source: Source = DIRECT_SOURCES.has(src) ? "direct" : "aggregated";
   const wm = (db.workMode ?? "").toLowerCase();
-  const isRemoteMode = wm.includes("remote");
-  const location = isRemoteMode && !/remote/i.test(db.location) ? `${db.location} · Remote` : db.location;
+  const modeLabel = wm.includes("remote")
+    ? "Remote"
+    : wm.includes("hybrid")
+      ? "Hybrid"
+      : "On-site";
+  const baseLocation = (db.location ?? "").replace(/\s*·\s*(remote|hybrid|on-?site)\s*$/i, "").trim();
+  const location =
+    modeLabel === "Remote"
+      ? "Remote"
+      : baseLocation
+        ? `${baseLocation} · ${modeLabel}`
+        : modeLabel;
   const description: DescriptionSection[] = [
     {
       heading: "About the role",
