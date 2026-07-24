@@ -777,15 +777,12 @@ function FiltersSidebar({
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
 
-  // When Field=Any, the Roles picker groups options by field. Otherwise it's a
-  // flat list of the current field's roles.
-  const anyField = p.field === FIELD_ANY;
-  const roleGroups = anyField
-    ? FIELDS.map((f) => ({ label: f, items: FIELD_ROLES[f].filter((r) => !p.roles.includes(r)) })).filter((g) => g.items.length)
-    : undefined;
-  const roleOptions = anyField
-    ? FIELDS.flatMap((f) => FIELD_ROLES[f]).filter((r) => !p.roles.includes(r))
-    : (FIELD_ROLES[p.field] ?? []).filter((r) => !p.roles.includes(r));
+  // Roles universe comes from the user's profile (quiz). The filter can only
+  // toggle which of those roles are active — never add/remove them here.
+  const profileRoles = useMemo(() => {
+    const q = loadQuiz();
+    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
+  }, []);
 
   return (
     <aside className="contents lg:block lg:relative lg:sticky lg:top-20">
