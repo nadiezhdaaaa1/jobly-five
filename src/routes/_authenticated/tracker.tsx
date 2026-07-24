@@ -486,7 +486,7 @@ function KanbanColumn({
     >
       {/* Header: 44px */}
       <div className="flex items-center gap-2 px-1" style={{ height: 44 }}>
-        <span className="text-[20px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "28px" }}>
+        <span className="text-[16px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "24px" }}>
           {COLUMN_TITLE[status]}
         </span>
         <span
