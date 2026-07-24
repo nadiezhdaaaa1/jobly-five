@@ -561,7 +561,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
         <span
-          className="text-[14px] text-[color:var(--color-text-muted)]"
+          className="text-[12px] text-[color:var(--color-text-muted)]"
           style={{ fontWeight: 300, lineHeight: 1.5 }}
         >
           {direct ? "Direct employer" : "Aggregated"}
