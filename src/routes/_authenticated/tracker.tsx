@@ -224,7 +224,7 @@ function KanbanCard({
       style={{
         borderColor: BORDER_LIGHT,
         padding: 13,
-        boxShadow: "0px 1px 4px 0px rgba(0,0,0,0.08)",
+        boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)",
         opacity: isArchived && archivedView ? 0.55 : 1,
       }}
     >
