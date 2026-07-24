@@ -243,6 +243,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
+          {(status === "default" || status === "saved") ? (
+          <>
           {/* Apply */}
           <div className="mt-4">
             <button
@@ -337,6 +339,19 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               {saved ? "Saved" : "Save"}
             </button>
           </div>
+          </>
+          ) : (
+            <div className="mt-4">
+              <a
+                href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Open original job posting
+              </a>
+            </div>
+          )}
 
           {!pro ? (
             <div className="mt-5" />
