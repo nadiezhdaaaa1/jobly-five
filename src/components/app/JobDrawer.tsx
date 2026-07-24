@@ -35,6 +35,7 @@ import {
 } from "@/components/app/TrackerTransitionDialogs";
 import { JobHistory } from "@/components/app/JobHistory";
 import { MatchLine } from "@/components/app/MatchLine";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal, FollowUpDialog } from "@/components/app/ApplyModal";
 import { setDigestSession } from "@/lib/digest-session-store";
 import { Link } from "@tanstack/react-router";
