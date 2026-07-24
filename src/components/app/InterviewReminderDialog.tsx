@@ -185,6 +185,24 @@ export function InterviewReminderDialog({
             <TimePickerAmPm value={time} onChange={setTime} />
           </div>
         </div>
+        {conflicts.length > 0 ? (
+          <div
+            className="mt-3 rounded-[4px] border px-3 py-2 text-[12px]"
+            style={{ background: "#FFEDD4", borderColor: "#FDBA74", color: "#9A3412" }}
+          >
+            <div style={{ fontWeight: 600 }}>Heads up — reminder conflict</div>
+            <div style={{ fontWeight: 300 }}>
+              You already have a reminder at this time for{" "}
+              {conflicts
+                .map((id) => {
+                  const j = getDbJobById(id);
+                  return j ? `${j.title} · ${j.company}` : id;
+                })
+                .join("; ")}
+              . You can still save it.
+            </div>
+          </div>
+        ) : null}
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"
