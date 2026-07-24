@@ -669,8 +669,8 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
   const wrap = session
-    ? "rounded-[8px] border border-[#D0D6D8] bg-[color:var(--color-surface-1)] transition-shadow"
-    : "rounded-[8px] border border-[#D0D6D8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-shadow hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]";
+    ? "rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-[box-shadow,border-color] hover:border-[#D0D6D8]"
+    : "rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color] hover:border-[#D0D6D8] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]";
   return (
     <div className={wrap}>
       <JobRow job={job} onOpen={onOpen} />
