@@ -213,9 +213,9 @@ export function ApplyModal({
         </div>
 
         {askReturn ? (
-          <div className="mt-4 rounded-[6px] border bg-[color:var(--color-surface-2)] p-3">
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-surface-2)] p-3">
             <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Did you apply?</div>
-            <div className="mt-2 flex gap-2">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={commitApplied}
