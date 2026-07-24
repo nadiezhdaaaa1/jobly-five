@@ -146,7 +146,7 @@ function ProfileScreen() {
   const search = useSearch({ from: "/_authenticated/profile" });
   const navigate = useNavigate({ from: "/_authenticated/profile" });
   const tab: TabKey = search.tab ?? "preferences";
-  const setTab = (t: TabKey) => navigate({ search: { tab: t }, replace: true });
+  const setTab = (t: TabKey) => navigate({ to: "/profile", search: { tab: t }, replace: true });
 
   const [quiz, setQuiz] = useState<QuizAnswers>(() => loadQuiz());
   useEffect(() => setQuiz(loadQuiz()), []);
