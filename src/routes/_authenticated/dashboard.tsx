@@ -389,14 +389,14 @@ function TrackerWidget() {
             key={s.l}
             className={`px-4 py-3 ${i % 2 === 0 ? "border-r" : ""} ${i < 2 ? "border-t border-b" : ""}`}
           >
-            <div className="text-[26px] leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>{s.n}</div>
-            <div className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">{s.l}</div>
+            <div className="text-[26px] leading-none text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>{s.n}</div>
+            <div className="mt-1 text-[12px] font-light text-[color:var(--color-alt-light-mist)]">{s.l}</div>
           </div>
         ))}
       </div>
       <div className="border-t px-4 py-3">
-        <div className="text-[26px] leading-none text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)" }}>{c.offer}</div>
-        <div className="mt-1 text-[11px] text-[color:var(--color-green)] font-semibold">Offers</div>
+        <div className="text-[26px] leading-none text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>{c.offer}</div>
+        <div className="mt-1 text-[12px] font-light text-[color:var(--color-alt-light-mist)]">Offers</div>
       </div>
     </aside>
   );
