@@ -769,7 +769,7 @@ function TrackerScreen() {
 
         {/* Board */}
         <div className="mt-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:gap-3">
+          <div className="flex flex-col gap-4 lg:flex-row lg:gap-4">
             {COLUMN_ORDER.map((k) => (
               <KanbanColumn
                 key={k}
