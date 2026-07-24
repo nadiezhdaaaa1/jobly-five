@@ -498,7 +498,7 @@ function CompactSessionRow({ job, kind }: { job: EnrichedJob; kind: DigestSessio
     kind === "reported" ? "var(--color-danger)" :
     "var(--color-warning)";
   return (
-    <div className="flex h-[54px] items-center justify-between rounded-[6px] bg-[color:var(--color-surface-2)] px-4">
+    <div className="flex h-[54px] items-center justify-between rounded-[8px] bg-[color:var(--color-surface-1)] px-4">
       <div className="flex min-w-0 items-center gap-3">
         <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[13px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
           {label}
@@ -1129,9 +1129,7 @@ function JobsScreen() {
                   No matches for your current filters
                 </div>
               ) : shown.map((j) => (
-                <div key={j.id} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
-                  <JobRow job={j} onOpen={() => setOpenJob(j)} />
-                </div>
+                <JobRowCard key={j.id} job={j} onOpen={() => setOpenJob(j)} />
               ))}
               {count < visible.length ? (
                 <div ref={sentinel} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-4 text-center text-[12px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">Loading more…</div>
