@@ -523,10 +523,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [toast, setToast] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
-  const applyRef = useOutsideClose(applyOpen, () => setApplyOpen(false));
 
   const direct = DIRECT_BOARDS.has(job.board);
 
@@ -587,7 +585,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); }}
+                    onClick={() => { setDigestSession(job.id, "reported"); setFlagOpen(false); }}
                   >
                     {label}
                   </button>
@@ -607,13 +605,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </button>
             {dislikeOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
+                {["Not relevant to my role", "Wrong seniority", "Compensation too low"].map((label) => (
                   <button
                     key={label}
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); }}
+                    onClick={() => { setDigestSession(job.id, "disliked"); setDislikeOpen(false); }}
                   >
                     {label}
                   </button>
@@ -637,61 +635,23 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
           </button>
 
-          <div className="relative" ref={applyRef}>
-            <button
-              type="button"
-              onClick={() => setApplyOpen((v) => !v)}
-              className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Apply
-              <Zap size={13} strokeWidth={2} fill="currentColor" />
-            </button>
-            {applyOpen ? (
-              <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Tailor your resume</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="flex items-center justify-between gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-text-muted)]">
-                  <span>Generate a cover letter</span>
-                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px]">Soon</span>
-                </div>
-                <div className="border-t" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { window.open(job.postingUrl ?? "#", "_blank"); setApplyOpen(false); setToast(true); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <ExternalLink size={14} strokeWidth={1.6} />
-                  Open posting to apply
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => { setStatus(job.id, "applied"); setApplyOpen(false); }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <Check size={14} strokeWidth={1.6} />
-                  Already applied
-                </button>
-              </div>
-            ) : null}
-          </div>
+          <button
+            type="button"
+            onClick={() => setApplyOpen(true)}
+            className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          >
+            Apply
+            <Zap size={13} strokeWidth={2} fill="currentColor" />
+          </button>
         </div>
       </div>
 
-      {toast ? (
-        <div
-          className="fixed inset-x-0 bottom-24 z-50 mx-auto flex w-fit items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3 text-[13px]"
-          style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-          role="status"
-        >
-          <span>Did you apply to {job.title}?</span>
-          <button type="button" className="rounded-[4px] bg-[color:var(--color-accent)] px-3 py-1 text-[12px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]" onClick={() => { setStatus(job.id, "applied"); setToast(false); }}>Yes, mark as applied</button>
-          <button type="button" className="rounded-[4px] border px-3 py-1 text-[12px] text-[color:var(--color-text-secondary)]" onClick={() => setToast(false)}>Not yet</button>
-        </div>
-      ) : null}
+      <ApplyModal
+        job={job}
+        open={applyOpen}
+        onClose={() => setApplyOpen(false)}
+        onApplied={() => setDigestSession(job.id, "applied")}
+      />
     </article>
   );
 }
