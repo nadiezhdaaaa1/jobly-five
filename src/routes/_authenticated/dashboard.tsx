@@ -487,19 +487,29 @@ function CompactPipelineRow({ job, status }: { job: EnrichedJob; status: JobStat
   );
 }
 
-function CompactFeedbackRow({ job, kind }: { job: EnrichedJob; kind: "dismissed" | "reported" }) {
-  const text = kind === "reported" ? "Thanks — we'll check this posting." : job.title;
-  const bg = kind === "reported" ? "var(--color-danger-subtle)" : "var(--color-warning-subtle)";
-  const fg = kind === "reported" ? "var(--color-danger)" : "var(--color-warning)";
+function CompactSessionRow({ job, kind }: { job: EnrichedJob; kind: DigestSessionState }) {
+  const label = kind === "applied" ? "Applied" : kind === "disliked" ? "Disliked" : "Reported";
+  const bg =
+    kind === "applied" ? "var(--color-mint)" :
+    kind === "reported" ? "var(--color-danger-subtle)" :
+    "var(--color-warning-subtle)";
+  const fg =
+    kind === "applied" ? "var(--color-green)" :
+    kind === "reported" ? "var(--color-danger)" :
+    "var(--color-warning)";
   return (
-    <div className="flex h-[54px] items-center justify-between bg-[color:var(--color-surface-1)] px-4">
+    <div className="flex h-[54px] items-center justify-between rounded-[6px] bg-[color:var(--color-surface-2)] px-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
-          {kind === "reported" ? "Reported" : "Disliked"}
+        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[13px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
+          {label}
         </span>
-        <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{text}</span>
+        <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{job.title}</span>
       </div>
-      <button type="button" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={() => setStatus(job.id, "default")}>Undo</button>
+      {kind === "applied" ? (
+        <Link to="/tracker" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">View in Tracker</Link>
+      ) : (
+        <button type="button" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline" onClick={() => clearDigestSession(job.id)}>Undo</button>
+      )}
     </div>
   );
 }
