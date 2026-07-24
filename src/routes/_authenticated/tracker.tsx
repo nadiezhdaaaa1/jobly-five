@@ -68,7 +68,7 @@ const COLUMN_TITLE: Record<ColumnKey, string> = {
 };
 
 const CHIP_ORANGE = "#FFEDD4";
-const CHIP_MINT = "#E6F4EA";
+const CHIP_MINT = "#D8FBEF";
 const BORDER_LIGHT = "#E3E7E8";
 const META_GREY = "#67787C";
 const DARK = "#090B0C";

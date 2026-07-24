@@ -498,7 +498,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 {record.reminderAt ? (
                   <div
                     className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
-                      status === "offer" ? "bg-[#E6F4EA]" : "bg-[#FFEDD4]"
+                      status === "offer" ? "bg-[#D8FBEF]" : "bg-[#FFEDD4]"
                     }`}
                   >
                     <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
