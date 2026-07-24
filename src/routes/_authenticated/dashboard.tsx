@@ -22,7 +22,7 @@ import { getAllJobs, type Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { setStatus, useCounts, useJobRecord, type JobStatus } from "@/lib/tracker-store";
+import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
@@ -1092,12 +1092,12 @@ function JobsScreen() {
 
   const allJobs = useMemo(() => getAllJobs().map(enrich), []);
   const blocked = useBlockedCompanies();
+  const hiddenIds = useTrackerHiddenIds();
   const visible = useMemo(() => {
     const list = applyFilters(allJobs, applied);
-    if (!blocked.length) return list;
-    const set = new Set(blocked.map((c) => c.toLowerCase()));
-    return list.filter((j) => !set.has(j.company.toLowerCase()));
-  }, [allJobs, applied, blocked]);
+    const blockedSet = new Set(blocked.map((c) => c.toLowerCase()));
+    return list.filter((j) => !hiddenIds.has(j.id) && !blockedSet.has(j.company.toLowerCase()));
+  }, [allJobs, applied, blocked, hiddenIds]);
 
   // Lazy loading
   const [count, setCount] = useState(15);
