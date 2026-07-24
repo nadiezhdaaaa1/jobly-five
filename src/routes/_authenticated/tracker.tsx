@@ -198,6 +198,7 @@ function KanbanCard({
   const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
 
   return (
+    <>
     <article
       ref={articleRef as React.RefObject<HTMLElement>}
       draggable={draggable}
@@ -350,6 +351,8 @@ function KanbanCard({
         )}
       </div>
     </article>
+    <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
+    </>
   );
 }
 
