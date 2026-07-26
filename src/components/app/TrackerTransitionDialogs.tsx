@@ -15,6 +15,22 @@ export const INTERVIEW_STAGES = [
   "Team / culture fit",
 ] as const;
 
+export const SCREEN_INTERVIEW_STAGES = [
+  "Recruiter screen",
+  "Hiring manager screen",
+  "Pre-screen",
+  "Team / culture fit",
+] as const;
+
+export const TECH_INTERVIEW_STAGES = [
+  "Technical screen",
+  "Technical interview",
+  "System design",
+  "Live coding",
+  "Onsite / Final round",
+  "Take-home follow-up",
+] as const;
+
 export const OFFER_STAGES = [
   "Waiting for my reply",
   "Negotiating",
@@ -266,6 +282,9 @@ export function InterviewTransitionDialog({
   jobId,
   onCancel,
   onSave,
+  title,
+  stages,
+  stageLabel,
 }: {
   open: boolean;
   initialStage?: string;
@@ -273,30 +292,78 @@ export function InterviewTransitionDialog({
   jobId?: string;
   onCancel: () => void;
   onSave: (payload: { stage: string; reminderIso: string | null }) => void;
+  title?: string;
+  stages?: readonly string[];
+  stageLabel?: string;
 }) {
-  const [stage, setStage] = useState<string>(initialStage ?? INTERVIEW_STAGES[0]);
+  const stageOptions = stages ?? INTERVIEW_STAGES;
+  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0]);
   const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
 
   useEffect(() => {
     if (!open) return;
-    setStage(initialStage ?? INTERVIEW_STAGES[0]);
+    setStage(initialStage ?? stageOptions[0]);
     setReminderIso(initialReminderIso ?? null);
-  }, [open, initialStage, initialReminderIso]);
+  }, [open, initialStage, initialReminderIso, stageOptions]);
 
   if (!open) return null;
   return (
     <DialogShell
-      title="Interview"
+      title={title ?? "Interview"}
       onCancel={onCancel}
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso })} />}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">Interview stage</span>
+        <span className="text-[12px] text-[color:var(--color-text-muted)]">{stageLabel ?? "Interview stage"}</span>
         <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
-          {INTERVIEW_STAGES.map((s) => (
+          {stageOptions.map((s) => (
             <option key={s} value={s}>{s}</option>
           ))}
         </select>
+      </div>
+      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
+    </DialogShell>
+  );
+}
+
+export function TestTaskTransitionDialog({
+  open,
+  initialDetails,
+  initialReminderIso,
+  jobId,
+  onCancel,
+  onSave,
+}: {
+  open: boolean;
+  initialDetails?: string;
+  initialReminderIso?: string;
+  jobId?: string;
+  onCancel: () => void;
+  onSave: (payload: { details: string; reminderIso: string | null }) => void;
+}) {
+  const [details, setDetails] = useState(initialDetails ?? "");
+  const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
+  useEffect(() => {
+    if (!open) return;
+    setDetails(initialDetails ?? "");
+    setReminderIso(initialReminderIso ?? null);
+  }, [open, initialDetails, initialReminderIso]);
+  if (!open) return null;
+  return (
+    <DialogShell
+      title="Test task"
+      onCancel={onCancel}
+      footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ details, reminderIso })} />}
+    >
+      <div className="flex flex-col gap-1">
+        <span className="text-[12px] text-[color:var(--color-text-muted)]">Task details</span>
+        <textarea
+          rows={4}
+          value={details}
+          onChange={(e) => setDetails(e.target.value)}
+          placeholder="Link, scope, or notes about the task (optional)"
+          className={textareaCls}
+        />
       </div>
       <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
     </DialogShell>

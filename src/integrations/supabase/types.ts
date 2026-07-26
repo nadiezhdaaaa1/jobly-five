@@ -152,6 +152,7 @@ export type Database = {
           applied_cover_letter_name: string | null
           applied_resume_name: string | null
           archived: boolean
+          column_id: string | null
           created_at: string
           history: Json
           interview_at: string | null
@@ -176,6 +177,7 @@ export type Database = {
           applied_cover_letter_name?: string | null
           applied_resume_name?: string | null
           archived?: boolean
+          column_id?: string | null
           created_at?: string
           history?: Json
           interview_at?: string | null
@@ -200,6 +202,7 @@ export type Database = {
           applied_cover_letter_name?: string | null
           applied_resume_name?: string | null
           archived?: boolean
+          column_id?: string | null
           created_at?: string
           history?: Json
           interview_at?: string | null
@@ -268,6 +271,9 @@ export type Database = {
         | "rejection"
         | "dismissed"
         | "reported"
+        | "interview_screen"
+        | "interview_tech"
+        | "test_task"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -405,6 +411,9 @@ export const Constants = {
         "rejection",
         "dismissed",
         "reported",
+        "interview_screen",
+        "interview_tech",
+        "test_task",
       ],
     },
   },
