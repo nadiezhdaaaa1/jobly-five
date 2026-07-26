@@ -482,11 +482,23 @@ function Row3({ stage, record }: { stage: BoardStage; record: JobRecord }) {
     );
   }
   if (stage === "interview_screen" || stage === "interview_tech" || stage === "test_task") {
+    const movedLabel =
+      stage === "test_task" ? "Test task from" : "Interview from";
+    const movedDate = record.interviewAt ?? record.movedAt;
     return (
-      <div className="flex flex-wrap gap-1">
-        {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
-        {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
-      </div>
+      <>
+        {movedDate ? (
+          <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
+            {movedLabel} {dateHelpers.shortDate(movedDate)}
+          </div>
+        ) : null}
+        {(record.interviewStage || record.reminderAt) ? (
+          <div className="flex flex-wrap gap-1">
+            {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
+            {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+          </div>
+        ) : null}
+      </>
     );
   }
   // offer
