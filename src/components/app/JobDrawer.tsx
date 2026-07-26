@@ -632,7 +632,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     className="inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] font-semibold"
                     style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
                   >
-                    {columnLabel[status]}
+                    {currentColumnTitle}
                   </span>
                   <div className="relative" ref={moveRef}>
                     <button
@@ -650,15 +650,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                         className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
                         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
                       >
-                        {moveOptions.map((k) => (
+                        {moveOptions.map((c) => (
                           <button
-                            key={k}
+                            key={c.id}
                             type="button"
                             role="menuitem"
                             className="flex w-full items-center px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                            onClick={() => requestMoveTo(k)}
+                            onClick={() => requestMoveToColumn(c)}
                           >
-                            {columnLabel[k]}
+                            {c.title}
                           </button>
                         ))}
                       </div>
@@ -669,18 +669,44 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               </div>
 
               {/* Stage block */}
-              {status === "interview" ? (
+              {status === "interview" || status === "interview_screen" ? (
                 <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Interview stage</div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Screen interview stage</div>
                   <select
                     className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                    value={record.interviewStage ?? INTERVIEW_STAGES[0]}
+                    value={record.interviewStage ?? SCREEN_INTERVIEW_STAGES[0]}
                     onChange={(e) => setInterviewStage(job.id, e.target.value)}
                   >
-                    {INTERVIEW_STAGES.map((s) => (
+                    {SCREEN_INTERVIEW_STAGES.map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
+                </div>
+              ) : null}
+              {status === "interview_tech" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Tech interview stage</div>
+                  <select
+                    className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    value={record.interviewStage ?? TECH_INTERVIEW_STAGES[0]}
+                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
+                  >
+                    {TECH_INTERVIEW_STAGES.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              {status === "test_task" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Task details</div>
+                  <textarea
+                    value={record.interviewStage ?? ""}
+                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
+                    rows={4}
+                    placeholder="Link, scope, or notes about the task"
+                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  />
                 </div>
               ) : null}
               {status === "offer" ? (
@@ -724,8 +750,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 </div>
               ) : null}
 
-              {/* Reminder — only for Interview and Offer */}
-              {status === "interview" || status === "offer" ? (
+              {/* Reminder — Interview family + Offer */}
+              {isInterviewFamily || status === "offer" ? (
               <div>
                 <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
                 {record.reminderAt ? (
@@ -756,7 +782,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               ) : null}
 
               {/* Documents used */}
-              {(status === "applied" || status === "interview" || status === "offer" || status === "rejection") &&
+              {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
               (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
                 <div>
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Documents used</div>
@@ -799,7 +825,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           <p className="mt-2 text-[13px] font-light" style={{ color: "var(--color-text-muted)", lineHeight: "20px" }}>
             Remove <span style={{ color: "var(--color-foreground)" }}>{job.title}</span> at{" "}
             <span style={{ color: "var(--color-foreground)" }}>{job.company}</span> from{" "}
-            {columnLabel[status] ?? status}? You can restore it later from Archived.
+            {currentColumnTitle}? You can restore it later from Archived.
           </p>
           <div className="mt-5 flex items-center justify-end gap-2">
             <button
@@ -839,34 +865,51 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
       <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
 
-      {pending?.target === "interview" ? (
+      {pending && (pending.col.stage === "interview_screen" || pending.col.stage === "interview_tech") ? (
         <InterviewTransitionDialog
           open
           jobId={job.id}
           initialStage={record.interviewStage}
           initialReminderIso={record.reminderAt}
+          title={pending.col.stage === "interview_tech" ? "Tech interview" : "Screen interview"}
+          stages={pending.col.stage === "interview_tech" ? TECH_INTERVIEW_STAGES : SCREEN_INTERVIEW_STAGES}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso }) => {
-            setStatus(job.id, "interview");
+            setCardColumn(job.id, pending.col.id, pending.col.stage as JobStatus);
             setInterviewStage(job.id, stage);
             setReminder(job.id, reminderIso);
             setPending(null);
           }}
         />
       ) : null}
-      {pending?.target === "rejection" ? (
+      {pending && pending.col.stage === "test_task" ? (
+        <TestTaskTransitionDialog
+          open
+          jobId={job.id}
+          initialDetails={record.interviewStage}
+          initialReminderIso={record.reminderAt}
+          onCancel={cancelPending}
+          onSave={({ details, reminderIso }) => {
+            setCardColumn(job.id, pending.col.id, "test_task");
+            setInterviewStage(job.id, details || "Test task");
+            setReminder(job.id, reminderIso);
+            setPending(null);
+          }}
+        />
+      ) : null}
+      {pending && pending.col.stage === "rejection" ? (
         <RejectedTransitionDialog
           open
           initialDetails={record.rejectionDetails}
           onCancel={cancelPending}
           onSave={({ details }) => {
-            setStatus(job.id, "rejection");
+            setCardColumn(job.id, pending.col.id, "rejection");
             if (details) setRejectionDetails(job.id, details);
             setPending(null);
           }}
         />
       ) : null}
-      {pending?.target === "offer" ? (
+      {pending && pending.col.stage === "offer" ? (
         <OfferTransitionDialog
           open
           jobId={job.id}
@@ -875,7 +918,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           initialDetails={record.offerDetails}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso, details }) => {
-            setStatus(job.id, "offer");
+            setCardColumn(job.id, pending.col.id, "offer");
             setOfferStatus(job.id, stage);
             setReminder(job.id, reminderIso);
             if (details) setOfferDetails(job.id, details);
