@@ -523,7 +523,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
 // ---------- Column ----------
 
 function KanbanColumn({
-  status,
+  column,
   jobs,
   isDropTarget,
   placeholderHeight,
@@ -539,8 +539,9 @@ function KanbanColumn({
   archivedView,
   collapsed,
   onToggleCollapse,
+  moveColumns,
 }: {
-  status: ColumnKey;
+  column: BoardColumn;
   jobs: { job: Job; rec: JobRecord }[];
   isDropTarget: boolean;
   placeholderHeight: number;
@@ -551,11 +552,12 @@ function KanbanColumn({
   onDragEnd: () => void;
   onArchive: (jobId: string) => void;
   onRequestApply: (jobId: string) => void;
-  onMoveTo: (jobId: string, target: ColumnKey) => void;
+  onMoveTo: (jobId: string, target: BoardColumn) => void;
   onMailShareToast: () => void;
   archivedView: boolean;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  moveColumns: BoardColumn[];
 }) {
   return (
     <div
@@ -579,7 +581,7 @@ function KanbanColumn({
         aria-expanded={!collapsed}
       >
         <span className="text-[16px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "24px" }}>
-          {COLUMN_TITLE[status]}
+          {column.title}
         </span>
         <span
           className="inline-flex items-center justify-center text-[14px]"
@@ -631,6 +633,8 @@ function KanbanColumn({
             onMoveTo={(t) => onMoveTo(job.id, t)}
             onMailShareToast={onMailShareToast}
             archivedView={archivedView}
+            column={column}
+            moveColumns={moveColumns}
           />
         ))}
       </div>
@@ -644,20 +648,20 @@ function TrackerScreen() {
   const plan = usePlan();
   useTrackerVersion();
   const { jobs: allJobs } = useJobs();
+  const columns = useColumns();
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOver, setDragOver] = useState<ColumnKey | null>(null);
+  const [dragOver, setDragOver] = useState<string | null>(null);
   const [dragHeight, setDragHeight] = useState<number>(0);
   const [applyJob, setApplyJob] = useState<Job | null>(null);
   const [pending, setPending] = useState<
-    | { jobId: string; target: "interview" | "rejection" | "offer"; source: JobStatus }
+    | { jobId: string; column: BoardColumn; source: JobStatus }
     | null
   >(null);
   const [toast, setToast] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
-  const [collapsed, setCollapsed] = useState<Record<ColumnKey, boolean>>({
-    saved: false, applied: false, interview: false, rejection: false, offer: false,
-  });
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
 
   if (!isPro(plan)) {
     return (
@@ -682,57 +686,69 @@ function TrackerScreen() {
     );
   }
 
-  // Bucket jobs
-  const buckets: Record<ColumnKey, { job: Job; rec: JobRecord }[]> = {
-    saved: [], applied: [], interview: [], rejection: [], offer: [],
-  };
+  // Bucket jobs into columns dynamically. `resolveColumnForCard` maps a
+  // record's (columnId? or status) to the currently displayed column.
+  const buckets: Record<string, { job: Job; rec: JobRecord }[]> = {};
+  for (const c of columns) buckets[c.id] = [];
   let total = 0;
   for (const j of allJobs) {
     const rec = getJobRecord(j.id);
+    const raw = rec.archived ? rec.lastStatus : rec.status;
+    if (!raw) continue;
     if (rec.archived) {
-      if (showArchived && rec.lastStatus && (COLUMN_ORDER as string[]).includes(rec.lastStatus)) {
-        buckets[rec.lastStatus as ColumnKey].push({ job: j, rec });
-      }
+      if (!showArchived) continue;
+      const col = resolveColumnForCard(rec.columnId, raw);
+      if (col) buckets[col.id].push({ job: j, rec });
       continue;
     }
-    if ((COLUMN_ORDER as string[]).includes(rec.status)) {
-      buckets[rec.status as ColumnKey].push({ job: j, rec });
+    const col = resolveColumnForCard(rec.columnId, raw);
+    if (col) {
+      buckets[col.id].push({ job: j, rec });
       total++;
     }
   }
-  // Sort: newest movedAt first per column
   const byMovedDesc = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
     (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
-  for (const k of COLUMN_ORDER) buckets[k].sort(byMovedDesc);
-  // Interview: soonest upcoming reminder first
-  buckets.interview.sort((a, b) => {
-    const ar = a.rec.reminderAt, br = b.rec.reminderAt;
-    if (ar && br) return ar.localeCompare(br);
-    if (ar) return -1;
-    if (br) return 1;
-    return byMovedDesc(a, b);
-  });
-
-  // Dispatcher: any move (drag OR "Move to") funnels through here.
-  // Applied is routed to the ApplyModal (unless already applied via Apply modal itself).
-  // Interview / Rejected / Offer open their transition popups; cancel reverts.
-  function requestMove(jobId: string, target: ColumnKey) {
-    const rec = getJobRecord(jobId);
-    const source = (rec.archived ? rec.lastStatus ?? "default" : rec.status) as JobStatus;
-    if (source === target) return;
-    if (target === "saved" || target === "applied") {
-      if (target === "applied") {
-        const job = allJobs.find((j) => j.id === jobId);
-        if (job) setApplyJob(job);
-        return;
-      }
-      setStatus(jobId, "saved");
-      return;
+  for (const c of columns) {
+    const isInterview =
+      c.stage === "interview_screen" || c.stage === "interview_tech" || c.stage === "test_task";
+    if (isInterview) {
+      buckets[c.id].sort((a, b) => {
+        const ar = a.rec.reminderAt, br = b.rec.reminderAt;
+        if (ar && br) return ar.localeCompare(br);
+        if (ar) return -1;
+        if (br) return 1;
+        return byMovedDesc(a, b);
+      });
+    } else {
+      buckets[c.id].sort(byMovedDesc);
     }
-    setPending({ jobId, target: target as "interview" | "rejection" | "offer", source });
   }
 
-  function handleDrop(target: ColumnKey) {
+  // Dispatcher: any move (drag OR "Move to") funnels through here.
+  // Applied routes to the ApplyModal; interview/test/offer/rejection open their
+  // transition popups. Saved is a simple status update.
+  function requestMove(jobId: string, target: BoardColumn) {
+    const rec = getJobRecord(jobId);
+    const source = (rec.archived ? rec.lastStatus ?? "default" : rec.status) as JobStatus;
+    // No-op if same column already
+    if (rec.columnId === target.id && source === (target.stage as JobStatus)) return;
+    if (target.stage === "saved" || target.stage === "applied") {
+      if (target.stage === "applied") {
+        const job = allJobs.find((j) => j.id === jobId);
+        if (job) {
+          setCardColumn(jobId, target.id);
+          setApplyJob(job);
+        }
+        return;
+      }
+      setCardColumn(jobId, target.id, "saved");
+      return;
+    }
+    setPending({ jobId, column: target, source });
+  }
+
+  function handleDrop(target: BoardColumn) {
     setDragOver(null);
     const id = draggingId;
     setDraggingId(null);
@@ -753,6 +769,7 @@ function TrackerScreen() {
   }
 
   const pendingJob = pending ? allJobs.find((j) => j.id === pending.jobId) ?? null : null;
+  const pendingStage = pending?.column.stage;
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -773,6 +790,15 @@ function TrackerScreen() {
               <Toggle checked={showArchived} onChange={setShowArchived} label="Show archived" />
               <span className="text-[14px]" style={{ color: MUTED_TEXT }}>Show archived</span>
             </label>
+            <button
+              type="button"
+              onClick={() => setColumnsDialogOpen(true)}
+              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border bg-white px-3 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+              style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
+            >
+              <LayoutColumns size={14} strokeWidth={1.8} />
+              Edit columns
+            </button>
             <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
             <span className="text-[14px] font-light" style={{ color: META_GREY }}>
               <span style={{ color: DARK }}>{total}</span> application{total === 1 ? "" : "s"}
@@ -783,15 +809,15 @@ function TrackerScreen() {
         {/* Board */}
         <div className="mt-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:gap-4">
-            {COLUMN_ORDER.map((k) => (
+            {columns.map((c) => (
               <KanbanColumn
-                key={k}
-                status={k}
-                jobs={buckets[k]}
-                isDropTarget={dragOver === k && draggingId !== null}
+                key={c.id}
+                column={c}
+                jobs={buckets[c.id] ?? []}
+                isDropTarget={dragOver === c.id && draggingId !== null}
                 placeholderHeight={dragHeight}
-                onDragEnter={() => setDragOver(k)}
-                onDrop={() => handleDrop(k)}
+                onDragEnter={() => setDragOver(c.id)}
+                onDrop={() => handleDrop(c)}
                 onOpen={setOpenJob}
                 onDragStartJob={(id, h) => { setDraggingId(id); setDragHeight(h); }}
                 onDragEnd={() => { setDraggingId(null); setDragOver(null); setDragHeight(0); }}
@@ -803,8 +829,9 @@ function TrackerScreen() {
                 onMoveTo={(id, target) => requestMove(id, target)}
                 onMailShareToast={() => showToast("Follow-up email drafted (demo)")}
                 archivedView={showArchived}
-                collapsed={collapsed[k]}
-                onToggleCollapse={() => setCollapsed((s) => ({ ...s, [k]: !s[k] }))}
+                collapsed={!!collapsed[c.id]}
+                onToggleCollapse={() => setCollapsed((s) => ({ ...s, [c.id]: !s[c.id] }))}
+                moveColumns={columns}
               />
             ))}
           </div>
@@ -812,6 +839,8 @@ function TrackerScreen() {
       </main>
 
       <MobileTabBar active="tracker" />
+
+      <BoardColumnsDialog open={columnsDialogOpen} onClose={() => setColumnsDialogOpen(false)} />
 
       {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
 
@@ -826,15 +855,17 @@ function TrackerScreen() {
         />
       ) : null}
 
-      {pendingJob && pending?.target === "interview" ? (
+      {pendingJob && pending && (pendingStage === "interview_screen" || pendingStage === "interview_tech") ? (
         <InterviewTransitionDialog
           open
           jobId={pending.jobId}
           initialStage={getJobRecord(pending.jobId).interviewStage}
           initialReminderIso={getJobRecord(pending.jobId).reminderAt}
+          title={pendingStage === "interview_tech" ? "Tech interview" : "Screen interview"}
+          stages={pendingStage === "interview_tech" ? TECH_INTERVIEW_STAGES : SCREEN_INTERVIEW_STAGES}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso }) => {
-            setStatus(pending.jobId, "interview");
+            setCardColumn(pending.jobId, pending.column.id, pending.column.stage as JobStatus);
             setInterviewStage(pending.jobId, stage);
             storeSetReminder(pending.jobId, reminderIso);
             setPending(null);
@@ -842,20 +873,36 @@ function TrackerScreen() {
         />
       ) : null}
 
-      {pendingJob && pending?.target === "rejection" ? (
+      {pendingJob && pending && pendingStage === "test_task" ? (
+        <TestTaskTransitionDialog
+          open
+          jobId={pending.jobId}
+          initialDetails={getJobRecord(pending.jobId).interviewStage}
+          initialReminderIso={getJobRecord(pending.jobId).reminderAt}
+          onCancel={cancelPending}
+          onSave={({ details, reminderIso }) => {
+            setCardColumn(pending.jobId, pending.column.id, "test_task");
+            setInterviewStage(pending.jobId, details || "Test task");
+            storeSetReminder(pending.jobId, reminderIso);
+            setPending(null);
+          }}
+        />
+      ) : null}
+
+      {pendingJob && pending && pendingStage === "rejection" ? (
         <RejectedTransitionDialog
           open
           initialDetails={getJobRecord(pending.jobId).rejectionDetails}
           onCancel={cancelPending}
           onSave={({ details }) => {
-            setStatus(pending.jobId, "rejection");
+            setCardColumn(pending.jobId, pending.column.id, "rejection");
             if (details) setRejectionDetails(pending.jobId, details);
             setPending(null);
           }}
         />
       ) : null}
 
-      {pendingJob && pending?.target === "offer" ? (
+      {pendingJob && pending && pendingStage === "offer" ? (
         <OfferTransitionDialog
           open
           jobId={pending.jobId}
@@ -864,7 +911,7 @@ function TrackerScreen() {
           initialDetails={getJobRecord(pending.jobId).offerDetails}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso, details }) => {
-            setStatus(pending.jobId, "offer");
+            setCardColumn(pending.jobId, pending.column.id, "offer");
             setOfferStatus(pending.jobId, stage);
             storeSetReminder(pending.jobId, reminderIso);
             if (details) setOfferDetails(pending.jobId, details);
