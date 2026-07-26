@@ -202,7 +202,7 @@ function KanbanCard({
   onOpen: () => void;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
-  onArchive: () => void;
+  onArchive: (reason?: string) => void;
   onRequestApply: () => void;
   onMoveTo: (target: BoardColumn) => void;
   onMailShareToast?: () => void;
