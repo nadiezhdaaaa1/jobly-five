@@ -1111,6 +1111,58 @@ function FiltersSidebar({
 // Screen
 // ============================================================
 
+function Pagination({ page, pageCount, onChange }: { page: number; pageCount: number; onChange: (p: number) => void }) {
+  const pages: (number | "…")[] = [];
+  const push = (v: number | "…") => pages.push(v);
+  const window = 1;
+  for (let i = 1; i <= pageCount; i++) {
+    if (i === 1 || i === pageCount || (i >= page - window && i <= page + window)) push(i);
+    else if (pages[pages.length - 1] !== "…") push("…");
+  }
+  const btn = "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] px-2 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40";
+  return (
+    <nav aria-label="Pagination" className="mt-2 flex items-center justify-center gap-1">
+      <button
+        type="button"
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        aria-label="Previous page"
+        className={btn}
+      >
+        <IconChevronLeft size={16} strokeWidth={1.8} />
+      </button>
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`e${i}`} className="px-1 text-[13px] text-[color:var(--color-text-muted)]">…</span>
+        ) : (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onChange(p)}
+            aria-current={p === page ? "page" : undefined}
+            className={
+              p === page
+                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-2 text-[13px] font-semibold text-[color:var(--color-on-accent)]"
+                : btn
+            }
+          >
+            {p}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        onClick={() => onChange(page + 1)}
+        disabled={page >= pageCount}
+        aria-label="Next page"
+        className={btn}
+      >
+        <IconChevronRight size={16} strokeWidth={1.8} />
+      </button>
+    </nav>
+  );
+}
+
 function JobsScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const plan = usePlan();
