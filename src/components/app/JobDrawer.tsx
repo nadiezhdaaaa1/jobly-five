@@ -232,6 +232,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveReason, setArchiveReason] = useState("");
   const [pending, setPending] = useState<
     | { col: BoardColumn; source: JobStatus }
     | null
