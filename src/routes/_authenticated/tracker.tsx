@@ -342,7 +342,6 @@ function KanbanCard({
               style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
             >
               Apply
-              <Zap size={14} strokeWidth={2} fill="currentColor" />
             </button>
           </>
         ) : (
