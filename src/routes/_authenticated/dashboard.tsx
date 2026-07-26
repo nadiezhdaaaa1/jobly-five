@@ -11,7 +11,6 @@ import {
   IconThumbDown as ThumbsDown,
   IconPlus,
   IconX as X,
-  IconBolt as Zap,
   IconAdjustmentsHorizontal,
   IconCheck as Check,
 } from "@tabler/icons-react";
