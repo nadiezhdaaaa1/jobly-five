@@ -385,23 +385,47 @@ function KanbanCard({
       </div>
     </article>
     <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
-    <Dialog open={confirmArchiveOpen} onOpenChange={(o) => !o && setConfirmArchiveOpen(false)}>
-      <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+    <Dialog
+      open={confirmArchiveOpen}
+      onOpenChange={(o) => {
+        if (!o) {
+          setConfirmArchiveOpen(false);
+          setArchiveReason("");
+        }
+      }}
+    >
+      <DialogContent className="max-w-[440px] rounded-[8px] p-5">
         <DialogTitle
           className="text-[16px] font-semibold"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Are you sure?
+          Archive this job?
         </DialogTitle>
         <p className="mt-2 text-[13px] font-light" style={{ color: MUTED_TEXT, lineHeight: "20px" }}>
-          Remove <span style={{ color: DARK }}>{job.title}</span> at{" "}
-          <span style={{ color: DARK }}>{job.company}</span> from{" "}
-          {column.title}? You can restore it later from Archived.
+          <span style={{ color: DARK }}>{job.title}</span> at{" "}
+          <span style={{ color: DARK }}>{job.company}</span> will be moved to
+          Archived. You can restore it later.
         </p>
+        <div className="mt-4">
+          <label
+            className="text-[12px] font-medium"
+            style={{ color: DARK, display: "block", marginBottom: 6 }}
+          >
+            Reason (optional)
+          </label>
+          <textarea
+            value={archiveReason}
+            onChange={(e) => setArchiveReason(e.target.value)}
+            placeholder="e.g. Position filled, lost interest, poor fit…"
+            rows={3}
+            className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+            style={{ borderColor: BORDER_LIGHT, color: DARK, resize: "vertical" }}
+          />
+        </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"
-            onClick={() => setConfirmArchiveOpen(false)}
+            onClick={() => { setConfirmArchiveOpen(false); setArchiveReason(""); }}
             className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px]"
             style={{ borderColor: BORDER_LIGHT, color: DARK }}
           >
@@ -410,13 +434,15 @@ function KanbanCard({
           <button
             type="button"
             onClick={() => {
+              const reason = archiveReason.trim();
               setConfirmArchiveOpen(false);
-              onArchive();
+              setArchiveReason("");
+              onArchive(reason || undefined);
             }}
             className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
             style={{ background: "#D00D01" }}
           >
-            Remove
+            Archive
           </button>
         </div>
       </DialogContent>
