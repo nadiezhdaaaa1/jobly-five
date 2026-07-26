@@ -6,6 +6,8 @@ import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";
 import { useResumeState } from "@/lib/resume-store";
 import { useProfileExtras } from "@/lib/profile-store";
+import { logFollowUp } from "@/lib/tracker-store";
+import { useAuth } from "@/hooks/use-auth";
 
 export type ApplyResult = { resumeName?: string; coverLetterName?: string };
 
@@ -264,41 +266,98 @@ export function FollowUpDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const { user } = useAuth();
+  const fromEmail = user?.email ?? "";
   const template = `Hi there,\n\nI wanted to follow up on my application for the ${job.title} role at ${job.company}. I remain very interested and would love to know if there are any updates or next steps.\n\nHappy to answer any questions or share more about my recent work — thank you for your time.\n\nBest,\n(your name)`;
+  const defaultSubject = `Following up on ${job.title} at ${job.company}`;
+  const [to, setTo] = useState("");
+  const [subject, setSubject] = useState(defaultSubject);
   const [body, setBody] = useState(template);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
   useEffect(() => {
-    if (open) setBody(template);
-  }, [open, template]);
+    if (open) {
+      setTo("");
+      setSubject(defaultSubject);
+      setBody(template);
+      setSending(false);
+      setSent(false);
+    }
+  }, [open, defaultSubject, template]);
+
+  const isValidTo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to.trim());
+  const canSend = isValidTo && !!fromEmail && !sending;
 
   function copy() {
     navigator.clipboard?.writeText(body);
   }
-  function download() {
-    const blob = new Blob([body], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `follow-up-${job.company.replace(/\s+/g, "-").toLowerCase()}.txt`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 500);
+  function send() {
+    if (!canSend) return;
+    setSending(true);
+    // Mocked send — replace with real dispatch from user's registered email later.
+    window.setTimeout(() => {
+      logFollowUp(job.id, { to: to.trim(), from: fromEmail, subject });
+      setSending(false);
+      setSent(true);
+      window.setTimeout(() => onClose(), 900);
+    }, 500);
   }
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[560px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[560px] rounded-[8px] bg-white p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Follow-up letter draft
         </DialogTitle>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-          A short nudge you can send if it's been a while with no reply.
+          A short nudge you can send if it's been a while with no reply. In the
+          future this goes out from the email on your Jobly account — for now
+          sending is simulated.
         </p>
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          rows={10}
-          className="mt-3 w-full resize-y rounded-[4px] border p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
-        />
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
+
+        <div className="mt-3 flex flex-col gap-2">
+          <label className="text-[12px] font-medium text-[color:var(--color-text-muted)]">From</label>
+          <input
+            value={fromEmail}
+            readOnly
+            className="h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-2)] px-3 text-[13px] text-[color:var(--color-foreground)]"
+          />
+        </div>
+        <div className="mt-2 flex flex-col gap-2">
+          <label className="text-[12px] font-medium text-[color:var(--color-text-muted)]">To</label>
+          <input
+            type="email"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            placeholder="recruiter@company.com"
+            className="h-10 w-full rounded-[4px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+          />
+        </div>
+        <div className="mt-2 flex flex-col gap-2">
+          <label className="text-[12px] font-medium text-[color:var(--color-text-muted)]">Subject</label>
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="h-10 w-full rounded-[4px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+          />
+        </div>
+        <div className="mt-2 flex flex-col gap-2">
+          <label className="text-[12px] font-medium text-[color:var(--color-text-muted)]">Message</label>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={9}
+            className="w-full resize-y rounded-[4px] border p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+          />
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+          {sent ? (
+            <span className="mr-auto text-[13px]" style={{ color: "#0E735A" }}>
+              Follow-up sent (demo) — logged in job history.
+            </span>
+          ) : null}
           <button
             type="button"
             onClick={onClose}
@@ -308,17 +367,18 @@ export function FollowUpDialog({
           </button>
           <button
             type="button"
-            onClick={download}
+            onClick={copy}
             className="inline-flex h-10 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
-            Download .txt
+            Copy
           </button>
           <button
             type="button"
-            onClick={copy}
-            className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            onClick={send}
+            disabled={!canSend}
+            className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Copy
+            {sending ? "Sending…" : sent ? "Sent" : "Send (demo)"}
           </button>
         </div>
       </DialogContent>
