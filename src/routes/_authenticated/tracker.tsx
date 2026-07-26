@@ -292,7 +292,10 @@ function KanbanCard({
           </button>
         ) : stage === "saved" ? (
           <>
-            <div className="relative" ref={flagRef}>
+            <div
+              className={`relative transition-opacity ${flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              ref={flagRef}
+            >
               <IconBtn label="Report this job" noBorder onClick={() => setFlagOpen((v) => !v)}>
                 <Flag size={16} strokeWidth={1.6} />
               </IconBtn>
@@ -304,7 +307,10 @@ function KanbanCard({
                 </MenuPop>
               ) : null}
             </div>
-            <div className="relative -ml-1" ref={dislikeRef}>
+            <div
+              className={`relative -ml-1 transition-opacity ${dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              ref={dislikeRef}
+            >
               <IconBtn label="Not interested" noBorder onClick={() => setDislikeOpen((v) => !v)}>
                 <ThumbsDown size={16} strokeWidth={1.6} />
               </IconBtn>
@@ -342,9 +348,11 @@ function KanbanCard({
         ) : (
           // Applied / Interview / Rejected / Offer
           <>
-            <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
-              <X size={16} strokeWidth={1.8} />
-            </IconBtn>
+            <div className="transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+              <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
+                <X size={16} strokeWidth={1.8} />
+              </IconBtn>
+            </div>
             <div className="ml-auto flex items-center gap-1">
               {stage === "applied" ? (
                 <IconBtn label="Send a follow-up" noBorder onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
