@@ -12,8 +12,6 @@ import {
   IconX as X,
   IconAdjustmentsHorizontal,
   IconCheck as Check,
-  IconBuilding,
-  IconWorld,
   IconArrowUpRight,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
