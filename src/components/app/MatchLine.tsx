@@ -105,13 +105,18 @@ function SegmentView({ seg, showBullet }: { seg: Segment; showBullet?: boolean }
 export function MatchLine({
   job,
   wrap = false,
+  onlyMissing = false,
   className = "",
 }: {
   job: Job;
   wrap?: boolean;
+  onlyMissing?: boolean;
   className?: string;
 }) {
-  const groups = useMemo(() => deriveMatchGroups(job), [job]);
+  const groups = useMemo(() => {
+    const g = deriveMatchGroups(job);
+    return onlyMissing ? g.filter((x) => x.tone === "missing") : g;
+  }, [job, onlyMissing]);
   const segments = useMemo(() => flatten(groups), [groups]);
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
