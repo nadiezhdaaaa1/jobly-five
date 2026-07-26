@@ -13,6 +13,7 @@ import type { Job } from "@/lib/jobs-data";
 import {
   dateHelpers,
   archiveJob,
+  archiveJobWithReason,
   markApplied,
   setInterviewStage,
   setNotes as storeSetNotes,
