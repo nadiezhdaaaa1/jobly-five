@@ -7,7 +7,10 @@ export type JobStatus =
   | "default"
   | "saved"
   | "applied"
-  | "interview"
+  | "interview"            // legacy — normalized to "interview_screen" on read
+  | "interview_screen"
+  | "interview_tech"
+  | "test_task"
   | "offer"
   | "rejection"
   | "dismissed"
@@ -28,6 +31,7 @@ export type JobRecord = {
   offerStatus?: string;
   movedAt?: string; // last status change timestamp — used to order within columns
   lastStatus?: JobStatus; // preserved column for archived cards ("Show archived" restore-in-place)
+  columnId?: string; // which board column this card lives in (custom columns)
   // Documents used when marking applied (Apply modal). Shown on Applied cards.
   appliedResumeName?: string;
   appliedCoverLetterName?: string;
@@ -128,11 +132,32 @@ function isSameLocalDay(iso: string, ref = new Date()) {
 
 export const dateHelpers = { shortDate, shortDateTime, shortDateTimeAmpm, reminderPhrase, isSameLocalDay };
 
+// Convenience: is this an interview-family stage?
+export function isInterviewStage(s: JobStatus): boolean {
+  return s === "interview" || s === "interview_screen" || s === "interview_tech" || s === "test_task";
+}
+
+export function isTrackerStage(s: JobStatus): boolean {
+  return (
+    s === "saved" ||
+    s === "applied" ||
+    s === "interview" ||
+    s === "interview_screen" ||
+    s === "interview_tech" ||
+    s === "test_task" ||
+    s === "offer" ||
+    s === "rejection"
+  );
+}
+
 const STATUS_LABELS: Record<JobStatus, string> = {
   default: "Removed",
   saved: "Saved",
   applied: "Applied",
   interview: "Interview",
+  interview_screen: "Screen interview",
+  interview_tech: "Tech interview",
+  test_task: "Test task",
   offer: "Offers",
   rejection: "Rejected",
   dismissed: "Dismissed",
