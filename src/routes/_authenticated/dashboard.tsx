@@ -68,7 +68,7 @@ const ALL_BOARDS = [
 type Board = (typeof ALL_BOARDS)[number];
 const DIRECT_BOARDS: ReadonlySet<Board> = new Set(["Greenhouse", "Lever", "Ashby", "Workable"]);
 
-const SENIORITIES = ["Junior", "Middle", "Senior", "Lead", "Exec"] as const;
+const SENIORITIES = ["Junior", "Middle", "Senior", "Lead", "Executive"] as const;
 type Seniority = (typeof SENIORITIES)[number];
 
 const ENGLISH_LEVELS = [
@@ -86,7 +86,7 @@ function inferSeniority(title: string): Seniority {
   const t = title.toLowerCase();
   if (/\b(principal|staff)\b/.test(t)) return "Lead";
   if (/\blead|head|director|vp\b/.test(t)) return "Lead";
-  if (/\bexec|chief|cto|cpo\b/.test(t)) return "Exec";
+  if (/\bexec|chief|cto|cpo\b/.test(t)) return "Executive";
   if (/\bsenior|sr\.?\b/.test(t)) return "Senior";
   if (/\bjunior|jr\.?|entry\b/.test(t)) return "Junior";
   if (/\bmid|middle|intermediate\b/.test(t)) return "Middle";
@@ -308,7 +308,7 @@ function levelToSeniority(level: string | undefined): Seniority | null {
   if (level === "Mid") return "Middle";
   if (level === "Senior" || level === "Staff" || level === "Principal") return "Senior";
   if (["Lead", "Manager", "Head", "Director", "VP"].includes(level)) return "Lead";
-  if (level === "Exec") return "Exec";
+  if (level === "Exec") return "Executive";
   return null;
 }
 
