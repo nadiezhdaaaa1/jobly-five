@@ -14,6 +14,7 @@ import {
   IconCheck as Check,
   IconBuilding,
   IconWorld,
+  IconArrowUpRight,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -447,7 +448,15 @@ function TrackerWidget() {
     <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
       <div className="flex items-center justify-between px-4 pt-4">
         <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Tracker</h3>
-        <Link to="/tracker" className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline">Open</Link>
+        <IconTooltip label="Open Tracker">
+          <Link
+            to="/tracker"
+            aria-label="Open Tracker"
+            className="inline-flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <IconArrowUpRight size={18} stroke={2} />
+          </Link>
+        </IconTooltip>
       </div>
       <div className="mt-3 grid grid-cols-2">
         {items.map((s, i) => (
@@ -569,7 +578,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)] group-hover:underline">{job.title}</span>
+            <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
             <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               {job.company} · {job.location} · {job.salary}
             </div>
@@ -715,7 +724,7 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
   const wrap =
-    "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-all duration-150 hover:-translate-y-[1px] hover:border-[#8A9599] hover:bg-[color:var(--color-surface-2)] hover:shadow-[0_6px_16px_-6px_rgba(12,12,13,0.18)]";
+    "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-colors hover:bg-[color:var(--color-surface-2)]";
   return (
     <div className={wrap}>
       <JobRow job={job} onOpen={onOpen} />
