@@ -582,7 +582,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <span
-          className="text-[12px] text-[color:var(--color-text-muted)]"
+          className="text-[12px] text-[color:var(--color-text-muted)] opacity-0 transition-opacity duration-150 group-hover:opacity-100 max-md:opacity-100"
           style={{ fontWeight: 300, lineHeight: 1.5 }}
         >
           {direct ? "Direct employer" : "Aggregated"}
@@ -694,7 +694,16 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
       {pro && detailsOpen ? (
         <div className="mt-5 border-t border-[color:var(--color-border)] pt-5">
-          <MatchLine job={job} wrap />
+          {job.missingSkills && job.missingSkills.length > 0 ? (
+            <MatchLine job={job} wrap onlyMissing />
+          ) : (
+            <div
+              className="text-[13px] text-[color:var(--color-text-secondary)]"
+              style={{ fontWeight: 300 }}
+            >
+              No skill gaps — you match all required skills.
+            </div>
+          )}
         </div>
       ) : null}
 
