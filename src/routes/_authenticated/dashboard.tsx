@@ -1154,22 +1154,13 @@ function JobsScreen() {
     return list.filter((j) => !hiddenIds.has(j.id) && !blockedSet.has(j.company.toLowerCase()));
   }, [allJobs, applied, blocked, hiddenIds]);
 
-  // Lazy loading
-  const [count, setCount] = useState(15);
-  const sentinel = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (count >= visible.length) return;
-    const el = sentinel.current;
-    if (!el) return;
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) setCount((c) => Math.min(c + 10, visible.length));
-    }, { rootMargin: "200px" });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [count, visible.length]);
-  useEffect(() => setCount(15), [applied]);
-
-  const shown = visible.slice(0, count);
+  // Pagination
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  useEffect(() => setPage(1), [applied]);
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const shown = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
