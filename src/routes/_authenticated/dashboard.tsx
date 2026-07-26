@@ -1205,7 +1205,11 @@ function JobsScreen() {
 
           <div className="min-w-0">
             <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
-              {firstName ? `Good morning, ${firstName}` : "Good morning"}
+              {(() => {
+                const h = new Date().getHours();
+                const g = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+                return firstName ? `${g}, ${firstName}` : g;
+              })()}
             </h1>
             <p className="mt-1 text-[14px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
               Your latest digest arrived <span className="font-semibold text-[color:var(--color-text-secondary)]">Today at 9:02</span>
