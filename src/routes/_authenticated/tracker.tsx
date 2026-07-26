@@ -292,7 +292,10 @@ function KanbanCard({
           </button>
         ) : stage === "saved" ? (
           <>
-            <div className="relative" ref={flagRef}>
+            <div
+              className={`relative transition-opacity ${flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              ref={flagRef}
+            >
               <IconBtn label="Report this job" noBorder onClick={() => setFlagOpen((v) => !v)}>
                 <Flag size={16} strokeWidth={1.6} />
               </IconBtn>
@@ -304,7 +307,10 @@ function KanbanCard({
                 </MenuPop>
               ) : null}
             </div>
-            <div className="relative -ml-1" ref={dislikeRef}>
+            <div
+              className={`relative -ml-1 transition-opacity ${dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              ref={dislikeRef}
+            >
               <IconBtn label="Not interested" noBorder onClick={() => setDislikeOpen((v) => !v)}>
                 <ThumbsDown size={16} strokeWidth={1.6} />
               </IconBtn>
@@ -342,9 +348,11 @@ function KanbanCard({
         ) : (
           // Applied / Interview / Rejected / Offer
           <>
-            <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
-              <X size={16} strokeWidth={1.8} />
-            </IconBtn>
+            <div className="transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+              <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
+                <X size={16} strokeWidth={1.8} />
+              </IconBtn>
+            </div>
             <div className="ml-auto flex items-center gap-1">
               {stage === "applied" ? (
                 <IconBtn label="Send a follow-up" noBorder onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
@@ -474,11 +482,23 @@ function Row3({ stage, record }: { stage: BoardStage; record: JobRecord }) {
     );
   }
   if (stage === "interview_screen" || stage === "interview_tech" || stage === "test_task") {
+    const movedLabel =
+      stage === "test_task" ? "Test task from" : "Interview from";
+    const movedDate = record.interviewAt ?? record.movedAt;
     return (
-      <div className="flex flex-wrap gap-1">
-        {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
-        {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
-      </div>
+      <>
+        {movedDate ? (
+          <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
+            {movedLabel} {dateHelpers.shortDate(movedDate)}
+          </div>
+        ) : null}
+        {(record.interviewStage || record.reminderAt) ? (
+          <div className="flex flex-wrap gap-1">
+            {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
+            {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+          </div>
+        ) : null}
+      </>
     );
   }
   // offer
