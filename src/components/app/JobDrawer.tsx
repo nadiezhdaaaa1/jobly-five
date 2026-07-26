@@ -114,17 +114,21 @@ function ListingMetaBlock({ job }: { job: Job }) {
       </div>
       <div className={row}>
         <span className={label}>Type</span>
-        <span
-          className={value}
-          style={{ fontWeight: 400 }}
-          title={
+        <IconTooltip
+          side="left"
+          label={
             direct
               ? "Direct employer — posted by the company itself on their careers page."
               : "Aggregated — collected from a job board or third-party aggregator."
           }
         >
-          {direct ? "Direct employer" : "Aggregated"}
-        </span>
+          <span
+            className={`${value} cursor-help underline decoration-dotted underline-offset-4 decoration-[color:var(--color-border)]`}
+            style={{ fontWeight: 400 }}
+          >
+            {direct ? "Direct employer" : "Aggregated"}
+          </span>
+        </IconTooltip>
       </div>
     </div>
   );
