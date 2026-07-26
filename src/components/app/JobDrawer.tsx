@@ -80,6 +80,41 @@ function BigRing({ score }: { score: number }) {
   );
 }
 
+function formatDateLabel(daysAgo: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - Math.max(0, daysAgo));
+  return d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+}
+
+function ListingMetaBlock({ job }: { job: Job }) {
+  const postedDays = job.postedDays ?? 0;
+  // Simulated fetch delay: pulled 0–1 day after posting.
+  const fetchedDaysAgo = Math.max(0, postedDays - (postedDays > 0 ? 1 : 0));
+  const rawSource = job.sources?.[0]?.name ?? "";
+  const sourceName = rawSource
+    ? rawSource.replace(/\s*—.*$/, "").trim() || rawSource
+    : "Unknown source";
+  const row = "flex items-baseline justify-between gap-3 py-1.5";
+  const label = "text-[12px] text-[color:var(--color-text-muted)]" ;
+  const value = "text-[13px] text-[color:var(--color-text-secondary)]";
+  return (
+    <div className="mt-4 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2">
+      <div className={row}>
+        <span className={label}>Posted</span>
+        <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(postedDays)}</span>
+      </div>
+      <div className={row}>
+        <span className={label}>Added to Jobly</span>
+        <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(fetchedDaysAgo)}</span>
+      </div>
+      <div className={row}>
+        <span className={label}>Source</span>
+        <span className={value} style={{ fontWeight: 400, textTransform: "capitalize" }}>{sourceName}</span>
+      </div>
+    </div>
+  );
+}
+
 function JobDescriptionBlock({ job }: { job: Job }) {
   const [expanded, setExpanded] = useState(false);
   const sections = job.description ?? [];
@@ -324,6 +359,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               <MatchLine job={job} wrap />
             </div>
           ) : null}
+
+          {/* Listing metadata */}
+          <ListingMetaBlock job={job} />
 
           {/* Description */}
           <JobDescriptionBlock job={job} />

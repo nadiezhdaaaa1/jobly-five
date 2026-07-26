@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   IconBookmark as Bookmark,
+  IconChevronLeft,
   IconChevronRight,
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
@@ -712,8 +713,8 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
   const wrap = session
-    ? "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-[box-shadow,border-color,transform] hover:border-[#B7C0C3] hover:shadow-[0_4px_16px_0_rgba(12,12,13,0.10)]"
-    : "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,transform] hover:border-[#B7C0C3] hover:shadow-[0_6px_20px_0_rgba(12,12,13,0.12)]";
+    ? "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-colors hover:border-[#B7C0C3] hover:bg-[color:var(--color-surface-2)]"
+    : "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-colors hover:border-[#B7C0C3] hover:bg-[color:var(--color-surface-2)]";
   return (
     <div className={wrap}>
       <JobRow job={job} onOpen={onOpen} />
@@ -1110,6 +1111,58 @@ function FiltersSidebar({
 // Screen
 // ============================================================
 
+function Pagination({ page, pageCount, onChange }: { page: number; pageCount: number; onChange: (p: number) => void }) {
+  const pages: (number | "…")[] = [];
+  const push = (v: number | "…") => pages.push(v);
+  const window = 1;
+  for (let i = 1; i <= pageCount; i++) {
+    if (i === 1 || i === pageCount || (i >= page - window && i <= page + window)) push(i);
+    else if (pages[pages.length - 1] !== "…") push("…");
+  }
+  const btn = "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] px-2 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40";
+  return (
+    <nav aria-label="Pagination" className="mt-2 flex items-center justify-center gap-1">
+      <button
+        type="button"
+        onClick={() => onChange(page - 1)}
+        disabled={page <= 1}
+        aria-label="Previous page"
+        className={btn}
+      >
+        <IconChevronLeft size={16} strokeWidth={1.8} />
+      </button>
+      {pages.map((p, i) =>
+        p === "…" ? (
+          <span key={`e${i}`} className="px-1 text-[13px] text-[color:var(--color-text-muted)]">…</span>
+        ) : (
+          <button
+            key={p}
+            type="button"
+            onClick={() => onChange(p)}
+            aria-current={p === page ? "page" : undefined}
+            className={
+              p === page
+                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-2 text-[13px] font-semibold text-[color:var(--color-on-accent)]"
+                : btn
+            }
+          >
+            {p}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        onClick={() => onChange(page + 1)}
+        disabled={page >= pageCount}
+        aria-label="Next page"
+        className={btn}
+      >
+        <IconChevronRight size={16} strokeWidth={1.8} />
+      </button>
+    </nav>
+  );
+}
+
 function JobsScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const plan = usePlan();
@@ -1154,22 +1207,13 @@ function JobsScreen() {
     return list.filter((j) => !hiddenIds.has(j.id) && !blockedSet.has(j.company.toLowerCase()));
   }, [allJobs, applied, blocked, hiddenIds]);
 
-  // Lazy loading
-  const [count, setCount] = useState(15);
-  const sentinel = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (count >= visible.length) return;
-    const el = sentinel.current;
-    if (!el) return;
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) setCount((c) => Math.min(c + 10, visible.length));
-    }, { rootMargin: "200px" });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [count, visible.length]);
-  useEffect(() => setCount(15), [applied]);
-
-  const shown = visible.slice(0, count);
+  // Pagination
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  useEffect(() => setPage(1), [applied]);
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const shown = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -1200,18 +1244,18 @@ function JobsScreen() {
 
             <div className="mt-6 flex flex-col gap-3">
               {!loaded && allJobs.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   Loading jobs…
                 </div>
               ) : shown.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   No matches for your current filters
                 </div>
               ) : shown.map((j) => (
                 <JobRowCard key={j.id} job={j} onOpen={() => setOpenJob(j)} />
               ))}
-              {count < visible.length ? (
-                <div ref={sentinel} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-4 text-center text-[12px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">Loading more…</div>
+              {pageCount > 1 ? (
+                <Pagination page={currentPage} pageCount={pageCount} onChange={setPage} />
               ) : null}
             </div>
           </div>
