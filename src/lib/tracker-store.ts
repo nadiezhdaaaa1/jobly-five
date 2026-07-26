@@ -451,6 +451,19 @@ export function setNotes(id: string, notes: string) {
   emit();
 }
 
+// Log a follow-up email send (currently mocked in the UI; the entry lets us
+// show it in the job history and later swap in a real send).
+export function logFollowUp(
+  id: string,
+  payload: { to: string; from: string; subject?: string }
+) {
+  const r = ensure(id);
+  const summary = `Follow-up sent to ${payload.to} from ${payload.from}`;
+  logHistory(r, "follow_up", summary);
+  sync(id);
+  emit();
+}
+
 // Assign a card to a specific board column (for user-defined column layouts).
 // Also normalizes the record's status to the column's stage when they differ.
 export function setCardColumn(id: string, columnId: string, stage?: JobStatus) {
