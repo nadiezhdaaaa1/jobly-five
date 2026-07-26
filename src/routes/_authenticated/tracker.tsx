@@ -6,6 +6,7 @@ import {
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
   IconMailShare as MailShare,
+  IconLayoutColumns as LayoutColumns,
   IconThumbDown as ThumbsDown,
   IconX as X,
   IconBolt as Zap,
@@ -20,7 +21,11 @@ import {
   InterviewTransitionDialog,
   OfferTransitionDialog,
   RejectedTransitionDialog,
+  TestTaskTransitionDialog,
+  SCREEN_INTERVIEW_STAGES,
+  TECH_INTERVIEW_STAGES,
 } from "@/components/app/TrackerTransitionDialogs";
+import { BoardColumnsDialog } from "@/components/app/BoardColumnsDialog";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
@@ -35,10 +40,12 @@ import {
   setOfferDetails,
   setReminder as storeSetReminder,
   setStatus,
+  setCardColumn,
   useJobRecord,
   type JobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
+import { resolveColumnForCard, useColumns, type BoardColumn, type BoardStage } from "@/lib/board-columns-store";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { blockCompany } from "@/lib/blocked-companies-store";
 
@@ -57,15 +64,17 @@ function useTrackerVersion() {
   useJobRecord("__version__");
 }
 
-type ColumnKey = "saved" | "applied" | "interview" | "rejection" | "offer";
-const COLUMN_ORDER: ColumnKey[] = ["saved", "applied", "interview", "rejection", "offer"];
-const COLUMN_TITLE: Record<ColumnKey, string> = {
-  saved: "Saved",
-  applied: "Applied",
-  interview: "Interview",
-  rejection: "Rejected",
-  offer: "Offers",
-};
+// Stages this board handles as buckets (everything else — dismissed/reported/default —
+// is either archived or not visible on the tracker).
+const KANBAN_STAGES: BoardStage[] = [
+  "saved",
+  "applied",
+  "interview_screen",
+  "interview_tech",
+  "test_task",
+  "offer",
+  "rejection",
+];
 
 const CHIP_ORANGE = "#FFEDD4";
 const CHIP_MINT = "#D8FBEF";
@@ -185,6 +194,8 @@ function KanbanCard({
   onMoveTo,
   onMailShareToast,
   archivedView,
+  column,
+  moveColumns,
 }: {
   job: Job;
   onOpen: () => void;
@@ -192,12 +203,14 @@ function KanbanCard({
   onDragEnd?: (e: React.DragEvent) => void;
   onArchive: () => void;
   onRequestApply: () => void;
-  onMoveTo: (target: ColumnKey) => void;
+  onMoveTo: (target: BoardColumn) => void;
   onMailShareToast?: () => void;
   archivedView: boolean;
+  column: BoardColumn;
+  moveColumns: BoardColumn[];
 }) {
   const record = useJobRecord(job.id);
-  const status = (record.archived ? record.lastStatus : record.status) as ColumnKey;
+  const stage: BoardStage = column.stage;
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
@@ -212,7 +225,7 @@ function KanbanCard({
   const isArchived = !!record.archived;
   const draggable = !isArchived;
 
-  const moveOptions = COLUMN_ORDER.filter((k) => k !== status);
+  const moveOptions = moveColumns.filter((c) => c.id !== column.id);
   // Suppress unused-var warning; kept for API symmetry
   void onMailShareToast;
 
@@ -261,7 +274,7 @@ function KanbanCard({
           </div>
         </div>
         {/* Row 3: per-status content */}
-        <Row3 status={status} record={record} />
+        <Row3 stage={stage} record={record} />
       </div>
 
       {/* Footer controls */}
@@ -275,7 +288,7 @@ function KanbanCard({
           >
             Restore
           </button>
-        ) : status === "saved" ? (
+        ) : stage === "saved" ? (
           <>
             <div className="relative" ref={flagRef}>
               <IconBtn label="Report this job" noBorder onClick={() => setFlagOpen((v) => !v)}>
@@ -331,7 +344,7 @@ function KanbanCard({
               <X size={16} strokeWidth={1.8} />
             </IconBtn>
             <div className="ml-auto flex items-center gap-1">
-              {status === "applied" ? (
+              {stage === "applied" ? (
                 <IconBtn label="Send a follow-up" noBorder onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
                   <MailShare size={16} strokeWidth={1.6} />
                 </IconBtn>
@@ -350,15 +363,15 @@ function KanbanCard({
                 </button>
                 {moveOpen ? (
                   <MenuPop align="right" minWidth={200}>
-                    {moveOptions.map((k) => (
+                    {moveOptions.map((c) => (
                       <MenuItem
-                        key={k}
+                        key={c.id}
                         onClick={() => {
                           setMoveOpen(false);
-                          onMoveTo(k);
+                          onMoveTo(c);
                         }}
                       >
-                        {COLUMN_TITLE[k]}
+                        {c.title}
                       </MenuItem>
                     ))}
                   </MenuPop>
@@ -381,7 +394,7 @@ function KanbanCard({
         <p className="mt-2 text-[13px] font-light" style={{ color: MUTED_TEXT, lineHeight: "20px" }}>
           Remove <span style={{ color: DARK }}>{job.title}</span> at{" "}
           <span style={{ color: DARK }}>{job.company}</span> from{" "}
-          {COLUMN_TITLE[status]}? You can restore it later from Archived.
+          {column.title}? You can restore it later from Archived.
         </p>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
@@ -410,29 +423,29 @@ function KanbanCard({
   );
 }
 
-function Row3({ status, record }: { status: ColumnKey; record: JobRecord }) {
-  if (status === "saved") {
+function Row3({ stage, record }: { stage: BoardStage; record: JobRecord }) {
+  if (stage === "saved") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Saved {dateHelpers.shortDate(record.savedAt)}
       </div>
     );
   }
-  if (status === "applied") {
+  if (stage === "applied") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Applied {dateHelpers.shortDate(record.appliedAt)}
       </div>
     );
   }
-  if (status === "rejection") {
+  if (stage === "rejection") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Rejected on {dateHelpers.shortDate(record.rejectionAt)}
       </div>
     );
   }
-  if (status === "interview") {
+  if (stage === "interview_screen" || stage === "interview_tech" || stage === "test_task") {
     return (
       <div className="flex flex-wrap gap-1">
         {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
