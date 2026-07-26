@@ -227,15 +227,29 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const saved = status === "saved";
   const [notes, setNotesLocal] = useState(record.notes ?? "");
+  const [notesEditing, setNotesEditing] = useState(false);
   const [rejectionDraft, setRejectionDraft] = useState(record.rejectionDetails ?? "");
   const [offerDraft, setOfferDraft] = useState(record.offerDetails ?? "");
 
-  useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
+  useEffect(() => {
+    setNotesLocal(record.notes ?? "");
+    setNotesEditing(false);
+  }, [job.id, record.notes]);
   useEffect(() => setRejectionDraft(record.rejectionDetails ?? ""), [job.id, record.rejectionDetails]);
   useEffect(() => setOfferDraft(record.offerDetails ?? ""), [job.id, record.offerDetails]);
 
-  function handleNotesBlur() {
-    if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
+  function handleNotesSave() {
+    storeSetNotes(job.id, notes.trim());
+    setNotesEditing(false);
+  }
+  function handleNotesCancel() {
+    setNotesLocal(record.notes ?? "");
+    setNotesEditing(false);
+  }
+  function handleNotesDelete() {
+    storeSetNotes(job.id, "");
+    setNotesLocal("");
+    setNotesEditing(false);
   }
   function handleRejectionBlur() {
     if (rejectionDraft !== (record.rejectionDetails ?? "")) setRejectionDetails(job.id, rejectionDraft);
