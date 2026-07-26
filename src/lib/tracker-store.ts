@@ -51,7 +51,8 @@ export type HistoryKind =
   | "saved"
   | "notes"
   | "rejection_details"
-  | "offer_details";
+  | "offer_details"
+  | "follow_up";
 
 export type HistoryEntry = {
   id: string;
