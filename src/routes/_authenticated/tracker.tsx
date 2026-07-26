@@ -30,6 +30,7 @@ import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
   archiveJob,
+  archiveJobWithReason,
   dateHelpers,
   getJobRecord,
   markApplied,
@@ -201,7 +202,7 @@ function KanbanCard({
   onOpen: () => void;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: (e: React.DragEvent) => void;
-  onArchive: () => void;
+  onArchive: (reason?: string) => void;
   onRequestApply: () => void;
   onMoveTo: (target: BoardColumn) => void;
   onMailShareToast?: () => void;
@@ -216,6 +217,7 @@ function KanbanCard({
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
+  const [archiveReason, setArchiveReason] = useState("");
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
@@ -383,23 +385,47 @@ function KanbanCard({
       </div>
     </article>
     <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
-    <Dialog open={confirmArchiveOpen} onOpenChange={(o) => !o && setConfirmArchiveOpen(false)}>
-      <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+    <Dialog
+      open={confirmArchiveOpen}
+      onOpenChange={(o) => {
+        if (!o) {
+          setConfirmArchiveOpen(false);
+          setArchiveReason("");
+        }
+      }}
+    >
+      <DialogContent className="max-w-[440px] rounded-[8px] p-5">
         <DialogTitle
           className="text-[16px] font-semibold"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Are you sure?
+          Archive this job?
         </DialogTitle>
         <p className="mt-2 text-[13px] font-light" style={{ color: MUTED_TEXT, lineHeight: "20px" }}>
-          Remove <span style={{ color: DARK }}>{job.title}</span> at{" "}
-          <span style={{ color: DARK }}>{job.company}</span> from{" "}
-          {column.title}? You can restore it later from Archived.
+          <span style={{ color: DARK }}>{job.title}</span> at{" "}
+          <span style={{ color: DARK }}>{job.company}</span> will be moved to
+          Archived. You can restore it later.
         </p>
+        <div className="mt-4">
+          <label
+            className="text-[12px] font-medium"
+            style={{ color: DARK, display: "block", marginBottom: 6 }}
+          >
+            Reason (optional)
+          </label>
+          <textarea
+            value={archiveReason}
+            onChange={(e) => setArchiveReason(e.target.value)}
+            placeholder="e.g. Position filled, lost interest, poor fit…"
+            rows={3}
+            className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+            style={{ borderColor: BORDER_LIGHT, color: DARK, resize: "vertical" }}
+          />
+        </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"
-            onClick={() => setConfirmArchiveOpen(false)}
+            onClick={() => { setConfirmArchiveOpen(false); setArchiveReason(""); }}
             className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px]"
             style={{ borderColor: BORDER_LIGHT, color: DARK }}
           >
@@ -408,13 +434,15 @@ function KanbanCard({
           <button
             type="button"
             onClick={() => {
+              const reason = archiveReason.trim();
               setConfirmArchiveOpen(false);
-              onArchive();
+              setArchiveReason("");
+              onArchive(reason || undefined);
             }}
             className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
             style={{ background: "#D00D01" }}
           >
-            Remove
+            Archive
           </button>
         </div>
       </DialogContent>
@@ -550,7 +578,7 @@ function KanbanColumn({
   onOpen: (j: Job) => void;
   onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
-  onArchive: (jobId: string) => void;
+  onArchive: (jobId: string, reason?: string) => void;
   onRequestApply: (jobId: string) => void;
   onMoveTo: (jobId: string, target: BoardColumn) => void;
   onMailShareToast: () => void;
@@ -628,7 +656,7 @@ function KanbanColumn({
               onDragStartJob(job.id, h);
             }}
             onDragEnd={onDragEnd}
-            onArchive={() => onArchive(job.id)}
+            onArchive={(reason) => onArchive(job.id, reason)}
             onRequestApply={() => onRequestApply(job.id)}
             onMoveTo={(t) => onMoveTo(job.id, t)}
             onMailShareToast={onMailShareToast}
@@ -821,7 +849,7 @@ function TrackerScreen() {
                 onOpen={setOpenJob}
                 onDragStartJob={(id, h) => { setDraggingId(id); setDragHeight(h); }}
                 onDragEnd={() => { setDraggingId(null); setDragOver(null); setDragHeight(0); }}
-                onArchive={(id) => archiveJob(id)}
+                onArchive={(id, reason) => archiveJobWithReason(id, reason)}
                 onRequestApply={(id) => {
                   const j = allJobs.find((x) => x.id === id);
                   if (j) setApplyJob(j);

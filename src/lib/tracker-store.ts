@@ -350,6 +350,21 @@ export function archiveJob(id: string) {
   emit();
 }
 
+export function archiveJobWithReason(id: string, reason?: string) {
+  const r = ensure(id);
+  r.lastStatus = r.status;
+  r.archived = true;
+  r.status = "default";
+  const trimmed = (reason ?? "").trim();
+  logHistory(
+    r,
+    "status",
+    trimmed ? `Archived — ${trimmed}` : `Archived`,
+  );
+  sync(id);
+  emit();
+}
+
 export function restoreArchived(id: string) {
   const r = ensure(id);
   if (!r.archived) return;

@@ -12,7 +12,7 @@ import {
 import type { Job } from "@/lib/jobs-data";
 import {
   dateHelpers,
-  archiveJob,
+  archiveJobWithReason,
   markApplied,
   setInterviewStage,
   setNotes as storeSetNotes,
@@ -231,6 +231,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveReason, setArchiveReason] = useState("");
   const [pending, setPending] = useState<
     | { col: BoardColumn; source: JobStatus }
     | null
@@ -817,20 +818,44 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         </div>
       </div>
 
-      <Dialog open={archiveOpen} onOpenChange={(o) => !o && setArchiveOpen(false)}>
-        <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+      <Dialog
+        open={archiveOpen}
+        onOpenChange={(o) => {
+          if (!o) {
+            setArchiveOpen(false);
+            setArchiveReason("");
+          }
+        }}
+      >
+        <DialogContent className="max-w-[440px] rounded-[8px] p-5">
           <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-            Are you sure?
+            Archive this job?
           </DialogTitle>
           <p className="mt-2 text-[13px] font-light" style={{ color: "var(--color-text-muted)", lineHeight: "20px" }}>
-            Remove <span style={{ color: "var(--color-foreground)" }}>{job.title}</span> at{" "}
-            <span style={{ color: "var(--color-foreground)" }}>{job.company}</span> from{" "}
-            {currentColumnTitle}? You can restore it later from Archived.
+            <span style={{ color: "var(--color-foreground)" }}>{job.title}</span> at{" "}
+            <span style={{ color: "var(--color-foreground)" }}>{job.company}</span> will be moved to
+            Archived. You can restore it later.
           </p>
+          <div className="mt-4">
+            <label
+              className="text-[12px] font-medium"
+              style={{ color: "var(--color-foreground)", display: "block", marginBottom: 6 }}
+            >
+              Reason (optional)
+            </label>
+            <textarea
+              value={archiveReason}
+              onChange={(e) => setArchiveReason(e.target.value)}
+              placeholder="e.g. Position filled, lost interest, poor fit…"
+              rows={3}
+              className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+              style={{ resize: "vertical" }}
+            />
+          </div>
           <div className="mt-5 flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={() => setArchiveOpen(false)}
+              onClick={() => { setArchiveOpen(false); setArchiveReason(""); }}
               className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px] text-[color:var(--color-foreground)]"
             >
               Cancel
@@ -838,14 +863,16 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <button
               type="button"
               onClick={() => {
+                const reason = archiveReason.trim();
                 setArchiveOpen(false);
-                archiveJob(job.id);
+                setArchiveReason("");
+                archiveJobWithReason(job.id, reason || undefined);
                 onClose();
               }}
               className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
               style={{ background: "#D00D01" }}
             >
-              Remove
+              Archive
             </button>
           </div>
         </DialogContent>
