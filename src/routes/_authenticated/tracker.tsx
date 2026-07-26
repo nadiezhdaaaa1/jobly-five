@@ -849,7 +849,7 @@ function TrackerScreen() {
                 onOpen={setOpenJob}
                 onDragStartJob={(id, h) => { setDraggingId(id); setDragHeight(h); }}
                 onDragEnd={() => { setDraggingId(null); setDragOver(null); setDragHeight(0); }}
-                onArchive={(id) => archiveJob(id)}
+                onArchive={(id, reason) => archiveJobWithReason(id, reason)}
                 onRequestApply={(id) => {
                   const j = allJobs.find((x) => x.id === id);
                   if (j) setApplyJob(j);
