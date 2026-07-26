@@ -227,15 +227,29 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
   const saved = status === "saved";
   const [notes, setNotesLocal] = useState(record.notes ?? "");
+  const [notesEditing, setNotesEditing] = useState(false);
   const [rejectionDraft, setRejectionDraft] = useState(record.rejectionDetails ?? "");
   const [offerDraft, setOfferDraft] = useState(record.offerDetails ?? "");
 
-  useEffect(() => setNotesLocal(record.notes ?? ""), [job.id, record.notes]);
+  useEffect(() => {
+    setNotesLocal(record.notes ?? "");
+    setNotesEditing(false);
+  }, [job.id, record.notes]);
   useEffect(() => setRejectionDraft(record.rejectionDetails ?? ""), [job.id, record.rejectionDetails]);
   useEffect(() => setOfferDraft(record.offerDetails ?? ""), [job.id, record.offerDetails]);
 
-  function handleNotesBlur() {
-    if (notes !== (record.notes ?? "")) storeSetNotes(job.id, notes);
+  function handleNotesSave() {
+    storeSetNotes(job.id, notes.trim());
+    setNotesEditing(false);
+  }
+  function handleNotesCancel() {
+    setNotesLocal(record.notes ?? "");
+    setNotesEditing(false);
+  }
+  function handleNotesDelete() {
+    storeSetNotes(job.id, "");
+    setNotesLocal("");
+    setNotesEditing(false);
   }
   function handleRejectionBlur() {
     if (rejectionDraft !== (record.rejectionDetails ?? "")) setRejectionDetails(job.id, rejectionDraft);
@@ -505,15 +519,61 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           {/* Notes — available for every job (Pro) */}
           {pro ? (
             <div className="mt-6">
-              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotesLocal(e.target.value)}
-                onBlur={handleNotesBlur}
-                rows={4}
-                placeholder="Notes — contacts, salary discussed, next steps…"
-                className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
-              />
+              <div className="flex items-center justify-between">
+                <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
+                {record.notes && !notesEditing ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setNotesEditing(true)}
+                      className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNotesDelete}
+                      className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+              {record.notes && !notesEditing ? (
+                <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                  {record.notes}
+                </div>
+              ) : (
+                <>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotesLocal(e.target.value)}
+                    rows={4}
+                    placeholder="Notes — contacts, salary discussed, next steps…"
+                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  />
+                  <div className="mt-2 flex items-center justify-end gap-2">
+                    {notesEditing ? (
+                      <button
+                        type="button"
+                        onClick={handleNotesCancel}
+                        className="inline-flex h-9 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                      >
+                        Cancel
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={handleNotesSave}
+                      disabled={notes.trim() === (record.notes ?? "")}
+                      className="inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ) : null}
 
