@@ -306,7 +306,7 @@ export function FollowUpDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[560px] rounded-[8px] bg-white p-5">
+      <DialogContent className="max-w-[560px] max-h-[90vh] overflow-y-auto rounded-[8px] bg-white p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Follow-up letter draft
         </DialogTitle>
