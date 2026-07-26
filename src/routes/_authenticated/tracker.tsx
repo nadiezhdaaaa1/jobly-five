@@ -30,6 +30,7 @@ import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
   archiveJob,
+  archiveJobWithReason,
   dateHelpers,
   getJobRecord,
   markApplied,
