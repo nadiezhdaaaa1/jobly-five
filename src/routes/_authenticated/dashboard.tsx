@@ -725,20 +725,11 @@ function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 // Filters sidebar
 // ============================================================
 
-function FilterSection({ title, children, dirty, onReset }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number; dirty?: boolean; onReset?: () => void }) {
+function FilterSection({ title, children }: { title: string; children: React.ReactNode; defaultOpen?: boolean; collapseSignal?: number }) {
   return (
     <div>
       <div className="flex items-center justify-between px-4 lg:px-1 pt-3 pb-2">
         <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{title}</span>
-        {dirty && onReset ? (
-          <button
-            type="button"
-            onClick={onReset}
-            className="text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-          >
-            Reset
-          </button>
-        ) : null}
       </div>
       <div className="px-4 lg:px-1 pb-4">{children}</div>
     </div>
