@@ -605,10 +605,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </button>
           ) : null}
           <div className="relative" ref={flagRef}>
-            <IconTooltip label="Report">
+            <IconTooltip label="Report this job">
               <button
                 type="button"
-                aria-label="Report"
+                aria-label="Report this job"
                 onClick={() => setFlagOpen((v) => !v)}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
@@ -617,7 +617,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             </IconTooltip>
             {flagOpen ? (
               <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                {["Spam/Scam", "Ghost/Expired", "Duplicate posting"].map((label) => (
+                {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                   <button
                     key={label}
                     type="button"
@@ -633,10 +633,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           </div>
 
           <div className="relative -ml-1" ref={dislikeRef}>
-            <IconTooltip label="Dislike">
+            <IconTooltip label="Not interested">
               <button
                 type="button"
-                aria-label="Dislike"
+                aria-label="Not interested"
                 onClick={() => setDislikeOpen((v) => !v)}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >

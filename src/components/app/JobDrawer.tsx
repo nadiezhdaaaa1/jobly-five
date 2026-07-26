@@ -280,7 +280,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="relative" ref={flagRef}>
               <button
                 type="button"
-                aria-label="Report"
+                aria-label="Report this job"
                 onClick={() => setFlagOpen((v) => !v)}
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
@@ -289,7 +289,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               </button>
               {flagOpen ? (
                 <div role="menu" className="absolute left-0 top-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                  {["Spam/Scam", "Ghost/Expired", "Duplicate posting"].map((label) => (
+                  {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                     <button
                       key={label}
                       type="button"
@@ -307,12 +307,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="relative" ref={dislikeRef}>
               <button
                 type="button"
-                aria-label="Dislike"
+                aria-label="Not interested"
                 onClick={() => setDislikeOpen((v) => !v)}
                 className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <ThumbsDown size={15} strokeWidth={1.6} />
-                Dislike
+                Not interested
               </button>
               {dislikeOpen ? (
                 <div role="menu" className="absolute left-1/2 top-[44px] z-30 min-w-[220px] -translate-x-1/2 overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
