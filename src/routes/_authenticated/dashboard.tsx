@@ -1191,18 +1191,18 @@ function JobsScreen() {
 
             <div className="mt-6 flex flex-col gap-3">
               {!loaded && allJobs.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   Loading jobs…
                 </div>
               ) : shown.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   No matches for your current filters
                 </div>
               ) : shown.map((j) => (
                 <JobRowCard key={j.id} job={j} onOpen={() => setOpenJob(j)} />
               ))}
-              {count < visible.length ? (
-                <div ref={sentinel} className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-4 text-center text-[12px] text-[color:var(--color-text-muted)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">Loading more…</div>
+              {pageCount > 1 ? (
+                <Pagination page={currentPage} pageCount={pageCount} onChange={setPage} />
               ) : null}
             </div>
           </div>
