@@ -12,8 +12,6 @@ import {
   IconX as X,
   IconAdjustmentsHorizontal,
   IconCheck as Check,
-  IconBuilding,
-  IconWorld,
   IconArrowUpRight,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
@@ -559,8 +557,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
 
-  const direct = DIRECT_BOARDS.has(job.board);
-
   return (
     <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
       <button
@@ -588,23 +584,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       </button>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <IconTooltip
-          label={
-            direct
-              ? "Direct employer — posted by the company itself on their careers page."
-              : "Aggregated — collected from a job board or third-party aggregator."
-          }
-          side="top"
-        >
-          <span
-            tabIndex={0}
-            aria-label={direct ? "Direct employer" : "Aggregated"}
-            className="inline-flex h-[24px] w-[24px] cursor-help items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-          >
-            {direct ? <IconBuilding size={16} stroke={1.75} /> : <IconWorld size={16} stroke={1.75} />}
-          </span>
-        </IconTooltip>
-
         <div className="ml-auto flex items-center gap-1">
           <div
             className={

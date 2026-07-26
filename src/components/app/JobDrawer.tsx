@@ -94,6 +94,7 @@ function ListingMetaBlock({ job }: { job: Job }) {
   const sourceName = rawSource
     ? rawSource.replace(/\s*—.*$/, "").trim() || rawSource
     : "Unknown source";
+  const direct = job.source === "direct";
   const row = "flex items-baseline justify-between gap-3 py-1.5";
   const label = "text-[12px] text-[color:var(--color-text-muted)]" ;
   const value = "text-[13px] text-[color:var(--color-text-secondary)]";
@@ -110,6 +111,20 @@ function ListingMetaBlock({ job }: { job: Job }) {
       <div className={row}>
         <span className={label}>Source</span>
         <span className={value} style={{ fontWeight: 400, textTransform: "capitalize" }}>{sourceName}</span>
+      </div>
+      <div className={row}>
+        <span className={label}>Type</span>
+        <span
+          className={value}
+          style={{ fontWeight: 400 }}
+          title={
+            direct
+              ? "Direct employer — posted by the company itself on their careers page."
+              : "Aggregated — collected from a job board or third-party aggregator."
+          }
+        >
+          {direct ? "Direct employer" : "Aggregated"}
+        </span>
       </div>
     </div>
   );
