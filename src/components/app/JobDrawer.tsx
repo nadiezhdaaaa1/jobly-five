@@ -449,6 +449,21 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           )}
 
+          {/* Notes — available for every job (Pro) */}
+          {pro ? (
+            <div className="mt-6">
+              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Notes</div>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotesLocal(e.target.value)}
+                onBlur={handleNotesBlur}
+                rows={4}
+                placeholder="Notes — contacts, salary discussed, next steps…"
+                className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              />
+            </div>
+          ) : null}
+
           {!pro ? (
             <div className="mt-5" />
           ) : null}
