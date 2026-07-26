@@ -544,7 +544,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
 
