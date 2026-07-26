@@ -797,7 +797,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       Cover letter: {record.appliedCoverLetterName ?? "—"}
                     </span>
                   </div>
-                  {status === "applied" ? (
+                  {(status === "applied" || status === "interview" || status === "interview_screen" || status === "interview_tech" || status === "test_task" || status === "offer") ? (
                     <button
                       type="button"
                       onClick={() => setFollowUpOpen(true)}
