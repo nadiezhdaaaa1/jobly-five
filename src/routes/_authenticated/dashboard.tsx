@@ -3,8 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   IconBookmark as Bookmark,
-  IconChevronDown as ChevronDown,
-  IconChevronUp as ChevronUp,
   IconChevronRight,
   IconExternalLink as ExternalLink,
   IconFlag as Flag,
@@ -19,7 +17,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
-import { MatchLine } from "@/components/app/MatchLine";
 import { ApplyModal } from "@/components/app/ApplyModal";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
@@ -547,7 +544,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
 
@@ -598,21 +594,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </IconTooltip>
 
         <div className="ml-auto flex items-center gap-1">
-          {pro ? (
-            <button
-              type="button"
-              onClick={() => setDetailsOpen((v) => !v)}
-              aria-expanded={detailsOpen}
-              className="mr-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-            >
-              {detailsOpen ? "Hide details" : "Match details"}
-              {detailsOpen ? (
-                <ChevronUp size={14} strokeWidth={2} />
-              ) : (
-                <ChevronDown size={14} strokeWidth={2} />
-              )}
-            </button>
-          ) : null}
           <div
             className={
               "relative transition-opacity duration-150 max-md:opacity-100 " +
@@ -711,21 +692,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           </button>
         </div>
       </div>
-
-      {pro && detailsOpen ? (
-        <div className="mt-5 border-t border-[color:var(--color-border)] pt-5">
-          {job.missingSkills && job.missingSkills.length > 0 ? (
-            <MatchLine job={job} wrap onlyMissing />
-          ) : (
-            <div
-              className="text-[13px] text-[color:var(--color-text-secondary)]"
-              style={{ fontWeight: 300 }}
-            >
-              No skill gaps — you match all required skills.
-            </div>
-          )}
-        </div>
-      ) : null}
 
       <ApplyModal
         job={job}
