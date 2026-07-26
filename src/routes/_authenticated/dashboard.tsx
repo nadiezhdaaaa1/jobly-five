@@ -11,7 +11,6 @@ import {
   IconThumbDown as ThumbsDown,
   IconPlus,
   IconX as X,
-  IconBolt as Zap,
   IconAdjustmentsHorizontal,
   IconCheck as Check,
 } from "@tabler/icons-react";
@@ -581,12 +580,22 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       </button>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span
-          className="text-[12px] text-[color:var(--color-text-muted)] opacity-0 transition-opacity duration-150 group-hover:opacity-100 max-md:opacity-100"
-          style={{ fontWeight: 300, lineHeight: 1.5 }}
+        <IconTooltip
+          label={
+            direct
+              ? "Direct employer — posted by the company itself on their careers page."
+              : "Aggregated — collected from a job board or third-party aggregator."
+          }
+          side="top"
         >
-          {direct ? "Direct employer" : "Aggregated"}
-        </span>
+          <span
+            tabIndex={0}
+            className="cursor-help text-[12px] text-[color:var(--color-text-muted)] underline decoration-dotted underline-offset-2"
+            style={{ fontWeight: 300, lineHeight: 1.5 }}
+          >
+            {direct ? "Direct employer" : "Aggregated"}
+          </span>
+        </IconTooltip>
 
         <div className="ml-auto flex items-center gap-1">
           {pro ? (
@@ -604,7 +613,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               )}
             </button>
           ) : null}
-          <div className="relative" ref={flagRef}>
+          <div
+            className={
+              "relative transition-opacity duration-150 max-md:opacity-100 " +
+              (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+            }
+            ref={flagRef}
+          >
             <IconTooltip label="Report this job">
               <button
                 type="button"
@@ -632,7 +647,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             ) : null}
           </div>
 
-          <div className="relative -ml-1" ref={dislikeRef}>
+          <div
+            className={
+              "relative -ml-1 transition-opacity duration-150 max-md:opacity-100 " +
+              (dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+            }
+            ref={dislikeRef}
+          >
             <IconTooltip label="Not interested">
               <button
                 type="button"
@@ -684,10 +705,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={() => setApplyOpen(true)}
-            className="inline-flex h-[30px] items-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-[30px] items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Apply
-            <Zap size={13} strokeWidth={2} fill="currentColor" />
           </button>
         </div>
       </div>
@@ -726,8 +746,8 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
   const wrap = session
-    ? "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-[box-shadow,border-color] hover:border-[#D0D6D8]"
-    : "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color] hover:border-[#D0D6D8] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]";
+    ? "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] transition-[box-shadow,border-color,transform] hover:border-[#B7C0C3] hover:shadow-[0_4px_16px_0_rgba(12,12,13,0.10)]"
+    : "group rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,transform] hover:border-[#B7C0C3] hover:shadow-[0_6px_20px_0_rgba(12,12,13,0.12)]";
   return (
     <div className={wrap}>
       <JobRow job={job} onOpen={onOpen} />
