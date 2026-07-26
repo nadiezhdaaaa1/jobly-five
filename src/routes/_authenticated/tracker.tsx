@@ -578,7 +578,7 @@ function KanbanColumn({
   onOpen: (j: Job) => void;
   onDragStartJob: (jobId: string, height: number) => void;
   onDragEnd: () => void;
-  onArchive: (jobId: string) => void;
+  onArchive: (jobId: string, reason?: string) => void;
   onRequestApply: (jobId: string) => void;
   onMoveTo: (jobId: string, target: BoardColumn) => void;
   onMailShareToast: () => void;
@@ -656,7 +656,7 @@ function KanbanColumn({
               onDragStartJob(job.id, h);
             }}
             onDragEnd={onDragEnd}
-            onArchive={() => onArchive(job.id)}
+            onArchive={(reason) => onArchive(job.id, reason)}
             onRequestApply={() => onRequestApply(job.id)}
             onMoveTo={(t) => onMoveTo(job.id, t)}
             onMailShareToast={onMailShareToast}
