@@ -51,7 +51,8 @@ export type HistoryKind =
   | "saved"
   | "notes"
   | "rejection_details"
-  | "offer_details";
+  | "offer_details"
+  | "follow_up";
 
 export type HistoryEntry = {
   id: string;
@@ -446,6 +447,19 @@ export function setOfferDetails(id: string, details: string) {
 export function setNotes(id: string, notes: string) {
   const r = ensure(id);
   r.notes = notes;
+  sync(id);
+  emit();
+}
+
+// Log a follow-up email send (currently mocked in the UI; the entry lets us
+// show it in the job history and later swap in a real send).
+export function logFollowUp(
+  id: string,
+  payload: { to: string; from: string; subject?: string }
+) {
+  const r = ensure(id);
+  const summary = `Follow-up sent to ${payload.to} from ${payload.from}`;
+  logHistory(r, "follow_up", summary);
   sync(id);
   emit();
 }
