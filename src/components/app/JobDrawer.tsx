@@ -80,6 +80,80 @@ function BigRing({ score }: { score: number }) {
   );
 }
 
+function JobDescriptionBlock({ job }: { job: Job }) {
+  const [expanded, setExpanded] = useState(false);
+  const sections = job.description ?? [];
+  if (!sections.length) return null;
+  const first = sections[0];
+  const rest = sections.slice(1);
+  return (
+    <div className="mt-5">
+      <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
+        {first.heading ?? "About the role"}
+      </div>
+      {first.body ? (
+        <p
+          className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300, lineHeight: 1.6 }}
+        >
+          {first.body}
+        </p>
+      ) : null}
+      {first.bullets?.length ? (
+        <ul
+          className="mt-2 list-disc pl-5 text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300, lineHeight: 1.6 }}
+        >
+          {first.bullets.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>
+      ) : null}
+
+      {expanded && rest.length ? (
+        <div className="mt-4 flex flex-col gap-4">
+          {rest.map((s, i) => (
+            <div key={i}>
+              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
+                {s.heading}
+              </div>
+              {s.body ? (
+                <p
+                  className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]"
+                  style={{ fontWeight: 300, lineHeight: 1.6 }}
+                >
+                  {s.body}
+                </p>
+              ) : null}
+              {s.bullets?.length ? (
+                <ul
+                  className="mt-2 list-disc pl-5 text-[13px] text-[color:var(--color-text-secondary)]"
+                  style={{ fontWeight: 300, lineHeight: 1.6 }}
+                >
+                  {s.bullets.map((b, j) => (
+                    <li key={j}>{b}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {rest.length ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          aria-expanded={expanded}
+          className="mt-3 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+        >
+          {expanded ? "Show less" : "Show full description"}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const plan = usePlan();
   const pro = isPro(plan);
