@@ -1077,14 +1077,6 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="English" collapseSignal={collapseSignal} dirty={p.english !== ""} onReset={() => set({ english: "" })}>
-          <div className="flex flex-wrap gap-1.5">
-            {ENGLISH_LEVELS.map((l) => (
-              <SelectChip key={l} label={l} selected={p.english === l} onClick={() => set({ english: p.english === l ? "" : l })} />
-            ))}
-          </div>
-        </FilterSection>
-
         <FilterSection title="Sources of search" collapseSignal={collapseSignal} dirty={p.sources.length !== ALL_BOARDS.length} onReset={() => set({ sources: [...ALL_BOARDS] as Board[] })}>
           <div className="flex flex-wrap gap-1.5">
             {ALL_BOARDS.map((b) => {
