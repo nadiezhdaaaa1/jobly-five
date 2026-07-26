@@ -557,8 +557,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
 
-  const direct = DIRECT_BOARDS.has(job.board);
-
   return (
     <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
       <button
