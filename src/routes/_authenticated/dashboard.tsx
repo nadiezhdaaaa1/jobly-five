@@ -596,21 +596,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </IconTooltip>
 
         <div className="ml-auto flex items-center gap-1">
-          {pro ? (
-            <button
-              type="button"
-              onClick={() => setDetailsOpen((v) => !v)}
-              aria-expanded={detailsOpen}
-              className="mr-1 inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-            >
-              {detailsOpen ? "Hide details" : "Match details"}
-              {detailsOpen ? (
-                <ChevronUp size={14} strokeWidth={2} />
-              ) : (
-                <ChevronDown size={14} strokeWidth={2} />
-              )}
-            </button>
-          ) : null}
           <div
             className={
               "relative transition-opacity duration-150 max-md:opacity-100 " +
