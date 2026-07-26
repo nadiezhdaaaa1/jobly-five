@@ -435,6 +435,20 @@ export function setNotes(id: string, notes: string) {
   emit();
 }
 
+// Assign a card to a specific board column (for user-defined column layouts).
+// Also normalizes the record's status to the column's stage when they differ.
+export function setCardColumn(id: string, columnId: string, stage?: JobStatus) {
+  const r = ensure(id);
+  if (r.columnId === columnId && (!stage || r.status === stage)) return;
+  r.columnId = columnId;
+  if (stage && r.status !== stage) {
+    r.status = stage;
+    r.movedAt = today();
+  }
+  sync(id);
+  emit();
+}
+
 export function removeFromTracker(id: string) {
   const r = ensure(id);
   r.status = "default";
