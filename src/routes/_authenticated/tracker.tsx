@@ -608,7 +608,7 @@ function KanbanColumn({
 }) {
   return (
     <div
-      className="flex w-full min-w-0 flex-col lg:flex-1 lg:basis-0"
+      className="flex w-full min-w-0 flex-col lg:w-[240px] lg:shrink-0"
       onDragOver={(e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
@@ -627,12 +627,12 @@ function KanbanColumn({
         style={{ height: 44 }}
         aria-expanded={!collapsed}
       >
-        <span className="text-[16px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "24px" }}>
+        <span className="text-[14px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "20px" }}>
           {column.title}
         </span>
         <span
-          className="inline-flex items-center justify-center text-[14px]"
-          style={{ width: 24, height: 24, background: "#F1F3F3", borderRadius: 4, color: MUTED_TEXT }}
+          className="inline-flex items-center justify-center text-[12px]"
+          style={{ width: 22, height: 22, background: "#F1F3F3", borderRadius: 4, color: MUTED_TEXT }}
         >
           {jobs.length}
         </span>
@@ -855,7 +855,7 @@ function TrackerScreen() {
 
         {/* Board */}
         <div className="mt-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-4 lg:overflow-x-auto lg:pb-2">
             {columns.map((c) => (
               <KanbanColumn
                 key={c.id}
