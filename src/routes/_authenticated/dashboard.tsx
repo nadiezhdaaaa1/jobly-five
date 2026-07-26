@@ -12,6 +12,8 @@ import {
   IconX as X,
   IconAdjustmentsHorizontal,
   IconCheck as Check,
+  IconBuilding,
+  IconWorld,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -587,10 +589,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         >
           <span
             tabIndex={0}
-            className="cursor-help text-[12px] text-[color:var(--color-text-muted)] underline decoration-dotted underline-offset-2"
-            style={{ fontWeight: 300, lineHeight: 1.5 }}
+            aria-label={direct ? "Direct employer" : "Aggregated"}
+            className="inline-flex h-[24px] w-[24px] cursor-help items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
-            {direct ? "Direct employer" : "Aggregated"}
+            {direct ? <IconBuilding size={16} stroke={1.75} /> : <IconWorld size={16} stroke={1.75} />}
           </span>
         </IconTooltip>
 
