@@ -251,6 +251,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
+          {/* Description */}
+          <JobDescriptionBlock job={job} />
+
           {!inTracker || status === "saved" ? (
           <>
           {/* Apply */}
