@@ -828,7 +828,6 @@ function FiltersSidebar({
   applied,
   onChange,
   onApply,
-  onReset,
   onSave,
   open,
   onToggle,
@@ -840,7 +839,6 @@ function FiltersSidebar({
   applied: FilterState;
   onChange: (f: FilterState) => void;
   onApply: () => void;
-  onReset: () => void;
   onSave: () => void;
   open: boolean;
   onToggle: () => void;
@@ -1088,7 +1086,6 @@ function FiltersSidebar({
 
       <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:bg-[color:var(--color-background)] lg:px-0">
         <button type="button" onClick={onSave} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Save</button>
-        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
         <button
           type="button"
           onClick={onApply}
@@ -1225,7 +1222,6 @@ function JobsScreen() {
               applied={applied}
               onChange={setPending}
               onApply={() => setApplied(pending)}
-             }
               onSave={() => {
                 setSaveName(`Filter ${saved.length + 1}`);
                 setSaveOpen(true);
