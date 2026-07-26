@@ -989,7 +989,7 @@ function FiltersSidebar({
           </div>
         </FilterSection>
 
-        <FilterSection title="Salary" collapseSignal={collapseSignal} dirty={p.minSalary !== 0} onReset={() => set({ minSalary: 0 })}>
+        <FilterSection title="Salary (annual)" collapseSignal={collapseSignal} dirty={p.minSalary !== 0} onReset={() => set({ minSalary: 0 })}>
           <div className="flex items-center gap-3">
             {(() => {
               const steps = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
@@ -1014,8 +1014,8 @@ function FiltersSidebar({
                       className="jobly-range absolute inset-0 w-full"
                     />
                   </div>
-                  <span className="w-[48px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
-                    {p.minSalary === 0 ? "Off" : `$${(p.minSalary / 1000).toLocaleString()}k`}
+                  <span className="w-[64px] text-right text-[13px] font-semibold text-[color:var(--color-foreground)]">
+                    {p.minSalary === 0 ? "Off" : `$${(p.minSalary / 1000).toLocaleString()}k/yr`}
                   </span>
                 </>
               );
