@@ -184,6 +184,45 @@ export function MatchLine({
 
   if (!segments.length) return null;
 
+  // In wrap mode (Match details panel), render each group as its own row for
+  // a cleaner read: "Label" on the left, chips on the right.
+  if (wrap) {
+    return (
+      <div className={cn("flex flex-col gap-2", className)}>
+        {groups.map((g) => {
+          const match = g.tone === "match";
+          return (
+            <div
+              key={g.label}
+              className="grid grid-cols-[88px_1fr] items-start gap-x-3 gap-y-1 sm:grid-cols-[104px_1fr]"
+            >
+              <span
+                className="pt-[3px] text-[13px] text-[color:var(--color-text-secondary)]"
+                style={{ fontWeight: 300 }}
+              >
+                {g.label}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {g.items.map((it) => (
+                  <span
+                    key={it}
+                    className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[12px]"
+                    style={{
+                      background: match ? "var(--color-mint)" : "var(--color-danger-subtle)",
+                      color: match ? "var(--color-green)" : "var(--color-danger)",
+                    }}
+                  >
+                    {it}
+                  </span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   const shown = wrap ? segments : segments.slice(0, visible);
   const hidden = segments.length - shown.length;
 
