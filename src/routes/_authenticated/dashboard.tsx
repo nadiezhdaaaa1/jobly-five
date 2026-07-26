@@ -695,21 +695,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </div>
       </div>
 
-      {pro && detailsOpen ? (
-        <div className="mt-5 border-t border-[color:var(--color-border)] pt-5">
-          {job.missingSkills && job.missingSkills.length > 0 ? (
-            <MatchLine job={job} wrap onlyMissing />
-          ) : (
-            <div
-              className="text-[13px] text-[color:var(--color-text-secondary)]"
-              style={{ fontWeight: 300 }}
-            >
-              No skill gaps — you match all required skills.
-            </div>
-          )}
-        </div>
-      ) : null}
-
       <ApplyModal
         job={job}
         open={applyOpen}
