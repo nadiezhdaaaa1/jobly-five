@@ -325,6 +325,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
+          {/* Listing metadata */}
+          <ListingMetaBlock job={job} />
+
           {/* Description */}
           <JobDescriptionBlock job={job} />
 
