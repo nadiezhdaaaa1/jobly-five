@@ -17,7 +17,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
-import { MatchLine } from "@/components/app/MatchLine";
 import { ApplyModal } from "@/components/app/ApplyModal";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
