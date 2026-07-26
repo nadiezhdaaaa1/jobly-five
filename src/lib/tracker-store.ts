@@ -288,13 +288,25 @@ export function setStatus(id: string, next: JobStatus) {
     // Do not auto-assign a default interview stage — the transition dialog
     // (or the user editing the drawer) records the real stage explicitly.
   }
+  if (next === "interview_screen" || next === "interview_tech" || next === "test_task") {
+    r.interviewAt ??= today();
+  }
   if (next === "offer") {
     r.offerAt ??= today();
     // Same rationale: leave offerStatus unset until the user picks one.
   }
   if (next === "rejection") r.rejectionAt ??= today();
   // History: only log meaningful transitions between tracker columns / saved.
-  const trackerCols: JobStatus[] = ["saved", "applied", "interview", "offer", "rejection"];
+  const trackerCols: JobStatus[] = [
+    "saved",
+    "applied",
+    "interview",
+    "interview_screen",
+    "interview_tech",
+    "test_task",
+    "offer",
+    "rejection",
+  ];
   if (next === "saved" && !trackerCols.includes(prev)) {
     logHistory(r, "saved", "Saved");
   } else if (prev === "saved" && next === "default") {
@@ -478,7 +490,12 @@ export function useCounts() {
   for (const r of records.values()) {
     if (r.status === "saved") saved++;
     else if (r.status === "applied") applied++;
-    else if (r.status === "interview") interview++;
+    else if (
+      r.status === "interview" ||
+      r.status === "interview_screen" ||
+      r.status === "interview_tech" ||
+      r.status === "test_task"
+    ) interview++;
     else if (r.status === "offer") offer++;
     else if (r.status === "rejection") rejection++;
   }
@@ -493,7 +510,15 @@ export function useTrackerHiddenIds(): Set<string> {
   useSyncExternalStore(subscribe, get, get);
   const set = new Set<string>();
   for (const [id, r] of records) {
-    if (r.status === "applied" || r.status === "interview" || r.status === "offer" || r.status === "rejection") {
+    if (
+      r.status === "applied" ||
+      r.status === "interview" ||
+      r.status === "interview_screen" ||
+      r.status === "interview_tech" ||
+      r.status === "test_task" ||
+      r.status === "offer" ||
+      r.status === "rejection"
+    ) {
       set.add(id);
     }
   }
@@ -526,6 +551,7 @@ function toRow(userId: string, jobId: string, r: JobRecord) {
     notes: r.notes ?? "",
     interview_stage: r.interviewStage ?? null,
     offer_status: r.offerStatus ?? null,
+    column_id: r.columnId ?? null,
     applied_resume_name: r.appliedResumeName ?? null,
     applied_cover_letter_name: r.appliedCoverLetterName ?? null,
     rejection_details: r.rejectionDetails ?? null,
@@ -562,6 +588,7 @@ function rowToRecord(row: Record<string, unknown>): JobRecord {
     movedAt: (row.moved_at as string | null) ?? undefined,
     interviewStage: (row.interview_stage as string | null) ?? undefined,
     offerStatus: (row.offer_status as string | null) ?? undefined,
+    columnId: (row.column_id as string | null) ?? undefined,
     appliedResumeName: (row.applied_resume_name as string | null) ?? undefined,
     appliedCoverLetterName: (row.applied_cover_letter_name as string | null) ?? undefined,
     rejectionDetails: (row.rejection_details as string | null) ?? undefined,
