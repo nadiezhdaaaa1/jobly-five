@@ -30,9 +30,18 @@ import {
   InterviewTransitionDialog,
   OfferTransitionDialog,
   RejectedTransitionDialog,
+  TestTaskTransitionDialog,
   INTERVIEW_STAGES,
+  SCREEN_INTERVIEW_STAGES,
+  TECH_INTERVIEW_STAGES,
   OFFER_STAGES,
 } from "@/components/app/TrackerTransitionDialogs";
+import {
+  resolveColumnForCard,
+  useColumns,
+  type BoardColumn,
+} from "@/lib/board-columns-store";
+import { setCardColumn } from "@/lib/tracker-store";
 import { JobHistory } from "@/components/app/JobHistory";
 import { MatchLine } from "@/components/app/MatchLine";
 import { IconTooltip } from "@/components/app/IconTooltip";
@@ -281,28 +290,38 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
   const reducedMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-  const inTracker = status === "saved" || status === "applied" || status === "interview" || status === "offer" || status === "rejection";
-  const columns: JobStatus[] = ["saved", "applied", "interview", "offer", "rejection"];
-  const columnLabel: Record<string, string> = {
-    saved: "Saved",
-    applied: "Applied",
-    interview: "Interview",
-    offer: "Offers",
-    rejection: "Rejected",
-  };
+  const inTracker =
+    status === "saved" ||
+    status === "applied" ||
+    status === "interview" ||
+    status === "interview_screen" ||
+    status === "interview_tech" ||
+    status === "test_task" ||
+    status === "offer" ||
+    status === "rejection";
+  const isInterviewFamily =
+    status === "interview" ||
+    status === "interview_screen" ||
+    status === "interview_tech" ||
+    status === "test_task";
+  const boardColumns = useColumns();
+  const currentColumn = resolveColumnForCard(record.columnId, status);
+  const currentColumnTitle = currentColumn?.title ?? "";
 
-  function requestMoveTo(target: JobStatus) {
+  function requestMoveToColumn(col: BoardColumn) {
     setMoveOpen(false);
-    if (target === status) return;
-    if (target === "applied") {
+    if (col.id === currentColumn?.id) return;
+    if (col.stage === "applied") {
+      setCardColumn(job.id, col.id);
       setApplyOpen(true);
       return;
     }
-    if (target === "saved") {
-      setStatus(job.id, "saved");
+    if (col.stage === "saved") {
+      setCardColumn(job.id, col.id, "saved");
       return;
     }
-    setPending({ target: target as "interview" | "rejection" | "offer", source: status });
+    // interview family / offer / rejection open transition dialogs.
+    setPendingCol({ col, source: status });
   }
 
   function cancelPending() {
@@ -315,14 +334,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
   const dateLine = (() => {
     if (status === "applied") return `Applied ${dateHelpers.shortDate(record.appliedAt)}`;
-    if (status === "interview") return `Applied ${dateHelpers.shortDate(record.appliedAt ?? record.interviewAt)}`;
+    if (isInterviewFamily) return `Applied ${dateHelpers.shortDate(record.appliedAt ?? record.interviewAt)}`;
     if (status === "offer") return `Offer received ${dateHelpers.shortDate(record.offerAt)}`;
     if (status === "rejection") return `Received ${dateHelpers.shortDate(record.rejectionAt)}`;
     return `Saved ${dateHelpers.shortDate(record.savedAt ?? new Date().toISOString())}`;
   })();
 
   const reminderToday = record.reminderAt ? dateHelpers.isSameLocalDay(record.reminderAt) : false;
-  const moveOptions = useMemo(() => columns.filter((c) => c !== status), [status]);
+  const moveOptions = useMemo(
+    () => boardColumns.filter((c) => c.id !== currentColumn?.id),
+    [boardColumns, currentColumn?.id],
+  );
   void moveOptions;
 
   return (
