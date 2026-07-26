@@ -232,9 +232,10 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [pending, setPending] = useState<
-    | { target: "interview" | "rejection" | "offer"; source: JobStatus }
+    | { col: BoardColumn; source: JobStatus }
     | null
   >(null);
+  const setPendingCol = setPending;
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
@@ -346,6 +347,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
     [boardColumns, currentColumn?.id],
   );
   void moveOptions;
+  void reminderToday;
 
   return (
     <div className="fixed inset-0 z-50" role="presentation">
