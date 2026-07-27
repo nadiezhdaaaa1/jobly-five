@@ -858,7 +858,7 @@ function TrackerScreen() {
 
         {/* Board */}
         <div className="mt-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:gap-4 lg:overflow-x-auto lg:pb-2">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-2 lg:overflow-x-auto lg:pb-2">
             {columns.map((c) => (
               <KanbanColumn
                 key={c.id}
