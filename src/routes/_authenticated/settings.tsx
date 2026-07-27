@@ -190,7 +190,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         {/* Pro card */}
         <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
         <div
-          className={`relative flex h-full flex-col rounded-[8px] bg-[color:var(--color-surface-1)] p-6 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
+          className="relative flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
           style={{ borderColor: "var(--color-accent)", boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
         >
           {(plan === "pro" || plan === "paused") ? (
