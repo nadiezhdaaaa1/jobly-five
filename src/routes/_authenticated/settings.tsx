@@ -154,7 +154,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       <div className="mt-5 grid gap-4 md:grid-cols-2 items-stretch">
         {/* Free card */}
         <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
-        <div className={`flex h-full flex-col rounded-[8px] bg-[color:var(--color-surface-1)] p-6 ${plan === "free" ? "border-2" : "border"}`} style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)", borderColor: plan === "free" ? "var(--color-accent)" : undefined }}>
+        <div className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
           <div className="flex items-baseline justify-between">
             <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
             <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
