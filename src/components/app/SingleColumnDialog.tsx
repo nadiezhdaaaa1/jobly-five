@@ -64,7 +64,7 @@ export function SingleColumnDialog({
       ? "At least one Interview column must remain."
       : "This column is required and can't be deleted."
     : activeInColumn > 0
-    ? `Move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first.`
+    ? `To delete, move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first.`
     : "";
 
   if (!open || !col) return null;
