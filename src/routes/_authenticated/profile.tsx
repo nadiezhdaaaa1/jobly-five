@@ -1159,7 +1159,7 @@ function CoverLettersTab({
         onSave={(name, body) => {
           if (editing === "new") {
             const cl = addCoverLetter({ name, body });
-            if (!cl) onToast("Limit of 5 reached");
+            if (!cl) onToast(`Limit of ${COVER_LETTER_LIMIT} reached`);
             else onToast("Template saved");
           } else if (editing) {
             updateCoverLetter(editing.id, { name, body });
