@@ -388,7 +388,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 function BillingCard({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
-      <Card title="Billing & payment">
+      <Card title="Billing and payment">
         <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           No billing yet. Start a Pro trial to see invoices here.
         </p>
@@ -401,7 +401,7 @@ function BillingCard({ plan }: { plan: Plan }) {
     { date: "May 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
   ];
   return (
-    <Card title="Billing & payment">
+    <Card title="Billing and payment">
       <div className="flex items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-12 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] text-[11px] font-semibold text-[color:var(--color-text-muted)]">
@@ -649,7 +649,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const mismatch = confirm.length > 0 && confirm !== next;
 
   return (
-    <Card title="Security & sign-in">
+    <Card title="Security and sign in">
       <form
         onSubmit={(e) => {
           e.preventDefault();
