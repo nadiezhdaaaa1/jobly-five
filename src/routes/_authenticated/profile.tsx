@@ -1962,13 +1962,6 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
                   key={s.id}
                   className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
                 >
-                  <div
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
-                    style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
-                    aria-hidden
-                  >
-                    <FileText size={20} strokeWidth={1.6} />
-                  </div>
                   <div className="min-w-0 flex-1">
                     {editing ? (
                       <input
