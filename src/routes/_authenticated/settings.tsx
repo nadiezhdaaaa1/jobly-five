@@ -422,7 +422,6 @@ function BillingCard({ plan }: { plan: Plan }) {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-[color:var(--color-foreground)]">{r.amount}</span>
-              <span className="text-[color:var(--color-text-muted)]">Receipt</span>
             </div>
           </li>
         ))}
