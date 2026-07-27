@@ -299,13 +299,6 @@ function ProfileScreen() {
                 onToast={toast.show}
               />
             )}
-            {tab === "achievements" && (
-              <AchievementsTab
-                extras={extras}
-                cfg={cfg}
-                onToast={toast.show}
-              />
-            )}
             {tab === "experience" && (
               <ExperienceTab
                 resume={resume}
