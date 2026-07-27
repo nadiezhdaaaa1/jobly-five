@@ -176,7 +176,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
                     <ArrowDown size={14} strokeWidth={1.8} />
                   </button>
                 </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <div className="flex min-w-0 flex-1 flex-col">
                   <input
                     type="text"
                     value={draftTitles[c.id] ?? c.title}
@@ -189,7 +189,6 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
                     className="h-9 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
                     style={{ borderColor: "#E3E7E8" }}
                   />
-                  <span className="text-[11px] font-light text-[color:var(--color-text-muted)]">Type: {KIND_LABEL[c.kind]}</span>
                 </div>
                 <button
                   type="button"
