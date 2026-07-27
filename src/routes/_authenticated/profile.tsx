@@ -83,6 +83,7 @@ import {
   deleteSavedFilter,
   renameSavedFilter,
   useSavedFilters,
+  SAVED_FILTER_LIMIT,
 } from "@/lib/saved-filters-store";
 
 const TAB_KEYS = [
