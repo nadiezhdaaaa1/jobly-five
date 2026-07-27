@@ -151,12 +151,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       </div>
 
       {/* Two plan cards */}
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-4 md:grid-cols-2 items-stretch">
         {/* Free card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-1">
-        <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-3" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
+        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
+        <div className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
           <div className="flex items-baseline justify-between">
-            <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Free</div>
+            <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
             <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
           </div>
           <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
@@ -169,7 +169,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <li>1 resume, 1 cover-letter template</li>
             <li>Report ghost / scam jobs</li>
           </ul>
-          <div className="mt-4">
+          <div className="mt-auto pt-4">
             {plan === "free" ? (
               <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] font-semibold text-[color:var(--color-text-secondary)]">
                 Current plan
