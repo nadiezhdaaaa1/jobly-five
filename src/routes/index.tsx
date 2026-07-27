@@ -961,18 +961,6 @@ function Pricing() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-5 text-sm text-[color:var(--color-text-secondary)]">
-          Billed $9.99/mo after your 3-day trial. Cancel in 2 steps. Pause for 6 months if you find a job.
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <Link
-            to="/quiz"
-            className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-          >
-            Start free trial
-          </Link>
-        </div>
       </div>
     </section>
   );
