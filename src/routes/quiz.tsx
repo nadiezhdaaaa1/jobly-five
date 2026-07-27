@@ -1156,14 +1156,14 @@ function SkillsGroup({
         </div>
       </div>
 
-      <Popover open={open} onOpenChange={setOpen}>
-      <PopoverAnchor asChild>
+      <div className="relative">
       <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
+          onClick={() => setOpen(true)}
           placeholder={searchPlaceholder}
           className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
@@ -1178,15 +1178,10 @@ function SkillsGroup({
           </button>
         )}
       </div>
-      </PopoverAnchor>
 
-      <PopoverContent
-        align="start"
-        side="bottom"
-        sideOffset={4}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        style={{ width: "var(--radix-popover-trigger-width)" }}
-        className="max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
+      {open && (
+      <div
+        className="absolute left-0 right-0 top-full z-40 mt-1 max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
         <div className="flex flex-col gap-[4px]">
           {filtered.map((s) => {
@@ -1225,8 +1220,9 @@ function SkillsGroup({
             <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
           )}
         </div>
-      </PopoverContent>
-      </Popover>
+      </div>
+      )}
+      </div>
 
       {value.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
