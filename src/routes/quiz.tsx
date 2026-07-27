@@ -1006,7 +1006,7 @@ export function RoleStep({
         </span>
       </div>
 
-      <div className="mt-3 max-h-[260px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      <div className="mt-3 rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         {grouped.length === 0 && (
           <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
