@@ -666,9 +666,6 @@ function PreferencesTab({
 
   return (
     <>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        Collected from onboarding. This powers your match score.
-      </p>
       <div className="rounded-[8px] border bg-[color:var(--color-surface-1)]">
         {rows
           .filter((r) => !r.hidden)
