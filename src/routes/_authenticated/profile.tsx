@@ -288,7 +288,6 @@ function ProfileScreen() {
               <DocumentsTab
                 onToast={toast.show}
                 resume={resume}
-                cvFile={extras.cvFile}
               />
             )}
             {tab === "letters" && (
