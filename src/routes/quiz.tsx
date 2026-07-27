@@ -857,7 +857,7 @@ export function FieldStep({
         This narrows the roles and skills we'll ask about next.
       </p>
       <div className="mt-6">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-[4px]">
           {groups.map((f) => {
             const selected = value === f;
             return (
