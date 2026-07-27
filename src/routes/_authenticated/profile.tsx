@@ -707,7 +707,7 @@ function PreferencesTab({
           <DialogTitle className="sr-only">
             Edit {rows.find((r) => r.key === editing)?.label ?? ""}
           </DialogTitle>
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex-1 overflow-y-auto px-5 pt-5 pb-0">
             {editing === "field" && (
               <FieldStep value={draft.field} onChange={(f) => setDraft((d) => ({ ...d, field: f }))} onContinue={commit} submitLabel="Save" onCancel={() => setEditing(null)} />
             )}
