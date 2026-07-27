@@ -846,6 +846,12 @@ function QualityOverQuantity() {
 /* ------------------------------ Pricing ------------------------------ */
 
 function Pricing() {
+  const [period, setPeriod] = useState<"monthly" | "6mo" | "annual">("annual");
+  const priceRows: Record<"monthly" | "6mo" | "annual", { price: string; billed: string; save?: string }> = {
+    monthly: { price: "$9.99", billed: "Billed monthly" },
+    "6mo": { price: "$7.99", billed: "Billed $47.94 every 6 months", save: "Save 20%" },
+    annual: { price: "$5.99", billed: "Billed $71.88 per year", save: "Save 40%" },
+  };
   const rows: { label: string; free: string | boolean; pro: string | boolean }[] = [
     { label: "Matches per digest", free: "Top 5", pro: "Top 5" },
     { label: "Digest frequency", free: "Weekly", pro: "Daily" },
