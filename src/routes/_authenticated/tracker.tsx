@@ -624,7 +624,7 @@ function KanbanColumn({
         type="button"
         onClick={onToggleCollapse}
         className="flex w-full items-center gap-2 lg:pointer-events-none"
-        style={{ height: 44 }}
+        style={{ height: 44, paddingLeft: 4 }}
         aria-expanded={!collapsed}
       >
         <span className="text-[14px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "20px" }}>
