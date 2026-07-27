@@ -103,40 +103,48 @@ function ListingMetaBlock({ job }: { job: Job }) {
     ? rawSource.replace(/\s*—.*$/, "").trim() || rawSource
     : "Unknown source";
   const direct = job.source === "direct";
-  const row = "flex items-baseline justify-between gap-3 py-1.5";
-  const label = "text-[12px] text-[color:var(--color-text-muted)]" ;
+  const label = "text-[12px] text-[color:var(--color-text-muted)]";
   const value = "text-[13px] text-[color:var(--color-text-secondary)]";
+  const bullet = (
+    <span aria-hidden className="text-[color:var(--color-text-muted)] select-none">•</span>
+  );
+  const item = "inline-flex items-baseline gap-1.5";
   return (
     <div className="mt-4 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2">
-      <div className={row}>
-        <span className={label}>Posted</span>
-        <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(postedDays)}</span>
-      </div>
-      <div className={row}>
-        <span className={label}>Added to Jobly</span>
-        <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(fetchedDaysAgo)}</span>
-      </div>
-      <div className={row}>
-        <span className={label}>Source</span>
-        <span className={value} style={{ fontWeight: 400, textTransform: "capitalize" }}>{sourceName}</span>
-      </div>
-      <div className={row}>
-        <span className={label}>Type</span>
-        <IconTooltip
-          side="left"
-          label={
-            direct
-              ? "Direct employer — posted by the company itself on their careers page."
-              : "Aggregated — collected from a job board or third-party aggregator."
-          }
-        >
-          <span
-            className={`${value} cursor-help underline decoration-dotted underline-offset-4 decoration-[color:var(--color-border)]`}
-            style={{ fontWeight: 400 }}
+      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span className={item}>
+          <span className={label}>Posted</span>
+          <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(postedDays)}</span>
+        </span>
+        {bullet}
+        <span className={item}>
+          <span className={label}>Added to Jobly</span>
+          <span className={value} style={{ fontWeight: 400 }}>{formatDateLabel(fetchedDaysAgo)}</span>
+        </span>
+        {bullet}
+        <span className={item}>
+          <span className={label}>Source</span>
+          <span className={value} style={{ fontWeight: 400, textTransform: "capitalize" }}>{sourceName}</span>
+        </span>
+        {bullet}
+        <span className={item}>
+          <span className={label}>Type</span>
+          <IconTooltip
+            side="left"
+            label={
+              direct
+                ? "Direct employer — posted by the company itself on their careers page."
+                : "Aggregated — collected from a job board or third-party aggregator."
+            }
           >
-            {direct ? "Direct employer" : "Aggregated"}
-          </span>
-        </IconTooltip>
+            <span
+              className={`${value} cursor-help underline decoration-dotted underline-offset-4 decoration-[color:var(--color-border)]`}
+              style={{ fontWeight: 400 }}
+            >
+              {direct ? "Direct employer" : "Aggregated"}
+            </span>
+          </IconTooltip>
+        </span>
       </div>
     </div>
   );
