@@ -21,6 +21,8 @@ import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal } from "@/components/app/ApplyModal";
 import { useJobs } from "@/lib/jobs-store";
+import { getDbJobById } from "@/lib/jobs-store";
+import { rolesOverlap } from "@/lib/match";
 import type { Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
