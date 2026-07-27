@@ -1,52 +1,96 @@
-## Tracker: new stages + custom columns
+# Real jobs via ATS direct feeds (Greenhouse + Lever + Ashby)
 
-### 1. Column model refactor
-Move from the fixed DB enum (`default | saved | applied | interview | offer | rejection | ...`) to a two-layer model:
+Replace the current mock/seeded jobs in the `jobs` table with real, live postings pulled directly from company Applicant Tracking Systems. No third-party aggregator, no API keys required for Greenhouse and Lever; Ashby uses the existing connector gateway.
 
-- **Stage** = stable canonical bucket used for logic, reminders, tags, history. Extend to:
-  `saved`, `applied`, `interview_screen`, `interview_tech`, `test_task`, `offer`, `rejection`, `dismissed`, `reported`.
-- **Board columns** = per-user ordered list of columns; each column maps to one stage. Default order:
-  `Saved → Applied → Screen interview → Tech interview → Test task → Offer → Rejected`.
+## How it works
 
-Stored in a new `src/lib/board-columns-store.ts` (localStorage, per-user), shape:
-```ts
-type BoardColumn = { id: string; title: string; stage: Stage; };
+1. Maintain a small curated list of ~80–120 companies with their ATS handles (e.g. `stripe` on Greenhouse, `netflix` on Lever). Stored in a new `job_sources` table so we can add/remove companies later without a code deploy.
+2. A scheduled sync endpoint fetches each company's public job feed, normalizes the response into Jobly's job shape, and upserts into the existing `jobs` table.
+3. A cron job (pg_cron + pg_net) hits the endpoint every 6 hours.
+4. Postings not seen in the latest sync for >48h get pruned so stale jobs disappear.
+
+## Data sources
+
+- **Greenhouse Job Board API** — `https://boards-api.greenhouse.io/v1/boards/{handle}/jobs?content=true`. Public, no auth, returns title, location, department, content (HTML description), absolute_url.
+- **Lever Postings API** — `https://api.lever.co/v0/postings/{handle}?mode=json`. Public, no auth, returns categories (team, location, commitment), descriptionPlain, hostedUrl.
+- **Ashby** — via existing connector gateway (`POST /job.list`). Optional; only enabled if the user later links an Ashby connection. Not required for launch.
+
+All three are **"Direct employer"** — the `source` field will reflect the ATS (`greenhouse` / `lever` / `ashby`) and Jobly's existing Direct/Aggregated badge stays truthful.
+
+## Schema changes (migration)
+
+```text
+job_sources
+  id            uuid pk
+  ats           text  ('greenhouse' | 'lever' | 'ashby')
+  handle        text  (company slug on the ATS)
+  company_name  text
+  company_domain text
+  company_sector text
+  enabled       boolean default true
+  last_synced_at timestamptz
+  unique (ats, handle)
+
+jobs (additive columns)
+  external_id      text   (e.g. 'greenhouse:stripe:4567890')
+  external_url     text   (apply link — hostedUrl / absolute_url)
+  source_ats       text
+  last_seen_at     timestamptz
+  raw_description  text   (HTML/plain from the ATS, used for the drawer)
+  unique (external_id)
 ```
 
-Users can:
-- Rename a column (title only, stage unchanged).
-- Reorder columns (drag or ↑/↓ buttons in an "Edit columns" dialog).
-- Add a custom column (choose which stage it belongs to; multiple columns can share a stage, cards keep a `columnId` preference).
-- Delete a custom column (its cards fall back to the default column for that stage).
-- Reset to defaults.
+`jobs.id` stays `text` (matches current schema). New rows use `external_id` as `id`. Existing seeded mock rows get deleted in the same migration since we're replacing.
 
-### 2. Database migration
-Extend `job_status` enum with `interview_screen`, `interview_tech`, `test_task`. Keep old `interview` value for backward compatibility; existing `interview` rows are migrated to `interview_screen` in the same migration. Add optional `column_id text` to `user_job_state` so cards remember which custom column they sit in.
+RLS: `job_sources` — admin-only writes, no public read (managed via SQL/admin). `jobs` — existing "readable by everyone" policy is kept.
 
-### 3. Reminders + status logic
-- Reminders currently gated to `interview` and `offer` → extend to `interview_screen`, `interview_tech`, `test_task`, `offer`.
-- Transition dialogs (`TrackerTransitionDialogs.tsx`): rename "Interview" flow into two triggers (Screen / Tech) plus a new "Test task" flow (deadline reminder like interview). Rejection dialog unchanged, applied to any active stage.
-- History labels + tag colors updated for the new stages (mint like interview/offer).
+## Sync endpoint
 
-### 4. UI
-- `tracker.tsx`: render columns from the store instead of a hard-coded array. Existing DnD keeps working; drop target = column, which resolves stage.
-- New **Edit columns** dialog opened from a small pencil/settings button in the Tracker header. Lists columns with drag handles, rename input, delete (custom only), "Add column" (title + stage select), and "Reset to defaults". Mobile: same dialog, columns still stack vertically.
-- Column headers show the user-defined title; default titles for the new stages: "Screen interview", "Tech interview", "Test task", "Rejected" (moved to last).
-- Job Drawer "Move to" menu: uses the same column list; rejection stays last.
-- Dashboard hides jobs that are in any active tracker stage (same rule, extended to new stages).
+`POST /api/public/hooks/sync-jobs` (TanStack server route, `src/routes/api/public/hooks/sync-jobs.ts`)
 
-### 5. Migration for existing users
-On first load after this change, if the local board-columns store is empty, seed with the new default order. Any locally saved `interview` cards get remapped to `interview_screen` client-side too (mirrors the DB migration).
+- Authenticated with Supabase anon `apikey` header (cron pattern).
+- For each enabled row in `job_sources`:
+  - Fetch feed with a 10s timeout and small concurrency (e.g. 5 parallel).
+  - Normalize each posting → Jobly job shape (title, location, work_mode inferred from location string, company, stack/hard_skills/tools/roles derived from title + description via a lightweight keyword extractor already used by the mock generator, salary parsed when the ATS exposes it — Greenhouse/Lever rarely do, so `salary_min/max` stay nullable).
+  - Upsert on `external_id`, set `last_seen_at = now()`.
+- After all sources processed: `DELETE FROM jobs WHERE last_seen_at < now() - interval '48 hours' AND external_id IS NOT NULL`.
+- Return `{ synced, inserted, updated, pruned, errors }`.
 
-### Files touched
-- `supabase` migration (enum + column)
-- `src/lib/tracker-store.ts` — extend `JobStatus`, mappers, reminder logic, dashboard filter
-- `src/lib/board-columns-store.ts` — NEW
-- `src/routes/_authenticated/tracker.tsx` — columns from store, header edit button
-- `src/components/app/BoardColumnsDialog.tsx` — NEW (edit columns UI)
-- `src/components/app/TrackerTransitionDialogs.tsx` — new flows for screen/tech/test-task
-- `src/components/app/JobDrawer.tsx` — updated Move-to list, reminder gating, tag colors
-- `src/routes/_authenticated/dashboard.tsx` — active-stage filter update
+Normalization lives in `src/lib/job-sync/` (server-only, `.server.ts` files): `greenhouse.server.ts`, `lever.server.ts`, `ashby.server.ts`, `normalize.server.ts`. The existing keyword-extraction logic from the mock generator moves here.
 
-### Open question before I build
-Do you want the split-interview + test-task rollout for **all users automatically** (with the default order I described), or should it be opt-in via the "Edit columns" dialog while existing users keep a single "Interview" column? Default plan is: auto-apply the new default order for everyone, existing "Interview" cards land in "Screen interview".
+## Cron
+
+pg_cron every 6 hours calling the endpoint via pg_net with the anon `apikey` header. First run triggered manually right after deploy so the user sees real jobs immediately.
+
+## Curated company seed list
+
+Seeded in the migration — a mix of well-known tech employers across sectors so the Digest feels alive on day one. Roughly:
+
+- Greenhouse: Stripe, Airbnb, DoorDash, Instacart, Robinhood, Coinbase, Figma, Notion, Vercel, Cloudflare, Anthropic, Scale AI, Ramp, Brex, Retool, Linear, Zapier, Discord, Reddit, Shopify, Pinterest, Twilio, Datadog, Snowflake, Confluent, MongoDB, HashiCorp, Elastic, GitLab, DigitalOcean… (~50)
+- Lever: Netflix, Spotify, KAYAK, Blockchain.com, Eventbrite, Attentive, Fivetran, Ironclad, Angi, Rippling… (~30)
+- Ashby: (empty at launch; grows if user links Ashby connector)
+
+User can add/remove companies later via a small admin surface (out of scope for this change — direct SQL edits to `job_sources` for now).
+
+## Frontend impact
+
+Minimal. `src/lib/jobs-store.ts` already reads from the `jobs` Supabase table, so the Digest, Matches, Job Drawer, and Tracker keep working. Two small changes:
+
+- `JobDrawer.tsx` "Open original job posting" and Digest "Apply" buttons use `external_url` when present (falls back to current behavior otherwise).
+- Company logo lookup: current asset archive stays; unmatched companies fall back to a generated monogram avatar so a job without a bundled logo still renders cleanly.
+
+## Rollout
+
+1. Migration: add columns, `job_sources` table, delete existing mock jobs, seed `job_sources`.
+2. Add server route + normalizers.
+3. Wire `external_url` in the two UI spots.
+4. Add pg_cron schedule.
+5. Trigger a manual sync and verify the Digest shows real jobs.
+
+## Technical details
+
+- No new secrets required for Greenhouse/Lever. Ashby uses `LOVABLE_API_KEY` + `ASHBY_API_KEY` via the connector gateway, only if a connection is linked.
+- Fetches run in the Cloudflare Worker runtime — plain `fetch`, no Node-only deps.
+- Per-source failures are caught and reported in the response; one bad feed does not fail the whole sync.
+- Rate-safe: at ~120 companies × 1 request each every 6h, we're well under any ATS's fair-use limit.
+- No frontend changes to filters, match logic, or Tracker — the normalized rows keep the same shape as today's mock rows.
