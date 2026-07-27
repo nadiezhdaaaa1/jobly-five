@@ -188,9 +188,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </div>
 
         {/* Pro card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-1">
+        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
         <div
-          className={`relative rounded-[8px] bg-[color:var(--color-surface-1)] p-3 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
+          className={`relative flex h-full flex-col rounded-[8px] bg-[color:var(--color-surface-1)] p-6 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
           style={{ borderColor: "var(--color-green)", boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
         >
           {(plan === "pro" || plan === "paused") ? (
@@ -201,7 +201,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             </span>
           ) : null}
           <div className="flex items-baseline justify-between">
-            <div className="text-[15px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
+            <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
           </div>
 
           {/* Billing period switcher */}
@@ -217,7 +217,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                     if (plan === "pro" && p !== period) { setSwitchOpen(p); return; }
                     setPeriod(p);
                   }}
-                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "bg-[color:var(--color-accent)] text-[color:var(--color-on-accent)] font-semibold" : "text-[color:var(--color-text-secondary)]"}`}
+                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "font-semibold text-white bg-[color:var(--color-green)]" : "text-[color:var(--color-text-secondary)]"}`}
                 >
                   {label}
                   {p === "annual" && !active ? (
