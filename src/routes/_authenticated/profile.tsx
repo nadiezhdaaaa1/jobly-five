@@ -936,12 +936,35 @@ function FileRow({
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <SecondaryBtn onClick={onPreview}>Preview</SecondaryBtn>
-        {onMakePrimary && <SecondaryBtn onClick={onMakePrimary}>Make primary</SecondaryBtn>}
-        {onReplace && <SecondaryBtn onClick={onReplace}>Replace</SecondaryBtn>}
-        <SecondaryBtn danger onClick={onDelete}>Delete</SecondaryBtn>
+        <GhostBtn onClick={onPreview}>Preview</GhostBtn>
+        {onMakePrimary && <GhostBtn onClick={onMakePrimary}>Make primary</GhostBtn>}
+        {onReplace && <GhostBtn onClick={onReplace}>Replace</GhostBtn>}
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label="Delete"
+          title="Delete"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Trash size={18} strokeWidth={1.8} />
+        </button>
       </div>
     </div>
+  );
+}
+
+function GhostBtn({
+  children, onClick, type = "button", disabled,
+}: { children: React.ReactNode; onClick?: () => void; type?: "button" | "submit"; disabled?: boolean }) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+    >
+      {children}
+    </button>
   );
 }
 
