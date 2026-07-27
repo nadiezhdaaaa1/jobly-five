@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IconX as X,
-  IconBolt as Zap,
   IconBookmark as Bookmark,
   IconFlag as Flag,
   IconThumbDown as ThumbsDown,
