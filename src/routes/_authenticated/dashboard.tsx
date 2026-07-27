@@ -583,7 +583,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <div className="min-w-0 flex-1">
             <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
             <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              {job.company} · {job.location} · {job.salary}
+              {job.company} · {job.location}
             </div>
           </div>
           <ScoreRing score={job.score} />
@@ -591,6 +591,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       </button>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">
+          {job.salary}
+        </div>
         <div className="ml-auto flex items-center gap-1">
           <div
             className={
