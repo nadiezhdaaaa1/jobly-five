@@ -563,6 +563,38 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [applyOpen, setApplyOpen] = useState(false);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
+  const flagBtnRef = useRef<HTMLButtonElement | null>(null);
+  const dislikeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [flagPos, setFlagPos] = useState<{ top: number; right: number } | null>(null);
+  const [dislikePos, setDislikePos] = useState<{ top: number; right: number } | null>(null);
+  useEffect(() => {
+    if (!flagOpen) return;
+    const update = () => {
+      const r = flagBtnRef.current?.getBoundingClientRect();
+      if (r) setFlagPos({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [flagOpen]);
+  useEffect(() => {
+    if (!dislikeOpen) return;
+    const update = () => {
+      const r = dislikeBtnRef.current?.getBoundingClientRect();
+      if (r) setDislikePos({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+    };
+  }, [dislikeOpen]);
 
   return (
     <article
@@ -606,6 +638,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           >
             <IconTooltip label="Report this job">
               <button
+                ref={flagBtnRef}
                 type="button"
                 aria-label="Report this job"
                 onClick={() => setFlagOpen((v) => !v)}
@@ -614,8 +647,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 <Flag size={15} strokeWidth={1.6} />
               </button>
             </IconTooltip>
-            {flagOpen ? (
-              <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+            {flagOpen && flagPos ? createPortal(
+              <div ref={flagRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: flagPos.top, right: flagPos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                   <button
                     key={label}
@@ -627,7 +660,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     {label}
                   </button>
                 ))}
-              </div>
+              </div>,
+              document.body
             ) : null}
           </div>
 
@@ -640,6 +674,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           >
             <IconTooltip label="Not interested">
               <button
+                ref={dislikeBtnRef}
                 type="button"
                 aria-label="Not interested"
                 onClick={() => setDislikeOpen((v) => !v)}
@@ -648,8 +683,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 <ThumbsDown size={15} strokeWidth={1.6} />
               </button>
             </IconTooltip>
-            {dislikeOpen ? (
-              <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+            {dislikeOpen && dislikePos ? createPortal(
+              <div ref={dislikeRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: dislikePos.top, right: dislikePos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Not relevant to my role", "Wrong seniority", "Compensation too low", "Don't recommend the company"].map((label) => (
                   <button
                     key={label}
@@ -665,7 +700,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     {label}
                   </button>
                 ))}
-              </div>
+              </div>,
+              document.body
             ) : null}
           </div>
 
