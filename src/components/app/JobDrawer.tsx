@@ -30,15 +30,11 @@ import {
   InterviewTransitionDialog,
   OfferTransitionDialog,
   RejectedTransitionDialog,
-  TestTaskTransitionDialog,
-  INTERVIEW_STAGES,
-  SCREEN_INTERVIEW_STAGES,
-  TECH_INTERVIEW_STAGES,
-  OFFER_STAGES,
 } from "@/components/app/TrackerTransitionDialogs";
 import {
   resolveColumnForCard,
   useColumns,
+  statusForKind,
   type BoardColumn,
 } from "@/lib/board-columns-store";
 import { setCardColumn } from "@/lib/tracker-store";
@@ -321,12 +317,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   function requestMoveToColumn(col: BoardColumn) {
     setMoveOpen(false);
     if (col.id === currentColumn?.id) return;
-    if (col.stage === "applied") {
+    if (col.kind === "applied") {
       setCardColumn(job.id, col.id);
       setApplyOpen(true);
       return;
     }
-    if (col.stage === "saved") {
+    if (col.kind === "saved") {
       setCardColumn(job.id, col.id, "saved");
       return;
     }
@@ -563,59 +559,45 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
               {/* Stage block */}
-              {status === "interview" || status === "interview_screen" ? (
+              {currentColumn?.kind === "interview" ? (
                 <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Screen interview stage</div>
-                  <select
-                    className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                    value={record.interviewStage ?? SCREEN_INTERVIEW_STAGES[0]}
-                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
-                  >
-                    {SCREEN_INTERVIEW_STAGES.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
-              {status === "interview_tech" ? (
-                <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Tech interview stage</div>
-                  <select
-                    className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                    value={record.interviewStage ?? TECH_INTERVIEW_STAGES[0]}
-                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
-                  >
-                    {TECH_INTERVIEW_STAGES.map((s) => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
-              {status === "test_task" ? (
-                <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Task details</div>
-                  <textarea
-                    value={record.interviewStage ?? ""}
-                    onChange={(e) => setInterviewStage(job.id, e.target.value)}
-                    rows={4}
-                    placeholder="Link, scope, or notes about the task"
-                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                  />
-                </div>
-              ) : null}
-              {status === "offer" ? (
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{currentColumn.title} stage</div>
+                  {currentColumn.stages.length ? (
                     <select
                       className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                      value={record.offerStatus ?? OFFER_STAGES[0]}
-                      onChange={(e) => setOfferStatus(job.id, e.target.value)}
+                      value={record.interviewStage ?? currentColumn.stages[0]}
+                      onChange={(e) => setInterviewStage(job.id, e.target.value)}
                     >
-                      {OFFER_STAGES.map((s) => (
+                      {currentColumn.stages.map((s: string) => (
                         <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
+                  ) : (
+                    <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
+                      No stages defined. Add stages in Edit columns.
+                    </div>
+                  )}
+                </div>
+              ) : null}
+              {currentColumn?.kind === "offer" ? (
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
+                    {currentColumn.stages.length ? (
+                      <select
+                        className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                        value={record.offerStatus ?? currentColumn.stages[0]}
+                        onChange={(e) => setOfferStatus(job.id, e.target.value)}
+                      >
+                        {currentColumn.stages.map((s: string) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
+                        No stages defined. Add stages in Edit columns.
+                      </div>
+                    )}
                   </div>
                   <div>
                     <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
@@ -900,39 +882,24 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
       <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
 
-      {pending && (pending.col.stage === "interview_screen" || pending.col.stage === "interview_tech") ? (
+      {pending && pending.col.kind === "interview" ? (
         <InterviewTransitionDialog
           open
           jobId={job.id}
           initialStage={record.interviewStage}
           initialReminderIso={record.reminderAt}
-          title={pending.col.stage === "interview_tech" ? "Tech interview" : "Screen interview"}
-          stages={pending.col.stage === "interview_tech" ? TECH_INTERVIEW_STAGES : SCREEN_INTERVIEW_STAGES}
+          title={pending.col.title}
+          stages={pending.col.stages}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso }) => {
-            setCardColumn(job.id, pending.col.id, pending.col.stage as JobStatus);
+            setCardColumn(job.id, pending.col.id, statusForKind(pending.col.kind));
             setInterviewStage(job.id, stage);
             setReminder(job.id, reminderIso);
             setPending(null);
           }}
         />
       ) : null}
-      {pending && pending.col.stage === "test_task" ? (
-        <TestTaskTransitionDialog
-          open
-          jobId={job.id}
-          initialDetails={record.interviewStage}
-          initialReminderIso={record.reminderAt}
-          onCancel={cancelPending}
-          onSave={({ details, reminderIso }) => {
-            setCardColumn(job.id, pending.col.id, "test_task");
-            setInterviewStage(job.id, details || "Test task");
-            setReminder(job.id, reminderIso);
-            setPending(null);
-          }}
-        />
-      ) : null}
-      {pending && pending.col.stage === "rejection" ? (
+      {pending && pending.col.kind === "rejected" ? (
         <RejectedTransitionDialog
           open
           initialDetails={record.rejectionDetails}
@@ -944,13 +911,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           }}
         />
       ) : null}
-      {pending && pending.col.stage === "offer" ? (
+      {pending && pending.col.kind === "offer" ? (
         <OfferTransitionDialog
           open
           jobId={job.id}
           initialStage={record.offerStatus}
           initialReminderIso={record.reminderAt}
           initialDetails={record.offerDetails}
+          stages={pending.col.stages}
+          title={pending.col.title}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso, details }) => {
             setCardColumn(job.id, pending.col.id, "offer");

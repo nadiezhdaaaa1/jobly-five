@@ -1,77 +1,238 @@
 import { useSyncExternalStore } from "react";
 
-export type BoardStage =
-  | "saved"
-  | "applied"
-  | "interview_screen"
-  | "interview_tech"
-  | "test_task"
-  | "offer"
-  | "rejection";
+// ---------- Types ----------
+
+// Column *kinds*. Users cannot create new kinds — only Interview is multi-instance.
+export type ColumnKind = "saved" | "applied" | "interview" | "offer" | "rejected";
 
 export type BoardColumn = {
   id: string;
+  kind: ColumnKind;
   title: string;
-  stage: BoardStage;
+  // Ordered list of stage labels a card can hold within this column.
+  // Meaningful only for `interview` and `offer` kinds; empty otherwise.
+  stages: string[];
 };
 
-export const STAGE_LABEL: Record<BoardStage, string> = {
+export const KIND_LABEL: Record<ColumnKind, string> = {
   saved: "Saved",
   applied: "Applied",
-  interview_screen: "Screen interview",
-  interview_tech: "Tech interview",
-  test_task: "Test task",
+  interview: "Interview",
   offer: "Offer",
-  rejection: "Rejected",
+  rejected: "Rejected",
 };
 
-// Built-in ids match their stages so drag/drop preserves stage naturally.
-export const BUILTIN_COLUMN_IDS = new Set<string>([
-  "saved",
-  "applied",
-  "interview_screen",
-  "interview_tech",
-  "test_task",
-  "offer",
-  "rejection",
-]);
+// Kinds that only ever exist as a single column on the board.
+export const SINGLETON_KINDS: ColumnKind[] = ["saved", "applied", "offer", "rejected"];
+
+// Fixed ids for the singletons so a card's persisted `columnId` keeps
+// resolving across sessions and installs.
+export const SINGLETON_IDS: Record<Exclude<ColumnKind, "interview">, string> = {
+  saved: "col-saved",
+  applied: "col-applied",
+  offer: "col-offer",
+  rejected: "col-rejected",
+};
 
 export const DEFAULT_COLUMNS: BoardColumn[] = [
-  { id: "saved", title: "Saved", stage: "saved" },
-  { id: "applied", title: "Applied", stage: "applied" },
-  { id: "interview_screen", title: "Screen interview", stage: "interview_screen" },
-  { id: "interview_tech", title: "Tech interview", stage: "interview_tech" },
-  { id: "test_task", title: "Test task", stage: "test_task" },
-  { id: "offer", title: "Offer", stage: "offer" },
-  { id: "rejection", title: "Rejected", stage: "rejection" },
+  { id: SINGLETON_IDS.saved, kind: "saved", title: "Saved", stages: [] },
+  { id: SINGLETON_IDS.applied, kind: "applied", title: "Applied", stages: [] },
+  {
+    id: "col-interview-screen",
+    kind: "interview",
+    title: "Screen interview",
+    stages: ["Recruiter screen", "Hiring manager screen"],
+  },
+  {
+    id: "col-interview-tech",
+    kind: "interview",
+    title: "Tech interview",
+    stages: ["Tech screen", "System design"],
+  },
+  {
+    id: "col-interview-test",
+    kind: "interview",
+    title: "Take-home",
+    stages: ["Assigned", "In progress", "Submitted"],
+  },
+  {
+    id: "col-interview-final",
+    kind: "interview",
+    title: "Final interview",
+    stages: ["Onsite", "Panel", "Culture", "Executive"],
+  },
+  {
+    id: SINGLETON_IDS.offer,
+    kind: "offer",
+    title: "Offer",
+    stages: ["Received", "Negotiating", "Accepted"],
+  },
+  { id: SINGLETON_IDS.rejected, kind: "rejected", title: "Rejected", stages: [] },
 ];
 
-const STORAGE_KEY = "jobly:board-columns:v1";
+const STORAGE_KEY = "jobly:board-columns:v2";
+const LEGACY_STORAGE_KEY = "jobly:board-columns:v1";
+
+// Map legacy v1 stage identifiers → new column ids (used when migrating a
+// v1-persisted layout and when translating cards whose `columnId` still
+// points at the old stage identifier).
+export const LEGACY_STAGE_TO_COLUMN_ID: Record<string, string> = {
+  saved: SINGLETON_IDS.saved,
+  applied: SINGLETON_IDS.applied,
+  interview_screen: "col-interview-screen",
+  interview_tech: "col-interview-tech",
+  test_task: "col-interview-test",
+  offer: SINGLETON_IDS.offer,
+  rejection: SINGLETON_IDS.rejected,
+};
 
 let columns: BoardColumn[] = load();
 const listeners = new Set<() => void>();
 let version = 0;
 
+function defaults(): BoardColumn[] {
+  return DEFAULT_COLUMNS.map((c) => ({ ...c, stages: [...c.stages] }));
+}
+
+function validKind(k: unknown): k is ColumnKind {
+  return k === "saved" || k === "applied" || k === "interview" || k === "offer" || k === "rejected";
+}
+
+function ensureInvariants(list: BoardColumn[]): BoardColumn[] {
+  // Deduplicate singletons — keep the first occurrence, drop the rest.
+  const seen = new Set<ColumnKind>();
+  const out: BoardColumn[] = [];
+  for (const c of list) {
+    if (SINGLETON_KINDS.includes(c.kind)) {
+      if (seen.has(c.kind)) continue;
+      seen.add(c.kind);
+    }
+    out.push({
+      ...c,
+      // Pin singleton ids so cards persisted with the fixed ids resolve.
+      id: SINGLETON_KINDS.includes(c.kind)
+        ? SINGLETON_IDS[c.kind as Exclude<ColumnKind, "interview">]
+        : c.id,
+      stages: c.kind === "interview" || c.kind === "offer" ? [...(c.stages ?? [])] : [],
+    });
+  }
+  // Add any missing singletons in their canonical order.
+  const defaultsList = defaults();
+  for (const kind of SINGLETON_KINDS) {
+    if (!out.some((c) => c.kind === kind)) {
+      const d = defaultsList.find((c) => c.kind === kind)!;
+      // saved/applied → prepend; offer → before rejected; rejected → append.
+      if (kind === "saved") out.unshift(d);
+      else if (kind === "applied") {
+        const savedIdx = out.findIndex((c) => c.kind === "saved");
+        out.splice(savedIdx + 1, 0, d);
+      } else if (kind === "offer") {
+        const rejIdx = out.findIndex((c) => c.kind === "rejected");
+        if (rejIdx >= 0) out.splice(rejIdx, 0, d);
+        else out.push(d);
+      } else {
+        out.push(d);
+      }
+    }
+  }
+  // Ensure at least one interview column exists.
+  if (!out.some((c) => c.kind === "interview")) {
+    const rejIdx = out.findIndex((c) => c.kind === "rejected");
+    const insertAt = rejIdx >= 0 ? rejIdx : out.length;
+    out.splice(insertAt, 0, {
+      id: `col-${Math.random().toString(36).slice(2, 9)}`,
+      kind: "interview",
+      title: "Interview",
+      stages: [],
+    });
+  }
+  return out;
+}
+
+function migrateFromV1(raw: string): BoardColumn[] | null {
+  try {
+    const parsed = JSON.parse(raw) as Array<{ id?: string; title?: string; stage?: string }>;
+    if (!Array.isArray(parsed) || !parsed.length) return null;
+    const stageToKind: Record<string, ColumnKind> = {
+      saved: "saved",
+      applied: "applied",
+      interview_screen: "interview",
+      interview_tech: "interview",
+      test_task: "interview",
+      offer: "offer",
+      rejection: "rejected",
+    };
+    const defaultStages: Record<string, string[]> = {
+      interview_screen: ["Recruiter screen", "Hiring manager screen"],
+      interview_tech: ["Tech screen", "System design"],
+      test_task: ["Assigned", "In progress", "Submitted"],
+      offer: ["Received", "Negotiating", "Accepted"],
+    };
+    const idMap: Record<string, string> = {
+      saved: SINGLETON_IDS.saved,
+      applied: SINGLETON_IDS.applied,
+      interview_screen: "col-interview-screen",
+      interview_tech: "col-interview-tech",
+      test_task: "col-interview-test",
+      offer: SINGLETON_IDS.offer,
+      rejection: SINGLETON_IDS.rejected,
+    };
+    const converted: BoardColumn[] = parsed
+      .map((c) => {
+        const stage = c.stage ?? "";
+        const kind = stageToKind[stage];
+        if (!kind) return null;
+        const id = idMap[stage] ?? c.id ?? `col-${Math.random().toString(36).slice(2, 9)}`;
+        return {
+          id,
+          kind,
+          title: c.title || KIND_LABEL[kind],
+          stages: kind === "interview" || kind === "offer" ? [...(defaultStages[stage] ?? [])] : [],
+        } as BoardColumn;
+      })
+      .filter(Boolean) as BoardColumn[];
+    return ensureInvariants(converted);
+  } catch {
+    return null;
+  }
+}
+
 function load(): BoardColumn[] {
-  if (typeof window === "undefined") return [...DEFAULT_COLUMNS];
+  if (typeof window === "undefined") return defaults();
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [...DEFAULT_COLUMNS];
-    const parsed = JSON.parse(raw) as BoardColumn[];
-    if (!Array.isArray(parsed) || parsed.length === 0) return [...DEFAULT_COLUMNS];
-    // Basic validation
-    const clean = parsed.filter(
-      (c) =>
-        c &&
-        typeof c.id === "string" &&
-        typeof c.title === "string" &&
-        typeof c.stage === "string" &&
-        (STAGE_LABEL as Record<string, string>)[c.stage] !== undefined,
-    );
-    return clean.length ? clean : [...DEFAULT_COLUMNS];
+    if (raw) {
+      const parsed = JSON.parse(raw) as BoardColumn[];
+      if (Array.isArray(parsed) && parsed.length) {
+        const clean = parsed
+          .filter((c) => c && typeof c.id === "string" && typeof c.title === "string" && validKind(c.kind))
+          .map((c) => ({
+            id: c.id,
+            kind: c.kind,
+            title: c.title,
+            stages: Array.isArray(c.stages) ? c.stages.filter((s) => typeof s === "string") : [],
+          }));
+        if (clean.length) return ensureInvariants(clean);
+      }
+    }
+    // One-time migration from v1
+    const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacy) {
+      const migrated = migrateFromV1(legacy);
+      if (migrated) {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+          window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+        } catch {
+          /* ignore */
+        }
+        return migrated;
+      }
+    }
   } catch {
-    return [...DEFAULT_COLUMNS];
+    /* fall through */
   }
+  return defaults();
 }
 
 function persist() {
@@ -105,8 +266,20 @@ export function useColumns(): BoardColumn[] {
   return columns;
 }
 
-export function isBuiltin(id: string): boolean {
-  return BUILTIN_COLUMN_IDS.has(id);
+// Deletable rules — mirrors the invariants in deleteColumn().
+export function isSingleton(kind: ColumnKind): boolean {
+  return SINGLETON_KINDS.includes(kind);
+}
+
+export function canDeleteColumn(id: string): boolean {
+  const c = columns.find((x) => x.id === id);
+  if (!c) return false;
+  if (isSingleton(c.kind)) return false;
+  if (c.kind === "interview") {
+    const remaining = columns.filter((x) => x.kind === "interview").length;
+    return remaining > 1;
+  }
+  return true;
 }
 
 export function findColumn(id: string): BoardColumn | undefined {
@@ -114,25 +287,79 @@ export function findColumn(id: string): BoardColumn | undefined {
 }
 
 // Find the display column for a card given its persisted (columnId?, status).
+// Handles both fresh v2 columnIds and legacy v1 columnIds/stages.
 export function resolveColumnForCard(cardColumnId: string | undefined, status: string): BoardColumn | undefined {
   if (cardColumnId) {
     const hit = columns.find((c) => c.id === cardColumnId);
     if (hit) return hit;
+    // Legacy column id (v1 stage identifier) → remap
+    const remapped = LEGACY_STAGE_TO_COLUMN_ID[cardColumnId];
+    if (remapped) {
+      const hit2 = columns.find((c) => c.id === remapped);
+      if (hit2) return hit2;
+    }
   }
-  // Legacy "interview" status → interview_screen
-  const stage = status === "interview" ? "interview_screen" : status;
-  return columns.find((c) => c.stage === stage);
+  // Fall back to status: map to the corresponding kind's column.
+  const kind = statusToKind(status);
+  if (!kind) return undefined;
+  if (kind === "interview") {
+    // First interview column in the current layout.
+    return columns.find((c) => c.kind === "interview");
+  }
+  return columns.find((c) => c.kind === kind);
+}
+
+// Map a legacy JobStatus string to its ColumnKind (or null if not a board status).
+export function statusToKind(status: string): ColumnKind | null {
+  switch (status) {
+    case "saved":
+      return "saved";
+    case "applied":
+      return "applied";
+    case "interview":
+    case "interview_screen":
+    case "interview_tech":
+    case "test_task":
+      return "interview";
+    case "offer":
+      return "offer";
+    case "rejection":
+      return "rejected";
+    default:
+      return null;
+  }
+}
+
+// Canonical JobStatus string to persist on a JobRecord when it lands in a
+// column of this kind. Kept separate from ColumnKind for backwards compat
+// with existing status-based selectors (counts, digest hidden ids, etc).
+export function statusForKind(kind: ColumnKind): "saved" | "applied" | "interview" | "offer" | "rejection" {
+  if (kind === "rejected") return "rejection";
+  return kind;
 }
 
 function uid() {
   return `col-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function addColumn(input: { title: string; stage: BoardStage; afterId?: string }) {
-  const col: BoardColumn = { id: uid(), title: input.title.trim() || STAGE_LABEL[input.stage], stage: input.stage };
-  const idx = input.afterId ? columns.findIndex((c) => c.id === input.afterId) : -1;
-  if (idx >= 0) columns = [...columns.slice(0, idx + 1), col, ...columns.slice(idx + 1)];
-  else columns = [...columns, col];
+// Only Interview columns are user-addable. Inserted just after the last
+// existing interview column (or before Offer if none exist).
+export function addInterviewColumn(title: string): string {
+  const t = title.trim() || "Interview";
+  const col: BoardColumn = { id: uid(), kind: "interview", title: t, stages: [] };
+  const lastInterviewIdx = (() => {
+    let idx = -1;
+    for (let i = 0; i < columns.length; i++) if (columns[i].kind === "interview") idx = i;
+    return idx;
+  })();
+  if (lastInterviewIdx >= 0) {
+    columns = [...columns.slice(0, lastInterviewIdx + 1), col, ...columns.slice(lastInterviewIdx + 1)];
+  } else {
+    const rejIdx = columns.findIndex((c) => c.kind === "rejected");
+    const offerIdx = columns.findIndex((c) => c.kind === "offer");
+    const insertAt = offerIdx >= 0 ? offerIdx : rejIdx >= 0 ? rejIdx : columns.length;
+    columns = [...columns.slice(0, insertAt), col, ...columns.slice(insertAt)];
+  }
   emit();
   return col.id;
 }
@@ -145,7 +372,7 @@ export function renameColumn(id: string, title: string) {
 }
 
 export function deleteColumn(id: string) {
-  if (isBuiltin(id)) return;
+  if (!canDeleteColumn(id)) return;
   columns = columns.filter((c) => c.id !== id);
   emit();
 }
@@ -176,6 +403,44 @@ export function reorderColumns(orderedIds: string[]) {
 }
 
 export function resetColumns() {
-  columns = [...DEFAULT_COLUMNS];
+  columns = defaults();
   emit();
+}
+
+// ---------- Stage CRUD (interview / offer only) ----------
+
+function updateStages(colId: string, mut: (stages: string[]) => string[]) {
+  const col = columns.find((c) => c.id === colId);
+  if (!col || (col.kind !== "interview" && col.kind !== "offer")) return;
+  columns = columns.map((c) => (c.id === colId ? { ...c, stages: mut([...c.stages]) } : c));
+  emit();
+}
+
+export function addStage(colId: string, name: string) {
+  const t = name.trim();
+  if (!t) return;
+  updateStages(colId, (stages) => (stages.includes(t) ? stages : [...stages, t]));
+}
+
+export function renameStage(colId: string, oldName: string, newName: string) {
+  const t = newName.trim();
+  if (!t) return;
+  updateStages(colId, (stages) => stages.map((s) => (s === oldName ? t : s)));
+}
+
+export function deleteStage(colId: string, name: string) {
+  updateStages(colId, (stages) => stages.filter((s) => s !== name));
+}
+
+export function moveStage(colId: string, name: string, dir: -1 | 1) {
+  updateStages(colId, (stages) => {
+    const idx = stages.indexOf(name);
+    if (idx < 0) return stages;
+    const to = idx + dir;
+    if (to < 0 || to >= stages.length) return stages;
+    const next = stages.slice();
+    const [item] = next.splice(idx, 1);
+    next.splice(to, 0, item);
+    return next;
+  });
 }
