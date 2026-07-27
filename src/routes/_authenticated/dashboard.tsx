@@ -1333,7 +1333,11 @@ function JobsScreen() {
               e.preventDefault();
               const name = saveName.trim();
               if (!name) return;
-              addSavedFilter(name, pending);
+              const result = addSavedFilter(name, pending);
+              if (!result) {
+                alert("You can save up to 10 filter sets. Delete one to add a new search.");
+                return;
+              }
               setSaveOpen(false);
             }}
             className="flex flex-col gap-4"
