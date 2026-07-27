@@ -21,9 +21,6 @@ import {
   InterviewTransitionDialog,
   OfferTransitionDialog,
   RejectedTransitionDialog,
-  TestTaskTransitionDialog,
-  SCREEN_INTERVIEW_STAGES,
-  TECH_INTERVIEW_STAGES,
 } from "@/components/app/TrackerTransitionDialogs";
 import { BoardColumnsDialog } from "@/components/app/BoardColumnsDialog";
 import { useJobs } from "@/lib/jobs-store";
@@ -46,7 +43,7 @@ import {
   type JobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
-import { resolveColumnForCard, useColumns, type BoardColumn, type BoardStage } from "@/lib/board-columns-store";
+import { resolveColumnForCard, useColumns, statusForKind, type BoardColumn, type ColumnKind } from "@/lib/board-columns-store";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { blockCompany } from "@/lib/blocked-companies-store";
 
@@ -65,17 +62,7 @@ function useTrackerVersion() {
   useJobRecord("__version__");
 }
 
-// Stages this board handles as buckets (everything else — dismissed/reported/default —
-// is either archived or not visible on the tracker).
-const KANBAN_STAGES: BoardStage[] = [
-  "saved",
-  "applied",
-  "interview_screen",
-  "interview_tech",
-  "test_task",
-  "offer",
-  "rejection",
-];
+// (Column kinds live on each BoardColumn now.)
 
 const CHIP_ORANGE = "#FFEDD4";
 const CHIP_MINT = "#D8FBEF";
@@ -211,7 +198,7 @@ function KanbanCard({
   moveColumns: BoardColumn[];
 }) {
   const record = useJobRecord(job.id);
-  const stage: BoardStage = column.stage;
+  const kind: ColumnKind = column.kind;
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
@@ -276,7 +263,7 @@ function KanbanCard({
           </div>
         </div>
         {/* Row 3: per-status content */}
-        <Row3 stage={stage} record={record} />
+        <Row3 kind={kind} record={record} />
       </div>
 
       {/* Footer controls */}
@@ -290,7 +277,7 @@ function KanbanCard({
           >
             Restore
           </button>
-        ) : stage === "saved" ? (
+        ) : kind === "saved" ? (
           <>
             <div
               className={`relative transition-opacity ${flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
@@ -353,7 +340,7 @@ function KanbanCard({
               </IconBtn>
             </div>
             <div className="ml-auto flex items-center gap-1">
-              {(stage === "applied" || stage === "interview_screen" || stage === "interview_tech" || stage === "test_task" || stage === "offer") ? (
+              {(kind === "applied" || kind === "interview" || kind === "offer") ? (
                 <IconBtn label="Send a follow-up" noBorder onClick={(e) => { e.stopPropagation(); setFollowUpOpen(true); }}>
                   <MailShare size={16} strokeWidth={1.6} />
                 </IconBtn>
@@ -458,31 +445,30 @@ function KanbanCard({
   );
 }
 
-function Row3({ stage, record }: { stage: BoardStage; record: JobRecord }) {
-  if (stage === "saved") {
+function Row3({ kind, record }: { kind: ColumnKind; record: JobRecord }) {
+  if (kind === "saved") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Saved {dateHelpers.shortDate(record.savedAt)}
       </div>
     );
   }
-  if (stage === "applied") {
+  if (kind === "applied") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Applied {dateHelpers.shortDate(record.appliedAt)}
       </div>
     );
   }
-  if (stage === "rejection") {
+  if (kind === "rejected") {
     return (
       <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
         Rejected on {dateHelpers.shortDate(record.rejectionAt)}
       </div>
     );
   }
-  if (stage === "interview_screen" || stage === "interview_tech" || stage === "test_task") {
-    const movedLabel =
-      stage === "test_task" ? "Test task from" : "Interview from";
+  if (kind === "interview") {
+    const movedLabel = "Moved in";
     const movedDate = record.interviewAt ?? record.movedAt;
     return (
       <>
@@ -760,9 +746,7 @@ function TrackerScreen() {
   const byMovedDesc = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
     (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
   for (const c of columns) {
-    const isInterview =
-      c.stage === "interview_screen" || c.stage === "interview_tech" || c.stage === "test_task";
-    if (isInterview) {
+    if (c.kind === "interview") {
       buckets[c.id].sort((a, b) => {
         const ar = a.rec.reminderAt, br = b.rec.reminderAt;
         if (ar && br) return ar.localeCompare(br);
@@ -781,10 +765,10 @@ function TrackerScreen() {
   function requestMove(jobId: string, target: BoardColumn) {
     const rec = getJobRecord(jobId);
     const source = (rec.archived ? rec.lastStatus ?? "default" : rec.status) as JobStatus;
-    // No-op if same column already
-    if (rec.columnId === target.id && source === (target.stage as JobStatus)) return;
-    if (target.stage === "saved" || target.stage === "applied") {
-      if (target.stage === "applied") {
+    // No-op if already in the same column
+    if (rec.columnId === target.id) return;
+    if (target.kind === "saved" || target.kind === "applied") {
+      if (target.kind === "applied") {
         const job = allJobs.find((j) => j.id === jobId);
         if (job) {
           setCardColumn(jobId, target.id);
@@ -795,6 +779,7 @@ function TrackerScreen() {
       setCardColumn(jobId, target.id, "saved");
       return;
     }
+    void source;
     setPending({ jobId, column: target, source });
   }
 
@@ -819,7 +804,7 @@ function TrackerScreen() {
   }
 
   const pendingJob = pending ? allJobs.find((j) => j.id === pending.jobId) ?? null : null;
-  const pendingStage = pending?.column.stage;
+  const pendingKind = pending?.column.kind;
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -908,17 +893,17 @@ function TrackerScreen() {
         />
       ) : null}
 
-      {pendingJob && pending && (pendingStage === "interview_screen" || pendingStage === "interview_tech") ? (
+      {pendingJob && pending && pendingKind === "interview" ? (
         <InterviewTransitionDialog
           open
           jobId={pending.jobId}
           initialStage={getJobRecord(pending.jobId).interviewStage}
           initialReminderIso={getJobRecord(pending.jobId).reminderAt}
-          title={pendingStage === "interview_tech" ? "Tech interview" : "Screen interview"}
-          stages={pendingStage === "interview_tech" ? TECH_INTERVIEW_STAGES : SCREEN_INTERVIEW_STAGES}
+          title={pending.column.title}
+          stages={pending.column.stages}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso }) => {
-            setCardColumn(pending.jobId, pending.column.id, pending.column.stage as JobStatus);
+            setCardColumn(pending.jobId, pending.column.id, statusForKind(pending.column.kind));
             setInterviewStage(pending.jobId, stage);
             storeSetReminder(pending.jobId, reminderIso);
             setPending(null);
@@ -926,23 +911,7 @@ function TrackerScreen() {
         />
       ) : null}
 
-      {pendingJob && pending && pendingStage === "test_task" ? (
-        <TestTaskTransitionDialog
-          open
-          jobId={pending.jobId}
-          initialDetails={getJobRecord(pending.jobId).interviewStage}
-          initialReminderIso={getJobRecord(pending.jobId).reminderAt}
-          onCancel={cancelPending}
-          onSave={({ details, reminderIso }) => {
-            setCardColumn(pending.jobId, pending.column.id, "test_task");
-            setInterviewStage(pending.jobId, details || "Test task");
-            storeSetReminder(pending.jobId, reminderIso);
-            setPending(null);
-          }}
-        />
-      ) : null}
-
-      {pendingJob && pending && pendingStage === "rejection" ? (
+      {pendingJob && pending && pendingKind === "rejected" ? (
         <RejectedTransitionDialog
           open
           initialDetails={getJobRecord(pending.jobId).rejectionDetails}
@@ -955,13 +924,15 @@ function TrackerScreen() {
         />
       ) : null}
 
-      {pendingJob && pending && pendingStage === "offer" ? (
+      {pendingJob && pending && pendingKind === "offer" ? (
         <OfferTransitionDialog
           open
           jobId={pending.jobId}
           initialStage={getJobRecord(pending.jobId).offerStatus}
           initialReminderIso={getJobRecord(pending.jobId).reminderAt}
           initialDetails={getJobRecord(pending.jobId).offerDetails}
+          stages={pending.column.stages}
+          title={pending.column.title}
           onCancel={cancelPending}
           onSave={({ stage, reminderIso, details }) => {
             setCardColumn(pending.jobId, pending.column.id, "offer");
