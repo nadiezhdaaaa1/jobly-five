@@ -1131,16 +1131,52 @@ function SkillsGroup({
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const inputWrapRef = useRef<HTMLDivElement | null>(null);
   const popRef = useRef<HTMLDivElement | null>(null);
-  const [pos, setPos] = useState<{ left: number; top: number; width: number; maxHeight: number } | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+  const [pos, setPos] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    maxHeight: number;
+    position: "absolute" | "fixed";
+  } | null>(null);
   useEffect(() => {
     if (!open) return;
     const update = () => {
       const el = inputWrapRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - r.bottom - 12;
-      const maxHeight = Math.max(160, Math.min(280, spaceBelow));
-      setPos({ left: r.left, top: r.bottom + 4, width: r.width, maxHeight });
+      const gap = 4;
+      const viewportMargin = 12;
+      const spaceBelow = window.innerHeight - r.bottom - viewportMargin;
+      const spaceAbove = r.top - viewportMargin;
+      const placeAbove = spaceBelow < 180 && spaceAbove > spaceBelow;
+      const availableSpace = placeAbove ? spaceAbove : spaceBelow;
+      const maxHeight = Math.max(96, Math.min(280, availableSpace));
+      const dialog = el.closest<HTMLElement>('[role="dialog"]');
+
+      if (dialog) {
+        const dialogRect = dialog.getBoundingClientRect();
+        setPortalTarget(dialog);
+        setPos({
+          left: r.left - dialogRect.left,
+          top: placeAbove
+            ? r.top - dialogRect.top - gap - maxHeight
+            : r.bottom - dialogRect.top + gap,
+          width: r.width,
+          maxHeight,
+          position: "absolute",
+        });
+        return;
+      }
+
+      setPortalTarget(document.body);
+      setPos({
+        left: r.left,
+        top: placeAbove ? r.top - gap - maxHeight : r.bottom + gap,
+        width: r.width,
+        maxHeight,
+        position: "fixed",
+      });
     };
     update();
     window.addEventListener("resize", update);
@@ -1212,10 +1248,11 @@ function SkillsGroup({
         )}
       </div>
 
-      {open && pos && typeof document !== "undefined" && createPortal(
+      {open && pos && portalTarget && createPortal(
       <div
         ref={popRef}
-        style={{ position: "fixed", left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
+        data-skill-dropdown="true"
+        style={{ position: pos.position, left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
         className="overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
         <div className="flex flex-col gap-[4px]">
@@ -1256,7 +1293,7 @@ function SkillsGroup({
           )}
         </div>
       </div>,
-      document.body
+      portalTarget
       )}
       </div>
 
