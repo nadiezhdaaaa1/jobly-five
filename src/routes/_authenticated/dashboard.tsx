@@ -594,41 +594,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         <div className="ml-auto flex items-center gap-1">
           <div
             className={
-              "relative transition-opacity duration-150 max-md:opacity-100 " +
-              (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
-            }
-            ref={flagRef}
-          >
-            <IconTooltip label="Report this job">
-              <button
-                type="button"
-                aria-label="Report this job"
-                onClick={() => setFlagOpen((v) => !v)}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <Flag size={15} strokeWidth={1.6} />
-              </button>
-            </IconTooltip>
-            {flagOpen ? (
-              <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
-                  <button
-                    key={label}
-                    type="button"
-                    role="menuitem"
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setDigestSession(job.id, "reported"); setFlagOpen(false); }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div
-            className={
-              "relative -ml-1 transition-opacity duration-150 max-md:opacity-100 " +
+              "relative transition-opacity duration-150 max-lg:opacity-100 " +
               (dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
             }
             ref={dislikeRef}
@@ -688,6 +654,40 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           >
             Apply
           </button>
+        </div>
+
+        <div
+          className={
+            "relative transition-opacity duration-150 max-lg:opacity-100 " +
+            (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+          }
+          ref={flagRef}
+        >
+          <IconTooltip label="Report this job">
+            <button
+              type="button"
+              aria-label="Report this job"
+              onClick={() => setFlagOpen((v) => !v)}
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <Flag size={15} strokeWidth={1.6} />
+            </button>
+          </IconTooltip>
+          {flagOpen ? (
+            <div role="menu" className="absolute right-0 top-[34px] z-30 min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+              {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  role="menuitem"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+                  onClick={() => { setDigestSession(job.id, "reported"); setFlagOpen(false); }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 
