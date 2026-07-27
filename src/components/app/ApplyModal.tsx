@@ -149,29 +149,18 @@ export function ApplyModal({
               </Link>
             </p>
           ) : (
-            <div className="mt-2 flex items-center gap-2">
-              <select
-                value={resumeId}
-                onChange={(e) => setResumeId(e.target.value)}
-                className="h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
-              >
-                {resumes.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}.{r.ext}
-                    {r.id === resume.primaryId ? " · Default" : ""}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={downloadResume}
-                disabled={!selectedResume}
-                aria-label="Download resume"
-                className="inline-flex h-10 items-center gap-1 rounded-[4px] border px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-40"
-              >
-                <Download size={14} strokeWidth={1.8} /> Download
-              </button>
-            </div>
+            <select
+              value={resumeId}
+              onChange={(e) => setResumeId(e.target.value)}
+              className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+            >
+              {resumes.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}.{r.ext}
+                  {r.id === resume.primaryId ? " · Default" : ""}
+                </option>
+              ))}
+            </select>
           )}
         </div>
 
@@ -188,29 +177,18 @@ export function ApplyModal({
               </Link>
             </p>
           ) : (
-            <div className="mt-2 flex items-center gap-2">
-              <select
-                value={letterId}
-                onChange={(e) => setLetterId(e.target.value)}
-                className="h-10 flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
-              >
-                {letters.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                    {l.id === extras.defaultCoverLetterId ? " · Default" : ""}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={downloadLetter}
-                disabled={!selectedLetter}
-                aria-label="Download cover letter"
-                className="inline-flex h-10 items-center gap-1 rounded-[4px] border px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-40"
-              >
-                <Download size={14} strokeWidth={1.8} /> Download
-              </button>
-            </div>
+            <select
+              value={letterId}
+              onChange={(e) => setLetterId(e.target.value)}
+              className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+            >
+              {letters.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name}
+                  {l.id === extras.defaultCoverLetterId ? " · Default" : ""}
+                </option>
+              ))}
+            </select>
           )}
         </div>
 
@@ -236,7 +214,21 @@ export function ApplyModal({
             </div>
           </div>
         ) : (
-          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row">
+          <>
+            <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] p-3" style={{ background: "#E3E7E8" }}>
+              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
+                Bundle of the files for Applying to this vacancy
+              </div>
+              <button
+                type="button"
+                onClick={() => { downloadResume(); downloadLetter(); }}
+                disabled={!selectedResume && !selectedLetter}
+                className="inline-flex h-9 shrink-0 items-center gap-1 rounded-[4px] border bg-white px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)] disabled:opacity-40"
+              >
+                <Download size={14} strokeWidth={1.8} /> Download files
+              </button>
+            </div>
+            <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row">
             <button
               type="button"
               onClick={commitApplied}
@@ -252,7 +244,8 @@ export function ApplyModal({
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply
             </button>
-          </div>
+            </div>
+          </>
         )}
       </DialogContent>
     </Dialog>
