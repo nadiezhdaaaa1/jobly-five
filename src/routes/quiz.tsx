@@ -1129,10 +1129,34 @@ function SkillsGroup({
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const inputWrapRef = useRef<HTMLDivElement | null>(null);
+  const popRef = useRef<HTMLDivElement | null>(null);
+  const [pos, setPos] = useState<{ left: number; top: number; width: number; maxHeight: number } | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      const el = inputWrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - r.bottom - 12;
+      const maxHeight = Math.max(160, Math.min(280, spaceBelow));
+      setPos({ left: r.left, top: r.bottom + 4, width: r.width, maxHeight });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [open]);
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+      const t = e.target as Node;
+      const inWrap = wrapRef.current?.contains(t);
+      const inPop = popRef.current?.contains(t);
+      if (!inWrap && !inPop) setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
@@ -1166,7 +1190,7 @@ function SkillsGroup({
       </div>
 
       <div ref={wrapRef} className="relative">
-      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div ref={inputWrapRef} className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -1188,9 +1212,11 @@ function SkillsGroup({
         )}
       </div>
 
-      {open && (
+      {open && pos && typeof document !== "undefined" && createPortal(
       <div
-        className="absolute left-0 right-0 top-full z-40 mt-1 max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
+        ref={popRef}
+        style={{ position: "fixed", left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
+        className="overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
         <div className="flex flex-col gap-[4px]">
           {filtered.map((s) => {
@@ -1229,7 +1255,8 @@ function SkillsGroup({
             <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
           )}
         </div>
-      </div>
+      </div>,
+      document.body
       )}
       </div>
 
