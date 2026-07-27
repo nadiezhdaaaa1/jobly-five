@@ -32,6 +32,34 @@ function pickLogo(company: string): string {
 
 const DIRECT_SOURCES = new Set(["greenhouse", "lever", "ashby", "workable"]);
 
+function parseDescription(raw: string): DescriptionSection[] {
+  const lines = raw.split(/\r?\n/);
+  const sections: DescriptionSection[] = [];
+  let current: DescriptionSection | null = null;
+  const flush = () => {
+    if (current) sections.push(current);
+    current = null;
+  };
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { flush(); continue; }
+    if (t.startsWith("- ")) {
+      if (!current) current = { heading: "" };
+      current.bullets = current.bullets ?? [];
+      current.bullets.push(t.slice(2));
+    } else if (!current) {
+      current = { heading: t };
+    } else if (current.bullets) {
+      flush();
+      current = { heading: t };
+    } else {
+      current.body = current.body ? `${current.body}\n${t}` : t;
+    }
+  }
+  flush();
+  return sections.length ? sections : [{ heading: "About the role", body: raw }];
+}
+
 function formatSalary(min: number | null, max: number | null): string {
   if (min && max) return `$${Math.round(min / 1000)}–${Math.round(max / 1000)}K`;
   if (min) return `$${Math.round(min / 1000)}K+`;
