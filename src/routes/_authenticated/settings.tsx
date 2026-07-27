@@ -154,7 +154,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {/* Free card */}
         <div className="rounded-[12px] bg-[#F1F3F3] p-1">
-        <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-4" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
+        <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-3" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
           <div className="flex items-baseline justify-between">
             <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Free</div>
             <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
@@ -190,7 +190,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         {/* Pro card */}
         <div className="rounded-[12px] bg-[#F1F3F3] p-1">
         <div
-          className={`relative rounded-[8px] bg-[color:var(--color-surface-1)] p-4 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
+          className={`relative rounded-[8px] bg-[color:var(--color-surface-1)] p-3 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
           style={{ borderColor: "var(--color-green)", boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
         >
           {(plan === "pro" || plan === "paused") ? (
