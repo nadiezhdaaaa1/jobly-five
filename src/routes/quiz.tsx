@@ -1126,6 +1126,18 @@ function SkillsGroup({
   searchPlaceholder: string;
 }) {
   const [query, setQuery] = useState("");
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
@@ -1136,14 +1148,31 @@ function SkillsGroup({
     <div className="mt-6">
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-sm font-light text-[#090B0C]">{label}</span>
-        <span className="text-xs text-[color:var(--color-text-muted)]">{hint}</span>
+        <div className="flex items-center gap-3 text-xs">
+          <button
+            type="button"
+            onClick={() => onChange(Array.from(new Set([...value, ...options])))}
+            className="text-[color:var(--color-foreground)] underline-offset-2 hover:underline"
+          >
+            Select all
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange([])}
+            className="text-[color:var(--color-foreground)] underline-offset-2 hover:underline"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
+      <div ref={wrapRef} className="relative">
       <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setOpen(true)}
           placeholder={searchPlaceholder}
           className="h-10 w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--color-text-muted)]"
         />
@@ -1159,28 +1188,8 @@ function SkillsGroup({
         )}
       </div>
 
-      {value.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {value.map((s) => (
-            <span
-              key={s}
-              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
-            >
-              {s}
-              <button
-                type="button"
-                onClick={() => toggle(s)}
-                aria-label={`Remove ${s}`}
-                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-2 max-h-[160px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      {open && (
+      <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]">
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
             const selected = value.includes(s);
@@ -1219,6 +1228,29 @@ function SkillsGroup({
           )}
         </div>
       </div>
+      )}
+      </div>
+
+      {value.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {value.map((s) => (
+            <span
+              key={s}
+              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+            >
+              {s}
+              <button
+                type="button"
+                onClick={() => toggle(s)}
+                aria-label={`Remove ${s}`}
+                className="text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
