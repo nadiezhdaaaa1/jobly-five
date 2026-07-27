@@ -561,6 +561,7 @@ function KanbanColumn({
   collapsed,
   onToggleCollapse,
   moveColumns,
+  onEditColumn,
 }: {
   column: BoardColumn;
   jobs: { job: Job; rec: JobRecord }[];
