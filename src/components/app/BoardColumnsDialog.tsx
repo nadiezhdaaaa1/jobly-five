@@ -205,9 +205,8 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
           ))}
         </div>
 
-        <div className="mt-5 rounded-[6px] border p-3" style={{ borderColor: "#E3E7E8" }}>
-          <div className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>Add an Interview column</div>
-          <div className="mt-2 grid grid-cols-[1fr_auto] gap-2">
+        <div className="mt-3">
+          <div className="grid grid-cols-[1fr_auto] gap-2">
             <input
               type="text"
               placeholder="Column title (e.g. Second-round tech)"
