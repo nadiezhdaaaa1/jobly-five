@@ -668,30 +668,28 @@ function PreferencesTab({
           .map((row, idx, arr) => (
             <div
               key={row.key}
-              className={`flex items-start gap-3 p-4 ${
+              className={`flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:gap-4 ${
                 idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
               }`}
             >
-              <div className="min-w-0 flex-1">
-                <div className="body-small text-[#4B585B]">
-                  {row.label}
-                  {row.key === "stack" ? <span className="ml-1"><Tag>optional</Tag></span> : null}
-                </div>
-                <div
-                  className={`body-medium mt-1 ${
-                    row.value
-                      ? "text-[color:var(--color-foreground)]"
-                      : "text-[color:var(--color-text-muted)]"
-                  }`}
-                >
-                  {row.value || "Not set"}
-                </div>
+              <div className="flex shrink-0 items-center gap-1.5 sm:w-[168px] sm:pt-[2px]">
+                <span className="body-small text-[#4B585B]">{row.label}</span>
+                {row.key === "stack" ? <Tag>optional</Tag> : null}
+              </div>
+              <div
+                className={`body-medium min-w-0 flex-1 break-words ${
+                  row.value
+                    ? "text-[color:var(--color-foreground)]"
+                    : "text-[color:var(--color-text-muted)]"
+                }`}
+              >
+                {row.value || "Not set"}
               </div>
               <button
                 type="button"
                 onClick={() => setEditing(row.key)}
                 aria-label={`Edit ${row.label}`}
-                className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] sm:self-start"
               >
                 <Pencil size={14} strokeWidth={1.8} />
                 Edit
