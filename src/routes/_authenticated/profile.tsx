@@ -909,9 +909,15 @@ function DocumentsTab({
 }
 
 function FileRow({
-  name, meta, onPreview, onReplace, onDelete,
+  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary,
 }: {
-  name: string; meta: string; onPreview: () => void; onReplace: () => void; onDelete: () => void;
+  name: string;
+  meta: string;
+  onPreview: () => void;
+  onReplace?: () => void;
+  onDelete: () => void;
+  isPrimary?: boolean;
+  onMakePrimary?: () => void;
 }) {
   return (
     <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
@@ -923,12 +929,16 @@ function FileRow({
         <FileText size={20} strokeWidth={1.6} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+          {isPrimary && <Tag tone="mint">Primary</Tag>}
+        </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <SecondaryBtn onClick={onPreview}>Preview</SecondaryBtn>
-        <SecondaryBtn onClick={onReplace}>Replace</SecondaryBtn>
+        {onMakePrimary && <SecondaryBtn onClick={onMakePrimary}>Make primary</SecondaryBtn>}
+        {onReplace && <SecondaryBtn onClick={onReplace}>Replace</SecondaryBtn>}
         <SecondaryBtn danger onClick={onDelete}>Delete</SecondaryBtn>
       </div>
     </div>
