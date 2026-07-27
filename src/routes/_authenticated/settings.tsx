@@ -205,7 +205,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </div>
 
           {/* Billing period switcher */}
-          <div className="mt-3 inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] p-1">
+          <div className="mt-3 inline-flex w-fit self-start items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] p-1">
             {(["monthly", "6mo", "annual"] as const).map((p) => {
               const active = period === p;
               const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
