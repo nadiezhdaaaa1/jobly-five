@@ -28,12 +28,20 @@ export type DbJob = {
 export function rolesOverlap(userRoles: string[], job: DbJob): boolean {
   if (!userRoles.length) return false;
   const jobRolesLc = job.roles.map((r) => r.toLowerCase());
-  const titleLc = job.title.toLowerCase();
+  const jobRoleIdsLc = job.roleIds.map((r) => r.toLowerCase());
+  const slug = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[—–]/g, "-")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   return userRoles.some((r) => {
     const rl = r.toLowerCase();
-    if (jobRolesLc.some((jr) => jr === rl || jr.includes(rl) || rl.includes(jr))) return true;
-    const firstToken = rl.split(/[\s—-]+/)[0];
-    return firstToken.length > 3 && titleLc.includes(firstToken);
+    if (jobRolesLc.includes(rl)) return true;
+    const rs = slug(r);
+    if (rs && jobRoleIdsLc.includes(rs)) return true;
+    if (rs && jobRolesLc.some((jr) => slug(jr) === rs)) return true;
+    return false;
   });
 }
 
