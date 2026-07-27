@@ -521,7 +521,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   <div className="flex items-center gap-2">
                     <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</span>
                     <span
-                      className="inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] font-semibold"
+                      className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px]"
                       style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
                     >
                       {currentColumnTitle}
