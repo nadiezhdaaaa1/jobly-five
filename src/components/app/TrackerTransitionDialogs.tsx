@@ -388,7 +388,9 @@ export function OfferTransitionDialog({
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso, details })} />}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">Offer stage</span>
+        <p className="body-small text-[color:var(--color-text-secondary)]">
+          Pick where this offer stands right now.
+        </p>
         {stageOptions.length ? (
           <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
             {stageOptions.map((s) => (
@@ -401,9 +403,16 @@ export function OfferTransitionDialog({
           </div>
         )}
       </div>
-      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
-      <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">Offer details</span>
+      <div className="flex flex-col gap-2">
+        <p className="body-small text-[color:var(--color-text-secondary)]">
+          Set a reminder for your next step — deadline, call, or decision date.
+        </p>
+        <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
+      </div>
+      <div className="flex flex-col gap-2">
+        <p className="body-small text-[color:var(--color-text-secondary)]">
+          Jot down the details — comp, benefits, deadlines — so nothing gets lost.
+        </p>
         <textarea
           rows={4}
           value={details}
