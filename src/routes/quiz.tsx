@@ -1128,6 +1128,15 @@ function SkillsGroup({
 }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
@@ -1156,7 +1165,7 @@ function SkillsGroup({
         </div>
       </div>
 
-      <div className="relative">
+      <div ref={wrapRef} className="relative">
       <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
