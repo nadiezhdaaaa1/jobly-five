@@ -1162,6 +1162,19 @@ function SkillsGroup({
       window.removeEventListener("scroll", update, true);
     };
   }, [open]);
+  useEffect(() => {
+    if (!open) return;
+    const el = popRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.stopPropagation();
+      const before = el.scrollTop;
+      el.scrollTop += e.deltaY;
+      if (el.scrollTop !== before) e.preventDefault();
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [open, pos]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
