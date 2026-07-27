@@ -205,6 +205,7 @@ function ProfileScreen() {
 
   // Strength card (based on 5 checkable items)
   const strength = useMemo(() => {
+    const hasPortfolio = (extras.links?.length ?? 0) > 0 || !!extras.portfolioFile;
     const items = [
       { key: "quiz", label: "Quiz completed", done: (quiz.roles?.length ?? 0) > 0 },
       { key: "resume", label: "Resume added", done: resume.hasResume },
@@ -213,8 +214,8 @@ function ProfileScreen() {
       { key: "verify", label: "Verify your email", done: false },
     ];
     const done = items.filter((i) => i.done).length;
-    return { items, pct: Math.round((done / 5) * 100) };
-  }, [quiz.roles, resume]);
+    return { items, pct: Math.round((done / 5) * 100), hasPortfolio };
+  }, [quiz.roles, resume, extras.links, extras.portfolioFile]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
@@ -346,9 +347,20 @@ function ProfileScreen() {
                       )}
                     </li>
                   ))}
-                  <li className="flex items-center gap-2 text-[13px] text-[color:var(--color-text-muted)]">
-                    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--color-border)]" />
-                    CV / portfolio — optional
+                  <li className="flex items-center gap-2 text-[13px]">
+                    {strength.hasPortfolio ? (
+                      <>
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                        </span>
+                        <span className="font-semibold text-[color:var(--color-foreground)]">Portfolio — optional</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--color-border)]" />
+                        <span className="text-[color:var(--color-text-muted)]">Portfolio — optional</span>
+                      </>
+                    )}
                   </li>
                 </ul>
                 <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
