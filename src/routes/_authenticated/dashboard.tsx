@@ -344,6 +344,7 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
     if (!f.onlyRemote && f.locations.length) {
       const jobLoc = j.location.toLowerCase();
       const hit = f.locations.some((l) => {
+        if (/^remote\s*\(us\)$/i.test(l)) return j.remote;
         const stateMatch = /^state of (.+)$/i.exec(l);
         if (stateMatch) {
           const stateName = stateMatch[1].trim().toLowerCase();
