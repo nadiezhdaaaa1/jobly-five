@@ -402,16 +402,14 @@ function BillingCard({ plan }: { plan: Plan }) {
   ];
   return (
     <Card title="Billing and payment">
-      <div className="flex items-center justify-between rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-12 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] text-[11px] font-semibold text-[color:var(--color-text-muted)]">
-            CARD
-          </div>
-          <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
-            •••• 4242 · expires 08/27
-          </div>
+      <div className="flex flex-col gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-4">
+        <div className="flex h-8 w-12 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+          CARD
         </div>
-        <div className="flex items-center gap-2">
+        <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
+          •••• 4242 · expires 08/27
+        </div>
+        <div className="flex items-center justify-end gap-2">
           <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">Soon</span>
           <span className="text-[13px] text-[color:var(--color-text-muted)]">Change</span>
         </div>
