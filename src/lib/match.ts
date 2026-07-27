@@ -23,6 +23,7 @@ export type DbJob = {
   companySector: string | null;
   companyDomain: string | null;
   group: string | null;
+  externalUrl?: string | null;
 };
 
 export function rolesOverlap(userRoles: string[], job: DbJob): boolean {
