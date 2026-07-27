@@ -1189,7 +1189,7 @@ function SkillsGroup({
       </div>
 
       {open && (
-      <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_1px_4px_0px_rgba(12,12,13,0.05)]">
+      <div className="absolute left-0 right-0 top-full z-20 mt-1 max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]">
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
             const selected = value.includes(s);
