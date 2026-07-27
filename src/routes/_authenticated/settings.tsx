@@ -674,35 +674,35 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
 
       <div className="mt-6 border-t pt-4">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-[4px] border bg-white text-[13px] font-bold" aria-hidden>
-              G
-            </div>
-            <div>
-              <div className="text-[14px] text-[color:var(--color-foreground)]">Google</div>
-              <div className="text-[12px] text-[color:var(--color-text-muted)]">
-                {googleConnected ? "Connected as serjkrush@gmail.com" : "Not connected"}
-              </div>
+        <div className="mt-3 flex flex-col gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[4px] border bg-white text-[13px] font-bold" aria-hidden>
+            G
+          </div>
+          <div>
+            <div className="text-[14px] text-[color:var(--color-foreground)]">Google</div>
+            <div className="text-[12px] text-[color:var(--color-text-muted)]">
+              {googleConnected ? "Connected as serjkrush@gmail.com" : "Not connected"}
             </div>
           </div>
-          {googleConnected ? (
-            <button
-              type="button"
-              onClick={() => setGConfirm(true)}
-              className="text-[13px] text-[color:var(--color-text-muted)] hover:underline"
-            >
-              Disconnect
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => { setGoogleConnected(true); onFlash("Google connected."); }}
-              className="inline-flex h-9 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Connect
-            </button>
-          )}
+          <div className="flex justify-end">
+            {googleConnected ? (
+              <button
+                type="button"
+                onClick={() => setGConfirm(true)}
+                className="text-[13px] text-[color:var(--color-text-muted)] hover:underline"
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setGoogleConnected(true); onFlash("Google connected."); }}
+                className="inline-flex h-9 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Connect
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
