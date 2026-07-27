@@ -132,7 +132,7 @@ export function ApplyModal({
           </div>
         </div>
 
-        <p className="body-medium mt-4 text-[color:var(--color-text-secondary)]">
+        <p className="body-small mt-4 text-[color:var(--color-text-secondary)]">
           Pick the résumé and cover letter template you want to send.
         </p>
 
@@ -216,7 +216,7 @@ export function ApplyModal({
         ) : (
           <>
             <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] p-3" style={{ background: "#E3E7E8" }}>
-              <div className="body-medium text-[color:var(--color-foreground)]">
+              <div className="body-small text-[color:var(--color-foreground)]">
                 Bundle of the files for Applying to this vacancy
               </div>
               <button
