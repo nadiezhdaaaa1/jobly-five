@@ -363,7 +363,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="absolute right-0 top-0 h-full w-full overflow-y-auto bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
+        className="absolute right-0 top-0 flex h-full w-full flex-col overflow-hidden bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
         style={{
           boxShadow: "0 8px 24px rgba(0,0,0,.12)",
           animation: reducedMotion ? undefined : "job-drawer-in 160ms ease-out",
@@ -371,6 +371,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
       >
         <style>{`@keyframes job-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
 
+        <div className="relative min-h-0 flex-1 overflow-y-auto">
         {/* Sticky close */}
         <div className="sticky top-4 z-20 float-right mr-4 mt-4">
           <IconTooltip label="Close" side="left">
