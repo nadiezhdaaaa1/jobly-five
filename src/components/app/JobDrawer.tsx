@@ -517,23 +517,26 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="mt-6 flex flex-col gap-5">
               {/* Status */}
               <div>
-                <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</div>
-                <div className="mt-2 flex items-center justify-between gap-3">
-                  <span
-                    className="inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] font-semibold"
-                    style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
-                  >
-                    {currentColumnTitle}
-                  </span>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</span>
+                    <span
+                      className="inline-flex items-center rounded-[4px] px-2 py-1 text-[13px] font-semibold"
+                      style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
+                    >
+                      {currentColumnTitle}
+                    </span>
+                  </div>
                   <div className="relative" ref={moveRef}>
                     <button
                       type="button"
                       aria-haspopup="menu"
                       aria-expanded={moveOpen}
                       onClick={() => setMoveOpen((v) => !v)}
-                      className="inline-flex h-9 items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                      className="inline-flex h-9 items-center justify-between gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
                     >
                       Move to
+                      <ChevronDown size={14} strokeWidth={2} />
                     </button>
                     {moveOpen ? (
                       <div
