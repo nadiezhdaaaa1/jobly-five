@@ -285,7 +285,6 @@ export function InterviewTransitionDialog({
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso })} />}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">{stageLabel ?? "Stage"}</span>
         <p className="body-small text-[color:var(--color-text-secondary)]">
           Pick the stage you're currently at in this interview.
         </p>
