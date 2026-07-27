@@ -117,16 +117,16 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     >
       {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <PlanBadge plan={plan} />
+        <div className="flex min-w-0 items-center gap-3">
+          <PlanBadge plan={plan} />
+          <div className="min-w-0">
+            <p className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
+              {plan === "free" ? freeSummary : proSummary}
+            </p>
+            <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+              {plan === "pro" ? proBilling : plan === "paused" ? pausedLine : "Free plan — no billing"}
+            </p>
           </div>
-          <p className="mt-2 text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
-            {plan === "free" ? freeSummary : proSummary}
-          </p>
-          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            {plan === "pro" ? proBilling : plan === "paused" ? pausedLine : "Free plan — no billing"}
-          </p>
         </div>
         <div className="shrink-0 flex flex-col items-stretch gap-2">
           {plan === "paused" ? (
