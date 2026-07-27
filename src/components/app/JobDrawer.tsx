@@ -702,32 +702,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         {/* Fixed action bar aligned to drawer bottom */}
         {!inTracker || status === "saved" ? (
           <div className="flex shrink-0 items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
-            <div className="relative shrink-0" ref={dislikeRef}>
-              <button
-                type="button"
-                aria-label="Not interested"
-                onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <ThumbsDown size={16} strokeWidth={1.6} />
-              </button>
-              {dislikeOpen ? (
-                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                  {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
-                    <button
-                      key={label}
-                      type="button"
-                      role="menuitem"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
             <div className="relative shrink-0" ref={flagRef}>
               <button
                 type="button"
@@ -746,6 +720,32 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       role="menuitem"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
                       onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); onClose(); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="relative shrink-0" ref={dislikeRef}>
+              <button
+                type="button"
+                aria-label="Not interested"
+                onClick={() => setDislikeOpen((v) => !v)}
+                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <ThumbsDown size={16} strokeWidth={1.6} />
+              </button>
+              {dislikeOpen ? (
+                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                  {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
                     >
                       {label}
                     </button>
