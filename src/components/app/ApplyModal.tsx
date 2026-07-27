@@ -250,7 +250,7 @@ export function ApplyModal({
               className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               <ExternalLink size={14} strokeWidth={1.8} />
-              Apply on company site
+              Apply
             </button>
           </div>
         )}
