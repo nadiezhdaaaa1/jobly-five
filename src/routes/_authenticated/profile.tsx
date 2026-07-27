@@ -680,17 +680,16 @@ function PreferencesTab({
               }`}
             >
               <div className="min-w-0 flex-1">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                <div className="body-small text-[#4B585B]">
                   {row.label}
                   {row.key === "stack" ? <span className="ml-1"><Tag>optional</Tag></span> : null}
                 </div>
                 <div
-                  className={`mt-1 text-[14px] ${
+                  className={`body-medium mt-1 ${
                     row.value
                       ? "text-[color:var(--color-foreground)]"
                       : "text-[color:var(--color-text-muted)]"
                   }`}
-                  style={{ fontWeight: row.value ? 600 : 400 }}
                 >
                   {row.value || "Not set"}
                 </div>
@@ -699,8 +698,9 @@ function PreferencesTab({
                 type="button"
                 onClick={() => setEditing(row.key)}
                 aria-label={`Edit ${row.label}`}
-                className="ml-auto shrink-0 rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
+                <Pencil size={14} strokeWidth={1.8} />
                 Edit
               </button>
             </div>
