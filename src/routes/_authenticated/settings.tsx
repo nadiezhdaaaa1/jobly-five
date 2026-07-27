@@ -171,7 +171,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </ul>
           <div className="mt-auto pt-4">
             {plan === "free" ? (
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] font-semibold text-[color:var(--color-text-secondary)]">
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-green)] px-3 py-2 text-[12px] font-semibold text-white">
                 Current plan
               </span>
             ) : (
