@@ -164,7 +164,7 @@ export function useProfileExtras() {
 
 // ------- Cover letters -------
 
-export const COVER_LETTER_LIMIT = 5;
+export const COVER_LETTER_LIMIT = 10;
 
 export function addCoverLetter(input: { name: string; body: string }): CoverLetter | null {
   if (state.coverLetters.length >= COVER_LETTER_LIMIT) return null;
