@@ -69,7 +69,6 @@ import {
   removeLink,
   removeSocial,
   setApplyMode,
-  setCvFile,
   setPortfolioFile,
   toggleApplyBlock,
   updateAchievement,
@@ -289,7 +288,6 @@ function ProfileScreen() {
               <DocumentsTab
                 onToast={toast.show}
                 resume={resume}
-                cvFile={extras.cvFile}
               />
             )}
             {tab === "letters" && (
@@ -782,72 +780,78 @@ function PreferencesTab({
 function DocumentsTab({
   onToast,
   resume,
-  cvFile,
 }: {
   onToast: (m: string) => void;
   resume: ReturnType<typeof useResumeState>;
-  cvFile: { name: string; size: number; uploadedAt: string } | null;
 }) {
-  const [uploadOpen, setUploadOpen] = useState<null | "resume" | "cv">(null);
-  const [confirmDel, setConfirmDel] = useState<null | "resume" | "cv">(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [confirmDelId, setConfirmDelId] = useState<string | null>(null);
 
-  const primary = resume.files.find((f) => f.id === resume.primaryId) ?? null;
+  const MAX_FILES = 10;
+  const MAX_MB = 5;
+  const files = [...resume.files].sort((a, b) =>
+    a.id === resume.primaryId ? -1 : b.id === resume.primaryId ? 1 : a.uploadedAt < b.uploadedAt ? 1 : -1
+  );
+  const atLimit = files.length >= MAX_FILES;
 
   return (
     <>
       {/* Résumé */}
       <CardBig>
         <header className="flex items-center gap-2">
-          <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Résumé</h2>
-          <Tag tone="mint">Primary</Tag>
+          <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Resume</h2>
+          <span className="text-[12px] text-[color:var(--color-text-muted)]">
+            {files.length} / {MAX_FILES}
+          </span>
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Your main document — US standard, 1–2 pages. Used for match scoring and applications. On upload we
-          parse it into your Experience.
+          Upload up to {MAX_FILES} resumes (PDF or DOCX, up to {MAX_MB} MB each). Your primary resume is used
+          for match scoring and applications; on upload we parse it into your Experience.
         </p>
-        <div className="mt-3">
-          {primary ? (
-            <FileRow
-              name={`${primary.name}.${primary.ext}`}
-              meta={`Uploaded ${new Date(primary.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(primary.size / 1024))} KB`}
-              onPreview={() => onToast("Preview coming soon")}
-              onReplace={() => setUploadOpen("resume")}
-              onDelete={() => setConfirmDel("resume")}
+        <div className="mt-3 flex flex-col gap-2">
+          {files.length === 0 ? (
+            <DropzoneRow
+              hint={`PDF or DOCX, up to ${MAX_MB} MB`}
+              label="Upload resume"
+              onClick={() => setUploadOpen(true)}
             />
           ) : (
-            <DropzoneRow
-              hint="PDF or DOCX, up to 10 MB"
-              label="Upload résumé"
-              onClick={() => setUploadOpen("resume")}
-            />
-          )}
-        </div>
-      </CardBig>
-
-      {/* CV */}
-      <CardBig>
-        <header className="flex items-center gap-2">
-          <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">CV</h2>
-          <Tag>optional</Tag>
-        </header>
-        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Long-form document for academic / research / medical roles. Your résumé stays the primary document.
-        </p>
-        <div className="mt-3">
-          {cvFile ? (
-            <FileRow
-              name={cvFile.name}
-              meta={`Uploaded ${new Date(cvFile.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(cvFile.size / 1024))} KB`}
-              onPreview={() => onToast("Preview coming soon")}
-              onReplace={() => setUploadOpen("cv")}
-              onDelete={() => setConfirmDel("cv")}
-            />
-          ) : (
-            <DropzoneRow
-              hint="PDF or DOCX, up to 10 MB"
-              label="Upload CV"
-              onClick={() => setUploadOpen("cv")}
-            />
+            <>
+              {files.map((f) => {
+                const isPrimary = f.id === resume.primaryId;
+                return (
+                  <FileRow
+                    key={f.id}
+                    name={`${f.name}.${f.ext}`}
+                    meta={`Uploaded ${new Date(f.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(f.size / 1024))} KB`}
+                    isPrimary={isPrimary}
+                    onPreview={() => onToast("Preview coming soon")}
+                    onMakePrimary={
+                      isPrimary
+                        ? undefined
+                        : () => {
+                            setPrimaryResumeFile(f.id);
+                            onToast("Primary resume updated");
+                          }
+                    }
+                    onDelete={() => setConfirmDelId(f.id)}
+                  />
+                );
+              })}
+              {!atLimit && (
+                <div className="pt-1">
+                  <PrimaryBtn onClick={() => setUploadOpen(true)}>
+                    <UploadCloud size={16} strokeWidth={1.8} />
+                    Upload resume
+                  </PrimaryBtn>
+                </div>
+              )}
+              {atLimit && (
+                <p className="text-[12px] text-[color:var(--color-text-muted)]">
+                  You've reached the {MAX_FILES}-file limit. Delete one to upload a new resume.
+                </p>
+              )}
+            </>
           )}
         </div>
       </CardBig>
@@ -860,43 +864,44 @@ function DocumentsTab({
         />
         <ComingSoonMini
           title="ATS check"
-          body="See how much of your résumé or CV an ATS can parse — plus fixes to raise your pass rate."
+          body="See how much of your résumé an ATS can parse — plus fixes to raise your pass rate."
         />
       </div>
 
       <UploadModal
-        open={uploadOpen !== null}
-        title={uploadOpen === "cv" ? "Upload CV" : "Upload résumé"}
-        maxMB={10}
-        onClose={() => setUploadOpen(null)}
+        open={uploadOpen}
+        title="Upload resume"
+        maxMB={MAX_MB}
+        onClose={() => setUploadOpen(false)}
         onFile={(file) => {
-          if (uploadOpen === "resume") {
-            const ext = file.name.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
-            const base = file.name.replace(/\.[^.]+$/, "");
-            addResumeFile({ name: base, ext, size: file.size });
-            onToast("Résumé uploaded · Experience updated");
-          } else if (uploadOpen === "cv") {
-            setCvFile({ name: file.name, size: file.size, uploadedAt: new Date().toISOString() });
-            onToast("CV uploaded");
+          if (resume.files.length >= MAX_FILES) {
+            onToast(`Limit of ${MAX_FILES} resumes reached`);
+            setUploadOpen(false);
+            return;
           }
-          setUploadOpen(null);
+          const ext = file.name.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
+          const base = file.name.replace(/\.[^.]+$/, "");
+          addResumeFile({ name: base, ext, size: file.size });
+          onToast(
+            resume.files.length === 0
+              ? "Resume uploaded · Experience updated"
+              : "Resume uploaded"
+          );
+          setUploadOpen(false);
         }}
       />
 
       <ConfirmModal
-        open={confirmDel !== null}
-        title={confirmDel === "cv" ? "Delete CV?" : "Delete résumé?"}
+        open={confirmDelId !== null}
+        title="Delete resume?"
         body="This removes the file from your profile. You can upload it again anytime."
-        onClose={() => setConfirmDel(null)}
+        onClose={() => setConfirmDelId(null)}
         onConfirm={() => {
-          if (confirmDel === "resume" && primary) {
-            deleteResumeFile(primary.id);
-            onToast("Résumé deleted");
-          } else if (confirmDel === "cv") {
-            setCvFile(null);
-            onToast("CV deleted");
+          if (confirmDelId) {
+            deleteResumeFile(confirmDelId);
+            onToast("Resume deleted");
           }
-          setConfirmDel(null);
+          setConfirmDelId(null);
         }}
       />
     </>
@@ -904,9 +909,15 @@ function DocumentsTab({
 }
 
 function FileRow({
-  name, meta, onPreview, onReplace, onDelete,
+  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary,
 }: {
-  name: string; meta: string; onPreview: () => void; onReplace: () => void; onDelete: () => void;
+  name: string;
+  meta: string;
+  onPreview: () => void;
+  onReplace?: () => void;
+  onDelete: () => void;
+  isPrimary?: boolean;
+  onMakePrimary?: () => void;
 }) {
   return (
     <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
@@ -918,12 +929,16 @@ function FileRow({
         <FileText size={20} strokeWidth={1.6} />
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+          {isPrimary && <Tag tone="mint">Primary</Tag>}
+        </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <SecondaryBtn onClick={onPreview}>Preview</SecondaryBtn>
-        <SecondaryBtn onClick={onReplace}>Replace</SecondaryBtn>
+        {onMakePrimary && <SecondaryBtn onClick={onMakePrimary}>Make primary</SecondaryBtn>}
+        {onReplace && <SecondaryBtn onClick={onReplace}>Replace</SecondaryBtn>}
         <SecondaryBtn danger onClick={onDelete}>Delete</SecondaryBtn>
       </div>
     </div>
