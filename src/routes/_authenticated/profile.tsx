@@ -1930,31 +1930,47 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
 
   return (
     <>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        The filter sets you saved from your digest. Rename them to remember what each one is for, or
-        delete the ones you no longer use.
-      </p>
-
       <CardBig>
         <header className="flex items-center gap-2">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Saved searches</h2>
           <span className="text-[12px] text-[color:var(--color-text-muted)]">
-            {saved.length} saved
+            {saved.length} / {SAVED_FILTER_LIMIT}
           </span>
         </header>
-
-        {saved.length === 0 ? (
-          <p className="mt-3 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            You haven't saved any filter sets yet. Open the Digest, tune your filters, and use
-            "Save filter" to store them here.
-          </p>
-        ) : (
-          <ul className="mt-3 flex flex-col divide-y divide-[color:var(--color-border)]">
-            {saved.map((s) => {
+        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          Up to {SAVED_FILTER_LIMIT} filter sets you saved from your Digest. Rename them to remember what
+          each one is for, or delete the ones you no longer use.
+        </p>
+        <div className="mt-3 flex flex-col gap-2">
+          {saved.length === 0 ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+                <FileText size={20} strokeWidth={1.6} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">No saved searches yet</div>
+                <div className="text-[12px] text-[color:var(--color-text-muted)]">
+                  Open the Digest, tune your filters, and use "Save filter" to store them here.
+                </div>
+              </div>
+            </div>
+          ) : (
+            saved.map((s) => {
               const editing = editingId === s.id;
               const asking = confirmDel === s.id;
+              const summary = summarizeSavedFilter(s.filters);
               return (
-                <li key={s.id} className="flex flex-wrap items-center gap-3 py-3">
+                <div
+                  key={s.id}
+                  className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
+                >
+                  <div
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
+                    style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
+                    aria-hidden
+                  >
+                    <FileText size={20} strokeWidth={1.6} />
+                  </div>
                   <div className="min-w-0 flex-1">
                     {editing ? (
                       <input
@@ -1965,82 +1981,101 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
                           if (e.key === "Enter") commitRename(s.id);
                           if (e.key === "Escape") setEditingId(null);
                         }}
-                        className="h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+                        className="h-9 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
                         aria-label="Search name"
                       />
                     ) : (
-                      <div className="min-w-0 truncate text-[14px] text-[color:var(--color-foreground)]">
-                        {s.name}
-                      </div>
+                      <>
+                        <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">
+                          {s.name}
+                        </div>
+                        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
+                          {summary || "No filters selected"}
+                        </div>
+                      </>
                     )}
                   </div>
-                  {asking ? (
-                    <div className="flex items-center gap-2 text-[12px]">
-                      <span>Delete this search?</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteSavedFilter(s.id);
-                          setConfirmDel(null);
-                          onToast("Saved search deleted");
-                        }}
-                        className="rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDel(null)}
-                        className="rounded-[4px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                      >
-                        Keep
-                      </button>
-                    </div>
-                  ) : editing ? (
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => commitRename(s.id)}
-                        className="inline-flex h-9 items-center gap-1 rounded-[4px] bg-[color:var(--color-foreground)] px-3 text-[13px] font-medium text-[color:var(--color-background)]"
-                      >
-                        <Check size={14} strokeWidth={2} /> Save
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingId(null)}
-                        className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => startEdit(s.id, s.name)}
-                        aria-label="Rename search"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                      >
-                        <Pencil size={15} strokeWidth={1.6} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDel(s.id)}
-                        aria-label="Delete search"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-                      >
-                        <Trash size={15} strokeWidth={1.6} />
-                      </button>
-                    </div>
-                  )}
-                </li>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {asking ? (
+                      <div className="flex items-center gap-2 text-[12px]">
+                        <span>Delete?</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteSavedFilter(s.id);
+                            setConfirmDel(null);
+                            onToast("Saved search deleted");
+                          }}
+                          className="rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDel(null)}
+                          className="rounded-[4px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Keep
+                        </button>
+                      </div>
+                    ) : editing ? (
+                      <>
+                        <GhostBtn onClick={() => commitRename(s.id)}>Save</GhostBtn>
+                        <GhostBtn onClick={() => setEditingId(null)}>Cancel</GhostBtn>
+                      </>
+                    ) : (
+                      <>
+                        <GhostBtn onClick={() => startEdit(s.id, s.name)}>Rename</GhostBtn>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDel(s.id)}
+                          aria-label="Delete"
+                          title="Delete"
+                          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          <Trash size={18} strokeWidth={1.8} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
               );
-            })}
-          </ul>
-        )}
+            })
+          )}
+        </div>
       </CardBig>
     </>
   );
+}
+
+function summarizeSavedFilter(f: unknown): string {
+  if (!f || typeof f !== "object") return "";
+  const s = f as Record<string, unknown>;
+  const parts: string[] = [];
+  if (typeof s.field === "string" && s.field) parts.push(s.field);
+  if (Array.isArray(s.roles) && s.roles.length) {
+    parts.push(s.roles.length === 1 ? String(s.roles[0]) : `${s.roles.length} roles`);
+  }
+  if (Array.isArray(s.seniority) && s.seniority.length) parts.push(s.seniority.join(", "));
+  if (Array.isArray(s.years) && s.years.length) {
+    parts.push(s.years.length === 1 ? String(s.years[0]) : `${s.years.length} exp ranges`);
+  }
+  if (typeof s.english === "string" && s.english) parts.push(`English ${s.english}`);
+  if (s.onlyRemote === true) parts.push("Remote only");
+  if (Array.isArray(s.locations) && s.locations.length) {
+    parts.push(s.locations.length === 1 ? String(s.locations[0]) : `${s.locations.length} locations`);
+  }
+  if (Array.isArray(s.sources) && s.sources.length) {
+    parts.push(s.sources.length === 1 ? String(s.sources[0]) : `${s.sources.length} sources`);
+  }
+  if (typeof s.minMatch === "number" && s.minMatch > 0) parts.push(`Match ≥ ${s.minMatch}%`);
+  if (typeof s.minSalary === "number" && s.minSalary > 0) {
+    parts.push(`Salary ≥ $${Math.round(s.minSalary / 1000)}k`);
+  }
+  if (typeof s.postedWithin === "string" && s.postedWithin && s.postedWithin !== "any") {
+    parts.push(`Posted ${s.postedWithin}`);
+  }
+  return parts.join(" · ");
 }
 
 function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; editing: boolean; onEdit: () => void; onDone: () => void }) {
