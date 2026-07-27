@@ -151,12 +151,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       </div>
 
       {/* Two plan cards */}
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
+      <div className="mt-5 grid gap-4 md:grid-cols-2 items-stretch">
         {/* Free card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-1">
-        <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-3" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
+        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
+        <div className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
           <div className="flex items-baseline justify-between">
-            <div className="text-[15px] font-semibold text-[color:var(--color-foreground)]">Free</div>
+            <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
             <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
           </div>
           <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
@@ -169,7 +169,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <li>1 resume, 1 cover-letter template</li>
             <li>Report ghost / scam jobs</li>
           </ul>
-          <div className="mt-4">
+          <div className="mt-auto pt-4">
             {plan === "free" ? (
               <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] font-semibold text-[color:var(--color-text-secondary)]">
                 Current plan
@@ -188,9 +188,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </div>
 
         {/* Pro card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-1">
+        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
         <div
-          className={`relative rounded-[8px] bg-[color:var(--color-surface-1)] p-3 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
+          className={`relative flex h-full flex-col rounded-[8px] bg-[color:var(--color-surface-1)] p-6 ${plan === "pro" || plan === "paused" ? "border-2" : "border"}`}
           style={{ borderColor: "var(--color-green)", boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
         >
           {(plan === "pro" || plan === "paused") ? (
@@ -201,7 +201,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             </span>
           ) : null}
           <div className="flex items-baseline justify-between">
-            <div className="text-[15px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
+            <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
           </div>
 
           {/* Billing period switcher */}
@@ -217,7 +217,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                     if (plan === "pro" && p !== period) { setSwitchOpen(p); return; }
                     setPeriod(p);
                   }}
-                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "bg-[color:var(--color-accent)] text-[color:var(--color-on-accent)] font-semibold" : "text-[color:var(--color-text-secondary)]"}`}
+                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "font-semibold text-white bg-[color:var(--color-green)]" : "text-[color:var(--color-text-secondary)]"}`}
                 >
                   {label}
                   {p === "annual" && !active ? (
@@ -246,19 +246,28 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </p>
 
           <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
-          <ul className="mt-1 space-y-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300, lineHeight: 1.9 }}>
-            <li>Daily digest + instant high-match alerts</li>
-            <li>Full "why this match" + "raise your %"</li>
-            <li>Customizable tracker pipeline (unlimited stages)</li>
-            <li>Up to 5 cover-letter templates (rich text)</li>
-            <li>Screening answers + 1-click apply extension</li>
-            <li>CV, portfolio & achievements PDF</li>
-            <li>Gmail auto-status, follow-ups, interview prep</li>
-            <li>Source filters + blocked companies</li>
-            <li>Priority support</li>
+          <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            {[
+              "Daily digest + instant high-match alerts",
+              "Full \"why this match\" + \"raise your %\"",
+              "Customizable tracker pipeline (unlimited stages)",
+              "Up to 5 cover-letter templates (rich text)",
+              "Screening answers + 1-click apply extension",
+              "CV, portfolio & achievements PDF",
+              "Gmail auto-status, follow-ups, interview prep",
+              "Source filters + blocked companies",
+              "Priority support",
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                  <IconCheck size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
           </ul>
 
-          <div className="mt-4">
+          <div className="mt-auto pt-4">
             {plan === "free" ? (
               <>
                 <button
