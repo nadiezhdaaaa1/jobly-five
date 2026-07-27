@@ -1,4 +1,5 @@
 // Server-only keyword extraction: derive stack/tools/hard_skills/roles from title + description.
+import { extractRolesFromTitle } from "@/lib/role-patterns";
 
 const STACK = [
   "React","Next.js","Vue","Svelte","Angular","TypeScript","JavaScript","Node.js","Node",
@@ -23,40 +24,6 @@ const HARD_SKILLS = [
 ] as const;
 
 const SOFT_SKILLS = ["Communication","Leadership","Mentoring","Ownership","Collaboration"];
-
-const ROLE_MAP: Record<string, { id: string; label: string; group: string }> = {
-  "frontend": { id: "frontend-engineer", label: "Frontend Engineer", group: "Engineering" },
-  "front-end": { id: "frontend-engineer", label: "Frontend Engineer", group: "Engineering" },
-  "backend": { id: "backend-engineer", label: "Backend Engineer", group: "Engineering" },
-  "back-end": { id: "backend-engineer", label: "Backend Engineer", group: "Engineering" },
-  "full stack": { id: "fullstack-engineer", label: "Full Stack Engineer", group: "Engineering" },
-  "full-stack": { id: "fullstack-engineer", label: "Full Stack Engineer", group: "Engineering" },
-  "fullstack": { id: "fullstack-engineer", label: "Full Stack Engineer", group: "Engineering" },
-  "mobile": { id: "mobile-engineer", label: "Mobile Engineer", group: "Engineering" },
-  "ios": { id: "ios-engineer", label: "iOS Engineer", group: "Engineering" },
-  "android": { id: "android-engineer", label: "Android Engineer", group: "Engineering" },
-  "data engineer": { id: "data-engineer", label: "Data Engineer", group: "Data" },
-  "data scientist": { id: "data-scientist", label: "Data Scientist", group: "Data" },
-  "data analyst": { id: "data-analyst", label: "Data Analyst", group: "Data" },
-  "analytics engineer": { id: "analytics-engineer", label: "Analytics Engineer", group: "Data" },
-  "machine learning": { id: "ml-engineer", label: "ML Engineer", group: "Data" },
-  "ml engineer": { id: "ml-engineer", label: "ML Engineer", group: "Data" },
-  "devops": { id: "devops", label: "DevOps Engineer", group: "Infrastructure" },
-  "site reliability": { id: "sre", label: "SRE", group: "Infrastructure" },
-  "sre": { id: "sre", label: "SRE", group: "Infrastructure" },
-  "platform engineer": { id: "platform-engineer", label: "Platform Engineer", group: "Infrastructure" },
-  "security engineer": { id: "security-engineer", label: "Security Engineer", group: "Security" },
-  "product manager": { id: "product-manager", label: "Product Manager", group: "Product" },
-  "product designer": { id: "product-designer", label: "Product Designer", group: "Design" },
-  "ux designer": { id: "ux-designer", label: "UX Designer", group: "Design" },
-  "ui designer": { id: "ui-designer", label: "UI Designer", group: "Design" },
-  "designer": { id: "designer", label: "Designer", group: "Design" },
-  "engineering manager": { id: "engineering-manager", label: "Engineering Manager", group: "Engineering" },
-  "qa engineer": { id: "qa-engineer", label: "QA Engineer", group: "Engineering" },
-  "test engineer": { id: "qa-engineer", label: "QA Engineer", group: "Engineering" },
-  "software engineer": { id: "software-engineer", label: "Software Engineer", group: "Engineering" },
-  "engineer": { id: "software-engineer", label: "Software Engineer", group: "Engineering" },
-};
 
 function findAll(list: readonly string[], hay: string): string[] {
   const out: string[] = [];
@@ -86,24 +53,7 @@ export function extractKeywords(title: string, description: string) {
 }
 
 export function extractRoles(title: string): { roles: string[]; roleIds: string[]; group: string | null } {
-  const t = title.toLowerCase();
-  const seenIds = new Set<string>();
-  const roles: string[] = [];
-  const roleIds: string[] = [];
-  let group: string | null = null;
-  for (const [needle, meta] of Object.entries(ROLE_MAP)) {
-    if (t.includes(needle) && !seenIds.has(meta.id)) {
-      seenIds.add(meta.id);
-      roles.push(meta.label);
-      roleIds.push(meta.id);
-      if (!group) group = meta.group;
-    }
-  }
-  if (roles.length === 0) {
-    roles.push("Other");
-    roleIds.push("other");
-  }
-  return { roles, roleIds, group };
+  return extractRolesFromTitle(title);
 }
 
 export function inferSeniority(title: string): { seniority: string | null; minYears: number | null } {
