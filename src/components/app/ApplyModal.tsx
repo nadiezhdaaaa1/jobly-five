@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { IconDownload as Download, IconArrowUpRight as ExternalLink } from "@tabler/icons-react";
+import JSZip from "jszip";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";
@@ -73,34 +74,38 @@ export function ApplyModal({
     setAwaitingReturn(true);
   }
 
-  function downloadText(name: string, body: string) {
-    const blob = new Blob([body], { type: "text/plain" });
+  function sanitize(s: string) {
+    return s.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  async function downloadBundle() {
+    if (!selectedResume && !selectedLetter) return;
+    const folder = sanitize(`${job.company} - ${job.title}`) || "Application";
+    const zip = new JSZip();
+    const dir = zip.folder(folder)!;
+    if (selectedResume) {
+      dir.file(
+        `${selectedResume.name}.${selectedResume.ext}`,
+        `(Demo placeholder for résumé "${selectedResume.name}")`,
+      );
+    }
+    if (selectedLetter) {
+      const text = selectedLetter.body.replace(/<[^>]+>/g, "\n").replace(/\n{2,}/g, "\n\n").trim();
+      const filled = text
+        .replace(/\{\{?company\}?\}/gi, job.company)
+        .replace(/\{company\}/gi, job.company)
+        .replace(/\{role\}/gi, job.title)
+        .replace(/\{\{?hr_name\}?\}/gi, "there")
+        .replace(/\{hiring manager\}/gi, "there");
+      dir.file(`${selectedLetter.name}.txt`, filled);
+    }
+    const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = name;
+    a.download = `${folder}.zip`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 500);
-  }
-
-  function downloadResume() {
-    if (!selectedResume) return;
-    downloadText(
-      `${selectedResume.name}.${selectedResume.ext}`,
-      `(Demo placeholder for résumé "${selectedResume.name}")`,
-    );
-  }
-
-  function downloadLetter() {
-    if (!selectedLetter) return;
-    const text = selectedLetter.body.replace(/<[^>]+>/g, "\n").replace(/\n{2,}/g, "\n\n").trim();
-    const filled = text
-      .replace(/\{\{?company\}?\}/gi, job.company)
-      .replace(/\{company\}/gi, job.company)
-      .replace(/\{role\}/gi, job.title)
-      .replace(/\{\{?hr_name\}?\}/gi, "there")
-      .replace(/\{hiring manager\}/gi, "there");
-    downloadText(`${selectedLetter.name}.txt`, filled);
   }
 
   return (
@@ -221,7 +226,7 @@ export function ApplyModal({
               </div>
               <button
                 type="button"
-                onClick={() => { downloadResume(); downloadLetter(); }}
+                onClick={downloadBundle}
                 disabled={!selectedResume && !selectedLetter}
                 className="inline-flex h-9 shrink-0 items-center gap-1 rounded-[4px] border bg-white px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)] disabled:opacity-40"
               >
