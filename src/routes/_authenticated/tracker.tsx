@@ -11,6 +11,7 @@ import {
   IconX as X,
   IconBan as Cancel,
   IconBolt as Zap,
+  IconPencil as Pencil,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
@@ -24,6 +25,7 @@ import {
   RejectedTransitionDialog,
 } from "@/components/app/TrackerTransitionDialogs";
 import { BoardColumnsDialog } from "@/components/app/BoardColumnsDialog";
+import { SingleColumnDialog } from "@/components/app/SingleColumnDialog";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
@@ -577,6 +579,7 @@ function KanbanColumn({
   collapsed: boolean;
   onToggleCollapse: () => void;
   moveColumns: BoardColumn[];
+  onEditColumn: () => void;
 }) {
   return (
     <div
@@ -592,33 +595,47 @@ function KanbanColumn({
       }}
     >
       {/* Header: 44px */}
-      <button
-        type="button"
-        onClick={onToggleCollapse}
-        className="flex w-full items-center gap-2 lg:pointer-events-none"
+      <div
+        className="group/col flex w-full items-center gap-2"
         style={{ height: 44, paddingLeft: 4 }}
-        aria-expanded={!collapsed}
       >
-        <span className="text-[14px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "20px" }}>
-          {column.title}
-        </span>
-        <span
-          className="inline-flex items-center justify-center text-[14px]"
-          style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          className="flex flex-1 items-center gap-2 lg:pointer-events-none"
+          aria-expanded={!collapsed}
         >
-          {jobs.length}
-        </span>
+          <span className="text-[14px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: "20px" }}>
+            {column.title}
+          </span>
+          <span
+            className="inline-flex items-center justify-center text-[14px]"
+            style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
+          >
+            {jobs.length}
+          </span>
+        </button>
+        <IconTooltip label="Edit column">
+          <button
+            type="button"
+            onClick={onEditColumn}
+            aria-label="Edit column"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] transition-opacity hover:bg-white max-lg:opacity-100 lg:opacity-0 lg:group-hover/col:opacity-100 lg:focus-within:opacity-100"
+          >
+            <Pencil size={14} strokeWidth={1.8} />
+          </button>
+        </IconTooltip>
         <ChevronDown
           size={16}
           strokeWidth={1.8}
-          className="ml-auto lg:hidden"
+          className="lg:hidden"
           style={{
             color: MUTED_TEXT,
             transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)",
             transition: "transform 150ms",
           }}
         />
-      </button>
+      </div>
       {/* Cards */}
       <div
         className={`flex-col ${collapsed ? "hidden lg:flex" : "flex"}`}
@@ -684,6 +701,7 @@ function TrackerScreen() {
   const [showArchived, setShowArchived] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
+  const [editColumnId, setEditColumnId] = useState<string | null>(null);
 
   if (!isPro(plan)) {
     return (
@@ -856,6 +874,7 @@ function TrackerScreen() {
                 collapsed={!!collapsed[c.id]}
                 onToggleCollapse={() => setCollapsed((s) => ({ ...s, [c.id]: !s[c.id] }))}
                 moveColumns={columns}
+                onEditColumn={() => setEditColumnId(c.id)}
               />
             ))}
           </div>
@@ -865,6 +884,12 @@ function TrackerScreen() {
       <MobileTabBar active="tracker" />
 
       <BoardColumnsDialog open={columnsDialogOpen} onClose={() => setColumnsDialogOpen(false)} />
+
+      <SingleColumnDialog
+        columnId={editColumnId}
+        open={editColumnId !== null}
+        onClose={() => setEditColumnId(null)}
+      />
 
       {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
 
