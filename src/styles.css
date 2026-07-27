@@ -220,6 +220,13 @@
   line-height: 1.5;
 }
 
+@utility body-small {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.5;
+}
+
 @utility button-medium {
   font-family: var(--font-sans);
   font-size: 1rem;
