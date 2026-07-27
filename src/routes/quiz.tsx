@@ -857,7 +857,7 @@ export function FieldStep({
         This narrows the roles and skills we'll ask about next.
       </p>
       <div className="mt-6">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-1">
           {groups.map((f) => {
             const selected = value === f;
             return (
@@ -1200,7 +1200,7 @@ function SkillsGroup({
                 onClick={() => toggle(s)}
                 aria-pressed={selected}
                 className={cn(
-                  "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "flex w-full items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
                     ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
