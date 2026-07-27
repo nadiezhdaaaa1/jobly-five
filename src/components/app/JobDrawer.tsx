@@ -561,6 +561,64 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   )}
                 </div>
               ) : null}
+              {currentColumn?.kind === "offer" ? (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
+                    {record.offerDetails && !offerEditing ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setOfferEditing(true)}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleOfferDelete}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        {offerEditing ? (
+                          <button
+                            type="button"
+                            onClick={handleOfferCancel}
+                            className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          >
+                            Cancel
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={handleOfferSave}
+                          disabled={offerDraft.trim() === (record.offerDetails ?? "")}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {record.offerDetails && !offerEditing ? (
+                    <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                      {record.offerDetails}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={offerDraft}
+                      onChange={(e) => setOfferDraft(e.target.value)}
+                      rows={4}
+                      placeholder="Comp, deadline, notes (optional)"
+                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    />
+                  )}
+                </div>
+              ) : null}
               {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
               (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
                 <div>
