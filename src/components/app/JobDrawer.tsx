@@ -480,7 +480,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="mt-6 flex flex-col gap-5">
               {currentColumn?.kind === "interview" ? (
                 <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{currentColumn.title} stage</div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Stage</div>
                   {currentColumn.stages.length ? (
                     <select
                       className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
