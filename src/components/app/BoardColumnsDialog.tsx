@@ -154,7 +154,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
 
         <div className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto pr-1">
           {columns.map((c, idx) => (
-            <div key={c.id} className="rounded-[6px] border p-2" style={{ borderColor: "#E3E7E8" }}>
+            <div key={c.id} className="rounded-[12px] p-3" style={{ background: "#E3E7E8" }}>
               <div className="flex items-center gap-2">
                 <div className="flex flex-col">
                   <button
