@@ -641,6 +641,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 ref={flagBtnRef}
                 type="button"
                 aria-label="Report this job"
+                onMouseDown={(e) => e.stopPropagation()}
                 onClick={() => setFlagOpen((v) => !v)}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
@@ -677,6 +678,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 ref={dislikeBtnRef}
                 type="button"
                 aria-label="Not interested"
+                onMouseDown={(e) => e.stopPropagation()}
                 onClick={() => setDislikeOpen((v) => !v)}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
