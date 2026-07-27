@@ -1193,6 +1193,45 @@ function stripHtml(s: string): string {
   return d.textContent ?? "";
 }
 
+function LetterRow({
+  name, meta, onEdit, onDuplicate, onDelete,
+}: {
+  name: string;
+  meta: string;
+  onEdit: () => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+      <div
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
+        style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
+        aria-hidden
+      >
+        <FileText size={20} strokeWidth={1.6} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <GhostBtn onClick={onEdit}>Edit</GhostBtn>
+        <GhostBtn onClick={onDuplicate}>Duplicate</GhostBtn>
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label="Delete"
+          title="Delete"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Trash size={18} strokeWidth={1.8} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function CoverEditor({
   open, letter, onClose, onSave,
 }: {
