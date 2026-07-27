@@ -832,23 +832,26 @@ function TrackerScreen() {
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
         {/* Header row */}
         <div className="flex flex-wrap items-center justify-between gap-4" style={{ minHeight: 36 }}>
-          <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
-            Tracker
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
+              Tracker
+            </h1>
+            <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
+            <button
+              type="button"
+              onClick={() => setColumnsDialogOpen(true)}
+              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+              style={{ color: MUTED_TEXT }}
+            >
+              <LayoutColumns size={14} strokeWidth={1.8} />
+              Edit columns
+            </button>
+          </div>
           <div className="flex items-center gap-6" style={{ height: 24 }}>
             <label className="flex cursor-pointer items-center gap-2">
               <Toggle checked={showArchived} onChange={setShowArchived} label="Show archived" />
               <span className="text-[14px]" style={{ color: MUTED_TEXT }}>Show archived</span>
             </label>
-            <button
-              type="button"
-              onClick={() => setColumnsDialogOpen(true)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border bg-white px-3 text-[13px] hover:bg-[color:var(--color-surface-2)]"
-              style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
-            >
-              <LayoutColumns size={14} strokeWidth={1.8} />
-              Edit columns
-            </button>
             <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
             <span className="text-[14px] font-light" style={{ color: META_GREY }}>
               <span style={{ color: DARK }}>{total}</span> application{total === 1 ? "" : "s"}
