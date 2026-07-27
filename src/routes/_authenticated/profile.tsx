@@ -635,7 +635,7 @@ function PreferencesTab({
     { key: "field", label: "Field", value: quiz.field ?? "", done: !!quiz.field },
     { key: "role", label: "Role", value: (quiz.roles ?? []).join(", "), done: (quiz.roles?.length ?? 0) > 0 },
     { key: "stack", label: "Stack", value: (quiz.hardSkills ?? []).join(", "), done: (quiz.hardSkills?.length ?? 0) > 0, hidden: cfg.extraPref !== "stack" },
-    { key: "hard", label: "Hard skills & methods", value: (quiz.hardSkills ?? []).join(", "), done: (quiz.hardSkills?.length ?? 0) > 0, hidden: cfg.extraPref === "stack" },
+    { key: "hard", label: "Hard skills and methods", value: (quiz.hardSkills ?? []).join(", "), done: (quiz.hardSkills?.length ?? 0) > 0, hidden: cfg.extraPref === "stack" },
     { key: "tools", label: "Tools", value: (quiz.tools ?? []).join(", "), done: (quiz.tools?.length ?? 0) > 0 },
     { key: "soft", label: "Soft skills", value: (quiz.softSkills ?? []).join(", "), done: (quiz.softSkills?.length ?? 0) > 0 },
     { key: "level", label: "Experience", value: s.experience === "—" ? "" : s.experience, done: !!quiz.level },
