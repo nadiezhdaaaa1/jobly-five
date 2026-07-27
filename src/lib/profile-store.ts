@@ -331,7 +331,7 @@ export const ACHIEVEMENT_LABELS: Record<AchievementBlockKey, string> = {
   conferences: "Conferences and events",
   publications: "Publications",
   media: "Media and channels",
-  board: "Board & advisory",
+  board: "Board and advisory",
   courses: "Courses and certificates",
   awards: "Awards",
 };
