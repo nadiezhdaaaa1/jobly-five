@@ -155,7 +155,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
           Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
-        <div className="mt-4 rounded-[12px] p-4" style={{ background: "#E3E7E8" }}>
+        <div className="mt-4 rounded-[8px] p-4" style={{ background: "#E3E7E8" }}>
           <div className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
             Add a new column
           </div>
@@ -206,7 +206,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
         </button>
 
         {existingOpen ? (
-        <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-[12px] p-3" style={{ background: "#E3E7E8" }}>
+        <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-[8px] p-3" style={{ background: "#E3E7E8" }}>
           {columns.map((c, idx) => (
             <div key={c.id} className="rounded-[6px] border bg-white p-2" style={{ borderColor: "#E3E7E8" }}>
               <div className="flex items-center gap-2">
