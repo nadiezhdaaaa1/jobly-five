@@ -250,13 +250,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [notesEditing, setNotesEditing] = useState(false);
   const [rejectionDraft, setRejectionDraft] = useState(record.rejectionDetails ?? "");
   const [offerDraft, setOfferDraft] = useState(record.offerDetails ?? "");
+  const [offerEditing, setOfferEditing] = useState(false);
 
   useEffect(() => {
     setNotesLocal(record.notes ?? "");
     setNotesEditing(false);
   }, [job.id, record.notes]);
   useEffect(() => setRejectionDraft(record.rejectionDetails ?? ""), [job.id, record.rejectionDetails]);
-  useEffect(() => setOfferDraft(record.offerDetails ?? ""), [job.id, record.offerDetails]);
+  useEffect(() => {
+    setOfferDraft(record.offerDetails ?? "");
+    setOfferEditing(false);
+  }, [job.id, record.offerDetails]);
 
   function handleNotesSave() {
     storeSetNotes(job.id, notes.trim());
@@ -274,8 +278,18 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   function handleRejectionBlur() {
     if (rejectionDraft !== (record.rejectionDetails ?? "")) setRejectionDetails(job.id, rejectionDraft);
   }
-  function handleOfferBlur() {
-    if (offerDraft !== (record.offerDetails ?? "")) setOfferDetails(job.id, offerDraft);
+  function handleOfferSave() {
+    setOfferDetails(job.id, offerDraft.trim());
+    setOfferEditing(false);
+  }
+  function handleOfferCancel() {
+    setOfferDraft(record.offerDetails ?? "");
+    setOfferEditing(false);
+  }
+  function handleOfferDelete() {
+    setOfferDetails(job.id, "");
+    setOfferDraft("");
+    setOfferEditing(false);
   }
 
   useEffect(() => {
@@ -547,6 +561,64 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   )}
                 </div>
               ) : null}
+              {currentColumn?.kind === "offer" ? (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
+                    {record.offerDetails && !offerEditing ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setOfferEditing(true)}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleOfferDelete}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        {offerEditing ? (
+                          <button
+                            type="button"
+                            onClick={handleOfferCancel}
+                            className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          >
+                            Cancel
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={handleOfferSave}
+                          disabled={offerDraft.trim() === (record.offerDetails ?? "")}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {record.offerDetails && !offerEditing ? (
+                    <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                      {record.offerDetails}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={offerDraft}
+                      onChange={(e) => setOfferDraft(e.target.value)}
+                      rows={4}
+                      placeholder="Comp, deadline, notes (optional)"
+                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    />
+                  )}
+                </div>
+              ) : null}
               {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
               (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
                 <div>
@@ -650,21 +722,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
-              {currentColumn?.kind === "offer" ? (
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
-                    <textarea
-                      value={offerDraft}
-                      onChange={(e) => setOfferDraft(e.target.value)}
-                      onBlur={handleOfferBlur}
-                      rows={4}
-                      placeholder="Comp, deadline, notes (optional)"
-                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                    />
-                  </div>
-                </div>
-              ) : null}
               {status === "rejection" ? (
                 <div>
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Rejection details</div>
