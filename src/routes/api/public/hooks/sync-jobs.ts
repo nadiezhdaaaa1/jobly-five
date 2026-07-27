@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { fetchGreenhouse } from "@/lib/job-sync/greenhouse.server";
 import { fetchLever } from "@/lib/job-sync/lever.server";
+import { fetchAshby } from "@/lib/job-sync/ashby.server";
 import type { JobSourceRow, NormalizedJob } from "@/lib/job-sync/types.server";
 
 function admin() {
@@ -42,6 +43,7 @@ async function runSync() {
     let jobs: NormalizedJob[] = [];
     if (src.ats === "greenhouse") jobs = await fetchGreenhouse(src);
     else if (src.ats === "lever") jobs = await fetchLever(src);
+    else if (src.ats === "ashby") jobs = await fetchAshby(src);
     return jobs;
   });
 
