@@ -565,13 +565,15 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
 
   return (
-    <article className="relative rounded-[8px] bg-transparent p-5">
-      <button
-        type="button"
-        aria-label={`Open details for ${job.title}`}
-        onClick={onOpen}
-        className="w-full text-left"
-      >
+    <article
+      className="relative cursor-pointer rounded-[8px] bg-transparent p-5"
+      role="button"
+      tabIndex={0}
+      aria-label={`Open details for ${job.title}`}
+      onClick={onOpen}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
+    >
+      <div className="w-full text-left">
         <div className="flex w-full items-center gap-4">
           {job.logo ? (
             <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
@@ -588,9 +590,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           </div>
           <ScoreRing score={job.score} />
         </div>
-      </button>
+      </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-4 flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
         <div className="body-medium text-[color:var(--color-foreground)]">
           {job.salary}
         </div>
