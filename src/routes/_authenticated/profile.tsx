@@ -100,7 +100,7 @@ const TAB_LABELS: Record<TabKey, string> = {
   preferences: "Preferences",
   documents: "Resume",
   letters: "Cover letters",
-  portfolio: "Portfolio & links",
+  portfolio: "Portfolio and links",
   achievements: "Achievements",
   experience: "Experience",
   searches: "Saved searches",
