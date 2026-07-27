@@ -347,9 +347,20 @@ function ProfileScreen() {
                       )}
                     </li>
                   ))}
-                  <li className="flex items-center gap-2 text-[13px] text-[color:var(--color-text-muted)]">
-                    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--color-border)]" />
-                    CV / portfolio — optional
+                  <li className="flex items-center gap-2 text-[13px]">
+                    {strength.hasPortfolio ? (
+                      <>
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                        </span>
+                        <span className="font-semibold text-[color:var(--color-foreground)]">Portfolio — optional</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[color:var(--color-border)]" />
+                        <span className="text-[color:var(--color-text-muted)]">Portfolio — optional</span>
+                      </>
+                    )}
                   </li>
                 </ul>
                 <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
