@@ -363,7 +363,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="absolute right-0 top-0 h-full w-full overflow-y-auto bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
+        className="absolute right-0 top-0 flex h-full w-full flex-col overflow-hidden bg-[color:var(--color-surface-1)] outline-none md:w-[480px] md:border-l"
         style={{
           boxShadow: "0 8px 24px rgba(0,0,0,.12)",
           animation: reducedMotion ? undefined : "job-drawer-in 160ms ease-out",
@@ -371,6 +371,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
       >
         <style>{`@keyframes job-drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
 
+        <div className="relative min-h-0 flex-1 overflow-y-auto">
         {/* Sticky close */}
         <div className="sticky top-4 z-20 float-right mr-4 mt-4">
           <IconTooltip label="Close" side="left">
@@ -423,121 +424,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           {/* Description */}
           <JobDescriptionBlock job={job} />
 
-          {!inTracker || status === "saved" ? (
-          <>
-          <ApplyModal
-            job={job}
-            open={applyOpen}
-            onClose={() => setApplyOpen(false)}
-            onApplied={({ resumeName, coverLetterName }) => {
-              setDigestSession(job.id, "applied");
-              markApplied(job.id, { resumeName, coverLetterName });
-              // Keep drawer open so user can see the applied state; close only if not in tracker.
-              if (!inTracker) onClose();
-            }}
-          />
-
-          <div className="sticky bottom-0 z-10 -mx-5 mt-6 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
-            <button
-              type="button"
-              onClick={() => setApplyOpen(true)}
-              className="inline-flex h-10 flex-1 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Apply
-            </button>
-
-            <button
-              type="button"
-              aria-label="Save"
-              aria-pressed={saved}
-              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
-              style={{
-                borderColor: saved ? "var(--color-green)" : undefined,
-                background: saved ? "var(--color-mint)" : undefined,
-                color: saved ? "var(--color-green)" : "var(--color-foreground)",
-              }}
-            >
-              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
-              {saved ? "Saved" : "Save"}
-            </button>
-
-            <div className="relative shrink-0" ref={flagRef}>
-              <button
-                type="button"
-                aria-label="Report this job"
-                onClick={() => setFlagOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <Flag size={16} strokeWidth={1.6} />
-              </button>
-              {flagOpen ? (
-                <div role="menu" className="absolute right-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                  {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
-                    <button
-                      key={label}
-                      type="button"
-                      role="menuitem"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); onClose(); }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="relative shrink-0" ref={dislikeRef}>
-              <button
-                type="button"
-                aria-label="Not interested"
-                onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                <ThumbsDown size={16} strokeWidth={1.6} />
-              </button>
-              {dislikeOpen ? (
-                <div role="menu" className="absolute right-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
-                  {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
-                    <button
-                      key={label}
-                      type="button"
-                      role="menuitem"
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          </div>
-          </>
-          ) : (
-            <div className="sticky bottom-0 z-10 -mx-5 mt-6 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
-              {status === "applied" || status === "interview" || status === "offer" || status === "rejection" ? (
-                <button
-                  type="button"
-                  aria-label="Archive job"
-                  onClick={() => setArchiveOpen(true)}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <X size={15} strokeWidth={1.8} />
-                  Archive job
-                </button>
-              ) : null}
-              <a
-                href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                Open original job posting
-              </a>
-            </div>
-          )}
+          {/* Action bar rendered below the scroll area */}
 
           {/* Notes — available for every job (Pro) */}
           {pro ? (
@@ -810,6 +697,121 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           ) : null}
 
         </div>
+        </div>
+
+        {/* Fixed action bar aligned to drawer bottom */}
+        {!inTracker || status === "saved" ? (
+          <div className="flex shrink-0 items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
+            <div className="relative shrink-0" ref={dislikeRef}>
+              <button
+                type="button"
+                aria-label="Not interested"
+                onClick={() => setDislikeOpen((v) => !v)}
+                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <ThumbsDown size={16} strokeWidth={1.6} />
+              </button>
+              {dislikeOpen ? (
+                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                  {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="relative shrink-0" ref={flagRef}>
+              <button
+                type="button"
+                aria-label="Report this job"
+                onClick={() => setFlagOpen((v) => !v)}
+                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <Flag size={16} strokeWidth={1.6} />
+              </button>
+              {flagOpen ? (
+                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                  {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      role="menuitem"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); onClose(); }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              aria-label="Save"
+              aria-pressed={saved}
+              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
+              style={{
+                borderColor: saved ? "var(--color-green)" : undefined,
+                background: saved ? "var(--color-mint)" : undefined,
+                color: saved ? "var(--color-green)" : "var(--color-foreground)",
+              }}
+            >
+              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+              {saved ? "Saved" : "Save"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setApplyOpen(true)}
+              className="inline-flex h-10 flex-1 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Apply
+            </button>
+
+            <ApplyModal
+              job={job}
+              open={applyOpen}
+              onClose={() => setApplyOpen(false)}
+              onApplied={({ resumeName, coverLetterName }) => {
+                setDigestSession(job.id, "applied");
+                markApplied(job.id, { resumeName, coverLetterName });
+                if (!inTracker) onClose();
+              }}
+            />
+          </div>
+        ) : (
+          <div className="flex shrink-0 items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
+            <a
+              href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              Open original job posting
+            </a>
+            {status === "applied" || status === "interview" || status === "offer" || status === "rejection" ? (
+              <button
+                type="button"
+                aria-label="Archive job"
+                onClick={() => setArchiveOpen(true)}
+                className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                <X size={15} strokeWidth={1.8} />
+                Archive job
+              </button>
+            ) : null}
+          </div>
+        )}
       </div>
 
       <Dialog
