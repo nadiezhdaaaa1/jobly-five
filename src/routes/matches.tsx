@@ -212,8 +212,8 @@ function JobCard({ job }: { job: Job }) {
   const direct = job.source === "direct";
   const [detailsOpen, setDetailsOpen] = useState(false);
   return (
-    <li className="rounded-[8px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
-      <article className="relative rounded-[8px] bg-[color:var(--color-surface-1)] p-5">
+    <li className="rounded-[12px] bg-[#F1F3F3] p-1">
+      <article className="group relative rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
         <div className="flex w-full items-center gap-4">
           {job.logo ? (
             <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
