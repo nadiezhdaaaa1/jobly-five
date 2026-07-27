@@ -1252,8 +1252,13 @@ function SkillsGroup({
       <div
         ref={popRef}
         data-skill-dropdown="true"
+        onWheel={(e) => {
+          e.stopPropagation();
+          const el = e.currentTarget;
+          if (e.deltaY !== 0) el.scrollTop += e.deltaY;
+        }}
         style={{ position: pos.position, left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
-        className="overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
+        className="touch-pan-y overscroll-contain overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
         <div className="flex flex-col gap-[4px]">
           {filtered.map((s) => {
