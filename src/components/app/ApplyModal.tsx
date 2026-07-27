@@ -132,8 +132,12 @@ export function ApplyModal({
           </div>
         </div>
 
+        <p className="mt-4 text-[13px] leading-[1.5] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          Pick the résumé and cover letter template you want to send. We&#39;ll bundle them into a folder named after the company and role so you can download it and attach the files to the application form on the company&#39;s site.
+        </p>
+
         {/* Resume selector */}
-        <div className="mt-5">
+        <div className="mt-4">
           <label className="block text-[13px] font-semibold text-[color:var(--color-foreground)]">
             Which resume are you sending?
           </label>
@@ -246,7 +250,7 @@ export function ApplyModal({
               className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               <ExternalLink size={14} strokeWidth={1.8} />
-              Apply on company site
+              Apply
             </button>
           </div>
         )}
