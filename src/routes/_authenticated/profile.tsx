@@ -486,14 +486,11 @@ function NameModal({
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit name
         </DialogTitle>
-        <label className="mt-3 block body-small text-[#4B585B]">
-          Display name
-        </label>
         <input
           autoFocus
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          className="mt-2 h-10 w-full rounded-[4px] border px-3 text-[14px]"
+          className="mt-3 h-10 w-full rounded-[4px] border px-3 text-[14px]"
         />
         <div className="mt-4 flex justify-end gap-2">
           <SecondaryBtn onClick={onClose}>Cancel</SecondaryBtn>
