@@ -216,7 +216,7 @@ export function ApplyModal({
         ) : (
           <>
             <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] p-3" style={{ background: "#E3E7E8" }}>
-              <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
+              <div className="body-medium text-[color:var(--color-foreground)]">
                 Bundle of the files for Applying to this vacancy
               </div>
               <button
