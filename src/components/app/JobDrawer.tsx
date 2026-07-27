@@ -555,7 +555,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     ) : null}
                   </div>
                 </div>
-                <div className="mt-2 text-[13px] text-[color:var(--color-text-secondary)]">{dateLine}</div>
               </div>
 
               {/* Stage block */}
