@@ -209,7 +209,6 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 }
 
 function JobCard({ job }: { job: Job }) {
-  const direct = job.source === "direct";
   const [detailsOpen, setDetailsOpen] = useState(false);
   return (
     <li className="rounded-[12px] bg-[#F1F3F3] p-1">
@@ -225,18 +224,15 @@ function JobCard({ job }: { job: Job }) {
           <div className="min-w-0 flex-1">
             <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
             <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              {job.company} · {job.location} · {job.salary}
+              {job.company} · {job.location}
             </div>
           </div>
           <ScoreRing score={job.score} />
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span
-            className="text-[12px] text-[color:var(--color-text-muted)]"
-            style={{ fontWeight: 300, lineHeight: 1.5 }}
-          >
-            {direct ? "Direct employer" : "Aggregated"}
-          </span>
+          <div className="body-medium text-[color:var(--color-foreground)]">
+            {job.salary}
+          </div>
           <button
             type="button"
             onClick={() => setDetailsOpen((v) => !v)}
