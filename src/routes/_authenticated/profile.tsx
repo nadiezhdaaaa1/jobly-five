@@ -168,8 +168,6 @@ function ProfileScreen() {
   // Identity
   const email = user?.email ?? "serhii@example.com";
   const [name, setName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarPath, setAvatarPath] = useState<string | null>(null);
   const [nameOpen, setNameOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
@@ -177,7 +175,7 @@ function ProfileScreen() {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("avatar_url, display_name")
+        .select("display_name")
         .eq("id", user.id)
         .maybeSingle();
       if (!active) return;
@@ -186,13 +184,6 @@ function ProfileScreen() {
         (user.user_metadata?.name as string | undefined) ??
         (user.email ? user.email.split("@")[0] : "");
       setName(data?.display_name ?? fallback ?? "");
-      const path = data?.avatar_url ?? null;
-      if (!path) return;
-      setAvatarPath(path);
-      const { data: signed } = await supabase.storage
-        .from("avatars")
-        .createSignedUrl(path, 60 * 60 * 24 * 7);
-      if (active && signed?.signedUrl) setAvatarUrl(signed.signedUrl);
     })();
     return () => {
       active = false;
@@ -233,23 +224,6 @@ function ProfileScreen() {
       <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         {/* Header */}
         <section className="flex items-center gap-4">
-          <Avatar
-            url={avatarUrl}
-            name={name || "S"}
-            onUpload={(path, signed) => {
-              setAvatarPath(path);
-              setAvatarUrl(signed);
-            }}
-            onRemove={async () => {
-              if (!user || !avatarPath) return;
-              await supabase.storage.from("avatars").remove([avatarPath]);
-              await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
-              setAvatarPath(null);
-              setAvatarUrl(null);
-            }}
-            uid={user?.id}
-            oldPath={avatarPath}
-          />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1
@@ -286,9 +260,9 @@ function ProfileScreen() {
                 type="button"
                 onClick={() => setTab(k)}
                 aria-current={active ? "page" : undefined}
-                className={`shrink-0 border-b-2 pb-3 text-[14px] transition-colors ${
+                className={`shrink-0 border-b-[2px] px-1 pb-3 text-[14px] transition-colors ${
                   active
-                    ? "border-[color:var(--color-accent)] text-[color:var(--color-foreground)] font-semibold"
+                    ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)] font-semibold"
                     : "border-transparent text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-secondary)]"
                 }`}
               >
@@ -695,31 +669,23 @@ function PreferencesTab({
       <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
         Collected from onboarding. This powers your match score.
       </p>
-      <div className="flex flex-col gap-3">
+      <div className="rounded-[8px] border bg-[color:var(--color-surface-1)]">
         {rows
           .filter((r) => !r.hidden)
-          .map((row) => (
+          .map((row, idx, arr) => (
             <div
               key={row.key}
-              className="flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
+              className={`flex items-start gap-3 p-4 ${
+                idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
+              }`}
             >
-              <div
-                className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] ${
-                  row.done
-                    ? "bg-[color:var(--color-accent)] text-[color:var(--color-foreground)]"
-                    : "bg-[color:var(--color-surface-2)] text-[color:var(--color-text-muted)]"
-                }`}
-                aria-hidden
-              >
-                {row.done ? <Check size={16} strokeWidth={2.4} /> : <X size={14} strokeWidth={1.8} />}
-              </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
                   {row.label}
                   {row.key === "stack" ? <span className="ml-1"><Tag>optional</Tag></span> : null}
                 </div>
                 <div
-                  className={`mt-1 truncate text-[14px] ${
+                  className={`mt-1 text-[14px] ${
                     row.value
                       ? "text-[color:var(--color-foreground)]"
                       : "text-[color:var(--color-text-muted)]"
@@ -729,16 +695,14 @@ function PreferencesTab({
                   {row.value || "Not set"}
                 </div>
               </div>
-              <IconTooltip label={`Edit ${row.label}`}>
-                <button
-                  type="button"
-                  onClick={() => setEditing(row.key)}
-                  aria-label={`Edit ${row.label}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <Pencil size={15} strokeWidth={1.6} />
-                </button>
-              </IconTooltip>
+              <button
+                type="button"
+                onClick={() => setEditing(row.key)}
+                aria-label={`Edit ${row.label}`}
+                className="ml-auto shrink-0 rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Edit
+              </button>
             </div>
           ))}
       </div>
