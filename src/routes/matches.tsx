@@ -209,7 +209,6 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 }
 
 function JobCard({ job }: { job: Job }) {
-  const direct = job.source === "direct";
   const [detailsOpen, setDetailsOpen] = useState(false);
   return (
     <li className="rounded-[12px] bg-[#F1F3F3] p-1">
