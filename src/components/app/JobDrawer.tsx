@@ -673,16 +673,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       Cover letter: {record.appliedCoverLetterName ?? "—"}
                     </span>
                   </div>
-                  {(status === "applied" || status === "interview" || status === "interview_screen" || status === "interview_tech" || status === "test_task" || status === "offer") ? (
-                    <button
-                      type="button"
-                      onClick={() => setFollowUpOpen(true)}
-                      className="mt-3 inline-flex h-9 items-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-                    >
-                      <MailShare size={14} strokeWidth={1.6} />
-                      Generate follow-up letter
-                    </button>
-                  ) : null}
                 </div>
               ) : null}
 
