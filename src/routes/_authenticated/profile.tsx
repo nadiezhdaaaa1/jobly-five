@@ -69,7 +69,6 @@ import {
   removeLink,
   removeSocial,
   setApplyMode,
-  setCvFile,
   setPortfolioFile,
   toggleApplyBlock,
   updateAchievement,
