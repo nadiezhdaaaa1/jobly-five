@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { IconDownload as Download, IconExternalLink as ExternalLink } from "@tabler/icons-react";
+import { IconDownload as Download, IconArrowUpRight as ExternalLink } from "@tabler/icons-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IconBookmark as Bookmark,
   IconChevronDown as ChevronDown,
-  IconExternalLink as ExternalLink,
+  IconArrowUpRight as ExternalLink,
   IconFlag as Flag,
   IconMailShare as MailShare,
   IconLayoutColumns as LayoutColumns,
