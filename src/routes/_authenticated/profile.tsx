@@ -1707,10 +1707,6 @@ function ExperienceTab({
 
   return (
     <>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        {lead}
-      </p>
-
       <CardBig>
         <header className="flex items-center justify-between gap-3">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Previous jobs</h2>
