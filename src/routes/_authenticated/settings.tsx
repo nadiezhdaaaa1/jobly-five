@@ -273,6 +273,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             ) : null}
           </div>
         </div>
+        </div>
       </div>
 
       {/* Coming soon + info box */}
