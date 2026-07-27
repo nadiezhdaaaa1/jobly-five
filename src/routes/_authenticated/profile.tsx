@@ -703,11 +703,11 @@ function PreferencesTab({
 
       {/* Edit modal — reuses quiz Step components */}
       <Dialog open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="max-w-[640px] rounded-[8px] p-5">
+        <DialogContent className="flex max-h-[90vh] max-w-[640px] flex-col rounded-[8px] p-0">
           <DialogTitle className="sr-only">
             Edit {rows.find((r) => r.key === editing)?.label ?? ""}
           </DialogTitle>
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="flex-1 overflow-y-auto p-5">
             {editing === "field" && (
               <FieldStep value={draft.field} onChange={(f) => setDraft((d) => ({ ...d, field: f }))} onContinue={commit} submitLabel="Save" onCancel={() => setEditing(null)} />
             )}
