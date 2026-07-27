@@ -88,88 +88,73 @@ export type Database = {
       }
       jobs: {
         Row: {
-          company: string | null
+          company: string
           company_domain: string | null
           company_sector: string | null
-          created_at: string
-          english_level: string | null
-          external_url: string | null
-          group: string | null
-          hard_skills: string[]
+          description: string | null
+          group_name: string
+          hard_skills: Json
           id: string
-          last_seen_at: string | null
-          location: string | null
-          min_years_experience: number | null
-          posted_days_ago: number | null
-          raw_description: string | null
-          role_ids: string[]
-          roles: string[]
+          location: string
+          min_years_experience: number
+          posted_days_ago: number
+          role_ids: Json
+          roles: Json
           salary_max: number | null
           salary_min: number | null
-          seniority: string | null
-          soft_skills: string[]
+          seniority: string
+          soft_skills: Json
           source: string | null
-          source_ats: string | null
-          stack: string[]
+          stack: Json
           title: string
-          tools: string[]
-          work_mode: string | null
+          tools: Json
+          work_mode: string
         }
         Insert: {
-          company?: string | null
+          company: string
           company_domain?: string | null
           company_sector?: string | null
-          created_at?: string
-          english_level?: string | null
-          external_url?: string | null
-          group?: string | null
-          hard_skills?: string[]
+          description?: string | null
+          group_name: string
+          hard_skills?: Json
           id: string
-          last_seen_at?: string | null
-          location?: string | null
-          min_years_experience?: number | null
-          posted_days_ago?: number | null
-          raw_description?: string | null
-          role_ids?: string[]
-          roles?: string[]
+          location: string
+          min_years_experience?: number
+          posted_days_ago?: number
+          role_ids?: Json
+          roles?: Json
           salary_max?: number | null
           salary_min?: number | null
-          seniority?: string | null
-          soft_skills?: string[]
+          seniority: string
+          soft_skills?: Json
           source?: string | null
-          source_ats?: string | null
-          stack?: string[]
+          stack?: Json
           title: string
-          tools?: string[]
-          work_mode?: string | null
+          tools?: Json
+          work_mode: string
         }
         Update: {
-          company?: string | null
+          company?: string
           company_domain?: string | null
           company_sector?: string | null
-          created_at?: string
-          english_level?: string | null
-          external_url?: string | null
-          group?: string | null
-          hard_skills?: string[]
+          description?: string | null
+          group_name?: string
+          hard_skills?: Json
           id?: string
-          last_seen_at?: string | null
-          location?: string | null
-          min_years_experience?: number | null
-          posted_days_ago?: number | null
-          raw_description?: string | null
-          role_ids?: string[]
-          roles?: string[]
+          location?: string
+          min_years_experience?: number
+          posted_days_ago?: number
+          role_ids?: Json
+          roles?: Json
           salary_max?: number | null
           salary_min?: number | null
-          seniority?: string | null
-          soft_skills?: string[]
+          seniority?: string
+          soft_skills?: Json
           source?: string | null
-          source_ats?: string | null
-          stack?: string[]
+          stack?: Json
           title?: string
-          tools?: string[]
-          work_mode?: string | null
+          tools?: Json
+          work_mode?: string
         }
         Relationships: []
       }

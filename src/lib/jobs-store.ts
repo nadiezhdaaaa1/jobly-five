@@ -32,6 +32,34 @@ function pickLogo(company: string): string {
 
 const DIRECT_SOURCES = new Set(["greenhouse", "lever", "ashby", "workable"]);
 
+function parseDescription(raw: string): DescriptionSection[] {
+  const lines = raw.split(/\r?\n/);
+  const sections: DescriptionSection[] = [];
+  let current: DescriptionSection | null = null;
+  const flush = () => {
+    if (current) sections.push(current);
+    current = null;
+  };
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { flush(); continue; }
+    if (t.startsWith("- ")) {
+      if (!current) current = { heading: "" };
+      current.bullets = current.bullets ?? [];
+      current.bullets.push(t.slice(2));
+    } else if (!current) {
+      current = { heading: t };
+    } else if (current.bullets) {
+      flush();
+      current = { heading: t };
+    } else {
+      current.body = current.body ? `${current.body}\n${t}` : t;
+    }
+  }
+  flush();
+  return sections.length ? sections : [{ heading: "About the role", body: raw }];
+}
+
 function formatSalary(min: number | null, max: number | null): string {
   if (min && max) return `$${Math.round(min / 1000)}–${Math.round(max / 1000)}K`;
   if (min) return `$${Math.round(min / 1000)}K+`;
@@ -56,20 +84,21 @@ function toJob(db: DbJob): Job {
       : baseLocation
         ? `${baseLocation} · ${modeLabel}`
         : modeLabel;
-  const description: DescriptionSection[] = [
-    {
-      heading: "About the role",
-      body: `Join ${db.company} as a ${db.title}. You'll work on impactful problems in ${db.companySector ?? "the industry"} using ${db.stack.slice(0, 3).join(", ") || "modern tools"}.`,
-    },
-    {
-      heading: "Requirements",
-      bullets: [
-        `${db.minYearsExperience ?? 3}+ years of professional experience`,
-        `Strong with ${(db.hardSkills.length ? db.hardSkills : db.stack).slice(0, 3).join(", ") || "the core stack"}`,
-        `English level ${db.englishLevel ?? "B2+"}`,
-      ],
-    },
-  ];
+  const description: DescriptionSection[] = db.rawDescription
+    ? parseDescription(db.rawDescription)
+    : [
+        {
+          heading: "About the role",
+          body: `Join ${db.company} as a ${db.title}. You'll work on impactful problems in ${db.companySector ?? "the industry"} using ${db.stack.slice(0, 3).join(", ") || "modern tools"}.`,
+        },
+        {
+          heading: "Requirements",
+          bullets: [
+            `${db.minYearsExperience ?? 3}+ years of professional experience`,
+            `Strong with ${(db.hardSkills.length ? db.hardSkills : db.stack).slice(0, 3).join(", ") || "the core stack"}`,
+          ],
+        },
+      ];
   const sources: JobSource[] = [
     {
       name: db.source
@@ -137,7 +166,7 @@ export async function loadJobs(): Promise<void> {
   if (loaded) return;
   if (loading) return loading;
   loading = (async () => {
-    const { data, error } = await supabase.from("jobs").select("*").limit(15000);
+    const { data, error } = await supabase.from("jobs").select("*").order("posted_days_ago", { ascending: true }).limit(15000);
     if (error || !data) {
       loading = null;
       return;
@@ -150,7 +179,7 @@ export async function loadJobs(): Promise<void> {
       workMode: (row.work_mode as string | null) ?? null,
       seniority: (row.seniority as string | null) ?? null,
       minYearsExperience: (row.min_years_experience as number | null) ?? null,
-      englishLevel: (row.english_level as string | null) ?? null,
+      englishLevel: null,
       roles: (row.roles as string[] | null) ?? [],
       roleIds: (row.role_ids as string[] | null) ?? [],
       stack: (row.stack as string[] | null) ?? [],
@@ -163,7 +192,8 @@ export async function loadJobs(): Promise<void> {
       source: (row.source as string | null) ?? null,
       companySector: (row.company_sector as string | null) ?? null,
       companyDomain: (row.company_domain as string | null) ?? null,
-      group: (row.group as string | null) ?? null,
+      group: (row.group_name as string | null) ?? null,
+      rawDescription: (row.description as string | null) ?? null,
     }));
     dbJobs.sort((a, b) => (a.postedDaysAgo ?? 0) - (b.postedDaysAgo ?? 0));
     recomputeJobs();
