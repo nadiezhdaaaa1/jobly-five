@@ -795,10 +795,6 @@ function DocumentsTab({
 
   return (
     <>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        Upload the documents you send with applications.
-      </p>
-
       {/* Résumé */}
       <CardBig>
         <header className="flex items-center gap-2">
