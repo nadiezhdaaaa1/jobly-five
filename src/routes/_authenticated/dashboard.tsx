@@ -634,7 +634,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               "relative transition-opacity duration-150 max-lg:opacity-100 " +
               (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
             }
-            ref={flagRef}
           >
             <IconTooltip label="Report this job">
               <button
@@ -671,7 +670,6 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               "relative -ml-1 transition-opacity duration-150 max-lg:opacity-100 " +
               (dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
             }
-            ref={dislikeRef}
           >
             <IconTooltip label="Not interested">
               <button
