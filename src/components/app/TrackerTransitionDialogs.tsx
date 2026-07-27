@@ -5,38 +5,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { findReminderConflicts } from "@/lib/tracker-store";
 import { getDbJobById } from "@/lib/jobs-store";
 
-export const INTERVIEW_STAGES = [
-  "Recruiter screen",
-  "Hiring manager screen",
-  "Technical screen",
-  "Technical interview",
-  "System design",
-  "Onsite / Final round",
-  "Team / culture fit",
-] as const;
-
-export const SCREEN_INTERVIEW_STAGES = [
-  "Recruiter screen",
-  "Hiring manager screen",
-  "Pre-screen",
-  "Team / culture fit",
-] as const;
-
-export const TECH_INTERVIEW_STAGES = [
-  "Technical screen",
-  "Technical interview",
-  "System design",
-  "Live coding",
-  "Onsite / Final round",
-  "Take-home follow-up",
-] as const;
-
-export const OFFER_STAGES = [
-  "Waiting for my reply",
-  "Negotiating",
-  "Accepted",
-  "Declined",
-] as const;
+// Legacy fallback for callers that haven't switched to per-column stage lists.
+export const DEFAULT_INTERVIEW_STAGES = ["Recruiter screen", "Hiring manager screen"] as const;
+export const DEFAULT_OFFER_STAGES = ["Received", "Negotiating", "Accepted"] as const;
 
 function DialogShell({
   title,
@@ -296,7 +267,7 @@ export function InterviewTransitionDialog({
   stages?: readonly string[];
   stageLabel?: string;
 }) {
-  const stageOptions = stages ?? INTERVIEW_STAGES;
+  const stageOptions = stages && stages.length ? stages : DEFAULT_INTERVIEW_STAGES;
   const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0]);
   const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
 
@@ -314,61 +285,25 @@ export function InterviewTransitionDialog({
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso })} />}
     >
       <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">{stageLabel ?? "Interview stage"}</span>
-        <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
-          {stageOptions.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+        <span className="text-[12px] text-[color:var(--color-text-muted)]">{stageLabel ?? "Stage"}</span>
+        {stageOptions.length ? (
+          <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
+            {stageOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        ) : (
+          <div className="text-[12px] font-light text-[color:var(--color-text-muted)]">
+            No stages defined. You can add stages in Edit columns.
+          </div>
+        )}
       </div>
       <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
     </DialogShell>
   );
 }
 
-export function TestTaskTransitionDialog({
-  open,
-  initialDetails,
-  initialReminderIso,
-  jobId,
-  onCancel,
-  onSave,
-}: {
-  open: boolean;
-  initialDetails?: string;
-  initialReminderIso?: string;
-  jobId?: string;
-  onCancel: () => void;
-  onSave: (payload: { details: string; reminderIso: string | null }) => void;
-}) {
-  const [details, setDetails] = useState(initialDetails ?? "");
-  const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
-  useEffect(() => {
-    if (!open) return;
-    setDetails(initialDetails ?? "");
-    setReminderIso(initialReminderIso ?? null);
-  }, [open, initialDetails, initialReminderIso]);
-  if (!open) return null;
-  return (
-    <DialogShell
-      title="Test task"
-      onCancel={onCancel}
-      footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ details, reminderIso })} />}
-    >
-      <div className="flex flex-col gap-1">
-        <span className="text-[12px] text-[color:var(--color-text-muted)]">Task details</span>
-        <textarea
-          rows={4}
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          placeholder="Link, scope, or notes about the task (optional)"
-          className={textareaCls}
-        />
-      </div>
-      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
-    </DialogShell>
-  );
-}
+// TestTaskTransitionDialog removed — Take-home is now just an Interview-kind column.
 
 export function RejectedTransitionDialog({
   open,
@@ -413,6 +348,8 @@ export function OfferTransitionDialog({
   initialReminderIso,
   initialDetails,
   jobId,
+  stages,
+  title,
   onCancel,
   onSave,
 }: {
@@ -421,32 +358,41 @@ export function OfferTransitionDialog({
   initialReminderIso?: string;
   initialDetails?: string;
   jobId?: string;
+  stages?: readonly string[];
+  title?: string;
   onCancel: () => void;
   onSave: (payload: { stage: string; reminderIso: string | null; details: string }) => void;
 }) {
-  const [stage, setStage] = useState<string>(initialStage ?? OFFER_STAGES[0]);
+  const stageOptions = stages && stages.length ? stages : DEFAULT_OFFER_STAGES;
+  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0]);
   const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
   const [details, setDetails] = useState(initialDetails ?? "");
   useEffect(() => {
     if (!open) return;
-    setStage(initialStage ?? OFFER_STAGES[0]);
+    setStage(initialStage ?? stageOptions[0]);
     setReminderIso(initialReminderIso ?? null);
     setDetails(initialDetails ?? "");
-  }, [open, initialStage, initialReminderIso, initialDetails]);
+  }, [open, initialStage, initialReminderIso, initialDetails, stageOptions]);
   if (!open) return null;
   return (
     <DialogShell
-      title="Offer"
+      title={title ?? "Offer"}
       onCancel={onCancel}
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso, details })} />}
     >
       <div className="flex flex-col gap-1">
         <span className="text-[12px] text-[color:var(--color-text-muted)]">Offer stage</span>
-        <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
-          {OFFER_STAGES.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
+        {stageOptions.length ? (
+          <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
+            {stageOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        ) : (
+          <div className="text-[12px] font-light text-[color:var(--color-text-muted)]">
+            No stages defined. You can add stages in Edit columns.
+          </div>
+        )}
       </div>
       <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
       <div className="flex flex-col gap-1">
