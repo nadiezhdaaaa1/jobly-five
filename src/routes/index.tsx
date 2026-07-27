@@ -932,13 +932,42 @@ function Pricing() {
               </span>
               <div className="flex items-baseline justify-between">
                 <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$9.99</span>
-                  <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
-                </div>
+              </div>
+
+              {/* Billing period switcher */}
+              <div className="mt-3 inline-flex w-fit self-start items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] p-1">
+                {(["monthly", "6mo", "annual"] as const).map((p) => {
+                  const active = period === p;
+                  const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
+                  return (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPeriod(p)}
+                      className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "font-semibold text-white bg-[color:var(--color-green)]" : "text-[color:var(--color-text-secondary)]"}`}
+                    >
+                      {label}
+                      {p === "annual" && !active ? (
+                        <span className="ml-1 rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
+                          Best value
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]">{priceRows[period].price}</span>
+                <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
+                {priceRows[period].save ? (
+                  <span className="ml-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
+                    {priceRows[period].save}
+                  </span>
+                ) : null}
               </div>
               <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-                after 3-day trial
+                {priceRows[period].billed}
               </p>
               <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
               <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
