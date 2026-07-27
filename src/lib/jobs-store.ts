@@ -137,7 +137,7 @@ export async function loadJobs(): Promise<void> {
   if (loaded) return;
   if (loading) return loading;
   loading = (async () => {
-    const { data, error } = await supabase.from("jobs").select("*").limit(5000);
+    const { data, error } = await supabase.from("jobs").select("*").limit(12000);
     if (error || !data) {
       loading = null;
       return;
