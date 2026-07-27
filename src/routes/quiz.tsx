@@ -1217,6 +1217,12 @@ function SkillsGroup({
         ref={popRef}
         style={{ position: "fixed", left: pos.left, top: pos.top, width: pos.width, zIndex: 100 }}
         className="max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
+        onWheel={(e) => {
+          const el = popRef.current;
+          if (!el) return;
+          el.scrollTop += e.deltaY;
+          e.stopPropagation();
+        }}
       >
         <div className="flex flex-wrap gap-2">
           {filtered.map((s) => {
