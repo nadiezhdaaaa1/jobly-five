@@ -249,6 +249,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [notes, setNotesLocal] = useState(record.notes ?? "");
   const [notesEditing, setNotesEditing] = useState(false);
   const [rejectionDraft, setRejectionDraft] = useState(record.rejectionDetails ?? "");
+  const [rejectionEditing, setRejectionEditing] = useState(false);
   const [offerDraft, setOfferDraft] = useState(record.offerDetails ?? "");
   const [offerEditing, setOfferEditing] = useState(false);
 
@@ -256,7 +257,10 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
     setNotesLocal(record.notes ?? "");
     setNotesEditing(false);
   }, [job.id, record.notes]);
-  useEffect(() => setRejectionDraft(record.rejectionDetails ?? ""), [job.id, record.rejectionDetails]);
+  useEffect(() => {
+    setRejectionDraft(record.rejectionDetails ?? "");
+    setRejectionEditing(false);
+  }, [job.id, record.rejectionDetails]);
   useEffect(() => {
     setOfferDraft(record.offerDetails ?? "");
     setOfferEditing(false);
@@ -275,8 +279,18 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
     setNotesLocal("");
     setNotesEditing(false);
   }
-  function handleRejectionBlur() {
-    if (rejectionDraft !== (record.rejectionDetails ?? "")) setRejectionDetails(job.id, rejectionDraft);
+  function handleRejectionSave() {
+    setRejectionDetails(job.id, rejectionDraft.trim());
+    setRejectionEditing(false);
+  }
+  function handleRejectionCancel() {
+    setRejectionDraft(record.rejectionDetails ?? "");
+    setRejectionEditing(false);
+  }
+  function handleRejectionDelete() {
+    setRejectionDetails(job.id, "");
+    setRejectionDraft("");
+    setRejectionEditing(false);
   }
   function handleOfferSave() {
     setOfferDetails(job.id, offerDraft.trim());
