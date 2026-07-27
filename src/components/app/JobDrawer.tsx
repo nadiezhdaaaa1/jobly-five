@@ -7,6 +7,7 @@ import {
   IconCalendar as Calendar,
   IconMailShare as MailShare,
   IconFileText as FileText,
+  IconChevronDown as ChevronDown,
 } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
 import {
