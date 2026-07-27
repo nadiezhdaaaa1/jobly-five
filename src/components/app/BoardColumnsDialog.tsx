@@ -152,12 +152,12 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
           Edit columns
         </h2>
         <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
-          Add a new Interview column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
+          Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
         <div className="mt-4 rounded-[12px] p-4" style={{ background: "#E3E7E8" }}>
           <div className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
-            Add a new Interview column
+            Add a new column
           </div>
           <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
             Give it a clear name — e.g. "Second-round tech" or "Panel". You can edit stages afterwards.
