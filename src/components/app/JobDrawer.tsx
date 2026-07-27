@@ -633,6 +633,64 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   )}
                 </div>
               ) : null}
+              {status === "rejection" ? (
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Rejection details</div>
+                    {record.rejectionDetails && !rejectionEditing ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setRejectionEditing(true)}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleRejectionDelete}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        {rejectionEditing ? (
+                          <button
+                            type="button"
+                            onClick={handleRejectionCancel}
+                            className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          >
+                            Cancel
+                          </button>
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={handleRejectionSave}
+                          disabled={rejectionDraft.trim() === (record.rejectionDetails ?? "")}
+                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {record.rejectionDetails && !rejectionEditing ? (
+                    <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                      {record.rejectionDetails}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={rejectionDraft}
+                      onChange={(e) => setRejectionDraft(e.target.value)}
+                      rows={4}
+                      placeholder="What happened? (optional)"
+                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    />
+                  )}
+                </div>
+              ) : null}
               {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
               (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
                 <div>
@@ -736,20 +794,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
-              {status === "rejection" ? (
-                <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Rejection details</div>
-                  <textarea
-                    value={rejectionDraft}
-                    onChange={(e) => setRejectionDraft(e.target.value)}
-                    onBlur={handleRejectionBlur}
-                    rows={4}
-                    placeholder="What happened? (optional)"
-                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                  />
-                </div>
-              ) : null}
-
               {/* History — must be the last block */}
               <JobHistory history={record.history} />
             </div>
