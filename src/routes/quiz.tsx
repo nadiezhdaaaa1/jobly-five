@@ -2555,7 +2555,7 @@ function ContinueRow({
       className={cn(
         "flex items-center gap-2",
         onCancel
-          ? "sticky bottom-0 z-10 -mx-5 mt-6 border-t border-[color:var(--color-border)] bg-white px-5 py-4"
+          ? "sticky bottom-0 z-10 -mx-5 mt-6 rounded-b-[8px] border-t border-[color:var(--color-border)] bg-white px-5 py-4"
           : "mt-6"
       )}
     >
