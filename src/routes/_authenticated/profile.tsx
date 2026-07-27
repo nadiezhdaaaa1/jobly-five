@@ -208,7 +208,7 @@ function ProfileScreen() {
   const strength = useMemo(() => {
     const items = [
       { key: "quiz", label: "Quiz completed", done: (quiz.roles?.length ?? 0) > 0 },
-      { key: "resume", label: "Résumé added", done: resume.hasResume },
+      { key: "resume", label: "Resume added", done: resume.hasResume },
       { key: "jobs", label: "Previous jobs", done: resume.data.experience.length > 0 },
       { key: "edu", label: "Education", done: resume.data.education.length > 0 },
       { key: "verify", label: "Verify your email", done: false },
@@ -368,7 +368,7 @@ function ProfileScreen() {
                   How matching works
                 </h3>
                 <p className="mt-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                  Your preferences, résumé, and history are compared against every job we collect.
+                  Your preferences, resume, and history are compared against every job we collect.
                   You can see the breakdown on any job card.
                 </p>
               </div>
@@ -796,7 +796,7 @@ function DocumentsTab({
 
   return (
     <>
-      {/* Résumé */}
+      {/* Resume */}
       <CardBig>
         <header className="flex items-center gap-2">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Resume</h2>
@@ -859,12 +859,12 @@ function DocumentsTab({
       {/* Coming-soon */}
       <div className="grid gap-4 md:grid-cols-2">
         <ComingSoonMini
-          title="Tailor résumé to a job"
-          body="One click adapts your primary résumé to a specific opening from your digest."
+          title="Tailor resume to a job"
+          body="One click adapts your primary resume to a specific opening from your digest."
         />
         <ComingSoonMini
           title="ATS check"
-          body="See how much of your résumé an ATS can parse — plus fixes to raise your pass rate."
+          body="See how much of your resume an ATS can parse — plus fixes to raise your pass rate."
         />
       </div>
 
@@ -1697,12 +1697,12 @@ function ExperienceTab({
 
   const hasResume = resume.hasResume;
   const lead = hasResume
-    ? "Pulled from your résumé so you don't retype it — edit or add. Structured history sharpens matching; the PDF alone isn't enough."
-    : "Add your work history manually, or upload a résumé on the Documents tab to auto-fill it.";
+    ? "Pulled from your resume so you don't retype it — edit or add. Structured history sharpens matching; the PDF alone isn't enough."
+    : "Add your work history manually, or upload a resume on the Documents tab to auto-fill it.";
 
   const source = hasResume
-    ? `Parsed from ${resume.filename ?? "your résumé"} — edit or add more.`
-    : "No résumé yet — entries below are added manually.";
+    ? `Parsed from ${resume.filename ?? "your resume"} — edit or add more.`
+    : "No resume yet — entries below are added manually.";
 
   return (
     <>
@@ -1716,7 +1716,7 @@ function ExperienceTab({
           {hasResume ? (
             <SecondaryBtn onClick={() => setConfirmReimport(true)}>
               <Refresh size={14} strokeWidth={1.8} />
-              Re-import from résumé
+              Re-import from resume
             </SecondaryBtn>
           ) : null}
         </header>
@@ -1779,13 +1779,13 @@ function ExperienceTab({
 
       <ConfirmModal
         open={confirmReimport}
-        title="Re-import from résumé?"
-        body="This replaces manual edits with the parsed résumé content."
+        title="Re-import from resume?"
+        body="This replaces manual edits with the parsed resume content."
         confirmLabel="Re-import"
         onClose={() => setConfirmReimport(false)}
         onConfirm={() => {
           setConfirmReimport(false);
-          onToast("Re-imported from résumé");
+          onToast("Re-imported from resume");
         }}
       />
     </>

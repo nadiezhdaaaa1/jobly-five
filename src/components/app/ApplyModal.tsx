@@ -86,7 +86,7 @@ export function ApplyModal({
     if (selectedResume) {
       dir.file(
         `${selectedResume.name}.${selectedResume.ext}`,
-        `(Demo placeholder for résumé "${selectedResume.name}")`,
+        `(Demo placeholder for resume "${selectedResume.name}")`,
       );
     }
     if (selectedLetter) {
@@ -138,7 +138,7 @@ export function ApplyModal({
         </div>
 
         <p className="body-small mt-4 text-[color:var(--color-text-secondary)]">
-          Pick the résumé and cover letter template you want to send.
+          Pick the resume and cover letter template you want to send.
         </p>
 
         {/* Resume selector */}

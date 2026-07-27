@@ -156,7 +156,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <li>Weekly job digest</li>
             <li>Match score on every job</li>
             <li>Basic tracker (Saved · Applied · Interview)</li>
-            <li>1 résumé, 1 cover-letter template</li>
+            <li>1 resume, 1 cover-letter template</li>
             <li>Report ghost / scam jobs</li>
           </ul>
           <div className="mt-4">
@@ -265,7 +265,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
       {/* Coming soon + info box */}
       <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-        <span className="font-semibold">Coming soon (Pro):</span> tailor résumé to a job · ATS check · AI cover letter per job.
+        <span className="font-semibold">Coming soon (Pro):</span> tailor resume to a job · ATS check · AI cover letter per job.
       </p>
       <div className="mt-3 flex items-start gap-2 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
         <IconInfoCircle size={14} strokeWidth={1.6} className="mt-0.5 shrink-0" />
