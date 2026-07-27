@@ -8,6 +8,7 @@ import {
   IconMailShare as MailShare,
   IconFileText as FileText,
   IconChevronDown as ChevronDown,
+  IconExternalLink as ExternalLink,
 } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
 import {
