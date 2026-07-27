@@ -575,7 +575,7 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
             No blocked companies yet.
           </p>
         ) : list.map((c) => (
-          <span key={c} className="inline-flex items-center gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
+          <span key={c} className="inline-flex items-center gap-2 rounded-[4px] border bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
             {c}
             <IconTooltip label={`Unblock ${c}`}>
               <button
