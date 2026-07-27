@@ -597,7 +597,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         <div className="ml-auto flex items-center gap-1">
           <div
             className={
-              "relative transition-opacity duration-150 max-md:opacity-100 " +
+              "relative transition-opacity duration-150 max-lg:opacity-100 " +
               (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
             }
             ref={flagRef}
@@ -631,7 +631,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
           <div
             className={
-              "relative -ml-1 transition-opacity duration-150 max-md:opacity-100 " +
+              "relative -ml-1 transition-opacity duration-150 max-lg:opacity-100 " +
               (dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
             }
             ref={dislikeRef}
