@@ -866,49 +866,99 @@ function Pricing() {
           </p>
         </div>
 
-        {/* Desktop table */}
-        <div className="mt-10 hidden overflow-hidden rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] md:block">
-          <div className="grid grid-cols-3 border-b border-[color:var(--color-border)]">
-            <div className="p-6" />
-            <div className="border-l border-[color:var(--color-border)] p-6">
-              <div className="text-sm text-[color:var(--color-text-muted)]">Free</div>
-              <div className="mt-1 text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-                $0/mo
+        {/* Plan cards — matches Settings styling */}
+        <div className="mt-10 grid gap-4 md:grid-cols-2 items-stretch">
+          {/* Free */}
+          <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
+            <div
+              className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+              style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
+            >
+              <div className="flex items-baseline justify-between">
+                <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
+                <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
               </div>
-            </div>
-            <div className="relative border-l border-[color:var(--color-border)] bg-[color:var(--color-mint)] p-6">
-              <span className="absolute right-6 top-6 rounded-full bg-[color:var(--color-green)] px-2 py-0.5 text-xs text-white">
-                Recommended
-              </span>
-              <div className="text-sm text-[color:var(--color-green)]">Pro</div>
-              <div className="mt-1 text-3xl" style={{ fontFamily: "var(--font-display)" }}>
-                $9.99/mo
+              <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                The essentials to job-hunt cleanly.
+              </p>
+              <ul className="mt-3 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                {rows.map((r) => (
+                  <li key={r.label} className="flex items-center gap-2">
+                    {typeof r.free === "boolean" ? (
+                      r.free ? (
+                        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                        </span>
+                      ) : (
+                        <Minus size={16} className="shrink-0 text-[color:var(--color-text-muted)]" />
+                      )
+                    ) : (
+                      <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                        <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                      </span>
+                    )}
+                    <span>
+                      {r.label}
+                      {typeof r.free === "string" ? <span className="text-[color:var(--color-text-muted)]"> — {r.free}</span> : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto pt-4">
+                <Link
+                  to="/quiz"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  Get started free
+                </Link>
               </div>
-              <div className="text-xs text-[color:var(--color-text-secondary)]">after 3-day trial</div>
             </div>
           </div>
-          {rows.map((r, i) => (
-            <div
-              key={r.label}
-              className={`grid grid-cols-3 ${i < rows.length - 1 ? "border-b border-[color:var(--color-border)]" : ""}`}
-            >
-              <div className="p-4 text-sm">{r.label}</div>
-              <PricingCell v={r.free} border />
-              <PricingCell v={r.pro} border tint />
-            </div>
-          ))}
-        </div>
 
-        {/* Mobile stacked */}
-        <div className="mt-10 grid gap-4 md:hidden">
-          <PlanCard title="Free" price="$0/mo" rows={rows.map((r) => ({ label: r.label, value: r.free }))} />
-          <PlanCard
-            title="Pro"
-            price="$9.99/mo"
-            note="after 3-day trial"
-            recommended
-            rows={rows.map((r) => ({ label: r.label, value: r.pro }))}
-          />
+          {/* Pro */}
+          <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
+            <div
+              className="relative flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+              style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
+            >
+              <span className="absolute -top-2 right-3 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-on-accent)]">
+                Recommended
+              </span>
+              <div className="flex items-baseline justify-between">
+                <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$9.99</span>
+                  <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
+                </div>
+              </div>
+              <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+                after 3-day trial
+              </p>
+              <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
+              <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                {rows.map((r) => (
+                  <li key={r.label} className="flex items-center gap-2">
+                    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                      <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                    </span>
+                    <span>
+                      {r.label}
+                      {typeof r.pro === "string" ? <span className="text-[color:var(--color-text-muted)]"> — {r.pro}</span> : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto pt-4">
+                <Link
+                  to="/quiz"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                >
+                  Start 3-day free trial
+                </Link>
+                <p className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">Cancel anytime before it ends — no charge.</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="mt-6 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-5 text-sm text-[color:var(--color-text-secondary)]">
