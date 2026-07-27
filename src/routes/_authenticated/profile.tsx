@@ -669,31 +669,23 @@ function PreferencesTab({
       <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
         Collected from onboarding. This powers your match score.
       </p>
-      <div className="flex flex-col gap-3">
+      <div className="rounded-[8px] border bg-[color:var(--color-surface-1)]">
         {rows
           .filter((r) => !r.hidden)
-          .map((row) => (
+          .map((row, idx, arr) => (
             <div
               key={row.key}
-              className="flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
+              className={`flex items-start gap-3 p-4 ${
+                idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
+              }`}
             >
-              <div
-                className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] ${
-                  row.done
-                    ? "bg-[color:var(--color-accent)] text-[color:var(--color-foreground)]"
-                    : "bg-[color:var(--color-surface-2)] text-[color:var(--color-text-muted)]"
-                }`}
-                aria-hidden
-              >
-                {row.done ? <Check size={16} strokeWidth={2.4} /> : <X size={14} strokeWidth={1.8} />}
-              </div>
               <div className="min-w-0 flex-1">
                 <div className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
                   {row.label}
                   {row.key === "stack" ? <span className="ml-1"><Tag>optional</Tag></span> : null}
                 </div>
                 <div
-                  className={`mt-1 truncate text-[14px] ${
+                  className={`mt-1 text-[14px] ${
                     row.value
                       ? "text-[color:var(--color-foreground)]"
                       : "text-[color:var(--color-text-muted)]"
@@ -703,16 +695,14 @@ function PreferencesTab({
                   {row.value || "Not set"}
                 </div>
               </div>
-              <IconTooltip label={`Edit ${row.label}`}>
-                <button
-                  type="button"
-                  onClick={() => setEditing(row.key)}
-                  aria-label={`Edit ${row.label}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-                >
-                  <Pencil size={15} strokeWidth={1.6} />
-                </button>
-              </IconTooltip>
+              <button
+                type="button"
+                onClick={() => setEditing(row.key)}
+                aria-label={`Edit ${row.label}`}
+                className="ml-auto shrink-0 rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Edit
+              </button>
             </div>
           ))}
       </div>
