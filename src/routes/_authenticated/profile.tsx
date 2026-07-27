@@ -1989,7 +1989,7 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
                         <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">
                           {s.name}
                         </div>
-                        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
+                        <div className="text-[12px] text-[color:var(--color-text-muted)] break-words">
                           {summary || "No filters selected"}
                         </div>
                       </>
