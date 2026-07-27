@@ -624,7 +624,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         <div className="body-medium text-[color:var(--color-foreground)]">
           {job.salary}
         </div>
@@ -641,7 +641,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 type="button"
                 aria-label="Report this job"
                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={() => setFlagOpen((v) => !v)}
+                onClick={(e) => { e.stopPropagation(); setFlagOpen((v) => !v); }}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <Flag size={15} strokeWidth={1.6} />
@@ -655,7 +655,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={() => { setDigestSession(job.id, "reported"); setFlagOpen(false); }}
+                    onClick={(e) => { e.stopPropagation(); setDigestSession(job.id, "reported"); setFlagOpen(false); }}
                   >
                     {label}
                   </button>
@@ -677,7 +677,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 type="button"
                 aria-label="Not interested"
                 onMouseDown={(e) => e.stopPropagation()}
-                onClick={() => setDislikeOpen((v) => !v)}
+                onClick={(e) => { e.stopPropagation(); setDislikeOpen((v) => !v); }}
                 className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <ThumbsDown size={15} strokeWidth={1.6} />
@@ -691,7 +691,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (label === "Don't recommend the company") blockCompany(job.company);
                       setDigestSession(job.id, "disliked");
                       setDislikeOpen(false);
@@ -710,7 +711,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               type="button"
               aria-label="Save"
               aria-pressed={saved}
-              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
+              onClick={(e) => { e.stopPropagation(); setStatus(job.id, saved ? "default" : "saved"); }}
               className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
@@ -724,7 +725,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
           <button
             type="button"
-            onClick={() => setApplyOpen(true)}
+            onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
             className="inline-flex h-[30px] items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
