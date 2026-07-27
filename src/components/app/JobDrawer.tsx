@@ -770,6 +770,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               onClick={() => setApplyOpen(true)}
               className="inline-flex h-10 flex-1 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
+              <ExternalLink size={16} strokeWidth={1.8} className="mr-1" />
               Apply
             </button>
 
