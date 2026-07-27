@@ -411,7 +411,7 @@ export function OfferTransitionDialog({
       </div>
       <div className="flex flex-col gap-2">
         <p className="body-small text-[color:var(--color-text-secondary)]">
-          Jot down the details — comp, benefits, deadlines — so nothing gets lost.
+          Offer details
         </p>
         <textarea
           rows={4}
