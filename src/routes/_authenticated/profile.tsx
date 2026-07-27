@@ -639,7 +639,7 @@ function PreferencesTab({
     { key: "tools", label: "Tools", value: (quiz.tools ?? []).join(", "), done: (quiz.tools?.length ?? 0) > 0 },
     { key: "soft", label: "Soft skills", value: (quiz.softSkills ?? []).join(", "), done: (quiz.softSkills?.length ?? 0) > 0 },
     { key: "level", label: "Experience", value: s.experience === "—" ? "" : s.experience, done: !!quiz.level },
-    { key: "loc", label: "Salary and locations", value: [s.salary, s.locations].filter((v) => v && v !== "—").join(" · "), done: !!(quiz.locations?.length || quiz.workMode === "remote") },
+    { key: "loc", label: "Salary and locations", value: [s.salary, s.locations, quiz.workMode === "remote" ? "Remote" : ""].filter((v) => v && v !== "—").join(" · "), done: !!(quiz.locations?.length || quiz.workMode === "remote") },
   ];
 
   const commit = () => {
