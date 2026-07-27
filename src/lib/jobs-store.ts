@@ -56,20 +56,21 @@ function toJob(db: DbJob): Job {
       : baseLocation
         ? `${baseLocation} · ${modeLabel}`
         : modeLabel;
-  const description: DescriptionSection[] = [
-    {
-      heading: "About the role",
-      body: `Join ${db.company} as a ${db.title}. You'll work on impactful problems in ${db.companySector ?? "the industry"} using ${db.stack.slice(0, 3).join(", ") || "modern tools"}.`,
-    },
-    {
-      heading: "Requirements",
-      bullets: [
-        `${db.minYearsExperience ?? 3}+ years of professional experience`,
-        `Strong with ${(db.hardSkills.length ? db.hardSkills : db.stack).slice(0, 3).join(", ") || "the core stack"}`,
-        `English level ${db.englishLevel ?? "B2+"}`,
-      ],
-    },
-  ];
+  const description: DescriptionSection[] = db.rawDescription
+    ? parseDescription(db.rawDescription)
+    : [
+        {
+          heading: "About the role",
+          body: `Join ${db.company} as a ${db.title}. You'll work on impactful problems in ${db.companySector ?? "the industry"} using ${db.stack.slice(0, 3).join(", ") || "modern tools"}.`,
+        },
+        {
+          heading: "Requirements",
+          bullets: [
+            `${db.minYearsExperience ?? 3}+ years of professional experience`,
+            `Strong with ${(db.hardSkills.length ? db.hardSkills : db.stack).slice(0, 3).join(", ") || "the core stack"}`,
+          ],
+        },
+      ];
   const sources: JobSource[] = [
     {
       name: db.source
