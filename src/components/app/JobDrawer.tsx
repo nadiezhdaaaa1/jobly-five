@@ -722,21 +722,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
-              {currentColumn?.kind === "offer" ? (
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
-                    <textarea
-                      value={offerDraft}
-                      onChange={(e) => setOfferDraft(e.target.value)}
-                      onBlur={handleOfferBlur}
-                      rows={4}
-                      placeholder="Comp, deadline, notes (optional)"
-                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                    />
-                  </div>
-                </div>
-              ) : null}
               {status === "rejection" ? (
                 <div>
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Rejection details</div>
