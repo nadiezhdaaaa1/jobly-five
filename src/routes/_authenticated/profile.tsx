@@ -493,7 +493,7 @@ function NameModal({
           autoFocus
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          className="mt-1 h-10 w-full rounded-[4px] border px-3 text-[14px]"
+          className="mt-2 h-10 w-full rounded-[4px] border px-3 text-[14px]"
         />
         <div className="mt-4 flex justify-end gap-2">
           <SecondaryBtn onClick={onClose}>Cancel</SecondaryBtn>
