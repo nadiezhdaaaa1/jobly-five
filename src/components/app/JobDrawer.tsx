@@ -159,7 +159,7 @@ function JobDescriptionBlock({ job }: { job: Job }) {
   return (
     <div className="mt-5">
       <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
-        {first.heading ?? "About the role"}
+        About the Job
       </div>
       {first.body ? (
         <p
