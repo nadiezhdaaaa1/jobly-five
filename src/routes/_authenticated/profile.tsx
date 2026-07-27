@@ -1596,7 +1596,7 @@ function AchievementsTab({
               >
                 <span className="flex items-center gap-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">
                   {ACHIEVEMENT_LABELS[b]}
-                  {isSuggested ? <Tag tone="mint">suggested</Tag> : null}
+                  {isSuggested ? <Tag tone="mint">SUGGESTED</Tag> : null}
                   <span className="text-[12px] font-normal text-[color:var(--color-text-muted)]">({entries.length})</span>
                 </span>
                 {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
