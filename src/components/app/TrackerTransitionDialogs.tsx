@@ -286,6 +286,9 @@ export function InterviewTransitionDialog({
     >
       <div className="flex flex-col gap-1">
         <span className="text-[12px] text-[color:var(--color-text-muted)]">{stageLabel ?? "Stage"}</span>
+        <p className="body-small text-[color:var(--color-text-secondary)]">
+          Pick the stage you're currently at in this interview.
+        </p>
         {stageOptions.length ? (
           <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
             {stageOptions.map((s) => (
@@ -298,7 +301,12 @@ export function InterviewTransitionDialog({
           </div>
         )}
       </div>
-      <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
+      <div className="flex flex-col gap-2">
+        <p className="body-small text-[color:var(--color-text-secondary)]">
+          Add a reminder so this interview doesn't slip off your radar.
+        </p>
+        <ReminderInline reminderIso={reminderIso} onChange={setReminderIso} jobId={jobId} />
+      </div>
     </DialogShell>
   );
 }
