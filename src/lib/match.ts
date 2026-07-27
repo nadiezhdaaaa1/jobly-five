@@ -80,14 +80,14 @@ export function computeMatch(
   const jobSkillsLc = jobSkills.map((s) => s.toLowerCase());
 
   const roleMatch = rolesOverlap(userRoles, job) ? 1 : 0;
-  const roleScore = 30 * roleMatch;
+  const roleScore = 40 * roleMatch;
   if (roleMatch) criteria.push({ status: "full", text: `Role: ${job.roles.slice(0, 2).join(", ") || job.title} — matches` });
   else if (userRoles.length) criteria.push({ status: "partial", text: `Role: ${job.roles[0] ?? job.title} — adjacent` });
 
   const overlap = userSkills.size ? jobSkillsLc.filter((s) => userSkills.has(s)).length : 0;
   const needed = Math.max(3, Math.min(jobSkillsLc.length, 8));
   const skillRatio = jobSkillsLc.length ? Math.min(1, overlap / needed) : 0.5;
-  const skillScore = 35 * skillRatio;
+  const skillScore = 25 * skillRatio;
   const matchedSkills = jobSkills.filter((s) => userSkills.has(s.toLowerCase())).slice(0, 3);
   const missingSkills = jobSkills
     .filter((s) => !userSkills.has(s.toLowerCase()))
