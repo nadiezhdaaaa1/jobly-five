@@ -1084,53 +1084,68 @@ function CoverLettersTab({
 }) {
   const [editing, setEditing] = useState<CoverLetter | "new" | null>(null);
   const [confirmDel, setConfirmDel] = useState<CoverLetter | null>(null);
-  const remaining = COVER_LETTER_LIMIT - letters.length;
+  const atLimit = letters.length >= COVER_LETTER_LIMIT;
 
   return (
     <>
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        Up to {COVER_LETTER_LIMIT} reusable templates. Pick one when you apply.
-      </p>
-      <div
-        className="rounded-[6px] border bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-foreground)]"
-        style={{ borderColor: "var(--color-green)" }}
-      >
-        Your achievements can be appended to the letter automatically when you apply — set that up under{" "}
-        <span className="font-semibold">Achievements → When you apply</span>. You'll always preview before sending.
-      </div>
-      <div className="flex flex-col gap-3">
-        {letters.map((l) => (
-          <CardSmall key={l.id}>
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{l.name}</div>
-                <p className="mt-1 line-clamp-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-                  {stripHtml(l.body).slice(0, 96)}
-                </p>
+      <CardBig>
+        <header className="flex items-center gap-2">
+          <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Cover letters</h2>
+          <span className="text-[12px] text-[color:var(--color-text-muted)]">
+            {letters.length} / {COVER_LETTER_LIMIT}
+          </span>
+        </header>
+        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          Up to {COVER_LETTER_LIMIT} reusable templates. Pick one when you apply. Your achievements can be
+          appended automatically — set that up under Achievements → When you apply.
+        </p>
+        <div className="mt-3 flex flex-col gap-2">
+          {letters.length === 0 ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+                <FileText size={20} strokeWidth={1.6} />
               </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">No templates yet</div>
+                <div className="text-[12px] text-[color:var(--color-text-muted)]">Create a reusable cover letter to apply faster.</div>
+              </div>
+              <PrimaryBtn onClick={() => setEditing("new")}>
+                <Plus size={16} strokeWidth={1.8} />
+                New template
+              </PrimaryBtn>
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <SecondaryBtn onClick={() => setEditing(l)}>Edit</SecondaryBtn>
-              <SecondaryBtn onClick={() => {
-                const ok = duplicateCoverLetter(l.id);
-                if (!ok) onToast("Limit of 5 reached");
-              }}>Duplicate</SecondaryBtn>
-              <SecondaryBtn danger onClick={() => setConfirmDel(l)}>Delete</SecondaryBtn>
-            </div>
-          </CardSmall>
-        ))}
-      </div>
-      {remaining > 0 ? (
-        <button
-          type="button"
-          onClick={() => setEditing("new")}
-          className="self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-        >
-          + New template ({remaining} left)
-        </button>
-      ) : (
-        <span className="text-[13px] text-[color:var(--color-text-muted)]">+ New template (limit 5 reached)</span>
-      )}
+          ) : (
+            <>
+              {letters.map((l) => (
+                <LetterRow
+                  key={l.id}
+                  name={l.name}
+                  meta={stripHtml(l.body).slice(0, 96)}
+                  onEdit={() => setEditing(l)}
+                  onDuplicate={() => {
+                    const ok = duplicateCoverLetter(l.id);
+                    if (!ok) onToast(`Limit of ${COVER_LETTER_LIMIT} reached`);
+                  }}
+                  onDelete={() => setConfirmDel(l)}
+                />
+              ))}
+              {!atLimit && (
+                <div className="pt-1">
+                  <PrimaryBtn onClick={() => setEditing("new")}>
+                    <Plus size={16} strokeWidth={1.8} />
+                    New template
+                  </PrimaryBtn>
+                </div>
+              )}
+              {atLimit && (
+                <p className="text-[12px] text-[color:var(--color-text-muted)]">
+                  You've reached the {COVER_LETTER_LIMIT}-template limit. Delete one to add a new template.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      </CardBig>
 
       <ComingSoonMini
         title="AI cover letter per job"
