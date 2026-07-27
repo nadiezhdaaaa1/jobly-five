@@ -374,6 +374,13 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
       if (!db) return false;
       if (!rolesOverlap(f.roles, db)) return false;
     }
+    if (f.field && f.field !== FIELD_ANY) {
+      const db = getDbJobById(j.id);
+      const allowed = (FIELD_ROLES[f.field] ?? []).map((r) => r.toLowerCase());
+      if (!db || !allowed.length) return false;
+      const jobRolesLc = db.roles.map((r) => r.toLowerCase());
+      if (!jobRolesLc.some((jr) => allowed.includes(jr))) return false;
+    }
     return true;
   });
 }
