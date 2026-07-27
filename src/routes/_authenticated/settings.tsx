@@ -103,7 +103,18 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   };
 
   return (
-    <Card title="Plan">
+    <Card
+      title="Plan"
+      actions={plan === "pro" ? (
+        <button
+          type="button"
+          onClick={() => setCancelStep(1)}
+          className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Cancel subscription
+        </button>
+      ) : null}
+    >
       {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
@@ -118,15 +129,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </p>
         </div>
         <div className="shrink-0 flex flex-col items-stretch gap-2">
-          {plan === "pro" ? (
-            <button
-              type="button"
-              onClick={() => setCancelStep(1)}
-              className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Cancel subscription
-            </button>
-          ) : null}
           {plan === "paused" ? (
             <>
               <button
