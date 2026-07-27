@@ -59,9 +59,12 @@ async function runSync() {
     await sb.from("job_sources").update({ last_error: null, last_synced_at: now }).eq("id", p.item.id);
   }
 
-  // Upsert in chunks of 500
+  // Upsert in chunks of 500 (id already equals external_id)
   let inserted = 0;
-  const upsertRows = allJobs.map((j) => ({ ...j, last_seen_at: now }));
+  const upsertRows = allJobs.map((j) => {
+    const { external_id: _ignore, ...rest } = j;
+    return { ...rest, last_seen_at: now };
+  });
   for (let k = 0; k < upsertRows.length; k += 500) {
     const chunk = upsertRows.slice(k, k + 500);
     const { error: upErr } = await sb.from("jobs").upsert(chunk, { onConflict: "id" });
