@@ -475,6 +475,97 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
+          {/* Stage / Reminder / Documents used — above description for tracked jobs */}
+          {pro && inTracker ? (
+            <div className="mt-6 flex flex-col gap-5">
+              {currentColumn?.kind === "interview" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{currentColumn.title} stage</div>
+                  {currentColumn.stages.length ? (
+                    <select
+                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      value={record.interviewStage ?? currentColumn.stages[0]}
+                      onChange={(e) => setInterviewStage(job.id, e.target.value)}
+                    >
+                      {currentColumn.stages.map((s: string) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
+                      No stages defined. Add stages in Edit columns.
+                    </div>
+                  )}
+                </div>
+              ) : null}
+              {currentColumn?.kind === "offer" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
+                  {currentColumn.stages.length ? (
+                    <select
+                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      value={record.offerStatus ?? currentColumn.stages[0]}
+                      onChange={(e) => setOfferStatus(job.id, e.target.value)}
+                    >
+                      {currentColumn.stages.map((s: string) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
+                      No stages defined. Add stages in Edit columns.
+                    </div>
+                  )}
+                </div>
+              ) : null}
+              {isInterviewFamily || status === "offer" ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
+                  {record.reminderAt ? (
+                    <div
+                      className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
+                        status === "offer" ? "bg-[#D8FBEF]" : "bg-[#FFEDD4]"
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
+                        <Calendar size={14} strokeWidth={1.8} />
+                        {dateHelpers.shortDateTime(record.reminderAt)}
+                      </span>
+                      <span className="flex items-center gap-3">
+                        <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminderOpen(true)}>Edit</button>
+                        <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminder(job.id, null)}>Remove</button>
+                      </span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setReminderOpen(true)}
+                      className="mt-2 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+                    >
+                      Set a reminder
+                    </button>
+                  )}
+                </div>
+              ) : null}
+              {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
+              (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
+                <div>
+                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Documents used</div>
+                  <div className="mt-2 flex flex-col gap-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                    <span className="inline-flex items-center gap-2">
+                      <FileText size={14} strokeWidth={1.6} />
+                      Resume: {record.appliedResumeName ?? "—"}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                      <FileText size={14} strokeWidth={1.6} />
+                      Cover letter: {record.appliedCoverLetterName ?? "—"}
+                    </span>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           {/* Description */}
           <JobDescriptionBlock job={job} />
 
@@ -559,47 +650,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
-              {/* Stage block */}
-              {currentColumn?.kind === "interview" ? (
-                <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{currentColumn.title} stage</div>
-                  {currentColumn.stages.length ? (
-                    <select
-                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                      value={record.interviewStage ?? currentColumn.stages[0]}
-                      onChange={(e) => setInterviewStage(job.id, e.target.value)}
-                    >
-                      {currentColumn.stages.map((s: string) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
-                      No stages defined. Add stages in Edit columns.
-                    </div>
-                  )}
-                </div>
-              ) : null}
               {currentColumn?.kind === "offer" ? (
                 <div className="flex flex-col gap-3">
-                  <div>
-                    <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
-                    {currentColumn.stages.length ? (
-                      <select
-                        className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-                        value={record.offerStatus ?? currentColumn.stages[0]}
-                        onChange={(e) => setOfferStatus(job.id, e.target.value)}
-                      >
-                        {currentColumn.stages.map((s: string) => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <div className="mt-2 text-[12px] font-light text-[color:var(--color-text-muted)]">
-                        No stages defined. Add stages in Edit columns.
-                      </div>
-                    )}
-                  </div>
                   <div>
                     <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer details</div>
                     <textarea
@@ -624,55 +676,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     placeholder="What happened? (optional)"
                     className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
                   />
-                </div>
-              ) : null}
-
-              {/* Reminder — Interview family + Offer */}
-              {isInterviewFamily || status === "offer" ? (
-              <div>
-                <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
-                {record.reminderAt ? (
-                  <div
-                    className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
-                      status === "offer" ? "bg-[#D8FBEF]" : "bg-[#FFEDD4]"
-                    }`}
-                  >
-                    <span className="inline-flex items-center gap-2 text-[color:var(--color-foreground)]">
-                      <Calendar size={14} strokeWidth={1.8} />
-                      {dateHelpers.shortDateTime(record.reminderAt)}
-                    </span>
-                    <span className="flex items-center gap-3">
-                      <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminderOpen(true)}>Edit</button>
-                      <button className={`text-[12px] font-semibold hover:underline ${status === "offer" ? "text-[color:var(--color-green)]" : "text-[#C2410C]"}`} onClick={() => setReminder(job.id, null)}>Remove</button>
-                    </span>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setReminderOpen(true)}
-                    className="mt-2 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-                  >
-                    Set a reminder
-                  </button>
-                )}
-              </div>
-              ) : null}
-
-              {/* Documents used */}
-              {(status === "applied" || isInterviewFamily || status === "offer" || status === "rejection") &&
-              (record.appliedResumeName || record.appliedCoverLetterName || status === "applied") ? (
-                <div>
-                  <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Documents used</div>
-                  <div className="mt-2 flex flex-col gap-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                    <span className="inline-flex items-center gap-2">
-                      <FileText size={14} strokeWidth={1.6} />
-                      Resume: {record.appliedResumeName ?? "—"}
-                    </span>
-                    <span className="inline-flex items-center gap-2">
-                      <FileText size={14} strokeWidth={1.6} />
-                      Cover letter: {record.appliedCoverLetterName ?? "—"}
-                    </span>
-                  </div>
                 </div>
               ) : null}
 
