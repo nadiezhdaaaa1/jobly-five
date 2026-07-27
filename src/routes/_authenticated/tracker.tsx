@@ -9,6 +9,7 @@ import {
   IconLayoutColumns as LayoutColumns,
   IconThumbDown as ThumbsDown,
   IconX as X,
+  IconBan as Cancel,
   IconBolt as Zap,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
@@ -337,7 +338,7 @@ function KanbanCard({
           <>
             <div className="transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100">
               <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
-                <X size={16} strokeWidth={1.8} />
+                <Cancel size={16} strokeWidth={1.8} />
               </IconBtn>
             </div>
             <div className="ml-auto flex items-center gap-1">
