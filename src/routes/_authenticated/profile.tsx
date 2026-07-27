@@ -931,7 +931,7 @@ function FileRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 min-w-0">
           <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
-
+          {isPrimary && <Tag tone="mint">Primary</Tag>}
         </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
