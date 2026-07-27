@@ -99,7 +99,7 @@ type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_LABELS: Record<TabKey, string> = {
   preferences: "Preferences",
-  documents: "Documents",
+  documents: "Resume",
   letters: "Cover letters",
   portfolio: "Portfolio & links",
   achievements: "Achievements",
