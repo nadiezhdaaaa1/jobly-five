@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   IconArrowDown as ArrowDown,
   IconArrowUp as ArrowUp,
+  IconChevronDown as ChevronDown,
+  IconChevronRight as ChevronRight,
   IconPlus as Plus,
   IconTrash as Trash,
   IconX as X,
@@ -111,6 +113,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
   const columns = useColumns();
   const [draftTitles, setDraftTitles] = useState<Record<string, string>>({});
   const [newInterviewTitle, setNewInterviewTitle] = useState("");
+  const [existingOpen, setExistingOpen] = useState(true);
 
   useEffect(() => {
     if (!open) return;
@@ -149,10 +152,61 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
           Edit columns
         </h2>
         <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
-          Rename and reorder any column. Saved, Applied, Offer, and Rejected are single columns. You can add more Interview columns; each Interview and Offer column has its own stages.
+          Add a new Interview column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
-        <div className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto rounded-[12px] p-3" style={{ background: "#E3E7E8" }}>
+        <div className="mt-4 rounded-[12px] p-4" style={{ background: "#E3E7E8" }}>
+          <div className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+            Add a new Interview column
+          </div>
+          <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
+            Give it a clear name — e.g. "Second-round tech" or "Panel". You can edit stages afterwards.
+          </p>
+          <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
+            <input
+              type="text"
+              placeholder="Column title"
+              value={newInterviewTitle}
+              onChange={(e) => setNewInterviewTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && canAddInterview) {
+                  addInterviewColumn(newInterviewTitle);
+                  setNewInterviewTitle("");
+                }
+              }}
+              className="h-10 rounded-[4px] border bg-white px-3 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+              style={{ borderColor: "#D0D6D8" }}
+            />
+            <button
+              type="button"
+              disabled={!canAddInterview}
+              onClick={() => {
+                addInterviewColumn(newInterviewTitle);
+                setNewInterviewTitle("");
+              }}
+              className="inline-flex h-10 items-center gap-1.5 rounded-[4px] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
+              style={{ background: "var(--color-accent)" }}
+            >
+              <Plus size={14} strokeWidth={2} />
+              Add column
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setExistingOpen((v) => !v)}
+          className="mt-4 flex items-center justify-between gap-2 rounded-[4px] py-2 text-left"
+        >
+          <span className="flex items-center gap-2 text-[13px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+            {existingOpen ? <ChevronDown size={16} strokeWidth={1.8} /> : <ChevronRight size={16} strokeWidth={1.8} />}
+            Existing columns
+            <span className="text-[12px] font-light text-[color:var(--color-text-muted)]">({columns.length})</span>
+          </span>
+        </button>
+
+        {existingOpen ? (
+        <div className="flex flex-1 flex-col gap-2 overflow-y-auto rounded-[12px] p-3" style={{ background: "#E3E7E8" }}>
           {columns.map((c, idx) => (
             <div key={c.id} className="rounded-[6px] border bg-white p-2" style={{ borderColor: "#E3E7E8" }}>
               <div className="flex items-center gap-2">
@@ -204,32 +258,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
             </div>
           ))}
         </div>
-
-        <div className="mt-3">
-          <div className="grid grid-cols-[1fr_auto] gap-2">
-            <input
-              type="text"
-              placeholder="Column title (e.g. Second-round tech)"
-              value={newInterviewTitle}
-              onChange={(e) => setNewInterviewTitle(e.target.value)}
-              className="h-9 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-              style={{ borderColor: "#E3E7E8" }}
-            />
-            <button
-              type="button"
-              disabled={!canAddInterview}
-              onClick={() => {
-                addInterviewColumn(newInterviewTitle);
-                setNewInterviewTitle("");
-              }}
-              className="inline-flex h-9 items-center gap-1 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
-              style={{ background: "var(--color-accent)" }}
-            >
-              <Plus size={14} strokeWidth={2} />
-              Add
-            </button>
-          </div>
-        </div>
+        ) : null}
 
         <div className="mt-5 flex items-center justify-between">
           <button
