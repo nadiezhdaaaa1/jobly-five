@@ -1156,8 +1156,9 @@ function SkillsGroup({
         </div>
       </div>
 
-      <div ref={wrapRef} className="relative">
-      <div ref={inputWrapRef} className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <Popover open={open} onOpenChange={setOpen}>
+      <PopoverAnchor asChild>
+      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -1177,14 +1178,17 @@ function SkillsGroup({
           </button>
         )}
       </div>
+      </PopoverAnchor>
 
-      {open && pos && typeof document !== "undefined" && createPortal(
-      <div
-        ref={popRef}
-        style={{ position: "fixed", left: pos.left, top: pos.top, width: pos.width, zIndex: 100 }}
+      <PopoverContent
+        align="start"
+        side="bottom"
+        sideOffset={4}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        style={{ width: "var(--radix-popover-trigger-width)" }}
         className="max-h-[240px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-[4px]">
           {filtered.map((s) => {
             const selected = value.includes(s);
             return (
@@ -1221,10 +1225,8 @@ function SkillsGroup({
             <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
           )}
         </div>
-      </div>,
-      document.body
-      )}
-      </div>
+      </PopoverContent>
+      </Popover>
 
       {value.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
