@@ -2043,7 +2043,7 @@ function summarizeSavedFilter(f: unknown): string {
   if (!f || typeof f !== "object") return "";
   const s = f as Record<string, unknown>;
   const parts: string[] = [];
-  if (typeof s.field === "string" && s.field) parts.push(s.field);
+  if (typeof s.field === "string" && s.field && s.field !== "Any") parts.push(s.field);
   if (Array.isArray(s.roles) && s.roles.length) {
     parts.push(s.roles.length === 1 ? String(s.roles[0]) : `${s.roles.length} roles`);
   }
