@@ -205,7 +205,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </div>
 
           {/* Billing period switcher */}
-          <div className="mt-3 inline-flex w-fit self-start items-center gap-1 rounded-[4px] bg-[color:var(--color-surface-2)] p-1">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {(["monthly", "6mo", "annual"] as const).map((p) => {
               const active = period === p;
               const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
@@ -214,14 +214,20 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                   key={p}
                   type="button"
                   onClick={() => {
+                    if (active) return;
                     if (plan === "pro" && p !== period) { setSwitchOpen(p); return; }
                     setPeriod(p);
                   }}
-                  className={`relative rounded-[4px] px-3 py-1 text-[12px] ${active ? "font-semibold text-white bg-[color:var(--color-green)]" : "text-[color:var(--color-text-secondary)]"}`}
+                  aria-pressed={active}
+                  className={`inline-flex h-8 items-center gap-1 rounded-[4px] border px-3 button-small transition-colors ${
+                    active
+                      ? "bg-[color:var(--color-green)] text-white border-[color:var(--color-green)]"
+                      : "bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] border-[color:var(--color-border)] hover:bg-[#F9FBFB] hover:border-[#D0D6D8]"
+                  }`}
                 >
                   {label}
                   {p === "annual" && !active ? (
-                    <span className="ml-1 rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
+                    <span className="rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
                       Best value
                     </span>
                   ) : null}
