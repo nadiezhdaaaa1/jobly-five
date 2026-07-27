@@ -328,11 +328,11 @@ export type FieldConfig = {
 
 export const ACHIEVEMENT_LABELS: Record<AchievementBlockKey, string> = {
   speaking: "Speaking",
-  conferences: "Conferences & events",
+  conferences: "Conferences and events",
   publications: "Publications",
-  media: "Media & channels",
+  media: "Media and channels",
   board: "Board & advisory",
-  courses: "Courses & certificates",
+  courses: "Courses and certificates",
   awards: "Awards",
 };
 
