@@ -224,19 +224,19 @@ export function SingleColumnDialog({
 
         <div className="mt-5 flex items-center justify-between gap-2">
           <div className="flex flex-col">
-            <button
-              type="button"
-              disabled={!canDelete}
-              onClick={tryDeleteColumn}
-              title={deleteBlockedReason || "Delete column"}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border px-3 text-[13px] disabled:opacity-40"
-              style={{ borderColor: "#E3E7E8", color: canDelete ? "#D00D01" : "#67787C" }}
-            >
-              <Trash size={14} strokeWidth={1.6} />
-              Delete column
-            </button>
-            {!canDelete && deleteBlockedReason ? (
-              <span className="mt-1 text-[11px] font-light text-[color:var(--color-text-muted)]">
+            {canDelete ? (
+              <button
+                type="button"
+                onClick={tryDeleteColumn}
+                title="Delete column"
+                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border px-3 text-[13px]"
+                style={{ borderColor: "#E3E7E8", color: "#D00D01" }}
+              >
+                <Trash size={14} strokeWidth={1.6} />
+                Delete column
+              </button>
+            ) : deleteBlockedReason ? (
+              <span className="text-[11px] font-light text-[color:var(--color-text-muted)]">
                 {deleteBlockedReason}
               </span>
             ) : null}
