@@ -631,8 +631,8 @@ function KanbanColumn({
           {column.title}
         </span>
         <span
-          className="inline-flex items-center justify-center text-[12px]"
-          style={{ width: 22, height: 22, background: "#F1F3F3", borderRadius: 4, color: MUTED_TEXT }}
+          className="inline-flex items-center justify-center text-[14px]"
+          style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
         >
           {jobs.length}
         </span>
