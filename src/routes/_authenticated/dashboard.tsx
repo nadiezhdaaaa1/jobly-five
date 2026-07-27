@@ -691,6 +691,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             onClick={() => setApplyOpen(true)}
             className="inline-flex h-[30px] items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
+            <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
           </button>
         </div>
