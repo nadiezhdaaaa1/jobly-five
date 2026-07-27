@@ -148,7 +148,7 @@ export function BoardColumnsDialog({ open, onClose }: { open: boolean; onClose: 
         <h2 className="pr-6 text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit columns
         </h2>
-        <p className="mt-1 text-[12px] font-light text-[color:var(--color-text-muted)]">
+        <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
           Rename and reorder any column. Saved, Applied, Offer, and Rejected are single columns. You can add more Interview columns; each Interview and Offer column has its own stages.
         </p>
 
