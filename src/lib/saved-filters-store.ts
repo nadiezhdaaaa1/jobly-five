@@ -8,6 +8,8 @@ export type SavedFilter<T = unknown> = {
 
 const KEY = "jobly.savedFilters.v1";
 
+export const SAVED_FILTER_LIMIT = 10;
+
 function load(): SavedFilter[] {
   if (typeof window === "undefined") return [];
   try {
@@ -61,7 +63,8 @@ function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function addSavedFilter<T>(name: string, filters: T): SavedFilter<T> {
+export function addSavedFilter<T>(name: string, filters: T): SavedFilter<T> | null {
+  if (state.length >= SAVED_FILTER_LIMIT) return null;
   const entry: SavedFilter<T> = { id: uid(), name, filters };
   state = [...state, entry as SavedFilter];
   emit();
