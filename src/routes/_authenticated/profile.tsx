@@ -205,6 +205,7 @@ function ProfileScreen() {
 
   // Strength card (based on 5 checkable items)
   const strength = useMemo(() => {
+    const hasPortfolio = (extras.links?.length ?? 0) > 0 || !!extras.portfolioFile;
     const items = [
       { key: "quiz", label: "Quiz completed", done: (quiz.roles?.length ?? 0) > 0 },
       { key: "resume", label: "Resume added", done: resume.hasResume },
@@ -213,8 +214,8 @@ function ProfileScreen() {
       { key: "verify", label: "Verify your email", done: false },
     ];
     const done = items.filter((i) => i.done).length;
-    return { items, pct: Math.round((done / 5) * 100) };
-  }, [quiz.roles, resume]);
+    return { items, pct: Math.round((done / 5) * 100), hasPortfolio };
+  }, [quiz.roles, resume, extras.links, extras.portfolioFile]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
