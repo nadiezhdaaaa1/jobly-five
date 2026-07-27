@@ -430,6 +430,54 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           {/* Listing metadata */}
           <ListingMetaBlock job={job} />
 
+          {/* Status (tracked jobs) — shown above description */}
+          {inTracker ? (
+            <div className="mt-6">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</span>
+                  <span
+                    className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px]"
+                    style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
+                  >
+                    {currentColumnTitle}
+                  </span>
+                </div>
+                <div className="relative" ref={moveRef}>
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={moveOpen}
+                    onClick={() => setMoveOpen((v) => !v)}
+                    className="inline-flex h-9 items-center justify-between gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                  >
+                    Move to
+                    <ChevronDown size={14} strokeWidth={2} />
+                  </button>
+                  {moveOpen ? (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                      style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+                    >
+                      {moveOptions.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          role="menuitem"
+                          className="flex w-full items-center px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                          onClick={() => requestMoveToColumn(c)}
+                        >
+                          {c.title}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {/* Description */}
           <JobDescriptionBlock job={job} />
 
@@ -515,52 +563,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : inTracker ? (
             <div className="mt-6 flex flex-col gap-5">
-              {/* Status */}
-              <div>
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</span>
-                    <span
-                      className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px]"
-                      style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
-                    >
-                      {currentColumnTitle}
-                    </span>
-                  </div>
-                  <div className="relative" ref={moveRef}>
-                    <button
-                      type="button"
-                      aria-haspopup="menu"
-                      aria-expanded={moveOpen}
-                      onClick={() => setMoveOpen((v) => !v)}
-                      className="inline-flex h-9 items-center justify-between gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-                    >
-                      Move to
-                      <ChevronDown size={14} strokeWidth={2} />
-                    </button>
-                    {moveOpen ? (
-                      <div
-                        role="menu"
-                        className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
-                        style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
-                      >
-                        {moveOptions.map((c) => (
-                          <button
-                            key={c.id}
-                            type="button"
-                            role="menuitem"
-                            className="flex w-full items-center px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                            onClick={() => requestMoveToColumn(c)}
-                          >
-                            {c.title}
-                          </button>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
-
               {/* Stage block */}
               {status === "interview" || status === "interview_screen" ? (
                 <div>
