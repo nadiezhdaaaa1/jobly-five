@@ -1530,7 +1530,7 @@ function AchievementsTab({
       <CardBig>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Achievements & activity</h2>
+            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Achievements and activity</h2>
             <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               Optional blocks of achievements and professional activity. Kept structured so they can be attached
               to applications.
