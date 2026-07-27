@@ -1594,9 +1594,11 @@ function AchievementsTab({
                 className="flex w-full items-center justify-between gap-3"
                 aria-expanded={open}
               >
-                <span className="flex items-center gap-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">
-                  {ACHIEVEMENT_LABELS[b]}
-                  {isSuggested ? <Tag tone="mint">SUGGESTED</Tag> : null}
+                <span className="flex flex-col items-start gap-1 text-[14px] font-semibold text-[color:var(--color-foreground)]">
+                  <div className="flex items-center gap-2">
+                    {ACHIEVEMENT_LABELS[b]}
+                    {isSuggested ? <Tag tone="mint">SUGGESTED</Tag> : null}
+                  </div>
                   <span className="text-[12px] font-normal text-[color:var(--color-text-muted)]">({entries.length})</span>
                 </span>
                 {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
