@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IconX as X,
-  IconBolt as Zap,
   IconBookmark as Bookmark,
   IconFlag as Flag,
   IconThumbDown as ThumbsDown,
@@ -426,17 +425,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
           {!inTracker || status === "saved" ? (
           <>
-          {/* Apply */}
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={() => setApplyOpen(true)}
-              className="inline-flex h-10 w-full items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Apply
-              <Zap size={14} strokeWidth={2} fill="currentColor" />
-            </button>
-          </div>
           <ApplyModal
             job={job}
             open={applyOpen}
@@ -449,19 +437,42 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             }}
           />
 
-          <div className="mt-3 grid grid-cols-3 gap-2">
-            <div className="relative" ref={flagRef}>
+          <div className="sticky bottom-0 z-10 -mx-5 mt-6 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
+            <button
+              type="button"
+              onClick={() => setApplyOpen(true)}
+              className="inline-flex h-10 flex-1 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Apply
+            </button>
+
+            <button
+              type="button"
+              aria-label="Save"
+              aria-pressed={saved}
+              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
+              style={{
+                borderColor: saved ? "var(--color-green)" : undefined,
+                background: saved ? "var(--color-mint)" : undefined,
+                color: saved ? "var(--color-green)" : "var(--color-foreground)",
+              }}
+            >
+              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
+              {saved ? "Saved" : "Save"}
+            </button>
+
+            <div className="relative shrink-0" ref={flagRef}>
               <button
                 type="button"
                 aria-label="Report this job"
                 onClick={() => setFlagOpen((v) => !v)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
-                <Flag size={15} strokeWidth={1.6} />
-                Report
+                <Flag size={16} strokeWidth={1.6} />
               </button>
               {flagOpen ? (
-                <div role="menu" className="absolute left-0 top-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                <div role="menu" className="absolute right-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                   {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                     <button
                       key={label}
@@ -477,18 +488,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               ) : null}
             </div>
 
-            <div className="relative" ref={dislikeRef}>
+            <div className="relative shrink-0" ref={dislikeRef}>
               <button
                 type="button"
                 aria-label="Not interested"
                 onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
-                <ThumbsDown size={15} strokeWidth={1.6} />
-                Not interested
+                <ThumbsDown size={16} strokeWidth={1.6} />
               </button>
               {dislikeOpen ? (
-                <div role="menu" className="absolute left-1/2 top-[44px] z-30 min-w-[220px] -translate-x-1/2 overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                <div role="menu" className="absolute right-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                   {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
                     <button
                       key={label}
@@ -503,26 +513,10 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 </div>
               ) : null}
             </div>
-
-            <button
-              type="button"
-              aria-label="Save"
-              aria-pressed={saved}
-              onClick={() => setStatus(job.id, saved ? "default" : "saved")}
-              className="flex h-10 w-full items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
-              style={{
-                borderColor: saved ? "var(--color-green)" : undefined,
-                background: saved ? "var(--color-mint)" : undefined,
-                color: saved ? "var(--color-green)" : "var(--color-foreground)",
-              }}
-            >
-              <Bookmark size={15} strokeWidth={1.6} fill={saved ? "currentColor" : "none"} />
-              {saved ? "Saved" : "Save"}
-            </button>
           </div>
           </>
           ) : (
-            <div className="mt-4 flex items-center gap-2">
+            <div className="sticky bottom-0 z-10 -mx-5 mt-6 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
               {status === "applied" || status === "interview" || status === "offer" || status === "rejection" ? (
                 <button
                   type="button"
