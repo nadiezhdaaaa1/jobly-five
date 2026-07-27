@@ -246,19 +246,28 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           </p>
 
           <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
-          <ul className="mt-1 space-y-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300, lineHeight: 1.9 }}>
-            <li>Daily digest + instant high-match alerts</li>
-            <li>Full "why this match" + "raise your %"</li>
-            <li>Customizable tracker pipeline (unlimited stages)</li>
-            <li>Up to 5 cover-letter templates (rich text)</li>
-            <li>Screening answers + 1-click apply extension</li>
-            <li>CV, portfolio & achievements PDF</li>
-            <li>Gmail auto-status, follow-ups, interview prep</li>
-            <li>Source filters + blocked companies</li>
-            <li>Priority support</li>
+          <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            {[
+              "Daily digest + instant high-match alerts",
+              "Full \"why this match\" + \"raise your %\"",
+              "Customizable tracker pipeline (unlimited stages)",
+              "Up to 5 cover-letter templates (rich text)",
+              "Screening answers + 1-click apply extension",
+              "CV, portfolio & achievements PDF",
+              "Gmail auto-status, follow-ups, interview prep",
+              "Source filters + blocked companies",
+              "Priority support",
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-2">
+                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
+                  <IconCheck size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
           </ul>
 
-          <div className="mt-4">
+          <div className="mt-auto pt-4">
             {plan === "free" ? (
               <>
                 <button
