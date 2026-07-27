@@ -902,7 +902,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               onClick={() => setArchiveOpen(true)}
               className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
-              <X size={15} strokeWidth={1.8} />
+              <Cancel size={16} strokeWidth={1.8} />
             </button>
             <button
               type="button"
