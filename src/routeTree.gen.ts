@@ -32,7 +32,6 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated/resume'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as ApiPublicHooksSyncJobsRouteImport } from './routes/api/public/hooks/sync-jobs'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -148,11 +147,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiPublicHooksSyncJobsRoute = ApiPublicHooksSyncJobsRouteImport.update({
-  id: '/api/public/hooks/sync-jobs',
-  path: '/api/public/hooks/sync-jobs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -177,7 +171,6 @@ export interface FileRoutesByFullPath {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
-  '/api/public/hooks/sync-jobs': typeof ApiPublicHooksSyncJobsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -202,7 +195,6 @@ export interface FileRoutesByTo {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
-  '/api/public/hooks/sync-jobs': typeof ApiPublicHooksSyncJobsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -229,7 +221,6 @@ export interface FileRoutesById {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
-  '/api/public/hooks/sync-jobs': typeof ApiPublicHooksSyncJobsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -256,7 +247,6 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
-    | '/api/public/hooks/sync-jobs'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -281,7 +271,6 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog'
-    | '/api/public/hooks/sync-jobs'
   id:
     | '__root__'
     | '/'
@@ -307,7 +296,6 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
-    | '/api/public/hooks/sync-jobs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -329,7 +317,6 @@ export interface RootRouteChildren {
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
-  ApiPublicHooksSyncJobsRoute: typeof ApiPublicHooksSyncJobsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -495,13 +482,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/hooks/sync-jobs': {
-      id: '/api/public/hooks/sync-jobs'
-      path: '/api/public/hooks/sync-jobs'
-      fullPath: '/api/public/hooks/sync-jobs'
-      preLoaderRoute: typeof ApiPublicHooksSyncJobsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -543,7 +523,6 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
   BlogIndexRoute: BlogIndexRoute,
-  ApiPublicHooksSyncJobsRoute: ApiPublicHooksSyncJobsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

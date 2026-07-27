@@ -44,48 +44,6 @@ export type Database = {
         }
         Relationships: []
       }
-      job_sources: {
-        Row: {
-          ats: string
-          company_domain: string | null
-          company_name: string
-          company_sector: string | null
-          created_at: string
-          enabled: boolean
-          handle: string
-          id: string
-          last_error: string | null
-          last_synced_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          ats: string
-          company_domain?: string | null
-          company_name: string
-          company_sector?: string | null
-          created_at?: string
-          enabled?: boolean
-          handle: string
-          id?: string
-          last_error?: string | null
-          last_synced_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          ats?: string
-          company_domain?: string | null
-          company_name?: string
-          company_sector?: string | null
-          created_at?: string
-          enabled?: boolean
-          handle?: string
-          id?: string
-          last_error?: string | null
-          last_synced_at?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       jobs: {
         Row: {
           company: string | null
@@ -93,15 +51,12 @@ export type Database = {
           company_sector: string | null
           created_at: string
           english_level: string | null
-          external_url: string | null
           group: string | null
           hard_skills: string[]
           id: string
-          last_seen_at: string | null
           location: string | null
           min_years_experience: number | null
           posted_days_ago: number | null
-          raw_description: string | null
           role_ids: string[]
           roles: string[]
           salary_max: number | null
@@ -109,7 +64,6 @@ export type Database = {
           seniority: string | null
           soft_skills: string[]
           source: string | null
-          source_ats: string | null
           stack: string[]
           title: string
           tools: string[]
@@ -121,15 +75,12 @@ export type Database = {
           company_sector?: string | null
           created_at?: string
           english_level?: string | null
-          external_url?: string | null
           group?: string | null
           hard_skills?: string[]
           id: string
-          last_seen_at?: string | null
           location?: string | null
           min_years_experience?: number | null
           posted_days_ago?: number | null
-          raw_description?: string | null
           role_ids?: string[]
           roles?: string[]
           salary_max?: number | null
@@ -137,7 +88,6 @@ export type Database = {
           seniority?: string | null
           soft_skills?: string[]
           source?: string | null
-          source_ats?: string | null
           stack?: string[]
           title: string
           tools?: string[]
@@ -149,15 +99,12 @@ export type Database = {
           company_sector?: string | null
           created_at?: string
           english_level?: string | null
-          external_url?: string | null
           group?: string | null
           hard_skills?: string[]
           id?: string
-          last_seen_at?: string | null
           location?: string | null
           min_years_experience?: number | null
           posted_days_ago?: number | null
-          raw_description?: string | null
           role_ids?: string[]
           roles?: string[]
           salary_max?: number | null
@@ -165,7 +112,6 @@ export type Database = {
           seniority?: string | null
           soft_skills?: string[]
           source?: string | null
-          source_ats?: string | null
           stack?: string[]
           title?: string
           tools?: string[]

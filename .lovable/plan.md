@@ -1,53 +1,52 @@
+## Tracker: new stages + custom columns
 
-## Problem
+### 1. Column model refactor
+Move from the fixed DB enum (`default | saved | applied | interview | offer | rejection | ...`) to a two-layer model:
 
-The Digest is showing jobs that don't line up with the roles the user picked in their profile. Two confirmed root causes:
+- **Stage** = stable canonical bucket used for logic, reminders, tags, history. Extend to:
+  `saved`, `applied`, `interview_screen`, `interview_tech`, `test_task`, `offer`, `rejection`, `dismissed`, `reported`.
+- **Board columns** = per-user ordered list of columns; each column maps to one stage. Default order:
+  `Saved → Applied → Screen interview → Tech interview → Test task → Offer → Rejected`.
 
-1. **The sync extractor is too coarse.** Of 5,584 synced jobs, 3,234 are labeled `"Other"` and 1,921 as `"Software Engineer"` (generic bucket that catches every title containing "engineer"). Granular titles the quiz offers — "Frontend Engineer", "ML Engineer", "UX Researcher", etc. — either get collapsed into "Software Engineer" or fall through to "Other".
-2. **The matcher only compares role labels.** `rolesOverlap` in `src/lib/match.ts` does substring compares between the user's role labels and `job.roles`. So a user who picked "Frontend Engineer" gets no overlap against a job labeled "Software Engineer", even when its title clearly says "Senior Frontend Engineer".
+Stored in a new `src/lib/board-columns-store.ts` (localStorage, per-user), shape:
+```ts
+type BoardColumn = { id: string; title: string; stage: Stage; };
+```
 
-Result: most jobs fall into the generic bucket, and strict role filtering ends up showing near-random results.
+Users can:
+- Rename a column (title only, stage unchanged).
+- Reorder columns (drag or ↑/↓ buttons in an "Edit columns" dialog).
+- Add a custom column (choose which stage it belongs to; multiple columns can share a stage, cards keep a `columnId` preference).
+- Delete a custom column (its cards fall back to the default column for that stage).
+- Reset to defaults.
 
-## Fix
+### 2. Database migration
+Extend `job_status` enum with `interview_screen`, `interview_tech`, `test_task`. Keep old `interview` value for backward compatibility; existing `interview` rows are migrated to `interview_screen` in the same migration. Add optional `column_id text` to `user_job_state` so cards remember which custom column they sit in.
 
-### 1. Taxonomy-driven role patterns (new file)
+### 3. Reminders + status logic
+- Reminders currently gated to `interview` and `offer` → extend to `interview_screen`, `interview_tech`, `test_task`, `offer`.
+- Transition dialogs (`TrackerTransitionDialogs.tsx`): rename "Interview" flow into two triggers (Screen / Tech) plus a new "Test task" flow (deadline reminder like interview). Rejection dialog unchanged, applied to any active stage.
+- History labels + tag colors updated for the new stages (mint like interview/offer).
 
-Add `src/lib/role-patterns.ts` — one export mapping each quiz-taxonomy role label (from `src/data/jobly_taxonomy.json`, ~110 roles) to an ordered list of title-keyword regexes. Ordered most-specific first so "Frontend Engineer" wins over "Software Engineer", "ML Engineer" over "Data Engineer", etc.
+### 4. UI
+- `tracker.tsx`: render columns from the store instead of a hard-coded array. Existing DnD keeps working; drop target = column, which resolves stage.
+- New **Edit columns** dialog opened from a small pencil/settings button in the Tracker header. Lists columns with drag handles, rename input, delete (custom only), "Add column" (title + stage select), and "Reset to defaults". Mobile: same dialog, columns still stack vertically.
+- Column headers show the user-defined title; default titles for the new stages: "Screen interview", "Tech interview", "Test task", "Rejected" (moved to last).
+- Job Drawer "Move to" menu: uses the same column list; rejection stays last.
+- Dashboard hides jobs that are in any active tracker stage (same rule, extended to new stages).
 
-Client-safe module (no server imports) so both the extractor and the matcher can use it.
+### 5. Migration for existing users
+On first load after this change, if the local board-columns store is empty, seed with the new default order. Any locally saved `interview` cards get remapped to `interview_screen` client-side too (mirrors the DB migration).
 
-### 2. Smarter server-side extraction
+### Files touched
+- `supabase` migration (enum + column)
+- `src/lib/tracker-store.ts` — extend `JobStatus`, mappers, reminder logic, dashboard filter
+- `src/lib/board-columns-store.ts` — NEW
+- `src/routes/_authenticated/tracker.tsx` — columns from store, header edit button
+- `src/components/app/BoardColumnsDialog.tsx` — NEW (edit columns UI)
+- `src/components/app/TrackerTransitionDialogs.tsx` — new flows for screen/tech/test-task
+- `src/components/app/JobDrawer.tsx` — updated Move-to list, reminder gating, tag colors
+- `src/routes/_authenticated/dashboard.tsx` — active-stage filter update
 
-Update `src/lib/job-sync/keywords.server.ts`:
-- Replace the hand-written `ROLE_MAP` with a scan through the new patterns file, in order, collecting all roles whose regex matches the title.
-- Only fall back to "Software Engineer" when the title still contains a generic "engineer/developer" token; otherwise fall back to "Other".
-- Keep the `group` inference (Engineering / Data / Design / Product / …).
-
-### 3. Title-aware client matcher
-
-Update `rolesOverlap` in `src/lib/match.ts`:
-- For each user role, look up its patterns and test them against `job.title` directly.
-- Keep the existing label-vs-label check as a secondary path (covers taxonomy roles that don't appear in the title but are still labeled correctly).
-- Everything else (score weighting, English/seniority/skills) stays untouched.
-
-### 4. Backfill existing rows
-
-After the code lands, re-run the sync endpoint once. `sync-jobs` upserts by `id`, so live listings get their `roles` / `role_ids` / `group` overwritten with the new, more accurate values. No migration needed. Stale rows that are no longer in an ATS feed keep old labels but are pruned on the next 48h cycle.
-
-## Files touched
-
-- `src/lib/role-patterns.ts` — new, client-safe patterns map
-- `src/lib/job-sync/keywords.server.ts` — use the patterns for `extractRoles`
-- `src/lib/match.ts` — `rolesOverlap` matches user role → job title via patterns
-- Trigger `/api/public/hooks/sync-jobs` once to backfill
-
-## Verification
-
-- `SELECT unnest(roles), count(*)` should show a much flatter distribution (Frontend / Backend / ML / etc.) with far fewer rows in "Other" or "Software Engineer".
-- In the UI, a profile with only "Frontend Engineer" selected should return only frontend-shaped titles in the Digest; switching to "Data Scientist" should swap the list.
-
-## Out of scope
-
-- No schema changes.
-- No changes to filter UI, match-score formula, or skills extraction.
-- Adding a similarity/embedding matcher — the pattern approach is enough for the taxonomy we ship.
+### Open question before I build
+Do you want the split-interview + test-task rollout for **all users automatically** (with the default order I described), or should it be opt-in via the "Edit columns" dialog while existing users keep a single "Interview" column? Default plan is: auto-apply the new default order for everyone, existing "Interview" cards land in "Screen interview".

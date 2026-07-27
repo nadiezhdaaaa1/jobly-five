@@ -1,6 +1,5 @@
 import type { QuizAnswers } from "./quiz-store";
 import type { MatchCriterion } from "./jobs-data";
-import { userRoleMatchesTitle } from "./role-patterns";
 
 export type DbJob = {
   id: string;
@@ -24,15 +23,10 @@ export type DbJob = {
   companySector: string | null;
   companyDomain: string | null;
   group: string | null;
-  externalUrl?: string | null;
 };
 
 export function rolesOverlap(userRoles: string[], job: DbJob): boolean {
   if (!userRoles.length) return false;
-  // Primary: match user role's title patterns against the job's title.
-  if (userRoleMatchesTitle(userRoles, job.title)) return true;
-  // Secondary: label-vs-label compare (covers jobs correctly tagged but whose
-  // title doesn't literally contain the keyword).
   const jobRolesLc = job.roles.map((r) => r.toLowerCase());
   const titleLc = job.title.toLowerCase();
   return userRoles.some((r) => {

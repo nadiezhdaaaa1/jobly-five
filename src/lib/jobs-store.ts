@@ -78,7 +78,7 @@ function toJob(db: DbJob): Job {
           : `${db.source} — aggregated listing`
         : "Unknown source",
       role: "primary",
-      url: db.externalUrl && db.externalUrl.length > 0 ? db.externalUrl : "#",
+      url: "#",
     },
   ];
   return {
@@ -93,7 +93,7 @@ function toJob(db: DbJob): Job {
     source,
     postedDays: db.postedDaysAgo ?? 0,
     employmentType: "Full-time",
-    postingUrl: db.externalUrl && db.externalUrl.length > 0 ? db.externalUrl : "#",
+    postingUrl: "#",
     criteria,
     missingSkills,
     description,
@@ -164,7 +164,6 @@ export async function loadJobs(): Promise<void> {
       companySector: (row.company_sector as string | null) ?? null,
       companyDomain: (row.company_domain as string | null) ?? null,
       group: (row.group as string | null) ?? null,
-      externalUrl: (row.external_url as string | null) ?? null,
     }));
     dbJobs.sort((a, b) => (a.postedDaysAgo ?? 0) - (b.postedDaysAgo ?? 0));
     recomputeJobs();
