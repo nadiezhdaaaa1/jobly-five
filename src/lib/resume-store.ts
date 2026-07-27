@@ -77,7 +77,7 @@ export const DEFAULT_RESUME: ResumeData = {
       id: "e1",
       role: "Senior Frontend Engineer",
       company: "Nimbus Corp",
-      dates: "2021 — Present · New York City",
+      dates: "2021 — Present",
       bullets: [
         "Led migration of the customer console from Vue 2 to React 18 + TypeScript.",
         "Built the internal design system used by 40+ engineers across 6 product teams.",
@@ -89,7 +89,7 @@ export const DEFAULT_RESUME: ResumeData = {
       id: "e2",
       role: "Frontend Engineer",
       company: "Orion Tech",
-      dates: "2017 — 2021 · Baltimore",
+      dates: "2017 — 2021",
       bullets: [
         "Owned the checkout surface — React, Redux, and a bespoke A/B framework.",
         "Shipped accessibility fixes bringing the app to WCAG 2.1 AA.",
@@ -100,7 +100,7 @@ export const DEFAULT_RESUME: ResumeData = {
       id: "e3",
       role: "Web Developer",
       company: "Vertex Solutions",
-      dates: "2012 — 2017 · Philadelphia",
+      dates: "2012 — 2017",
       bullets: [
         "Built marketing sites and dashboards in Vue and vanilla JS.",
         "Introduced automated visual regression tests to the frontend pipeline.",
