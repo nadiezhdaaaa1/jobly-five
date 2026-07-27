@@ -925,7 +925,7 @@ function FileRow({
         </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-1">
         <GhostBtn onClick={onPreview}>Preview</GhostBtn>
         {onMakePrimary && <GhostBtn onClick={onMakePrimary}>Make primary</GhostBtn>}
         {onReplace && <GhostBtn onClick={onReplace}>Replace</GhostBtn>}
