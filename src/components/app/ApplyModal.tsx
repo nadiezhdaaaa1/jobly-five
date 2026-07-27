@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { IconDownload as Download, IconExternalLink as ExternalLink, IconBolt as Zap } from "@tabler/icons-react";
+import { IconDownload as Download, IconExternalLink as ExternalLink } from "@tabler/icons-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";
@@ -247,7 +247,6 @@ export function ApplyModal({
             >
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply on company site
-              <Zap size={13} strokeWidth={2} fill="currentColor" />
             </button>
           </div>
         )}
