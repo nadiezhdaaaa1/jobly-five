@@ -1440,7 +1440,7 @@ function PortfolioTab({
 
       {/* Socials */}
       <CardBig>
-        <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Social & profiles</h2>
+        <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Social and profiles</h2>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           Suggested for your field:
         </p>
