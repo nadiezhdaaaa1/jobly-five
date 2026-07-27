@@ -684,7 +684,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
               {googleConnected ? "Connected as serjkrush@gmail.com" : "Not connected"}
             </div>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             {googleConnected ? (
               <button
                 type="button"
