@@ -777,23 +777,6 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           </div>
         ) : (
           <div className="flex shrink-0 items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
-            <a
-              href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] bg-[color:var(--color-accent)] text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              <ExternalLink size={16} strokeWidth={1.8} />
-              Open original vacancy
-            </a>
-            <button
-              type="button"
-              onClick={() => setFollowUpOpen(true)}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              <MailShare size={15} strokeWidth={1.6} />
-              Send a follow-up
-            </button>
             <button
               type="button"
               aria-label="Archive job"
@@ -802,6 +785,23 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             >
               <X size={15} strokeWidth={1.8} />
             </button>
+            <button
+              type="button"
+              onClick={() => setFollowUpOpen(true)}
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <MailShare size={15} strokeWidth={1.6} />
+              Send a follow-up
+            </button>
+            <a
+              href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <ExternalLink size={16} strokeWidth={1.8} />
+              Open original vacancy
+            </a>
           </div>
         )}
       </div>
