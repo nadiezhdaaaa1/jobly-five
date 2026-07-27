@@ -59,10 +59,13 @@ function SettingsScreen() {
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children, actions }: { title: string; children: React.ReactNode; actions?: React.ReactNode }) {
   return (
     <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
-      <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">{title}</h2>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">{title}</h2>
+        {actions ? <div className="shrink-0">{actions}</div> : null}
+      </div>
       <div className="mt-4">{children}</div>
     </section>
   );
