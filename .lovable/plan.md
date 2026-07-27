@@ -1,96 +1,53 @@
-# Real jobs via ATS direct feeds (Greenhouse + Lever + Ashby)
 
-Replace the current mock/seeded jobs in the `jobs` table with real, live postings pulled directly from company Applicant Tracking Systems. No third-party aggregator, no API keys required for Greenhouse and Lever; Ashby uses the existing connector gateway.
+## Problem
 
-## How it works
+The Digest is showing jobs that don't line up with the roles the user picked in their profile. Two confirmed root causes:
 
-1. Maintain a small curated list of ~80–120 companies with their ATS handles (e.g. `stripe` on Greenhouse, `netflix` on Lever). Stored in a new `job_sources` table so we can add/remove companies later without a code deploy.
-2. A scheduled sync endpoint fetches each company's public job feed, normalizes the response into Jobly's job shape, and upserts into the existing `jobs` table.
-3. A cron job (pg_cron + pg_net) hits the endpoint every 6 hours.
-4. Postings not seen in the latest sync for >48h get pruned so stale jobs disappear.
+1. **The sync extractor is too coarse.** Of 5,584 synced jobs, 3,234 are labeled `"Other"` and 1,921 as `"Software Engineer"` (generic bucket that catches every title containing "engineer"). Granular titles the quiz offers — "Frontend Engineer", "ML Engineer", "UX Researcher", etc. — either get collapsed into "Software Engineer" or fall through to "Other".
+2. **The matcher only compares role labels.** `rolesOverlap` in `src/lib/match.ts` does substring compares between the user's role labels and `job.roles`. So a user who picked "Frontend Engineer" gets no overlap against a job labeled "Software Engineer", even when its title clearly says "Senior Frontend Engineer".
 
-## Data sources
+Result: most jobs fall into the generic bucket, and strict role filtering ends up showing near-random results.
 
-- **Greenhouse Job Board API** — `https://boards-api.greenhouse.io/v1/boards/{handle}/jobs?content=true`. Public, no auth, returns title, location, department, content (HTML description), absolute_url.
-- **Lever Postings API** — `https://api.lever.co/v0/postings/{handle}?mode=json`. Public, no auth, returns categories (team, location, commitment), descriptionPlain, hostedUrl.
-- **Ashby** — via existing connector gateway (`POST /job.list`). Optional; only enabled if the user later links an Ashby connection. Not required for launch.
+## Fix
 
-All three are **"Direct employer"** — the `source` field will reflect the ATS (`greenhouse` / `lever` / `ashby`) and Jobly's existing Direct/Aggregated badge stays truthful.
+### 1. Taxonomy-driven role patterns (new file)
 
-## Schema changes (migration)
+Add `src/lib/role-patterns.ts` — one export mapping each quiz-taxonomy role label (from `src/data/jobly_taxonomy.json`, ~110 roles) to an ordered list of title-keyword regexes. Ordered most-specific first so "Frontend Engineer" wins over "Software Engineer", "ML Engineer" over "Data Engineer", etc.
 
-```text
-job_sources
-  id            uuid pk
-  ats           text  ('greenhouse' | 'lever' | 'ashby')
-  handle        text  (company slug on the ATS)
-  company_name  text
-  company_domain text
-  company_sector text
-  enabled       boolean default true
-  last_synced_at timestamptz
-  unique (ats, handle)
+Client-safe module (no server imports) so both the extractor and the matcher can use it.
 
-jobs (additive columns)
-  external_id      text   (e.g. 'greenhouse:stripe:4567890')
-  external_url     text   (apply link — hostedUrl / absolute_url)
-  source_ats       text
-  last_seen_at     timestamptz
-  raw_description  text   (HTML/plain from the ATS, used for the drawer)
-  unique (external_id)
-```
+### 2. Smarter server-side extraction
 
-`jobs.id` stays `text` (matches current schema). New rows use `external_id` as `id`. Existing seeded mock rows get deleted in the same migration since we're replacing.
+Update `src/lib/job-sync/keywords.server.ts`:
+- Replace the hand-written `ROLE_MAP` with a scan through the new patterns file, in order, collecting all roles whose regex matches the title.
+- Only fall back to "Software Engineer" when the title still contains a generic "engineer/developer" token; otherwise fall back to "Other".
+- Keep the `group` inference (Engineering / Data / Design / Product / …).
 
-RLS: `job_sources` — admin-only writes, no public read (managed via SQL/admin). `jobs` — existing "readable by everyone" policy is kept.
+### 3. Title-aware client matcher
 
-## Sync endpoint
+Update `rolesOverlap` in `src/lib/match.ts`:
+- For each user role, look up its patterns and test them against `job.title` directly.
+- Keep the existing label-vs-label check as a secondary path (covers taxonomy roles that don't appear in the title but are still labeled correctly).
+- Everything else (score weighting, English/seniority/skills) stays untouched.
 
-`POST /api/public/hooks/sync-jobs` (TanStack server route, `src/routes/api/public/hooks/sync-jobs.ts`)
+### 4. Backfill existing rows
 
-- Authenticated with Supabase anon `apikey` header (cron pattern).
-- For each enabled row in `job_sources`:
-  - Fetch feed with a 10s timeout and small concurrency (e.g. 5 parallel).
-  - Normalize each posting → Jobly job shape (title, location, work_mode inferred from location string, company, stack/hard_skills/tools/roles derived from title + description via a lightweight keyword extractor already used by the mock generator, salary parsed when the ATS exposes it — Greenhouse/Lever rarely do, so `salary_min/max` stay nullable).
-  - Upsert on `external_id`, set `last_seen_at = now()`.
-- After all sources processed: `DELETE FROM jobs WHERE last_seen_at < now() - interval '48 hours' AND external_id IS NOT NULL`.
-- Return `{ synced, inserted, updated, pruned, errors }`.
+After the code lands, re-run the sync endpoint once. `sync-jobs` upserts by `id`, so live listings get their `roles` / `role_ids` / `group` overwritten with the new, more accurate values. No migration needed. Stale rows that are no longer in an ATS feed keep old labels but are pruned on the next 48h cycle.
 
-Normalization lives in `src/lib/job-sync/` (server-only, `.server.ts` files): `greenhouse.server.ts`, `lever.server.ts`, `ashby.server.ts`, `normalize.server.ts`. The existing keyword-extraction logic from the mock generator moves here.
+## Files touched
 
-## Cron
+- `src/lib/role-patterns.ts` — new, client-safe patterns map
+- `src/lib/job-sync/keywords.server.ts` — use the patterns for `extractRoles`
+- `src/lib/match.ts` — `rolesOverlap` matches user role → job title via patterns
+- Trigger `/api/public/hooks/sync-jobs` once to backfill
 
-pg_cron every 6 hours calling the endpoint via pg_net with the anon `apikey` header. First run triggered manually right after deploy so the user sees real jobs immediately.
+## Verification
 
-## Curated company seed list
+- `SELECT unnest(roles), count(*)` should show a much flatter distribution (Frontend / Backend / ML / etc.) with far fewer rows in "Other" or "Software Engineer".
+- In the UI, a profile with only "Frontend Engineer" selected should return only frontend-shaped titles in the Digest; switching to "Data Scientist" should swap the list.
 
-Seeded in the migration — a mix of well-known tech employers across sectors so the Digest feels alive on day one. Roughly:
+## Out of scope
 
-- Greenhouse: Stripe, Airbnb, DoorDash, Instacart, Robinhood, Coinbase, Figma, Notion, Vercel, Cloudflare, Anthropic, Scale AI, Ramp, Brex, Retool, Linear, Zapier, Discord, Reddit, Shopify, Pinterest, Twilio, Datadog, Snowflake, Confluent, MongoDB, HashiCorp, Elastic, GitLab, DigitalOcean… (~50)
-- Lever: Netflix, Spotify, KAYAK, Blockchain.com, Eventbrite, Attentive, Fivetran, Ironclad, Angi, Rippling… (~30)
-- Ashby: (empty at launch; grows if user links Ashby connector)
-
-User can add/remove companies later via a small admin surface (out of scope for this change — direct SQL edits to `job_sources` for now).
-
-## Frontend impact
-
-Minimal. `src/lib/jobs-store.ts` already reads from the `jobs` Supabase table, so the Digest, Matches, Job Drawer, and Tracker keep working. Two small changes:
-
-- `JobDrawer.tsx` "Open original job posting" and Digest "Apply" buttons use `external_url` when present (falls back to current behavior otherwise).
-- Company logo lookup: current asset archive stays; unmatched companies fall back to a generated monogram avatar so a job without a bundled logo still renders cleanly.
-
-## Rollout
-
-1. Migration: add columns, `job_sources` table, delete existing mock jobs, seed `job_sources`.
-2. Add server route + normalizers.
-3. Wire `external_url` in the two UI spots.
-4. Add pg_cron schedule.
-5. Trigger a manual sync and verify the Digest shows real jobs.
-
-## Technical details
-
-- No new secrets required for Greenhouse/Lever. Ashby uses `LOVABLE_API_KEY` + `ASHBY_API_KEY` via the connector gateway, only if a connection is linked.
-- Fetches run in the Cloudflare Worker runtime — plain `fetch`, no Node-only deps.
-- Per-source failures are caught and reported in the response; one bad feed does not fail the whole sync.
-- Rate-safe: at ~120 companies × 1 request each every 6h, we're well under any ATS's fair-use limit.
-- No frontend changes to filters, match logic, or Tracker — the normalized rows keep the same shape as today's mock rows.
+- No schema changes.
+- No changes to filter UI, match-score formula, or skills extraction.
+- Adding a similarity/embedding matcher — the pattern approach is enough for the taxonomy we ship.
