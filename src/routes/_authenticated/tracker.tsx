@@ -328,6 +328,7 @@ function KanbanCard({
               className="flex h-[30px] flex-1 items-center justify-center gap-1 rounded-[4px] text-[12px]"
               style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
             >
+              <ExternalLink size={14} strokeWidth={1.8} />
               Apply
             </button>
           </>
