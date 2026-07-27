@@ -91,7 +91,6 @@ const TAB_KEYS = [
   "documents",
   "letters",
   "portfolio",
-  "achievements",
   "experience",
   "searches",
 ] as const;
@@ -102,7 +101,6 @@ const TAB_LABELS: Record<TabKey, string> = {
   documents: "Resume",
   letters: "Cover letters",
   portfolio: "Portfolio and links",
-  achievements: "Achievements",
   experience: "Experience",
   searches: "Saved searches",
 };
@@ -296,13 +294,6 @@ function ProfileScreen() {
             )}
             {tab === "portfolio" && (
               <PortfolioTab
-                extras={extras}
-                cfg={cfg}
-                onToast={toast.show}
-              />
-            )}
-            {tab === "achievements" && (
-              <AchievementsTab
                 extras={extras}
                 cfg={cfg}
                 onToast={toast.show}
