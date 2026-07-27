@@ -45,26 +45,6 @@ export function rolesOverlap(userRoles: string[], job: DbJob): boolean {
   });
 }
 
-const ENGLISH_ORDER = [
-  "No English",
-  "Elementary · A1",
-  "Pre-intermediate · A2",
-  "Intermediate · B1",
-  "Upper-intermediate · B2",
-  "Advanced · C1",
-  "Proficient · C2",
-  "Native speaker",
-];
-function englishScore(userLevel?: string, jobLevel?: string | null) {
-  if (!userLevel || !jobLevel) return 0.7;
-  const u = ENGLISH_ORDER.findIndex((l) => l === userLevel);
-  const j = ENGLISH_ORDER.findIndex(
-    (l) => l === jobLevel || jobLevel.toLowerCase().includes(l.split("·")[0].trim().toLowerCase()),
-  );
-  if (u < 0 || j < 0) return 0.7;
-  return u >= j ? 1 : Math.max(0.3, 1 - (j - u) * 0.2);
-}
-
 const SENIORITY_ORDER = ["Junior", "Middle", "Senior", "Lead", "Exec"];
 function seniorityFromLevel(level?: string): string | null {
   if (!level) return null;
@@ -107,7 +87,7 @@ export function computeMatch(
   const overlap = userSkills.size ? jobSkillsLc.filter((s) => userSkills.has(s)).length : 0;
   const needed = Math.max(3, Math.min(jobSkillsLc.length, 8));
   const skillRatio = jobSkillsLc.length ? Math.min(1, overlap / needed) : 0.5;
-  const skillScore = 25 * skillRatio;
+  const skillScore = 35 * skillRatio;
   const matchedSkills = jobSkills.filter((s) => userSkills.has(s.toLowerCase())).slice(0, 3);
   const missingSkills = jobSkills
     .filter((s) => !userSkills.has(s.toLowerCase()))
@@ -133,10 +113,6 @@ export function computeMatch(
     else expScore = 10 * Math.max(0.2, quiz.years / Math.max(1, job.minYearsExperience));
   }
 
-  const engRatio = englishScore(quiz.primaryLanguage, job.englishLevel);
-  const engScore = 10 * engRatio;
-  if (engRatio === 1 && job.englishLevel) criteria.push({ status: "full", text: `English: ${job.englishLevel} — matches` });
-
   const wm = (job.workMode ?? "").toLowerCase();
   const remote = /remote/.test(wm) || /remote/i.test(job.location);
   const userLocs = (quiz.locations ?? []).map((l) => l.toLowerCase());
@@ -152,7 +128,7 @@ export function computeMatch(
     locScore = 3;
   }
 
-  const raw = roleScore + skillScore + senScore + expScore + engScore + locScore;
+  const raw = roleScore + skillScore + senScore + expScore + locScore;
   let h = 0;
   for (let i = 0; i < job.id.length; i++) h = (h * 31 + job.id.charCodeAt(i)) >>> 0;
   const jitter = (h % 7) - 3;
