@@ -511,6 +511,29 @@ export function findReminderConflicts(iso: string, excludeId?: string): string[]
   return out;
 }
 
+// Count active (non-archived) tracker records currently placed in `columnId`.
+// Used to guard column/stage deletion in the column-edit UI.
+export function countActiveInColumn(columnId: string): number {
+  let n = 0;
+  for (const r of records.values()) {
+    if (r.archived) continue;
+    if (r.columnId === columnId) n++;
+  }
+  return n;
+}
+
+// Count active (non-archived) tracker records placed in `columnId` whose
+// current stage label (interview or offer) equals `stage`.
+export function countActiveWithStage(columnId: string, stage: string): number {
+  let n = 0;
+  for (const r of records.values()) {
+    if (r.archived) continue;
+    if (r.columnId !== columnId) continue;
+    if (r.interviewStage === stage || r.offerStatus === stage) n++;
+  }
+  return n;
+}
+
 function minuteKey(iso: string): string {
   const d = new Date(iso);
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${d.getHours()}-${d.getMinutes()}`;
