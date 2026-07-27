@@ -168,8 +168,6 @@ function ProfileScreen() {
   // Identity
   const email = user?.email ?? "serhii@example.com";
   const [name, setName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarPath, setAvatarPath] = useState<string | null>(null);
   const [nameOpen, setNameOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
@@ -177,7 +175,7 @@ function ProfileScreen() {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("avatar_url, display_name")
+        .select("display_name")
         .eq("id", user.id)
         .maybeSingle();
       if (!active) return;
@@ -186,13 +184,6 @@ function ProfileScreen() {
         (user.user_metadata?.name as string | undefined) ??
         (user.email ? user.email.split("@")[0] : "");
       setName(data?.display_name ?? fallback ?? "");
-      const path = data?.avatar_url ?? null;
-      if (!path) return;
-      setAvatarPath(path);
-      const { data: signed } = await supabase.storage
-        .from("avatars")
-        .createSignedUrl(path, 60 * 60 * 24 * 7);
-      if (active && signed?.signedUrl) setAvatarUrl(signed.signedUrl);
     })();
     return () => {
       active = false;
@@ -233,23 +224,6 @@ function ProfileScreen() {
       <main className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
         {/* Header */}
         <section className="flex items-center gap-4">
-          <Avatar
-            url={avatarUrl}
-            name={name || "S"}
-            onUpload={(path, signed) => {
-              setAvatarPath(path);
-              setAvatarUrl(signed);
-            }}
-            onRemove={async () => {
-              if (!user || !avatarPath) return;
-              await supabase.storage.from("avatars").remove([avatarPath]);
-              await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
-              setAvatarPath(null);
-              setAvatarUrl(null);
-            }}
-            uid={user?.id}
-            oldPath={avatarPath}
-          />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1
@@ -286,9 +260,9 @@ function ProfileScreen() {
                 type="button"
                 onClick={() => setTab(k)}
                 aria-current={active ? "page" : undefined}
-                className={`shrink-0 border-b-2 pb-3 text-[14px] transition-colors ${
+                className={`shrink-0 border-b-[2px] px-1 pb-3 text-[14px] transition-colors ${
                   active
-                    ? "border-[color:var(--color-accent)] text-[color:var(--color-foreground)] font-semibold"
+                    ? "border-[color:var(--color-foreground)] text-[color:var(--color-foreground)] font-semibold"
                     : "border-transparent text-[color:var(--color-text-muted)] hover:text-[color:var(--color-text-secondary)]"
                 }`}
               >
