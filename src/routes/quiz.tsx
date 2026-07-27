@@ -1197,6 +1197,26 @@ function SkillsGroup({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
+  useEffect(() => {
+    if (!open) return;
+    const el = popRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const max = el.scrollHeight - el.clientHeight;
+      el.scrollTop = Math.max(0, Math.min(max, el.scrollTop + e.deltaY));
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      e.stopPropagation();
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      el.removeEventListener("touchmove", onTouchMove);
+    };
+  }, [open, pos]);
   const filtered = options.filter((s) =>
     s.toLowerCase().includes(query.trim().toLowerCase())
   );
@@ -1252,11 +1272,6 @@ function SkillsGroup({
       <div
         ref={popRef}
         data-skill-dropdown="true"
-        onWheel={(e) => {
-          e.stopPropagation();
-          const el = e.currentTarget;
-          if (e.deltaY !== 0) el.scrollTop += e.deltaY;
-        }}
         style={{ position: pos.position, left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
         className="touch-pan-y overscroll-contain overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
