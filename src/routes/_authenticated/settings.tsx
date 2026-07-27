@@ -625,12 +625,12 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
       aria-checked={on}
       aria-label={label}
       onClick={() => onChange(!on)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-[4px] transition-colors ${
-        on ? "bg-[color:var(--color-green)]" : "bg-[color:var(--color-surface-2)]"
-      }`}
+      className="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+      style={{ background: on ? "#0E735A" : "#E3E7E8" }}
     >
       <span
-        className={`inline-block h-5 w-5 transform rounded-[3px] bg-white shadow transition-transform ${on ? "translate-x-[22px]" : "translate-x-[2px]"}`}
+        className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+        style={{ transform: `translateX(${on ? 18 : 2}px)` }}
       />
     </button>
   );
