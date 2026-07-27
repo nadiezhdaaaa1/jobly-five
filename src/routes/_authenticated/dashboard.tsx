@@ -21,6 +21,8 @@ import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal } from "@/components/app/ApplyModal";
 import { useJobs } from "@/lib/jobs-store";
+import { getDbJobById } from "@/lib/jobs-store";
+import { rolesOverlap } from "@/lib/match";
 import type { Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
@@ -367,13 +369,10 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
       // Slider is annual; compare against parsed annual salary.
       if (maxSal > 0 && maxSal < f.minSalary) return false;
     }
-    // Loose taxonomy filter: if roles set is non-empty, require some overlap in title/why
     if (f.roles.length) {
-      const hay = `${j.title} ${j.why}`.toLowerCase();
-      const anyMatch = f.roles.some((r) => hay.includes(r.toLowerCase().split(" ")[0]));
-      if (!anyMatch && f.roles.length > 0) {
-        // don't hard-filter if nothing matches; keep loose
-      }
+      const db = getDbJobById(j.id);
+      if (!db) return false;
+      if (!rolesOverlap(f.roles, db)) return false;
     }
     return true;
   });
