@@ -15,6 +15,9 @@ import {
   IconCloudUpload as UploadCloud,
   IconFileText as FileText,
   IconDownload as Download,
+  IconEye as Eye,
+  IconStar as Star,
+  IconCopy as Copy,
   IconBold as Bold,
   IconItalic as Italic,
   IconUnderline as Underline,
@@ -929,7 +932,7 @@ function FileRow({
   onMakePrimary?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
@@ -944,21 +947,35 @@ function FileRow({
         </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
-      <div className="flex flex-wrap items-center gap-1">
-        <GhostBtn onClick={onPreview}>Preview</GhostBtn>
-        {onMakePrimary && <GhostBtn onClick={onMakePrimary}>Make primary</GhostBtn>}
-        {onReplace && <GhostBtn onClick={onReplace}>Replace</GhostBtn>}
-        <button
-          type="button"
-          onClick={onDelete}
-          aria-label="Delete"
-          title="Delete"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Trash size={18} strokeWidth={1.8} />
-        </button>
+      <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+        <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        {onMakePrimary && (
+          <RowIconBtn onClick={onMakePrimary} label="Make primary"><Star size={16} strokeWidth={1.8} /></RowIconBtn>
+        )}
+        {onReplace && (
+          <RowIconBtn onClick={onReplace} label="Replace"><Refresh size={16} strokeWidth={1.8} /></RowIconBtn>
+        )}
+        <RowIconBtn onClick={onDelete} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
       </div>
     </div>
+  );
+}
+
+function RowIconBtn({
+  children, onClick, label, danger,
+}: { children: React.ReactNode; onClick: () => void; label: string; danger?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={`inline-flex size-8 items-center justify-center rounded-[4px] hover:bg-[color:var(--color-surface-2)] ${
+        danger ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-foreground)]"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -1212,7 +1229,7 @@ function LetterRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
@@ -1224,18 +1241,10 @@ function LetterRow({
         <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <GhostBtn onClick={onEdit}>Edit</GhostBtn>
-        <GhostBtn onClick={onDuplicate}>Duplicate</GhostBtn>
-        <button
-          type="button"
-          onClick={onDelete}
-          aria-label="Delete"
-          title="Delete"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Trash size={18} strokeWidth={1.8} />
-        </button>
+      <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+        <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>
+        <RowIconBtn onClick={onDuplicate} label="Duplicate"><Copy size={16} strokeWidth={1.8} /></RowIconBtn>
+        <RowIconBtn onClick={onDelete} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
       </div>
     </div>
   );
@@ -1966,7 +1975,7 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
               return (
                 <div
                   key={s.id}
-                  className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
+                  className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
                 >
                   <div className="min-w-0 flex-1">
                     {editing ? (
@@ -2022,16 +2031,10 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
                       </>
                     ) : (
                       <>
-                        <GhostBtn onClick={() => startEdit(s.id, s.name)}>Rename</GhostBtn>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDel(s.id)}
-                          aria-label="Delete"
-                          title="Delete"
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
-                        >
-                          <Trash size={18} strokeWidth={1.8} />
-                        </button>
+                        <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+                          <RowIconBtn onClick={() => startEdit(s.id, s.name)} label="Rename"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>
+                          <RowIconBtn onClick={() => setConfirmDel(s.id)} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
+                        </div>
                       </>
                     )}
                   </div>
