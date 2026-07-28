@@ -671,7 +671,7 @@ function PreferencesTab({
           .map((row, idx, arr) => (
             <div
               key={row.key}
-              className={`flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:gap-4 ${
+              className={`group/row flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:gap-4 ${
                 idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
               }`}
             >
@@ -680,7 +680,7 @@ function PreferencesTab({
                 {row.key === "stack" ? <Tag>optional</Tag> : null}
               </div>
               <div
-                className={`body-medium min-w-0 flex-1 break-words ${
+                className={`body-small min-w-0 flex-1 break-words ${
                   row.value
                     ? "text-[color:var(--color-foreground)]"
                     : "text-[color:var(--color-text-muted)]"
@@ -692,10 +692,9 @@ function PreferencesTab({
                 type="button"
                 onClick={() => setEditing(row.key)}
                 aria-label={`Edit ${row.label}`}
-                className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-[4px] px-2 py-1 text-[14px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] sm:self-start"
+                className="inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-visible:opacity-100"
               >
-                <Pencil size={14} strokeWidth={1.8} />
-                Edit
+                <Pencil size={16} strokeWidth={1.8} />
               </button>
             </div>
           ))}
