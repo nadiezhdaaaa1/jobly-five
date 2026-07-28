@@ -671,7 +671,17 @@ function PreferencesTab({
           .map((row, idx, arr) => (
             <div
               key={row.key}
-              className={`group/row flex flex-col gap-2 p-4 transition-colors hover:bg-[#F9FBFB] sm:flex-row sm:items-start sm:gap-4 ${
+              role="button"
+              tabIndex={0}
+              onClick={() => setEditing(row.key)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setEditing(row.key);
+                }
+              }}
+              aria-label={`Edit ${row.label}`}
+              className={`group/row flex cursor-pointer flex-col gap-2 p-4 transition-colors hover:bg-[#F9FBFB] focus:outline-none focus-visible:bg-[#F9FBFB] sm:flex-row sm:items-start sm:gap-4 ${
                 idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
               }`}
             >
@@ -688,14 +698,12 @@ function PreferencesTab({
               >
                 {row.value || "Not set"}
               </div>
-              <button
-                type="button"
-                onClick={() => setEditing(row.key)}
-                aria-label={`Edit ${row.label}`}
-                className="inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-visible:opacity-100"
+              <span
+                aria-hidden="true"
+                className="pointer-events-none inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100"
               >
                 <Pencil size={16} strokeWidth={1.8} />
-              </button>
+              </span>
             </div>
           ))}
       </div>
