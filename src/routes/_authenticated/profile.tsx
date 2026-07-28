@@ -1975,7 +1975,7 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
               return (
                 <div
                   key={s.id}
-                  className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
+                  className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3"
                 >
                   <div className="min-w-0 flex-1">
                     {editing ? (
@@ -2031,16 +2031,10 @@ function SavedSearchesTab({ onToast }: { onToast: (m: string) => void }) {
                       </>
                     ) : (
                       <>
-                        <GhostBtn onClick={() => startEdit(s.id, s.name)}>Rename</GhostBtn>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDel(s.id)}
-                          aria-label="Delete"
-                          title="Delete"
-                          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
-                        >
-                          <Trash size={18} strokeWidth={1.8} />
-                        </button>
+                        <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+                          <RowIconBtn onClick={() => startEdit(s.id, s.name)} label="Rename"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>
+                          <RowIconBtn onClick={() => setConfirmDel(s.id)} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
+                        </div>
                       </>
                     )}
                   </div>
