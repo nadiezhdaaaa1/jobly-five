@@ -671,7 +671,7 @@ function PreferencesTab({
           .map((row, idx, arr) => (
             <div
               key={row.key}
-              className={`group/row flex flex-col gap-2 p-4 sm:flex-row sm:items-start sm:gap-4 ${
+              className={`group/row flex flex-col gap-2 p-4 transition-colors hover:bg-[#F9FBFB] sm:flex-row sm:items-start sm:gap-4 ${
                 idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
               }`}
             >
