@@ -1229,7 +1229,7 @@ function LetterRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
@@ -1241,18 +1241,10 @@ function LetterRow({
         <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <GhostBtn onClick={onEdit}>Edit</GhostBtn>
-        <GhostBtn onClick={onDuplicate}>Duplicate</GhostBtn>
-        <button
-          type="button"
-          onClick={onDelete}
-          aria-label="Delete"
-          title="Delete"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Trash size={18} strokeWidth={1.8} />
-        </button>
+      <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
+        <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>
+        <RowIconBtn onClick={onDuplicate} label="Duplicate"><Copy size={16} strokeWidth={1.8} /></RowIconBtn>
+        <RowIconBtn onClick={onDelete} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
       </div>
     </div>
   );
