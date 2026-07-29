@@ -1048,6 +1048,7 @@ function Pricing() {
                       color: "var(--green, #0E735A)",
                       position: "relative",
                       zIndex: 1,
+                      whiteSpace: "nowrap",
                     }}
                   >
                     Best value
