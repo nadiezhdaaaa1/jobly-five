@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
@@ -256,6 +256,27 @@ function PlanCardsBlock({
 }) {
   const hasHadPro = useHasHadPro();
   const [period, setPeriod] = useState<"annual" | "monthly">("annual");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [indicator, setIndicator] = useState<{ left: number; width: number; height: number; top: number }>({ left: 0, width: 0, height: 0, top: 0 });
+  const segments = ["annual", "monthly"] as const;
+
+  useEffect(() => {
+    const measure = () => {
+      const idx = segments.indexOf(period);
+      const btn = btnRefs.current[idx];
+      if (!btn) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth, height: btn.offsetHeight, top: btn.offsetTop });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (tabsRef.current) ro.observe(tabsRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [period]);
 
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
@@ -335,9 +356,10 @@ function PlanCardsBlock({
             <div className="relative flex-1" style={{ zIndex: 2 }}>
               {/* Toggle (top-right on desktop; static on mobile) */}
               <div
+                ref={tabsRef}
                 role="tablist"
                 aria-label="Billing period"
-                className="mb-3 flex w-full items-center gap-1 rounded-[10px] p-1 md:absolute md:right-0 md:top-0 md:mb-0 md:w-auto"
+                className="relative mb-3 flex w-full items-center gap-1 rounded-[10px] p-1 md:absolute md:right-0 md:top-0 md:mb-0 md:w-auto"
                 style={{ background: "rgba(0,0,0,0.08)" }}
                 onKeyDown={(e) => {
                   if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
@@ -345,21 +367,37 @@ function PlanCardsBlock({
                   }
                 }}
               >
-                {(["annual", "monthly"] as const).map((seg) => {
+                <span
+                  aria-hidden
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: indicator.left,
+                    top: indicator.top,
+                    width: indicator.width,
+                    height: indicator.height,
+                    background: "#FFFFFF",
+                    borderRadius: 6,
+                    boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
+                    transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                />
+                {segments.map((seg, idx) => {
                   const active = period === seg;
                   const label = seg === "annual" ? "Annual" : "Monthly";
                   return (
                     <button
                       key={seg}
+                      ref={(el) => { btnRefs.current[idx] = el; }}
                       role="tab"
                       type="button"
                       aria-selected={active}
                       onClick={() => setPeriod(seg)}
-                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 rounded-[6px]"
+                      className="relative flex-1 md:flex-none inline-flex items-center justify-center gap-1 rounded-[6px]"
                       style={{
-                        background: active ? "#FFFFFF" : "transparent",
-                        boxShadow: active ? "0 1px 2px rgba(12,12,13,0.05)" : undefined,
-                        padding: active ? "4px 4px 4px 8px" : "5px 8px",
+                        background: "transparent",
+                        padding: seg === "annual" ? "4px 4px 4px 8px" : "5px 8px",
+                        zIndex: 1,
+                        cursor: "pointer",
                       }}
                     >
                       <span
@@ -369,6 +407,7 @@ function PlanCardsBlock({
                           fontSize: 12,
                           lineHeight: "16px",
                           color: active ? "#090B0C" : "#4B585B",
+                          transition: "color 200ms ease",
                         }}
                       >
                         {label}
