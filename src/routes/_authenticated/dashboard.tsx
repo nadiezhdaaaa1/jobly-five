@@ -215,7 +215,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Visual / Graphic Designer",
     "Motion Designer",
   ],
-  "Engineering Leadership & Architecture": [
+  "Engineering Leadership and Architecture": [
     "Tech Lead",
     "Staff / Principal Engineer",
     "Engineering Manager",
