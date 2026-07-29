@@ -231,12 +231,12 @@ export function BoardColumnsDialog({
                     </button>
                   </IconTooltip>
                 ) : null}
-                <IconTooltip label={canDeleteColumn(c.id) ? "Delete column" : "This column can't be deleted"}>
+                <IconTooltip label={deleteLabel}>
                   <button
                     type="button"
                     aria-label="Delete column"
-                    aria-disabled={!canDeleteColumn(c.id)}
-                    onClick={() => canDeleteColumn(c.id) && deleteColumn(c.id)}
+                    aria-disabled={!deleteAllowed}
+                    onClick={() => deleteAllowed && deleteColumn(c.id)}
                     className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                   >
                     <Trash size={16} strokeWidth={1.6} />
@@ -244,7 +244,8 @@ export function BoardColumnsDialog({
                 </IconTooltip>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-5 flex items-center justify-between">
