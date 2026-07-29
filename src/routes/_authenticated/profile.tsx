@@ -2005,8 +2005,10 @@ function JobEntry({
     return (
       <div className="flex items-start justify-between gap-3 py-4">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-[14px] font-semibold text-[color:var(--color-foreground)]">{entry.role || "Untitled role"}</span>
+          <h6 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }} className="text-[color:var(--color-foreground)]">
+            {entry.role || "Untitled role"}
+          </h6>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
             <span className="text-[13px] text-[color:var(--color-text-secondary)]">{entry.company}</span>
             {entry.dates ? <span className="text-[13px] text-[color:var(--color-text-muted)]">· {entry.dates}</span> : null}
           </div>
@@ -2267,8 +2269,10 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
     return (
       <div className="flex items-start justify-between gap-3 py-4">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-[14px] font-semibold text-[color:var(--color-foreground)]">{heading}</span>
+          <h6 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }} className="text-[color:var(--color-foreground)]">
+            {heading}
+          </h6>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
             <span className="text-[13px] text-[color:var(--color-text-secondary)]">{entry.school}</span>
             {entry.years ? <span className="text-[13px] text-[color:var(--color-text-muted)]">· {entry.years}</span> : null}
           </div>
