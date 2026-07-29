@@ -846,7 +846,6 @@ function QualityOverQuantity() {
 /* ------------------------------ Pricing ------------------------------ */
 
 function Pricing() {
-function Pricing() {
   const [period, setPeriod] = useState<"monthly" | "annual">("monthly");
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["monthly", "annual"];
