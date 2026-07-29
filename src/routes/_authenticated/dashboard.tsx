@@ -639,7 +639,12 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
   return (
     <article
-      className="relative cursor-pointer rounded-[8px] bg-transparent p-5"
+      className="relative cursor-pointer rounded-[8px] border p-5"
+      style={{
+        background: "rgba(255, 255, 255, 0.9)",
+        borderColor: "var(--color-surface-1)",
+        boxShadow: "0 1px 4px 0 rgba(12, 12, 13, 0.05)",
+      }}
       role="button"
       tabIndex={0}
       aria-label={`Open details for ${job.title}`}
