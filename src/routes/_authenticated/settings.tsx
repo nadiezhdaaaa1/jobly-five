@@ -236,30 +236,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
-      {/* Period-switch confirm */}
-      {switchOpen ? (
-        <Modal onClose={() => setSwitchOpen(null)} title="Switch billing period?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Switch to {switchOpen === "monthly" ? "monthly" : switchOpen === "6mo" ? "6-month" : "annual"} billing at the next renewal?
-          </p>
-          <div className="mt-5 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => { setPeriod(switchOpen); onFlash("Billing period updated."); setSwitchOpen(null); }}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Confirm
-            </button>
-            <button
-              type="button"
-              onClick={() => setSwitchOpen(null)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Cancel
-            </button>
-          </div>
-        </Modal>
-      ) : null}
     </Card>
   );
 }
