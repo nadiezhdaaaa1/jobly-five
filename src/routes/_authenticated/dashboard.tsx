@@ -671,10 +671,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <div
-          className="text-[color:var(--color-accent)]"
-          style={{ fontSize: 16, lineHeight: 1.6, fontWeight: 300 }}
-        >
+        <div style={{ fontSize: 16, lineHeight: 1.6, fontWeight: 300, color: "#0E735A" }}>
           {job.salary}
         </div>
         <div className="ml-auto flex items-center gap-1">
