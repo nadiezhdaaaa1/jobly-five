@@ -323,11 +323,11 @@ function PlanCardsBlock({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch lg:gap-4">
         {/* Pro card — left, wider */}
         <div
-          className="rounded-[20px] p-2 md:p-3 lg:min-w-0"
+          className="rounded-[12px] p-2 md:p-3 lg:min-w-0"
           style={{ background: "#F1F3F3", flex: "504 0 0" }}
         >
           <div
-            className="relative flex h-full flex-col gap-4 rounded-[12px] p-5 md:p-[21px]"
+            className="relative flex h-full flex-col gap-4 rounded-[8px] p-5 md:p-[21px]"
             style={{
               background: "rgba(255,255,255,0.8)",
               border: "1px solid #FFFFFF",
@@ -591,11 +591,11 @@ function PlanCardsBlock({
 
         {/* Free card — right, narrower */}
         <div
-          className="rounded-[20px] p-2 md:p-3 lg:min-w-0"
+          className="rounded-[12px] p-2 md:p-3 lg:min-w-0"
           style={{ background: "#F1F3F3", flex: "280 0 0" }}
         >
           <div
-            className="flex h-full flex-col gap-4 rounded-[12px] p-5 md:p-[21px]"
+            className="flex h-full flex-col gap-4 rounded-[8px] p-5 md:p-[21px]"
             style={{
               background: "#F9FBFB",
               border: "1px solid #FFFFFF",
