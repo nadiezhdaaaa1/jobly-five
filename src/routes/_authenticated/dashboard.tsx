@@ -1356,7 +1356,10 @@ function JobsScreen() {
               saved={saved}
               onLoadSaved={(id) => {
                 const s = saved.find((x) => x.id === id);
-                if (s) setPending(s.filters);
+                if (s) {
+                  setPending(s.filters);
+                  setApplied(s.filters);
+                }
               }}
             />
           </div>
