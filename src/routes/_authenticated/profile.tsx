@@ -2008,9 +2008,9 @@ function JobEntry({
           <h6 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }} className="text-[color:var(--color-foreground)]">
             {entry.role || "Untitled role"}
           </h6>
-          <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
-            <span className="text-[13px] text-[color:var(--color-text-secondary)]">{entry.company}</span>
-            {entry.dates ? <span className="text-[13px] text-[color:var(--color-text-muted)]">· {entry.dates}</span> : null}
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-2" style={{ fontWeight: 300, fontSize: 14, lineHeight: 1.5 }}>
+            <span className="text-[color:var(--color-text-secondary)]">{entry.company}</span>
+            {entry.dates ? <span className="text-[color:var(--color-text-muted)]">· {entry.dates}</span> : null}
           </div>
           {(entry.description || entry.bullets.length) ? (
             <p className="mt-1 line-clamp-4 break-words text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
@@ -2272,9 +2272,9 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
           <h6 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }} className="text-[color:var(--color-foreground)]">
             {heading}
           </h6>
-          <div className="mt-0.5 flex flex-wrap items-baseline gap-2">
-            <span className="text-[13px] text-[color:var(--color-text-secondary)]">{entry.school}</span>
-            {entry.years ? <span className="text-[13px] text-[color:var(--color-text-muted)]">· {entry.years}</span> : null}
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-2" style={{ fontWeight: 300, fontSize: 14, lineHeight: 1.5 }}>
+            <span className="text-[color:var(--color-text-secondary)]">{entry.school}</span>
+            {entry.years ? <span className="text-[color:var(--color-text-muted)]">· {entry.years}</span> : null}
           </div>
         </div>
         <IconTooltip label="Edit">
