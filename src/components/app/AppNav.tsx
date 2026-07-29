@@ -61,13 +61,6 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
               >
                 <span className="relative">
                   <Icon size={19} strokeWidth={1.6} />
-                  {showDot ? (
-                    <span
-                      className="absolute -right-1 -top-1 h-[7px] w-[7px] rounded-full bg-[color:var(--color-accent)]"
-                      style={{ boxShadow: "0 0 0 1.5px #fff" }}
-                      aria-hidden
-                    />
-                  ) : null}
                 </span>
                 <span className="text-[11px] leading-none">{t.label}</span>
               </Link>
