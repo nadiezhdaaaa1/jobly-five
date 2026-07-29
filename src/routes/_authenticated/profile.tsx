@@ -859,10 +859,10 @@ function DocumentsTab({
               })}
               {!atLimit && pro && (
                 <div className="pt-1">
-                  <PrimaryBtn onClick={() => setUploadOpen(true)}>
+                  <SecondaryBtn onClick={() => setUploadOpen(true)}>
                     <UploadCloud size={16} strokeWidth={1.8} />
                     Upload resume
-                  </PrimaryBtn>
+                  </SecondaryBtn>
                 </div>
               )}
               {!pro && (
