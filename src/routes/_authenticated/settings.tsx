@@ -74,13 +74,13 @@ function Card({ title, children, actions }: { title: string; children: React.Rea
 function PlanBadge({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
-      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
+      <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
         Free
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
+    <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
       {plan === "paused" ? "Paused" : "Pro"}
     </span>
   );
