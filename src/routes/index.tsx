@@ -971,9 +971,25 @@ function Pricing() {
           ref={tabsRef}
           role="tablist"
           aria-label="Billing period"
-          className="inline-flex items-center"
+          className="inline-flex items-center relative"
           style={{ gap: 8, background: "#F1F3F3", borderRadius: 12, padding: 8 }}
         >
+          {/* Sliding indicator */}
+          <span
+            aria-hidden
+            className="absolute pointer-events-none"
+            style={{
+              top: 8,
+              bottom: 8,
+              left: period === "monthly" ? 8 : "calc(50% + 4px)",
+              right: period === "monthly" ? "calc(50% + 4px)" : 8,
+              background: "#FFFFFF",
+              border: "1px solid #E3E7E8",
+              borderRadius: 8,
+              boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
+              transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), right 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          />
           {periods.map((p, idx) => {
             const active = period === p;
             const label = p === "monthly" ? "Monthly" : "Annual";
@@ -986,15 +1002,23 @@ function Pricing() {
                 tabIndex={active ? 0 : -1}
                 onClick={() => setPeriod(p)}
                 onKeyDown={(e) => onTabKey(e, idx)}
-                className="inline-flex items-center"
+                className="inline-flex items-center group relative"
                 style={{
+                  flex: "1 1 0",
+                  justifyContent: "center",
                   gap: 8,
                   borderRadius: 8,
-                  padding: active ? (p === "annual" ? "9px 9px 9px 13px" : "9px 13px") : "8px 12px",
-                  background: active ? "#FFFFFF" : "transparent",
-                  border: active ? "1px solid #E3E7E8" : "1px solid transparent",
-                  boxShadow: active ? "0 1px 2px rgba(12,12,13,0.05)" : "none",
+                  padding: p === "annual" ? "9px 9px 9px 13px" : "9px 13px",
+                  background: "transparent",
+                  border: "1px solid transparent",
                   cursor: "pointer",
+                  transition: "background 200ms ease",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
                 }}
               >
                 <span
@@ -1004,6 +1028,9 @@ function Pricing() {
                     fontSize: 14,
                     lineHeight: "20px",
                     color: active ? "#090B0C" : "#4B585B",
+                    transition: "color 200ms ease",
+                    position: "relative",
+                    zIndex: 1,
                   }}
                 >
                   {label}
@@ -1019,6 +1046,8 @@ function Pricing() {
                       fontSize: 12,
                       lineHeight: 1.3,
                       color: "var(--green, #0E735A)",
+                      position: "relative",
+                      zIndex: 1,
                     }}
                   >
                     Best value
