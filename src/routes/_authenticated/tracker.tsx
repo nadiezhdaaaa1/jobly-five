@@ -914,7 +914,11 @@ function TrackerScreen() {
 
       <MobileTabBar active="tracker" />
 
-      <BoardColumnsDialog open={columnsDialogOpen} onClose={() => setColumnsDialogOpen(false)} />
+      <BoardColumnsDialog
+        open={columnsDialogOpen}
+        onClose={() => setColumnsDialogOpen(false)}
+        onEditStages={(id) => setEditColumnId(id)}
+      />
 
       <SingleColumnDialog
         columnId={editColumnId}
