@@ -1890,7 +1890,7 @@ function ExperienceTab({
   return (
     <>
       <CardBig>
-        <header className="flex items-center justify-between gap-3">
+        <header className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Previous jobs</h2>
           {hasResume ? (
             <button
