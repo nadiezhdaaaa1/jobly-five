@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   IconArrowDown as ArrowDown,
   IconArrowUp as ArrowUp,
+  IconGripVertical as Grip,
   IconListDetails as ListDetails,
   IconPlus as Plus,
   IconTrash as Trash,
@@ -14,6 +15,7 @@ import {
   deleteColumn,
   moveColumn,
   renameColumn,
+  reorderColumns,
   resetColumns,
   useColumns,
 } from "@/lib/board-columns-store";
@@ -30,6 +32,8 @@ export function BoardColumnsDialog({
   const columns = useColumns();
   const [draftTitles, setDraftTitles] = useState<Record<string, string>>({});
   const [newInterviewTitle, setNewInterviewTitle] = useState("");
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -47,6 +51,20 @@ export function BoardColumnsDialog({
   }, [open, onClose]);
 
   const canAddInterview = useMemo(() => newInterviewTitle.trim().length > 0, [newInterviewTitle]);
+
+  function handleDrop(targetId: string) {
+    const sourceId = dragId;
+    setDragId(null);
+    setOverId(null);
+    if (!sourceId || sourceId === targetId) return;
+    const ids = columns.map((c) => c.id);
+    const from = ids.indexOf(sourceId);
+    const to = ids.indexOf(targetId);
+    if (from < 0 || to < 0) return;
+    ids.splice(from, 1);
+    ids.splice(to, 0, sourceId);
+    reorderColumns(ids);
+  }
 
   if (!open) return null;
   return (
