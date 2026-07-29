@@ -642,7 +642,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       className="relative cursor-pointer rounded-[8px] border p-5"
       style={{
         background: "rgba(255, 255, 255, 0.9)",
-        borderColor: "var(--color-surface-1)",
+        borderColor: "#FFFFFF",
         boxShadow: "0 1px 4px 0 rgba(12, 12, 13, 0.05)",
       }}
       role="button"
