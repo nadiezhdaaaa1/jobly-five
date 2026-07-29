@@ -166,30 +166,31 @@ export function BoardColumnsDialog({
                   </span>
                 </IconTooltip>
                 <div className="flex flex-row items-center gap-0.5">
-                  <IconTooltip label="Move up">
+                  <IconTooltip label={idx === 0 ? "Already first" : "Move up"}>
                     <button
                       type="button"
                       aria-label="Move up"
-                      disabled={idx === 0}
-                      onClick={() => moveColumn(c.id, -1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"
+                      aria-disabled={idx === 0}
+                      onClick={() => idx !== 0 && moveColumn(c.id, -1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                     >
                       <ArrowUp size={14} strokeWidth={1.8} />
                     </button>
                   </IconTooltip>
-                  <IconTooltip label="Move down">
+                  <IconTooltip label={idx === columns.length - 1 ? "Already last" : "Move down"}>
                     <button
                       type="button"
                       aria-label="Move down"
-                      disabled={idx === columns.length - 1}
-                      onClick={() => moveColumn(c.id, 1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"
+                      aria-disabled={idx === columns.length - 1}
+                      onClick={() => idx !== columns.length - 1 && moveColumn(c.id, 1)}
+                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                     >
                       <ArrowDown size={14} strokeWidth={1.8} />
                     </button>
                   </IconTooltip>
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col">
+                  <IconTooltip label="Rename column">
                   <input
                     type="text"
                     value={draftTitles[c.id] ?? c.title}
@@ -202,6 +203,7 @@ export function BoardColumnsDialog({
                     className="h-9 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
                     style={{ borderColor: "#E3E7E8" }}
                   />
+                  </IconTooltip>
                 </div>
                 {(c.kind === "interview" || c.kind === "offer") && onEditStages ? (
                   <IconTooltip label="Edit stages">
@@ -222,9 +224,9 @@ export function BoardColumnsDialog({
                   <button
                     type="button"
                     aria-label="Delete column"
-                    disabled={!canDeleteColumn(c.id)}
-                    onClick={() => deleteColumn(c.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"
+                    aria-disabled={!canDeleteColumn(c.id)}
+                    onClick={() => canDeleteColumn(c.id) && deleteColumn(c.id)}
+                    className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                   >
                     <Trash size={16} strokeWidth={1.6} />
                   </button>
