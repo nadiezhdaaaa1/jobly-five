@@ -1310,7 +1310,7 @@ function JobsScreen() {
             <SalaryTeaser />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 pb-10">
             <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
               {(() => {
                 const h = new Date().getHours();
