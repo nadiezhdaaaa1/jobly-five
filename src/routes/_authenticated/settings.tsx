@@ -146,11 +146,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {/* Two plan cards — Pro (wide, left) + Free (narrow, right) */}
       <PlanCardsBlock plan={plan} onFlash={onFlash} onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)} />
 
-      {/* Coming soon + info box */}
-      <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-        <span className="font-semibold">Coming soon (Pro):</span> tailor resume to a job · ATS check · AI cover letter per job.
-      </p>
-      <div className="mt-3 flex items-start gap-2 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+      {/* Info box */}
+      <div className="mt-4 flex items-start gap-2 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
         <IconInfoCircle size={14} strokeWidth={1.6} className="mt-0.5 shrink-0" />
         <span>
           You see the monthly price, but pay for the period up front. <span className="font-semibold">Cancel or pause anytime</span> — found a job? Pause billing for 6 months. We email a reminder 7 days before any renewal.
