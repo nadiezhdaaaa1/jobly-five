@@ -795,7 +795,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         Choose what lands in your inbox. We only email what's useful — no spam.
       </p>
       <div>
-        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Digest frequency</div>
+        <h6 className="text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }}>Digest frequency</h6>
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
