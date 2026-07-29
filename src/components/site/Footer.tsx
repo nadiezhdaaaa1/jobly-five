@@ -43,7 +43,7 @@ const COLS: { title: string; items: FooterLink[] }[] = [
     items: [
       { label: "Terms of Service", to: "/legal/terms" },
       { label: "Privacy Policy", to: "/legal/privacy" },
-      { label: "Subscription & Billing", to: "/legal/billing" },
+      { label: "Subscription and Billing", to: "/legal/billing" },
       { label: "Cookie Policy", to: "/legal/cookies" },
       { label: "Refund Policy", to: "/legal/refund" },
       { label: "Email Consent", to: "/legal/email" },
