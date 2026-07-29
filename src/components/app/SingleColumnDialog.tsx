@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  IconArrowDown as ArrowDown,
-  IconArrowUp as ArrowUp,
-  IconPlus as Plus,
-  IconTrash as Trash,
-  IconX as X,
-} from "@tabler/icons-react";
+import { IconPlus as Plus, IconTrash as Trash, IconX as X } from "@tabler/icons-react";
 import {
   addStage,
   canDeleteColumn,
@@ -13,7 +7,6 @@ import {
   deleteStage,
   findColumn,
   KIND_LABEL,
-  moveStage,
   renameColumn,
   renameStage,
   useColumns,
@@ -133,9 +126,9 @@ export function SingleColumnDialog({
           </div>
 
           {hasStages ? (
-            <div className="flex flex-col gap-1 rounded-[6px] p-2" style={{ background: "#F7F8F8" }}>
+            <div className="flex flex-col gap-1">
               <div className="text-[12px] font-light text-[color:var(--color-text-muted)]">Stages</div>
-              {col.stages.map((s, i) => {
+              {col.stages.map((s) => {
                 const inUse = countActiveWithStage(col.id, s);
                 const isLast = col.stages.length <= 1;
                 const disabled = isLast || inUse > 0;
@@ -146,24 +139,6 @@ export function SingleColumnDialog({
                   : "Delete stage";
                 return (
                   <div key={s} className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      aria-label="Move stage up"
-                      disabled={i === 0}
-                      onClick={() => moveStage(col.id, s, -1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-white disabled:opacity-30"
-                    >
-                      <ArrowUp size={12} strokeWidth={1.8} />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Move stage down"
-                      disabled={i === col.stages.length - 1}
-                      onClick={() => moveStage(col.id, s, 1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-white disabled:opacity-30"
-                    >
-                      <ArrowDown size={12} strokeWidth={1.8} />
-                    </button>
                     <input
                       type="text"
                       value={draftStages[s] ?? s}
