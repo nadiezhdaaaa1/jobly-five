@@ -1186,7 +1186,11 @@ function CoverLettersTab({
 }) {
   const [editing, setEditing] = useState<CoverLetter | "new" | null>(null);
   const [confirmDel, setConfirmDel] = useState<CoverLetter | null>(null);
-  const atLimit = letters.length >= COVER_LETTER_LIMIT;
+  const plan = usePlan();
+  const pro = isPro(plan);
+  const MAX_LETTERS = pro ? COVER_LETTER_LIMIT : 1;
+  const activeId = letters[0]?.id ?? null;
+  const atLimit = letters.length >= MAX_LETTERS;
 
   return (
     <>
@@ -1194,12 +1198,13 @@ function CoverLettersTab({
         <header className="flex items-center gap-2">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Cover letters</h2>
           <span className="text-[12px] text-[color:var(--color-text-muted)]">
-            {letters.length} / {COVER_LETTER_LIMIT}
+            {letters.length} / {MAX_LETTERS}
           </span>
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Up to {COVER_LETTER_LIMIT} reusable templates. Pick one when you apply. Your achievements can be
-          appended automatically — set that up under Achievements → When you apply.
+          {pro
+            ? `Up to ${COVER_LETTER_LIMIT} reusable templates. Pick one when you apply. Your achievements can be appended automatically — set that up under Achievements → When you apply.`
+            : `Free plan includes 1 cover letter template. Upgrade to Pro to keep up to ${COVER_LETTER_LIMIT}.`}
         </p>
         <div className="mt-3 flex flex-col gap-2">
           {letters.length === 0 ? (
@@ -1218,20 +1223,34 @@ function CoverLettersTab({
             </div>
           ) : (
             <>
-              {letters.map((l) => (
-                <LetterRow
-                  key={l.id}
-                  name={l.name}
-                  meta={stripHtml(l.body).slice(0, 96)}
-                  onEdit={() => setEditing(l)}
-                  onDuplicate={() => {
-                    const ok = duplicateCoverLetter(l.id);
-                    if (!ok) onToast(`Limit of ${COVER_LETTER_LIMIT} reached`);
-                  }}
-                  onDelete={() => setConfirmDel(l)}
-                />
-              ))}
-              {!atLimit && (
+              {letters.map((l) => {
+                const isActive = l.id === activeId;
+                const locked = !pro && !isActive;
+                return (
+                  <LetterRow
+                    key={l.id}
+                    name={l.name}
+                    meta={stripHtml(l.body).slice(0, 96)}
+                    isActive={isActive}
+                    locked={locked}
+                    onEdit={locked ? undefined : () => setEditing(l)}
+                    onDuplicate={
+                      locked
+                        ? undefined
+                        : () => {
+                            if (letters.length >= MAX_LETTERS) {
+                              onToast(`Limit of ${MAX_LETTERS} reached`);
+                              return;
+                            }
+                            const ok = duplicateCoverLetter(l.id);
+                            if (!ok) onToast(`Limit of ${COVER_LETTER_LIMIT} reached`);
+                          }
+                    }
+                    onDelete={() => setConfirmDel(l)}
+                  />
+                );
+              })}
+              {!atLimit && pro && (
                 <div className="pt-1">
                   <PrimaryBtn onClick={() => setEditing("new")}>
                     <Plus size={16} strokeWidth={1.8} />
@@ -1239,9 +1258,63 @@ function CoverLettersTab({
                   </PrimaryBtn>
                 </div>
               )}
-              {atLimit && (
+              {!pro && (
+                <div className="mt-1 rounded-[12px] bg-[#F1F3F3] p-[4px]">
+                  <div
+                    data-letters-upsell
+                    className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
+                    style={{
+                      boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
+                      padding: "20px",
+                    }}
+                  >
+                    <style>{`@media (min-width: 768px) { [data-letters-upsell] { padding: 21px 33px 21px 25px !important; } }`}</style>
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute right-[-32px] top-4 z-[1] hidden h-[140px] w-[140px] md:block"
+                      style={{
+                        right: "-64px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: 200,
+                        height: 200,
+                        background:
+                          "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                        filter: "blur(40px)",
+                        opacity: 0.45,
+                      }}
+                    />
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute right-[-32px] top-[-32px] z-[1] block h-[140px] w-[140px] md:hidden"
+                      style={{
+                        background:
+                          "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                        filter: "blur(40px)",
+                        opacity: 0.45,
+                      }}
+                    />
+                    <div className="relative z-[3] flex min-w-0 flex-1 flex-col gap-1">
+                      <div className="text-[16px] leading-[24px] text-[#090B0C]" style={{ fontWeight: 400 }}>
+                        Store up to {COVER_LETTER_LIMIT} cover letters with Pro
+                      </div>
+                      <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
+                        Free plan is limited to 1 template. Upgrade to Pro to tailor cover letters for different roles.
+                      </div>
+                    </div>
+                    <Link
+                      to="/settings"
+                      className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
+                      style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+                    >
+                      Upgrade to Pro
+                    </Link>
+                  </div>
+                </div>
+              )}
+              {pro && atLimit && (
                 <p className="text-[12px] text-[color:var(--color-text-muted)]">
-                  You've reached the {COVER_LETTER_LIMIT}-template limit. Delete one to add a new template.
+                  You've reached the {MAX_LETTERS}-template limit. Delete one to add a new template.
                 </p>
               )}
             </>
@@ -1296,30 +1369,42 @@ function stripHtml(s: string): string {
 }
 
 function LetterRow({
-  name, meta, onEdit, onDuplicate, onDelete,
+  name, meta, onEdit, onDuplicate, onDelete, isActive, locked,
 }: {
   name: string;
   meta: string;
-  onEdit: () => void;
-  onDuplicate: () => void;
+  onEdit?: () => void;
+  onDuplicate?: () => void;
   onDelete: () => void;
+  isActive?: boolean;
+  locked?: boolean;
 }) {
   return (
-    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
         aria-hidden
       >
-        <FileText size={20} strokeWidth={1.6} />
+        {locked ? <Lock size={20} strokeWidth={1.6} /> : <FileText size={20} strokeWidth={1.6} />}
       </div>
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
+          {isActive && <Tag tone="mint">Active</Tag>}
+          {locked && (
+            <IconTooltip label="Available on Pro">
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+                Locked
+              </span>
+            </IconTooltip>
+          )}
+        </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
-        <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>
-        <RowIconBtn onClick={onDuplicate} label="Duplicate"><Copy size={16} strokeWidth={1.8} /></RowIconBtn>
+        {onEdit && <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>}
+        {onDuplicate && <RowIconBtn onClick={onDuplicate} label="Duplicate"><Copy size={16} strokeWidth={1.8} /></RowIconBtn>}
         <RowIconBtn onClick={onDelete} label="Delete" danger><Trash size={16} strokeWidth={1.8} /></RowIconBtn>
       </div>
     </div>
