@@ -1897,10 +1897,19 @@ function ExperienceTab({
         <header className="flex items-center justify-between gap-3">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Previous jobs</h2>
           {hasResume ? (
-            <SecondaryBtn onClick={() => setConfirmReimport(true)}>
-              <Refresh size={14} strokeWidth={1.8} />
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              title="Coming soon"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border-strong)] px-2.5 text-[12px] font-medium text-[color:var(--color-text-muted)] opacity-60 cursor-not-allowed"
+            >
+              <Refresh size={12} strokeWidth={1.8} />
               Re-import from resume
-            </SecondaryBtn>
+              <span className="ml-1 rounded-[3px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                Coming soon
+              </span>
+            </button>
           ) : null}
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
