@@ -266,7 +266,7 @@ function KanbanCard({
           </div>
         </div>
         {/* Row 3: per-status content */}
-        <Row3 kind={kind} record={record} />
+        <Row3 kind={kind} record={record} column={column} />
       </div>
 
       {/* Footer controls */}
@@ -433,24 +433,27 @@ function KanbanCard({
   );
 }
 
-function Row3({ kind, record }: { kind: ColumnKind; record: JobRecord }) {
+function Row3({ kind, record, column }: { kind: ColumnKind; record: JobRecord; column: BoardColumn }) {
   if (kind === "saved" || kind === "applied" || kind === "rejected") {
     return null;
   }
+  const fallbackStage = column.stages?.[0];
   if (kind === "interview") {
+    const stage = record.interviewStage || fallbackStage;
     return (
-      (record.interviewStage || record.reminderAt) ? (
+      (stage || record.reminderAt) ? (
         <div className="flex flex-wrap gap-1">
-          {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
+          {stage ? <Chip>{stage}</Chip> : null}
           {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
         </div>
       ) : null
     );
   }
   // offer
+  const offerStage = record.offerStatus || fallbackStage;
   return (
     <div className="flex flex-wrap gap-1">
-      {record.offerStatus ? <Chip tone="mint">{record.offerStatus}</Chip> : null}
+      {offerStage ? <Chip tone="mint">{offerStage}</Chip> : null}
       {record.reminderAt ? <Chip tone="mint">{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
     </div>
   );
