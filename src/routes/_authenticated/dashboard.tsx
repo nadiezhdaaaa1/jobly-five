@@ -482,6 +482,47 @@ function TrackerWidget() {
   );
 }
 
+function TrackerUpsell() {
+  return (
+    <aside className="rounded-[12px] bg-[#F1F3F3] p-[4px]">
+      <div
+        data-tracker-upsell-mini
+        className="relative isolate flex flex-col items-start gap-3 overflow-hidden rounded-[8px] border border-white bg-white/80"
+        style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", padding: 16 }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-[1]"
+          style={{
+            right: -60,
+            top: -60,
+            width: 160,
+            height: 160,
+            background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+            filter: "blur(40px)",
+            opacity: 0.45,
+          }}
+        />
+        <div className="relative z-[3] flex flex-col gap-1">
+          <div className="text-[16px] leading-[24px] text-[#090B0C]" style={{ fontWeight: 400 }}>
+            Track applications with Pro
+          </div>
+          <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
+            Unlock the tracker to manage every job from saved to offer.
+          </div>
+        </div>
+        <Link
+          to="/settings"
+          className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
+          style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+        >
+          Upgrade to Pro
+        </Link>
+      </div>
+    </aside>
+  );
+}
+
 function SalaryTeaser() {
   return (
     <aside className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
