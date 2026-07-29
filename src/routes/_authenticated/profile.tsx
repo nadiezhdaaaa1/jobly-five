@@ -1252,10 +1252,10 @@ function CoverLettersTab({
               })}
               {!atLimit && pro && (
                 <div className="pt-1">
-                  <PrimaryBtn onClick={() => setEditing("new")}>
+                  <SecondaryBtn onClick={() => setEditing("new")}>
                     <Plus size={16} strokeWidth={1.8} />
                     New template
-                  </PrimaryBtn>
+                  </SecondaryBtn>
                 </div>
               )}
               {!pro && (
