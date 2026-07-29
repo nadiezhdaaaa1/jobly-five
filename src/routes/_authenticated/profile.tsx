@@ -965,17 +965,18 @@ function RowIconBtn({
   children, onClick, label, danger,
 }: { children: React.ReactNode; onClick: () => void; label: string; danger?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      className={`inline-flex size-8 items-center justify-center rounded-[4px] hover:bg-[color:var(--color-surface-2)] ${
-        danger ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-foreground)]"
-      }`}
-    >
-      {children}
-    </button>
+    <IconTooltip label={label}>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className={`inline-flex size-8 items-center justify-center rounded-[4px] hover:bg-[color:var(--color-surface-2)] ${
+          danger ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-foreground)]"
+        }`}
+      >
+        {children}
+      </button>
+    </IconTooltip>
   );
 }
 
