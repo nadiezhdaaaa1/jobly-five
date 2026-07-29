@@ -45,9 +45,9 @@ function SettingsScreen() {
           <div className="flex flex-col gap-3">
             <PlanCard plan={plan} onFlash={flashMsg} />
             <NotificationsCard plan={plan} />
-            <BlockedCompaniesCard onFlash={flashMsg} />
           </div>
           <aside className="flex flex-col gap-3">
+            <BlockedCompaniesCard onFlash={flashMsg} />
             <SecurityCard onFlash={flashMsg} />
             <DangerZoneCard onFlash={flashMsg} />
           </aside>
