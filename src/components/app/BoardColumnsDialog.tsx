@@ -83,7 +83,7 @@ export function BoardColumnsDialog({
               }}
             >
               <div className="flex items-center gap-2">
-                <div className="flex flex-col">
+                <div className="flex flex-row items-center gap-0.5">
                   <IconTooltip label="Move up">
                     <button
                       type="button"
