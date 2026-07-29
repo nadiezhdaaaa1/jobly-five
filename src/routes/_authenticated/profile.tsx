@@ -866,9 +866,10 @@ function DocumentsTab({
                 </div>
               )}
               {!pro && (
+                <div className="mt-1 rounded-[12px] bg-[#F1F3F3] p-[4px]">
                 <div
                   data-resume-upsell
-                  className="relative isolate mt-1 flex flex-col items-start gap-4 overflow-hidden rounded-[12px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
+                  className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
                   style={{
                     boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
                     padding: "20px",
@@ -915,6 +916,7 @@ function DocumentsTab({
                   >
                     Upgrade to Pro
                   </Link>
+                </div>
                 </div>
               )}
               {pro && atLimit && (
