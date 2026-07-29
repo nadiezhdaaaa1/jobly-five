@@ -88,19 +88,13 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
-  const [period, setPeriod] = useState<"monthly" | "6mo" | "annual">("annual");
-  const [switchOpen, setSwitchOpen] = useState<null | "monthly" | "6mo" | "annual">(null);
+  const [switchOpen, setSwitchOpen] = useState<null | "monthly" | "annual">(null);
 
   const proSummary = "Daily digest · match scores · application tracker";
   const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026 · started with a 14-day free trial";
   const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
-  const priceRows: Record<"monthly" | "6mo" | "annual", { price: string; billed: string; save?: string }> = {
-    monthly: { price: "$9.99", billed: "Billed monthly" },
-    "6mo": { price: "$7.99", billed: "Billed $47.94 every 6 months", save: "Save 20%" },
-    annual: { price: "$5.99", billed: "Billed $71.88 per year", save: "Save 40%" },
-  };
 
   return (
     <Card
