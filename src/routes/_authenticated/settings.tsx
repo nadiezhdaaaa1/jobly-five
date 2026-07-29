@@ -796,18 +796,33 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </p>
       <div>
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Digest frequency</div>
-        <div className="mt-2 flex flex-col gap-2">
-          <RadioRow
-            checked={freq === "daily"}
+        <div className="mt-2 flex flex-wrap gap-2">
+          <button
+            type="button"
             disabled={!pro}
-            onChange={() => pro && setFreq("daily")}
-            label={<span className="flex items-center gap-2">Daily{!pro ? <span className="rounded-[4px] bg-[color:var(--color-mint)] px-1.5 py-0.5 text-[10px] font-semibold text-[color:var(--color-green)]">Pro</span> : null}</span>}
-          />
-          <RadioRow
-            checked={freq === "weekly"}
-            onChange={() => setFreq("weekly")}
-            label="Weekly"
-          />
+            onClick={() => pro && setFreq("daily")}
+            className={`inline-flex h-8 items-center gap-1.5 rounded-[4px] border px-3 text-[13px] transition-colors ${
+              freq === "daily"
+                ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
+                : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            } ${!pro ? "cursor-not-allowed opacity-60" : ""}`}
+          >
+            Daily
+            {!pro ? (
+              <span className={`rounded-[4px] px-1.5 py-0.5 text-[10px] font-semibold ${freq === "daily" ? "bg-white/20 text-white" : "bg-[color:var(--color-mint)] text-[color:var(--color-green)]"}`}>Pro</span>
+            ) : null}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFreq("weekly")}
+            className={`inline-flex h-8 items-center rounded-[4px] border px-3 text-[13px] transition-colors ${
+              freq === "weekly"
+                ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
+                : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            }`}
+          >
+            Weekly
+          </button>
         </div>
         <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
           Quiet hours 9pm–7am · pause anytime under "Found a job?"
