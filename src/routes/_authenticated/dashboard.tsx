@@ -484,11 +484,6 @@ function TrackerWidget() {
 
 function SalaryTeaser() {
   return (
-    null
-  );
-}
-function _unused_teaser_marker() {
-  return (
     <aside className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
       <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">In development</span>
       <h3 className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">Salary insights</h3>
