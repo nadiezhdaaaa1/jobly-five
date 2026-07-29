@@ -19,6 +19,7 @@ import {
   resetColumns,
   useColumns,
 } from "@/lib/board-columns-store";
+import { countActiveInColumn } from "@/lib/tracker-store";
 
 export function BoardColumnsDialog({
   open,
@@ -127,7 +128,17 @@ export function BoardColumnsDialog({
           className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] border p-1"
           style={{ background: "#F1F3F3", borderColor: "#F1F3F3" }}
         >
-          {columns.map((c, idx) => (
+          {columns.map((c, idx) => {
+            const activeInColumn = countActiveInColumn(c.id);
+            const deleteAllowed = canDeleteColumn(c.id) && activeInColumn === 0;
+            const deleteLabel = !canDeleteColumn(c.id)
+              ? c.kind === "interview"
+                ? "At least one Interview column must remain."
+                : "This column is required and can't be deleted."
+              : activeInColumn > 0
+              ? `To delete, move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first.`
+              : "Delete column";
+            return (
             <div
               key={c.id}
               draggable
@@ -220,12 +231,12 @@ export function BoardColumnsDialog({
                     </button>
                   </IconTooltip>
                 ) : null}
-                <IconTooltip label={canDeleteColumn(c.id) ? "Delete column" : "This column can't be deleted"}>
+                <IconTooltip label={deleteLabel}>
                   <button
                     type="button"
                     aria-label="Delete column"
-                    aria-disabled={!canDeleteColumn(c.id)}
-                    onClick={() => canDeleteColumn(c.id) && deleteColumn(c.id)}
+                    aria-disabled={!deleteAllowed}
+                    onClick={() => deleteAllowed && deleteColumn(c.id)}
                     className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                   >
                     <Trash size={16} strokeWidth={1.6} />
@@ -233,7 +244,8 @@ export function BoardColumnsDialog({
                 </IconTooltip>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-5 flex items-center justify-between">
