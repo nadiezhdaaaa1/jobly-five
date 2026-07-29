@@ -71,7 +71,7 @@ export function BoardColumnsDialog({
           Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
-        <div className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto rounded-[8px] p-3" style={{ background: "#E3E7E8" }}>
+        <div className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto rounded-[8px] border bg-white p-3" style={{ borderColor: "#E3E7E8" }}>
           {columns.map((c, idx) => (
             <div key={c.id} className="rounded-[6px] border bg-white p-2" style={{ borderColor: "#E3E7E8" }}>
               <div className="flex items-center gap-2">
