@@ -128,7 +128,17 @@ export function BoardColumnsDialog({
           className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] border p-1"
           style={{ background: "#F1F3F3", borderColor: "#F1F3F3" }}
         >
-          {columns.map((c, idx) => (
+          {columns.map((c, idx) => {
+            const activeInColumn = countActiveInColumn(c.id);
+            const deleteAllowed = canDeleteColumn(c.id) && activeInColumn === 0;
+            const deleteLabel = !canDeleteColumn(c.id)
+              ? c.kind === "interview"
+                ? "At least one Interview column must remain."
+                : "This column is required and can't be deleted."
+              : activeInColumn > 0
+              ? `To delete, move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first.`
+              : "Delete column";
+            return (
             <div
               key={c.id}
               draggable
