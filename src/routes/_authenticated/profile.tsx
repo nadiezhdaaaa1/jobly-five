@@ -1583,9 +1583,9 @@ function PortfolioTab({
             const ok = addLink({ type: cfg.portfolioTypes[0] ?? "Other", url: "" });
             if (!ok) onToast("Link limit reached");
           }}
-          className="mt-3 self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
-          + Add link
+          Add link
         </button>
       </CardBig>
 
@@ -1666,9 +1666,9 @@ function PortfolioTab({
         <button
           type="button"
           onClick={() => addSocial({ network: "LinkedIn", url: "" })}
-          className="mt-3 self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
-          + Add profile
+          Add profile
         </button>
       </CardBig>
 
@@ -1926,9 +1926,9 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingExp(addExperience())}
-          className="mt-3 self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
-          + Add previous job
+          Add previous job
         </button>
       </CardBig>
 
@@ -1952,9 +1952,9 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingEdu(addEducation())}
-          className="mt-3 self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
-          + Add education
+          Add education
         </button>
       </CardBig>
 
