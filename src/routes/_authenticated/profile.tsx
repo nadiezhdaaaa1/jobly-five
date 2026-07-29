@@ -1655,9 +1655,11 @@ function PortfolioTab({
                 onChange={(e) => updateSocial(s.id, { url: e.target.value })}
                 className="h-10 rounded-[4px] border px-3 text-[13px]"
               />
-              <button type="button" onClick={() => removeSocial(s.id)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-                <X size={16} strokeWidth={1.6} />
-              </button>
+              <IconTooltip label="Remove profile">
+                <button type="button" onClick={() => removeSocial(s.id)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+                  <X size={16} strokeWidth={1.6} />
+                </button>
+              </IconTooltip>
             </div>
           ))}
         </div>
