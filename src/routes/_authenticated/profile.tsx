@@ -958,34 +958,44 @@ function DocumentsTab({
 }
 
 function FileRow({
-  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary,
+  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary, locked,
 }: {
   name: string;
   meta: string;
-  onPreview: () => void;
+  onPreview?: () => void;
   onReplace?: () => void;
   onDelete: () => void;
   isPrimary?: boolean;
   onMakePrimary?: () => void;
+  locked?: boolean;
 }) {
   return (
-    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
         aria-hidden
       >
-        <FileText size={20} strokeWidth={1.6} />
+        {locked ? <Lock size={20} strokeWidth={1.6} /> : <FileText size={20} strokeWidth={1.6} />}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 min-w-0">
           <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
           {isPrimary && <Tag tone="mint">Primary</Tag>}
+          {locked && (
+            <IconTooltip label="Available on Pro">
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+                Locked
+              </span>
+            </IconTooltip>
+          )}
         </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
-        <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        {onPreview && (
+          <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        )}
         {onMakePrimary && (
           <RowIconBtn onClick={onMakePrimary} label="Make primary"><Star size={16} strokeWidth={1.8} /></RowIconBtn>
         )}
