@@ -229,43 +229,6 @@ export function BoardColumnsDialog({
               </div>
             </div>
           ))}
-
-          <div
-            className="flex items-center gap-2 rounded-[8px] border p-2"
-            style={{
-              background: "rgba(255,255,255,0.9)",
-              borderColor: "#FFFFFF",
-              boxShadow: "0 1px 4px 0 rgba(12,12,13,0.05)",
-            }}
-          >
-            <input
-              type="text"
-              placeholder="New column name"
-              value={newInterviewTitle}
-              onChange={(e) => setNewInterviewTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && canAddInterview) {
-                  addInterviewColumn(newInterviewTitle);
-                  setNewInterviewTitle("");
-                }
-              }}
-              className="h-9 min-w-0 flex-1 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
-              style={{ borderColor: "#E3E7E8" }}
-            />
-            <button
-              type="button"
-              disabled={!canAddInterview}
-              onClick={() => {
-                addInterviewColumn(newInterviewTitle);
-                setNewInterviewTitle("");
-              }}
-              className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
-              style={{ background: "var(--color-accent)" }}
-            >
-              <Plus size={14} strokeWidth={2} />
-              Add column
-            </button>
-          </div>
         </div>
 
         <div className="mt-5 flex items-center justify-between">
