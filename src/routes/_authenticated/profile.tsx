@@ -670,7 +670,7 @@ function PreferencesTab({
 
   return (
     <>
-      <div className="rounded-[8px] border bg-[color:var(--color-surface-1)]">
+      <div className="overflow-hidden rounded-[8px] border bg-[color:var(--color-surface-1)]">
         {rows
           .filter((r) => !r.hidden)
           .map((row, idx, arr) => (
