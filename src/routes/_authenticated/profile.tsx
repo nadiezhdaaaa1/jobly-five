@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import {
   IconArrowDown as ArrowDown,
   IconArrowUp as ArrowUp,
   IconCheck as Check,
+  IconLock as Lock,
   IconPencil as Pencil,
   IconPlus as Plus,
   IconTrash as Trash,
@@ -46,6 +47,7 @@ import {
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
+import { usePlan, isPro } from "@/lib/plan-store";
 import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
@@ -798,13 +800,15 @@ function DocumentsTab({
 }) {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [confirmDelId, setConfirmDelId] = useState<string | null>(null);
-
-  const MAX_FILES = 10;
+  const plan = usePlan();
+  const pro = isPro(plan);
+  const MAX_FILES = pro ? 5 : 1;
   const MAX_MB = 5;
   const files = [...resume.files].sort((a, b) =>
     a.id === resume.primaryId ? -1 : b.id === resume.primaryId ? 1 : a.uploadedAt < b.uploadedAt ? 1 : -1
   );
   const atLimit = files.length >= MAX_FILES;
+  const overLimit = !pro && files.length > MAX_FILES; // downgraded state
 
   return (
     <>
@@ -817,8 +821,9 @@ function DocumentsTab({
           </span>
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Upload up to {MAX_FILES} resumes (PDF or DOCX, up to {MAX_MB} MB each). Your primary resume is used
-          for match scoring and applications; on upload we parse it into your Experience.
+          {pro
+            ? `Upload up to ${MAX_FILES} resumes (PDF or DOCX, up to ${MAX_MB} MB each). Your primary resume is used for match scoring and applications; on upload we parse it into your Experience.`
+            : `Free plan includes 1 resume (PDF or DOCX, up to ${MAX_MB} MB). Upgrade to Pro to keep up to 5.`}
         </p>
         <div className="mt-3 flex flex-col gap-2">
           {files.length === 0 ? (
@@ -831,15 +836,17 @@ function DocumentsTab({
             <>
               {files.map((f) => {
                 const isPrimary = f.id === resume.primaryId;
+                const locked = !pro && !isPrimary;
                 return (
                   <FileRow
                     key={f.id}
                     name={`${f.name}.${f.ext}`}
                     meta={`Uploaded ${new Date(f.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(f.size / 1024))} KB`}
                     isPrimary={isPrimary}
-                    onPreview={() => onToast("Preview coming soon")}
+                    locked={locked}
+                    onPreview={locked ? undefined : () => onToast("Preview coming soon")}
                     onMakePrimary={
-                      isPrimary
+                      isPrimary || locked
                         ? undefined
                         : () => {
                             setPrimaryResumeFile(f.id);
@@ -850,7 +857,7 @@ function DocumentsTab({
                   />
                 );
               })}
-              {!atLimit && (
+              {!atLimit && pro && (
                 <div className="pt-1">
                   <PrimaryBtn onClick={() => setUploadOpen(true)}>
                     <UploadCloud size={16} strokeWidth={1.8} />
@@ -858,7 +865,37 @@ function DocumentsTab({
                   </PrimaryBtn>
                 </div>
               )}
-              {atLimit && (
+              {!pro && (
+                <div className="mt-1 flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-mint)]/40 p-4">
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px]"
+                    style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
+                    aria-hidden
+                  >
+                    <Lock size={16} strokeWidth={1.8} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+                      <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
+                        {overLimit ? "Extra resumes are locked" : "Store up to 5 resumes with Pro"}
+                      </div>
+                    </div>
+                    <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                      {overLimit
+                        ? "Your Free plan keeps 1 resume active — your primary. Upgrade to Pro to unlock the others, or delete the ones you don't need."
+                        : "Free plan is limited to 1 resume. Upgrade to Pro to tailor separate resumes for different roles."}
+                    </p>
+                    <Link
+                      to="/settings"
+                      className="mt-3 inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                    >
+                      Upgrade to Pro
+                    </Link>
+                  </div>
+                </div>
+              )}
+              {pro && atLimit && (
                 <p className="text-[12px] text-[color:var(--color-text-muted)]">
                   You've reached the {MAX_FILES}-file limit. Delete one to upload a new resume.
                 </p>
@@ -887,7 +924,11 @@ function DocumentsTab({
         onClose={() => setUploadOpen(false)}
         onFile={(file) => {
           if (resume.files.length >= MAX_FILES) {
-            onToast(`Limit of ${MAX_FILES} resumes reached`);
+            onToast(
+              pro
+                ? `Limit of ${MAX_FILES} resumes reached`
+                : "Upgrade to Pro to store more resumes"
+            );
             setUploadOpen(false);
             return;
           }
@@ -921,34 +962,44 @@ function DocumentsTab({
 }
 
 function FileRow({
-  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary,
+  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary, locked,
 }: {
   name: string;
   meta: string;
-  onPreview: () => void;
+  onPreview?: () => void;
   onReplace?: () => void;
   onDelete: () => void;
   isPrimary?: boolean;
   onMakePrimary?: () => void;
+  locked?: boolean;
 }) {
   return (
-    <div className="group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3">
+    <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
       <div
         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
         aria-hidden
       >
-        <FileText size={20} strokeWidth={1.6} />
+        {locked ? <Lock size={20} strokeWidth={1.6} /> : <FileText size={20} strokeWidth={1.6} />}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 min-w-0">
           <div className="truncate text-[14px] font-semibold text-[color:var(--color-foreground)]">{name}</div>
           {isPrimary && <Tag tone="mint">Primary</Tag>}
+          {locked && (
+            <IconTooltip label="Available on Pro">
+              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+                Locked
+              </span>
+            </IconTooltip>
+          )}
         </div>
         <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
-        <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        {onPreview && (
+          <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        )}
         {onMakePrimary && (
           <RowIconBtn onClick={onMakePrimary} label="Make primary"><Star size={16} strokeWidth={1.8} /></RowIconBtn>
         )}
