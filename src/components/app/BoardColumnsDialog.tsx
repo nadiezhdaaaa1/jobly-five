@@ -71,9 +71,17 @@ export function BoardColumnsDialog({
           Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
-        <div className="mt-4 flex flex-1 flex-col gap-2 overflow-y-auto rounded-[8px] border bg-white p-3" style={{ borderColor: "#E3E7E8" }}>
+        <div className="mt-4 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] p-1" style={{ background: "#F1F3F3" }}>
           {columns.map((c, idx) => (
-            <div key={c.id} className="rounded-[6px] border bg-white p-2" style={{ borderColor: "#E3E7E8" }}>
+            <div
+              key={c.id}
+              className="rounded-[8px] border p-2"
+              style={{
+                background: "rgba(255,255,255,0.9)",
+                borderColor: "#FFFFFF",
+                boxShadow: "0 1px 4px 0 rgba(12,12,13,0.05)",
+              }}
+            >
               <div className="flex items-center gap-2">
                 <div className="flex flex-col">
                   <IconTooltip label="Move up">
@@ -143,7 +151,14 @@ export function BoardColumnsDialog({
             </div>
           ))}
 
-          <div className="flex items-center gap-2 rounded-[6px] border bg-white p-2" style={{ borderColor: "#E3E7E8" }}>
+          <div
+            className="flex items-center gap-2 rounded-[8px] border p-2"
+            style={{
+              background: "rgba(255,255,255,0.9)",
+              borderColor: "#FFFFFF",
+              boxShadow: "0 1px 4px 0 rgba(12,12,13,0.05)",
+            }}
+          >
             <input
               type="text"
               placeholder="New column name"
