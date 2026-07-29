@@ -867,6 +867,7 @@ function DocumentsTab({
               )}
               {!pro && (
                 <div
+                  data-resume-upsell
                   className="relative isolate mt-1 flex flex-col items-start gap-4 overflow-hidden rounded-[12px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
                   style={{
                     boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
@@ -874,7 +875,6 @@ function DocumentsTab({
                   }}
                 >
                   <style>{`@media (min-width: 768px) { [data-resume-upsell] { padding: 21px 33px 21px 25px !important; } }`}</style>
-                  <div data-resume-upsell className="contents" />
                   <div
                     aria-hidden
                     className="pointer-events-none absolute right-[-32px] top-4 z-[1] hidden h-[140px] w-[140px] md:block"
