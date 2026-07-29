@@ -133,10 +133,10 @@ export function BoardColumnsDialog({
             const deleteAllowed = canDeleteColumn(c.id) && activeInColumn === 0;
             const deleteLabel = !canDeleteColumn(c.id)
               ? c.kind === "interview"
-                ? "At least one Interview column must remain."
-                : "This column is required and can't be deleted."
+                ? "At least one Interview column must remain"
+                : "This column is required and can't be deleted"
               : activeInColumn > 0
-              ? `To delete, move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first.`
+              ? `To delete, move the ${activeInColumn} active job${activeInColumn === 1 ? "" : "s"} out of this column first`
               : "Delete column";
             return (
             <div
