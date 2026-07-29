@@ -88,7 +88,6 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
-  const [switchOpen, setSwitchOpen] = useState<null | "monthly" | "annual">(null);
 
   const proSummary = "Daily digest · match scores · application tracker";
   const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026 · started with a 14-day free trial";
