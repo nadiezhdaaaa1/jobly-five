@@ -1912,9 +1912,6 @@ function ExperienceTab({
             </button>
           ) : null}
         </header>
-        <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-          {source}
-        </p>
         <div className="mt-3 flex flex-col divide-y">
           {resume.data.experience.length === 0 ? (
             <div className="py-4 text-[13px] text-[color:var(--color-text-secondary)]">
