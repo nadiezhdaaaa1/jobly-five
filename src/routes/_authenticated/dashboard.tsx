@@ -160,7 +160,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Systems / Low-level Engineer",
     "Desktop / Enterprise Application Developer",
   ],
-  "Data & AI / ML": [
+  "Data and AI / ML": [
     "Data Analyst",
     "Data Scientist",
     "Data Engineer",
