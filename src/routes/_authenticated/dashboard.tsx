@@ -442,9 +442,6 @@ function ago(days: number) {
 // ============================================================
 
 function TrackerWidget() {
-  return null as never;
-}
-function _TrackerWidgetOriginalMarker() {}
   const c = useCounts();
   const items: Array<{ n: number; l: string }> = [
     { n: c.saved, l: "Saved" },
