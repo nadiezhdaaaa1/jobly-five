@@ -90,7 +90,7 @@ export function BoardColumnsDialog({
           Edit columns
         </h2>
         <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
-          Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
+          Add a new column, or rename and reorder existing ones
         </p>
 
         <div className="mt-4 flex items-center gap-2">
