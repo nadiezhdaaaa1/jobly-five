@@ -258,8 +258,7 @@ function PlanCardsBlock({
   const [period, setPeriod] = useState<"annual" | "monthly">("annual");
 
   const isPlanFree = plan === "free";
-  // Pro card is always shown in its current-plan state (design decision).
-  const isPlanPro = true;
+  const isPlanPro = plan === "pro" || plan === "paused";
 
   const savings = (PRO_MONTHLY * 12 - PRO_ANNUAL_MONTHLY * 12).toFixed(2);
 
@@ -650,6 +649,19 @@ function PlanCardsBlock({
         </div>
       </div>
 
+      {/* Dev toggle for prototyping trial eligibility */}
+      <div className="mt-3 flex items-center gap-2 text-[11px] text-[color:var(--color-text-muted)]">
+        <span>Dev:</span>
+        <label className="inline-flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={hasHadPro}
+            onChange={(e) => setHasHadPro(e.target.checked)}
+          />
+          <span>hasHadPro</span>
+        </label>
+        <span className="opacity-60">· current plan: {plan}</span>
+      </div>
     </div>
   );
 }
