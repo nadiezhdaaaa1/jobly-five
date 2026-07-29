@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { IconPlus as Plus, IconTrash as Trash, IconX as X } from "@tabler/icons-react";
+import { IconTooltip } from "@/components/app/IconTooltip";
 import {
   addStage,
   canDeleteColumn,
