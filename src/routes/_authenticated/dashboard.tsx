@@ -193,7 +193,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "GRC / Security Compliance",
     "Incident Response / Threat Intelligence",
   ],
-  "QA & Testing": ["QA Engineer (Manual)", "QA Automation Engineer", "SDET"],
+  "QA and Testing": ["QA Engineer (Manual)", "QA Automation Engineer", "SDET"],
   Product: [
     "Product Manager",
     "Technical Product Manager",
