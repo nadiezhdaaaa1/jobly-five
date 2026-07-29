@@ -1887,10 +1887,6 @@ function ExperienceTab({
     ? "Pulled from your resume so you don't retype it — edit or add. Structured history sharpens matching; the PDF alone isn't enough."
     : "Add your work history manually, or upload a resume on the Documents tab to auto-fill it.";
 
-  const source = hasResume
-    ? `Parsed from ${resume.filename ?? "your resume"} — edit or add more.`
-    : "No resume yet — entries below are added manually.";
-
   return (
     <>
       <CardBig>
@@ -1912,9 +1908,6 @@ function ExperienceTab({
             </button>
           ) : null}
         </header>
-        <p className="mt-1 text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-          {source}
-        </p>
         <div className="mt-3 flex flex-col divide-y">
           {resume.data.experience.length === 0 ? (
             <div className="py-4 text-[13px] text-[color:var(--color-text-secondary)]">
