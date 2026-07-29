@@ -846,9 +846,9 @@ function QualityOverQuantity() {
 /* ------------------------------ Pricing ------------------------------ */
 
 function Pricing() {
-  const [period, setPeriod] = useState<"monthly" | "annual">("monthly");
+  const [period, setPeriod] = useState<"monthly" | "annual">("annual");
   const tabsRef = useRef<HTMLDivElement>(null);
-  const periods: Array<"monthly" | "annual"> = ["monthly", "annual"];
+  const periods: Array<"monthly" | "annual"> = ["annual", "monthly"];
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
 
