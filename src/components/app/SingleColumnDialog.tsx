@@ -151,16 +151,17 @@ export function SingleColumnDialog({
                       className="h-8 flex-1 rounded-[4px] border bg-white px-2 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
                       style={{ borderColor: "#E3E7E8" }}
                     />
-                    <button
-                      type="button"
-                      aria-label="Delete stage"
-                      title={reason}
-                      disabled={disabled}
-                      onClick={() => tryDeleteStage(s)}
-                      className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-white disabled:opacity-30"
-                    >
-                      <Trash size={14} strokeWidth={1.6} />
-                    </button>
+                    <IconTooltip label={reason}>
+                      <button
+                        type="button"
+                        aria-label="Delete stage"
+                        aria-disabled={disabled}
+                        onClick={() => !disabled && tryDeleteStage(s)}
+                        className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
+                      >
+                        <Trash size={14} strokeWidth={1.6} />
+                      </button>
+                    </IconTooltip>
                   </div>
                 );
               })}
