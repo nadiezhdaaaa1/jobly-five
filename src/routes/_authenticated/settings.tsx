@@ -425,6 +425,7 @@ function PlanCardsBlock({
                             fontWeight: 300,
                             fontSize: 12,
                             lineHeight: "16px",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           Best value
