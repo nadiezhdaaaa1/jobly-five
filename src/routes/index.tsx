@@ -846,162 +846,405 @@ function QualityOverQuantity() {
 /* ------------------------------ Pricing ------------------------------ */
 
 function Pricing() {
-  const [period, setPeriod] = useState<"monthly" | "6mo" | "annual">("annual");
-  const priceRows: Record<"monthly" | "6mo" | "annual", { price: string; billed: string; save?: string }> = {
-    monthly: { price: "$9.99", billed: "Billed monthly" },
-    "6mo": { price: "$7.99", billed: "Billed $47.94 every 6 months", save: "Save 20%" },
-    annual: { price: "$5.99", billed: "Billed $71.88 per year", save: "Save 40%" },
-  };
-  const rows: { label: string; free: string | boolean; pro: string | boolean }[] = [
-    { label: "Matches per digest", free: "Top 5", pro: "Top 5" },
-    { label: "Digest frequency", free: "Weekly", pro: "Daily" },
-    { label: "AI match score & \"why it fits\"", free: false, pro: true },
-    { label: "Application tracker", free: false, pro: true },
-    { label: "Follow-up reminders", free: false, pro: true },
-    { label: "\"Found a job\" pause", free: false, pro: true },
+  const [period, setPeriod] = useState<"monthly" | "annual">("monthly");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const periods: Array<"monthly" | "annual"> = ["monthly", "annual"];
+
+  const paid =
+    period === "monthly"
+      ? { name: "Monthly", struck: "", price: "$9.99", suffix: "per month", pill: "" }
+      : { name: "Annual", struck: "$9.99", price: "$5.79", suffix: "per month", pill: "Save $50.40" };
+
+  const features: { label: (plan: "free" | "paid") => string; freeIncluded: boolean }[] = [
+    { label: () => "Matches per digest — Top 5", freeIncluded: true },
+    {
+      label: (plan) => (plan === "free" ? "Digest frequency — Weekly" : "Digest frequency — Daily"),
+      freeIncluded: true,
+    },
+    { label: () => 'AI match score & "why it fits"', freeIncluded: false },
+    { label: () => "Application tracker", freeIncluded: false },
+    { label: () => "Follow-up reminders", freeIncluded: false },
+    { label: () => '"Found a job" pause', freeIncluded: false },
   ];
+
+  function onTabKey(e: React.KeyboardEvent<HTMLButtonElement>, idx: number) {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const next = e.key === "ArrowRight" ? (idx + 1) % periods.length : (idx - 1 + periods.length) % periods.length;
+    setPeriod(periods[next]);
+    const btns = tabsRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    btns?.[next]?.focus();
+  }
+
+  const CheckDot = ({ bg, stroke }: { bg: string; stroke: string }) => (
+    <span
+      className="inline-flex shrink-0 items-center justify-center rounded-full"
+      style={{ width: 16, height: 16, background: bg }}
+    >
+      <Check size={11} strokeWidth={2.5} style={{ color: stroke }} />
+    </span>
+  );
+
+  const DashBox = () => (
+    <span
+      className="inline-flex shrink-0 items-center justify-center"
+      style={{ width: 16, height: 16 }}
+      aria-hidden="true"
+    >
+      <span style={{ width: 8, height: 1.5, background: "#D0D6D8", borderRadius: 1 }} />
+    </span>
+  );
+
+  const FeatureList = ({ plan }: { plan: "free" | "paid" }) => (
+    <ul className="flex flex-col" style={{ gap: 12, padding: "8px 0" }}>
+      {features.map((f, i) => {
+        const included = plan === "paid" ? true : f.freeIncluded;
+        const labelColor = plan === "paid" ? "#090B0C" : "#4B585B";
+        return (
+          <li key={i} className="flex items-center" style={{ gap: 8 }}>
+            {plan === "paid" ? (
+              <CheckDot bg="#00F1A9" stroke="#090B0C" />
+            ) : included ? (
+              <CheckDot bg="#E3E7E8" stroke="#67787C" />
+            ) : (
+              <DashBox />
+            )}
+            <span
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontWeight: 300,
+                fontSize: 13,
+                lineHeight: "19.5px",
+                color: labelColor,
+              }}
+            >
+              {f.label(plan)}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
-    <section id="pricing" className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+    <section
+      id="pricing"
+      className="border-b border-[color:var(--color-border)]"
+      style={{ background: "#FFFFFF" }}
+    >
+      <div
+        className="mx-auto flex w-full flex-col items-center"
+        style={{ maxWidth: 1200, padding: "80px 24px", gap: 40 }}
+      >
+        {/* Header */}
+        <div className="text-center" style={{ maxWidth: 672 }}>
+          <h2
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 300,
+              fontSize: 36,
+              lineHeight: "40px",
+              letterSpacing: "-0.36px",
+              color: "#090B0C",
+            }}
+            className="max-md:!text-[28px] max-md:!leading-[1.15]"
+          >
             Simple pricing
           </h2>
-          <p className="mt-3 text-[color:var(--color-text-secondary)]">
+          <p
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontWeight: 200,
+              fontSize: 16,
+              lineHeight: "24px",
+              color: "#4B585B",
+              paddingTop: 12,
+            }}
+            className="max-md:!text-[14px]"
+          >
             Choose the tier that fits your pacing. Cancel or pause anytime.
           </p>
         </div>
 
-        {/* Plan cards — matches Settings styling */}
-        <div className="mt-10 grid gap-4 md:grid-cols-2 items-stretch">
-          {/* Free */}
-          <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
-            <div
-              className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
-              style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
-            >
-              <div className="flex items-baseline justify-between">
-                <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
-                <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
-              </div>
-              <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                The essentials to job-hunt cleanly.
-              </p>
-              <ul className="mt-3 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                {rows.map((r) => (
-                  <li key={r.label} className="flex items-center gap-2">
-                    {typeof r.free === "boolean" ? (
-                      r.free ? (
-                        <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
-                        </span>
-                      ) : (
-                        <Minus size={16} className="shrink-0 text-[color:var(--color-text-muted)]" />
-                      )
-                    ) : (
-                      <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                        <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
-                      </span>
-                    )}
-                    <span>
-                      {r.label}
-                      {typeof r.free === "string" ? <span className="text-[color:var(--color-text-muted)]"> — {r.free}</span> : null}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto pt-4">
-                <Link
-                  to="/quiz"
-                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+        {/* Billing toggle */}
+        <div
+          ref={tabsRef}
+          role="tablist"
+          aria-label="Billing period"
+          className="inline-flex items-center"
+          style={{ gap: 8, background: "#F1F3F3", borderRadius: 12, padding: 8 }}
+        >
+          {periods.map((p, idx) => {
+            const active = period === p;
+            const label = p === "monthly" ? "Monthly" : "Annual";
+            return (
+              <button
+                key={p}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                tabIndex={active ? 0 : -1}
+                onClick={() => setPeriod(p)}
+                onKeyDown={(e) => onTabKey(e, idx)}
+                className="inline-flex items-center"
+                style={{
+                  gap: 8,
+                  borderRadius: 8,
+                  padding: active ? (p === "annual" ? "9px 9px 9px 13px" : "9px 13px") : "8px 12px",
+                  background: active ? "#FFFFFF" : "transparent",
+                  border: active ? "1px solid #E3E7E8" : "1px solid transparent",
+                  boxShadow: active ? "0 1px 2px rgba(12,12,13,0.05)" : "none",
+                  cursor: "pointer",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-sans)",
+                    fontWeight: 400,
+                    fontSize: 14,
+                    lineHeight: "20px",
+                    color: active ? "#090B0C" : "#4B585B",
+                  }}
                 >
-                  Get started free
-                </Link>
+                  {label}
+                </span>
+                {p === "annual" ? (
+                  <span
+                    style={{
+                      background: "var(--mint, #D8FBEF)",
+                      borderRadius: 4,
+                      padding: "2px 4px",
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 300,
+                      fontSize: 12,
+                      lineHeight: 1.3,
+                      color: "var(--green, #0E735A)",
+                    }}
+                  >
+                    Best value
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Bento */}
+        <div
+          className="flex w-full items-stretch max-lg:!flex-col"
+          style={{ maxWidth: 800, gap: 20 }}
+        >
+          {/* Free shell */}
+          <div
+            className="flex-1 max-lg:order-2"
+            style={{ background: "#F1F3F3", borderRadius: 20, padding: 16 }}
+          >
+            <div
+              className="flex h-full flex-col"
+              style={{
+                background: "#F9FBFB",
+                border: "1px solid #FFFFFF",
+                borderRadius: 12,
+                padding: 21,
+                gap: 16,
+                boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
+              }}
+            >
+              <div className="relative flex flex-col" style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 400,
+                    fontSize: 16,
+                    lineHeight: "24px",
+                    color: "#090B0C",
+                  }}
+                >
+                  Free
+                </div>
+                <div
+                  className="mt-auto flex flex-col"
+                  style={{ gap: 4, justifyContent: "flex-end" }}
+                >
+                  <div style={{ height: 20 }} aria-hidden="true" />
+                  <div className="flex items-baseline" style={{ gap: 8 }}>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 400,
+                        fontSize: 32,
+                        lineHeight: 1.05,
+                        color: "#090B0C",
+                      }}
+                    >
+                      $0
+                    </span>
+                  </div>
+                </div>
               </div>
+              <FeatureList plan="free" />
+              <Link
+                to="/quiz"
+                className="inline-flex w-full items-center justify-center"
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #E3E7E8",
+                  borderRadius: 4,
+                  padding: "13px 17px",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "20px",
+                  color: "#090B0C",
+                }}
+              >
+                Get started free
+              </Link>
             </div>
           </div>
 
-          {/* Pro */}
-          <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
+          {/* Paid shell */}
+          <div
+            className="flex-1 max-lg:order-1"
+            style={{ background: "#F1F3F3", borderRadius: 20, padding: 16 }}
+          >
             <div
-              className="relative flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
-              style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
+              className="relative flex h-full flex-col"
+              style={{
+                background: "rgba(255,255,255,0.8)",
+                border: "1px solid #FFFFFF",
+                borderRadius: 12,
+                padding: 21,
+                gap: 16,
+                boxShadow: "0 1px 4px rgba(12,12,13,0.05)",
+                overflow: "hidden",
+                isolation: "isolate",
+              }}
             >
-              <span className="absolute -top-2 right-3 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-on-accent)]">
-                Recommended
-              </span>
-              <div className="flex items-baseline justify-between">
-                <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
-              </div>
-
-              {/* Billing period switcher */}
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                {(["monthly", "6mo", "annual"] as const).map((p) => {
-                  const active = period === p;
-                  const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
-                  return (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => { if (!active) setPeriod(p); }}
-                      aria-pressed={active}
-                      className={`inline-flex h-8 items-center gap-1 rounded-[4px] border px-3 button-small transition-colors ${
-                        active
-                          ? "bg-[color:var(--color-green)] text-white border-[color:var(--color-green)]"
-                          : "bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] border-[color:var(--color-border)] hover:bg-[#F9FBFB] hover:border-[#D0D6D8]"
-                      }`}
-                    >
-                      {label}
-                      {p === "annual" && !active ? (
-                        <span className="rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
-                          Best value
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]">{priceRows[period].price}</span>
-                <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
-                {priceRows[period].save ? (
-                  <span className="ml-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
-                    {priceRows[period].save}
+              {/* Glow */}
+              <span
+                aria-hidden="true"
+                className="pricing-paid-glow"
+                style={{
+                  position: "absolute",
+                  top: -64,
+                  right: -64,
+                  width: 200,
+                  height: 200,
+                  background:
+                    "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                  filter: "blur(40px)",
+                  opacity: 0.45,
+                  zIndex: 1,
+                  pointerEvents: "none",
+                }}
+              />
+              <div className="relative flex flex-col" style={{ flex: 1, zIndex: 2 }}>
+                <div
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 400,
+                    fontSize: 16,
+                    lineHeight: "24px",
+                    color: "#090B0C",
+                  }}
+                >
+                  {paid.name}
+                </div>
+                {paid.pill ? (
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      background: "#0E735A",
+                      borderRadius: 24,
+                      padding: "4px 8px",
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 400,
+                      fontSize: 12,
+                      lineHeight: "16px",
+                      color: "#FFFFFF",
+                    }}
+                  >
+                    {paid.pill}
                   </span>
                 ) : null}
-              </div>
-              <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-                {priceRows[period].billed}
-              </p>
-              <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
-              <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                {rows.map((r) => (
-                  <li key={r.label} className="flex items-center gap-2">
-                    <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                      <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
-                    </span>
-                    <span>
-                      {r.label}
-                      {typeof r.pro === "string" ? <span className="text-[color:var(--color-text-muted)]"> — {r.pro}</span> : null}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto pt-4">
-                <Link
-                  to="/quiz"
-                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                <div
+                  className="mt-auto flex flex-col"
+                  style={{ gap: 4, justifyContent: "flex-end" }}
                 >
-                  Start 3-day free trial
-                </Link>
-                <p className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">Cancel anytime before it ends — no charge.</p>
+                  <div
+                    style={{
+                      height: 20,
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 300,
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                      color: "#67787C",
+                      textDecoration: paid.struck ? "line-through" : "none",
+                    }}
+                  >
+                    {paid.struck || "\u00A0"}
+                  </div>
+                  <div className="flex items-baseline" style={{ gap: 8 }}>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 400,
+                        fontSize: 32,
+                        lineHeight: 1.05,
+                        color: "#090B0C",
+                      }}
+                    >
+                      {paid.price}
+                    </span>
+                    <span
+                      style={{
+                        fontFamily: "var(--font-sans)",
+                        fontWeight: 300,
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        color: "#67787C",
+                      }}
+                    >
+                      {paid.suffix}
+                    </span>
+                  </div>
+                </div>
               </div>
+              <div style={{ position: "relative", zIndex: 2 }}>
+                <FeatureList plan="paid" />
+              </div>
+              <Link
+                to="/quiz"
+                className="inline-flex w-full items-center justify-center"
+                style={{
+                  background: "#00F1A9",
+                  border: "1px solid #00F1A9",
+                  borderRadius: 4,
+                  padding: "13px 17px",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "20px",
+                  color: "#090B0C",
+                  position: "relative",
+                  zIndex: 2,
+                }}
+              >
+                Start 3-day free trial
+              </Link>
             </div>
           </div>
         </div>
-
       </div>
+      <style>{`
+        @media (max-width: 767px) {
+          #pricing > div { padding: 48px 24px !important; }
+          #pricing .pricing-paid-glow { width: 140px !important; height: 140px !important; }
+        }
+      `}</style>
     </section>
   );
 }
