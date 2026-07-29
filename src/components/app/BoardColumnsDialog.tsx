@@ -56,14 +56,18 @@ export function BoardColumnsDialog({
         className="relative z-10 flex max-h-[90vh] w-[92%] max-w-[560px] flex-col rounded-[8px] border bg-white p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <X size={16} strokeWidth={1.6} />
-        </button>
+        <div className="absolute right-3 top-3">
+          <IconTooltip label="Close">
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <X size={16} strokeWidth={1.6} />
+            </button>
+          </IconTooltip>
+        </div>
         <h2 className="pr-6 text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit columns
         </h2>
