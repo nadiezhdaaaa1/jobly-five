@@ -47,6 +47,7 @@ import {
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
+import { usePlan, isPro } from "@/lib/plan-store";
 import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
