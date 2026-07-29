@@ -857,7 +857,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </div>
 
       <div className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        <span className="font-semibold">Always on:</span> account & security (verify, sign-in, password), billing & receipts (trial, renewal, cancellation, failed payment), and data & legal (export, deletion). These are required and only sent when necessary.
+        <span className="font-semibold">Always on:</span> account and security (verify, sign-in, password), billing and receipts (trial, renewal, cancellation, failed payment), and data and legal (export, deletion). These are required and only sent when necessary.
       </div>
     </Card>
   );
