@@ -1171,14 +1171,14 @@ function Pricing() {
                 className="pricing-paid-glow"
                 style={{
                   position: "absolute",
-                  top: -64,
-                  right: -64,
-                  width: 200,
-                  height: 200,
+                  top: -120,
+                  right: -120,
+                  width: 360,
+                  height: 360,
                   background:
                     "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
-                  filter: "blur(40px)",
-                  opacity: 0.45,
+                  filter: "blur(60px)",
+                  opacity: 0.55,
                   zIndex: 1,
                   pointerEvents: "none",
                 }}
