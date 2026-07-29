@@ -708,18 +708,81 @@ function TrackerScreen() {
     return (
       <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
         <AppHeader active="tracker" />
-        <main className="mx-auto max-w-[720px] px-6 pb-24 pt-12">
-          <div className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-8 text-center">
-            <img src={proCube.url} alt="" aria-hidden className="mx-auto h-32 w-32 object-contain" />
-            <span className="mt-4 inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-3 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">Pro</span>
-            <h1 className="mt-3 text-[24px]" style={{ fontFamily: "var(--font-display)" }}>Track every application in one place</h1>
-            <p className="mx-auto mt-2 max-w-[440px] text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              Kanban board for Saved, Applied, Interview, Rejected, and Offers — with reminders. Available on Pro.
-            </p>
-            <Link to="/settings" className="mt-5 inline-flex h-11 items-center rounded-[4px] bg-[color:var(--color-accent)] px-5 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]">
-              Upgrade to Pro — $9.99/mo
-            </Link>
-            <div className="mt-2 text-[11px] text-[color:var(--color-text-muted)]">3-day free trial</div>
+        <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
+          {/* Header row (title only on Free) */}
+          <div className="flex flex-wrap items-center justify-between gap-4" style={{ minHeight: 36 }}>
+            <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
+              Tracker
+            </h1>
+          </div>
+          <div className="mx-auto mt-8 w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
+            <div
+              data-tracker-upsell
+              className="relative isolate flex flex-col items-center justify-center overflow-hidden rounded-[12px] border border-white bg-white/80"
+              style={{
+                boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
+                gap: 32,
+                padding: "49px 33px",
+              }}
+            >
+              <style>{`
+                @media (max-width: 767px) {
+                  [data-tracker-upsell] { padding: 40px 24px !important; gap: 24px !important; }
+                  [data-tracker-upsell] [data-tu-illus] { width: 96px !important; height: 96px !important; }
+                  [data-tracker-upsell] [data-tu-text] { padding-left: 0 !important; padding-right: 0 !important; }
+                  [data-tracker-upsell] [data-tu-headline] { font-size: 20px !important; line-height: 28px !important; }
+                  [data-tracker-upsell] [data-tu-glow] { width: 200px !important; height: 200px !important; bottom: -132px !important; }
+                  [data-tracker-upsell] [data-tu-btn] { width: 100% !important; }
+                }
+              `}</style>
+              <div
+                data-tu-glow
+                aria-hidden
+                className="pointer-events-none absolute"
+                style={{
+                  zIndex: 1,
+                  left: "50%",
+                  bottom: "-184.5px",
+                  transform: "translateX(-50%)",
+                  width: 280,
+                  height: 280,
+                  background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                  filter: "blur(56px)",
+                  opacity: 0.45,
+                }}
+              />
+              <img
+                data-tu-illus
+                src={proCube.url}
+                alt=""
+                aria-hidden
+                className="pointer-events-none object-contain"
+                style={{ position: "relative", zIndex: 4, width: 128, height: 128 }}
+              />
+              <div
+                data-tu-text
+                className="relative flex flex-col items-center text-center"
+                style={{ zIndex: 3, gap: 8, paddingLeft: 40, paddingRight: 40 }}
+              >
+                <div
+                  data-tu-headline
+                  style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 24, lineHeight: "32px", color: "#090B0C" }}
+                >
+                  Track every application in one place
+                </div>
+                <div style={{ fontWeight: 300, fontSize: 14, lineHeight: "20px", color: "#67787C" }}>
+                  Move every job through Saved, Applied, Interview, and Offer — with follow-up reminders so nothing slips.
+                </div>
+              </div>
+              <Link
+                data-tu-btn
+                to="/settings"
+                className="relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
+                style={{ zIndex: 2, padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+              >
+                Upgrade to Pro
+              </Link>
+            </div>
           </div>
         </main>
         <MobileTabBar active="tracker" />
