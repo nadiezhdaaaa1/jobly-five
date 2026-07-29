@@ -134,9 +134,9 @@ export function SingleColumnDialog({
                 const isLast = col.stages.length <= 1;
                 const disabled = isLast || inUse > 0;
                 const reason = isLast
-                  ? "Keep at least one stage."
+                  ? "Keep at least one stage"
                   : inUse > 0
-                  ? `In use by ${inUse} active job${inUse === 1 ? "" : "s"}.`
+                  ? `In use by ${inUse} active job${inUse === 1 ? "" : "s"}`
                   : "Delete stage";
                 return (
                   <div key={s} className="flex items-center gap-1">
