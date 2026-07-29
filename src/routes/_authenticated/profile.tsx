@@ -924,7 +924,11 @@ function DocumentsTab({
         onClose={() => setUploadOpen(false)}
         onFile={(file) => {
           if (resume.files.length >= MAX_FILES) {
-            onToast(`Limit of ${MAX_FILES} resumes reached`);
+            onToast(
+              pro
+                ? `Limit of ${MAX_FILES} resumes reached`
+                : "Upgrade to Pro to store more resumes"
+            );
             setUploadOpen(false);
             return;
           }
