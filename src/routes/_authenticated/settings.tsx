@@ -763,7 +763,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
   });
   const groups: { label: string; rows: { key: string; label: string; caption?: string }[] }[] = [
     {
-      label: "Digest & matches",
+      label: "Digest and matches",
       rows: [
         { key: "digest_ready", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
         { key: "hi_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
@@ -772,18 +772,18 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       ],
     },
     {
-      label: "Applications & tracker",
+      label: "Applications and tracker",
       rows: [
-        { key: "interview", label: "Interview reminders & prep", caption: "The day before, plus your prep pack." },
+        { key: "interview", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
         { key: "followup", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
         { key: "stale", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
         { key: "gmail", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
       ],
     },
     {
-      label: "Account & lifecycle",
+      label: "Account and lifecycle",
       rows: [
-        { key: "product", label: "Product updates & tips" },
+        { key: "product", label: "Product updates and tips" },
         { key: "reengage", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
       ],
     },
@@ -857,7 +857,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </div>
 
       <div className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        <span className="font-semibold">Always on:</span> account & security (verify, sign-in, password), billing & receipts (trial, renewal, cancellation, failed payment), and data & legal (export, deletion). These are required and only sent when necessary.
+        <span className="font-semibold">Always on:</span> account and security (verify, sign-in, password), billing and receipts (trial, renewal, cancellation, failed payment), and data and legal (export, deletion). These are required and only sent when necessary.
       </div>
     </Card>
   );
