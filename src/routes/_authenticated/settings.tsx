@@ -801,7 +801,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             type="button"
             disabled={!pro}
             onClick={() => pro && setFreq("daily")}
-            className={`inline-flex h-8 items-center gap-1.5 rounded-[4px] border px-3 text-[13px] transition-colors ${
+            className={`inline-flex h-10 items-center gap-1.5 rounded-[4px] border px-4 text-[14px] transition-colors ${
               freq === "daily"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
@@ -815,7 +815,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
           <button
             type="button"
             onClick={() => setFreq("weekly")}
-            className={`inline-flex h-8 items-center rounded-[4px] border px-3 text-[13px] transition-colors ${
+            className={`inline-flex h-10 items-center rounded-[4px] border px-4 text-[14px] transition-colors ${
               freq === "weekly"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
