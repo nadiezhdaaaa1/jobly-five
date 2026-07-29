@@ -93,18 +93,75 @@ export function BoardColumnsDialog({
           Add a new column, or rename and reorder existing ones. Saved, Applied, Offer, and Rejected are single columns.
         </p>
 
-        <div className="mt-4 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] p-1" style={{ background: "#F1F3F3" }}>
+        <div className="mt-4 flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="New column name"
+            value={newInterviewTitle}
+            onChange={(e) => setNewInterviewTitle(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && canAddInterview) {
+                addInterviewColumn(newInterviewTitle);
+                setNewInterviewTitle("");
+              }
+            }}
+            className="h-9 min-w-0 flex-1 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+            style={{ borderColor: "#E3E7E8" }}
+          />
+          <button
+            type="button"
+            disabled={!canAddInterview}
+            onClick={() => {
+              addInterviewColumn(newInterviewTitle);
+              setNewInterviewTitle("");
+            }}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
+            style={{ background: "var(--color-accent)" }}
+          >
+            <Plus size={14} strokeWidth={2} />
+            Add column
+          </button>
+        </div>
+
+        <div className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] p-1" style={{ background: "#F1F3F3" }}>
           {columns.map((c, idx) => (
             <div
               key={c.id}
+              draggable
+              onDragStart={(e) => {
+                setDragId(c.id);
+                e.dataTransfer.effectAllowed = "move";
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                if (dragId && overId !== c.id) setOverId(c.id);
+              }}
+              onDragLeave={() => setOverId((v) => (v === c.id ? null : v))}
+              onDrop={(e) => {
+                e.preventDefault();
+                handleDrop(c.id);
+              }}
+              onDragEnd={() => {
+                setDragId(null);
+                setOverId(null);
+              }}
               className="rounded-[8px] border p-2"
               style={{
                 background: "rgba(255,255,255,0.9)",
-                borderColor: "#FFFFFF",
+                borderColor: overId === c.id && dragId && dragId !== c.id ? "var(--color-accent)" : "#FFFFFF",
+                opacity: dragId === c.id ? 0.5 : 1,
                 boxShadow: "0 1px 4px 0 rgba(12,12,13,0.05)",
               }}
             >
               <div className="flex items-center gap-2">
+                <IconTooltip label="Drag to reorder">
+                  <span
+                    aria-label="Drag to reorder"
+                    className="flex h-6 w-5 cursor-grab items-center justify-center text-[color:var(--color-text-muted)] active:cursor-grabbing"
+                  >
+                    <Grip size={16} strokeWidth={1.6} />
+                  </span>
+                </IconTooltip>
                 <div className="flex flex-row items-center gap-0.5">
                   <IconTooltip label="Move up">
                     <button
