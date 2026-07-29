@@ -837,7 +837,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             </div>
             <div className="mt-2 divide-y">
               {g.rows.map((r) => (
-                <div key={r.key} className="flex items-start justify-between gap-4 py-3">
+                <div key={r.key} className="flex items-center justify-between gap-4 py-3">
                   <div className="min-w-0">
                     <div className="text-[14px] text-[color:var(--color-foreground)]" style={{ fontWeight: 600 }}>{r.label}</div>
                     {r.caption ? (
