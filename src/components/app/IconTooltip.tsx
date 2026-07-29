@@ -19,7 +19,7 @@ export function IconTooltip({
         <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
         <TooltipContent
           side={side}
-          className="rounded-[4px] bg-[color:var(--color-foreground)] px-2 py-1 text-[12px] font-medium text-white"
+          className="z-[200] rounded-[4px] bg-[color:var(--color-foreground)] px-2 py-1 text-[12px] font-medium text-white"
         >
           {label}
         </TooltipContent>
