@@ -487,7 +487,7 @@ function TrackerUpsell() {
     <aside className="rounded-[12px] bg-[#F1F3F3] p-[4px]">
       <div
         data-tracker-upsell-mini
-        className="relative isolate flex flex-col items-start gap-3 overflow-hidden rounded-[8px] border border-white bg-white/80"
+        className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80"
         style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", padding: 16 }}
       >
         <div
