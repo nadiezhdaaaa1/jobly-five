@@ -5,7 +5,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { usePlan, setPlan, type Plan } from "@/lib/plan-store";
+import { usePlan, setPlan, useHasHadPro, setHasHadPro, type Plan } from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -88,19 +88,12 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
-  const [period, setPeriod] = useState<"monthly" | "6mo" | "annual">("annual");
-  const [switchOpen, setSwitchOpen] = useState<null | "monthly" | "6mo" | "annual">(null);
 
   const proSummary = "Daily digest · match scores · application tracker";
   const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026 · started with a 14-day free trial";
   const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
-  const priceRows: Record<"monthly" | "6mo" | "annual", { price: string; billed: string; save?: string }> = {
-    monthly: { price: "$9.99", billed: "Billed monthly" },
-    "6mo": { price: "$7.99", billed: "Billed $47.94 every 6 months", save: "Save 20%" },
-    annual: { price: "$5.99", billed: "Billed $71.88 per year", save: "Save 40%" },
-  };
 
   return (
     <Card
@@ -150,146 +143,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </div>
       </div>
 
-      {/* Two plan cards */}
-      <div className="mt-5 grid gap-4 md:grid-cols-2 items-stretch">
-        {/* Free card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
-        <div className="flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6" style={{ boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}>
-          <div className="flex items-baseline justify-between">
-            <div className="text-[20px] font-semibold text-[color:var(--color-foreground)]">Free</div>
-            <div className="text-[22px] font-semibold text-[color:var(--color-foreground)]">$0</div>
-          </div>
-          <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            The essentials to job-hunt cleanly.
-          </p>
-          <ul className="mt-3 space-y-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300, lineHeight: 1.9 }}>
-            <li>Weekly job digest</li>
-            <li>Match score on every job</li>
-            <li>Basic tracker (Saved · Applied · Interview)</li>
-            <li>1 resume, 1 cover-letter template</li>
-            <li>Report ghost / scam jobs</li>
-          </ul>
-          <div className="mt-auto pt-4">
-            {plan === "free" ? (
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-green)] px-3 py-2 text-[12px] font-semibold text-white">
-                Current plan
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setCancelStep(plan === "paused" ? 2 : 1)}
-                className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-              >
-                Downgrade to Free
-              </button>
-            )}
-          </div>
-        </div>
-        </div>
-
-        {/* Pro card */}
-        <div className="rounded-[12px] bg-[#F1F3F3] p-[12px] h-full">
-        <div
-          className="relative flex h-full flex-col rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
-          style={{ borderColor: "var(--color-accent)", boxShadow: "0px 1px 4px 0px rgba(12,12,13,0.05)" }}
-        >
-          {(plan === "pro" || plan === "paused") ? (
-            <span
-              className="absolute -top-2 right-3 inline-flex items-center rounded-[4px] bg-[color:var(--color-accent)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-on-accent)]"
-            >
-              Current plan
-            </span>
-          ) : null}
-          <div className="flex items-baseline justify-between">
-            <div className="text-[20px] font-semibold" style={{ color: "var(--color-green)" }}>Pro</div>
-          </div>
-
-          {/* Billing period switcher */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {(["monthly", "6mo", "annual"] as const).map((p) => {
-              const active = period === p;
-              const label = p === "monthly" ? "Monthly" : p === "6mo" ? "6 months" : "Annual";
-              return (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => {
-                    if (active) return;
-                    if (plan === "pro" && p !== period) { setSwitchOpen(p); return; }
-                    setPeriod(p);
-                  }}
-                  aria-pressed={active}
-                  className={`inline-flex h-8 items-center gap-1 rounded-[4px] border px-3 button-small transition-colors ${
-                    active
-                      ? "bg-[color:var(--color-green)] text-white border-[color:var(--color-green)]"
-                      : "bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] border-[color:var(--color-border)] hover:bg-[#F9FBFB] hover:border-[#D0D6D8]"
-                  }`}
-                >
-                  {label}
-                  {p === "annual" && !active ? (
-                    <span className="rounded-[3px] bg-[color:var(--color-mint)] px-1 py-[1px] text-[9px] font-semibold text-[color:var(--color-green)]">
-                      Best value
-                    </span>
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-[22px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-sans)" }}>
-              {priceRows[period].price}
-            </span>
-            <span className="text-[13px] text-[color:var(--color-text-muted)]">/mo</span>
-            {priceRows[period].save ? (
-              <span className="ml-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">
-                {priceRows[period].save}
-              </span>
-            ) : null}
-          </div>
-          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            {priceRows[period].billed}
-          </p>
-
-          <p className="mt-3 text-[13px] font-semibold text-[color:var(--color-foreground)]">Everything in Free, plus:</p>
-          <ul className="mt-2 flex flex-col gap-2 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            {[
-              "Daily digest + instant high-match alerts",
-              "Full \"why this match\" + \"raise your %\"",
-              "Customizable tracker pipeline (unlimited stages)",
-              "Up to 5 cover-letter templates (rich text)",
-              "Screening answers + 1-click apply extension",
-              "CV, portfolio & achievements PDF",
-              "Gmail auto-status, follow-ups, interview prep",
-              "Source filters + blocked companies",
-              "Priority support",
-            ].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                  <IconCheck size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
-                </span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-auto pt-4">
-            {plan === "free" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => { setPlan("pro"); onFlash("Welcome to Pro — your 14-day trial has started."); }}
-                  className="inline-flex h-10 w-full items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-                >
-                  Start 14-day free trial
-                </button>
-                <p className="mt-1 text-[11px] text-[color:var(--color-text-muted)]">Cancel anytime before it ends — no charge.</p>
-              </>
-            ) : null}
-          </div>
-        </div>
-        </div>
-      </div>
+      {/* Two plan cards — Pro (wide, left) + Free (narrow, right) */}
+      <PlanCardsBlock plan={plan} onFlash={onFlash} onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)} />
 
       {/* Coming soon + info box */}
       <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
@@ -381,31 +236,433 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
-      {/* Period-switch confirm */}
-      {switchOpen ? (
-        <Modal onClose={() => setSwitchOpen(null)} title="Switch billing period?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Switch to {switchOpen === "monthly" ? "monthly" : switchOpen === "6mo" ? "6-month" : "annual"} billing at the next renewal?
-          </p>
-          <div className="mt-5 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => { setPeriod(switchOpen); onFlash("Billing period updated."); setSwitchOpen(null); }}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-            >
-              Confirm
-            </button>
-            <button
-              type="button"
-              onClick={() => setSwitchOpen(null)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Cancel
-            </button>
-          </div>
-        </Modal>
-      ) : null}
     </Card>
+  );
+}
+
+const TRIAL_DAYS = 14;
+const PRO_MONTHLY = 9.99;
+const PRO_ANNUAL_MONTHLY = 5.79;
+const PRO_ANNUAL_TOTAL = 69.48;
+
+function PlanCardsBlock({
+  plan,
+  onFlash,
+  onDowngrade,
+}: {
+  plan: Plan;
+  onFlash: (m: string) => void;
+  onDowngrade: () => void;
+}) {
+  const hasHadPro = useHasHadPro();
+  const [period, setPeriod] = useState<"annual" | "monthly">("annual");
+
+  const isPlanFree = plan === "free";
+  const isPlanPro = plan === "pro" || plan === "paused";
+
+  const savings = (PRO_MONTHLY * 12 - PRO_ANNUAL_MONTHLY * 12).toFixed(2);
+
+  const proLabel =
+    isPlanPro
+      ? "Current plan"
+      : !hasHadPro
+        ? `Start free ${TRIAL_DAYS}-day trial`
+        : "Upgrade to Pro";
+
+  const freeFeatures: Array<{ label: string; included: boolean }> = [
+    { label: "Matches per digest — Top 5", included: true },
+    { label: "Digest frequency — Weekly", included: true },
+    { label: "AI match score & \u201Cwhy it fits\u201D", included: false },
+    { label: "Application tracker", included: false },
+    { label: "Follow-up reminders", included: false },
+    { label: "\u201CFound a job\u201D pause", included: false },
+  ];
+  const proFeatures: string[] = [
+    "Matches per digest — Top 5",
+    "Digest frequency — Daily",
+    "AI match score & \u201Cwhy it fits\u201D",
+    "Application tracker",
+    "Follow-up reminders",
+    "\u201CFound a job\u201D pause",
+  ];
+
+  function onProClick() {
+    if (isPlanPro) return;
+    if (!hasHadPro) {
+      setPlan("pro");
+      onFlash(`Welcome to Pro — your ${TRIAL_DAYS}-day trial has started.`);
+    } else {
+      setPlan("pro");
+      onFlash("Welcome back to Pro.");
+    }
+  }
+
+  return (
+    <div className="mt-5 w-full max-w-[800px]">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch lg:gap-4">
+        {/* Pro card — left, wider */}
+        <div
+          className="rounded-[20px] p-2 md:p-3 lg:min-w-0"
+          style={{ background: "#F1F3F3", flex: "504 0 0" }}
+        >
+          <div
+            className="relative flex h-full flex-col gap-4 rounded-[12px] p-5 md:p-[21px]"
+            style={{
+              background: "rgba(255,255,255,0.8)",
+              border: "1px solid #FFFFFF",
+              boxShadow: "0 1px 4px rgba(12,12,13,0.05)",
+              overflow: "hidden",
+              isolation: "isolate",
+            }}
+          >
+            {/* Glow */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute"
+              style={{
+                width: 200,
+                height: 200,
+                top: -64,
+                right: -64,
+                zIndex: 1,
+                background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                filter: "blur(40px)",
+                opacity: 0.45,
+              }}
+            />
+
+            {/* Head */}
+            <div className="relative flex-1" style={{ zIndex: 2 }}>
+              {/* Toggle (top-right on desktop; static on mobile) */}
+              <div
+                role="tablist"
+                aria-label="Billing period"
+                className="mb-3 flex w-full items-center gap-1 rounded-[10px] p-1 md:absolute md:right-0 md:top-0 md:mb-0 md:w-auto"
+                style={{ background: "rgba(0,0,0,0.08)" }}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+                    setPeriod((p) => (p === "annual" ? "monthly" : "annual"));
+                  }
+                }}
+              >
+                {(["annual", "monthly"] as const).map((seg) => {
+                  const active = period === seg;
+                  const label = seg === "annual" ? "Annual" : "Monthly";
+                  return (
+                    <button
+                      key={seg}
+                      role="tab"
+                      type="button"
+                      aria-selected={active}
+                      onClick={() => setPeriod(seg)}
+                      className="flex-1 md:flex-none inline-flex items-center justify-center gap-1 rounded-[6px]"
+                      style={{
+                        background: active ? "#FFFFFF" : "transparent",
+                        boxShadow: active ? "0 1px 2px rgba(12,12,13,0.05)" : undefined,
+                        padding: active ? "4px 4px 4px 8px" : "5px 8px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontFamily: "var(--font-sans)",
+                          fontWeight: 400,
+                          fontSize: 12,
+                          lineHeight: "16px",
+                          color: active ? "#090B0C" : "#4B585B",
+                        }}
+                      >
+                        {label}
+                      </span>
+                      {seg === "annual" ? (
+                        <span
+                          className="inline-flex items-center"
+                          style={{
+                            background: "var(--color-mint, #D8FBEF)",
+                            color: "var(--color-green, #0E735A)",
+                            borderRadius: 4,
+                            padding: "2px 4px",
+                            height: 16,
+                            fontFamily: "var(--font-sans)",
+                            fontWeight: 300,
+                            fontSize: 12,
+                            lineHeight: "16px",
+                          }}
+                        >
+                          Best value
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Plan name */}
+              <div
+                style={{
+                  fontFamily: "var(--font-display, var(--font-sans))",
+                  fontWeight: 400,
+                  fontSize: 16,
+                  lineHeight: "24px",
+                  color: "#090B0C",
+                }}
+              >
+                {period === "annual" ? "Annual" : "Monthly"}
+              </div>
+
+              {/* Price group — pinned near bottom of head */}
+              <div className="mt-6 flex flex-col gap-1 relative">
+                {/* Struck row (always rendered) */}
+                <div style={{ height: 20 }}>
+                  {period === "annual" ? (
+                    <span
+                      style={{
+                        fontFamily: "var(--font-sans)",
+                        fontWeight: 300,
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        color: "#67787C",
+                        textDecoration: "line-through",
+                      }}
+                    >
+                      ${PRO_MONTHLY.toFixed(2)}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span
+                    style={{
+                      fontFamily: "var(--font-display, var(--font-sans))",
+                      fontWeight: 400,
+                      fontSize: 32,
+                      lineHeight: 1.05,
+                      color: "#090B0C",
+                    }}
+                  >
+                    ${period === "annual" ? PRO_ANNUAL_MONTHLY.toFixed(2) : PRO_MONTHLY.toFixed(2)}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 300,
+                      fontSize: 14,
+                      lineHeight: 1.5,
+                      color: "#67787C",
+                    }}
+                  >
+                    per month
+                  </span>
+                  {period === "annual" ? (
+                    <span
+                      className="ml-1 hidden md:inline-flex items-center md:absolute md:right-0 md:bottom-0"
+                      style={{
+                        background: "#0E735A",
+                        color: "#FFFFFF",
+                        borderRadius: 24,
+                        padding: "4px 8px",
+                        fontFamily: "var(--font-sans)",
+                        fontWeight: 400,
+                        fontSize: 12,
+                        lineHeight: "16px",
+                      }}
+                    >
+                      Save ${savings}
+                    </span>
+                  ) : null}
+                </div>
+                {period === "annual" ? (
+                  <span
+                    className="md:hidden inline-flex items-center self-start"
+                    style={{
+                      background: "#0E735A",
+                      color: "#FFFFFF",
+                      borderRadius: 24,
+                      padding: "4px 8px",
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 400,
+                      fontSize: 12,
+                      lineHeight: "16px",
+                    }}
+                  >
+                    Save ${savings}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Feature list */}
+            <ul className="relative flex flex-col gap-3 py-2" style={{ zIndex: 2 }}>
+              {proFeatures.map((label) => (
+                <li key={label} className="flex items-center gap-2">
+                  <span
+                    className="inline-flex shrink-0 items-center justify-center rounded-full"
+                    style={{ width: 16, height: 16, background: "#00F1A9" }}
+                  >
+                    <IconCheck size={11} strokeWidth={2.5} style={{ color: "#090B0C" }} />
+                  </span>
+                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 13, lineHeight: "19.5px", color: "#090B0C" }}>
+                    {label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            {/* Button */}
+            <div className="relative" style={{ zIndex: 2 }}>
+              <button
+                type="button"
+                onClick={onProClick}
+                disabled={isPlanPro}
+                className="w-full inline-flex items-center justify-center"
+                style={{
+                  background: "#00F1A9",
+                  border: "1px solid #00F1A9",
+                  color: "#090B0C",
+                  borderRadius: 4,
+                  padding: "13px 17px",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "20px",
+                  opacity: isPlanPro ? 0.6 : 1,
+                  cursor: isPlanPro ? "default" : "pointer",
+                }}
+              >
+                {proLabel}
+              </button>
+              {!isPlanPro && !hasHadPro ? (
+                <p
+                  className="mt-2 text-center"
+                  style={{
+                    fontFamily: "var(--font-sans)",
+                    fontWeight: 300,
+                    fontSize: 12,
+                    lineHeight: "16px",
+                    color: "#67787C",
+                  }}
+                >
+                  {TRIAL_DAYS} days free, then {period === "annual"
+                    ? `$${PRO_ANNUAL_MONTHLY.toFixed(2)}/mo billed annually ($${PRO_ANNUAL_TOTAL.toFixed(2)})`
+                    : `$${PRO_MONTHLY.toFixed(2)}/mo`}
+                  . Cancel anytime.
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
+        {/* Free card — right, narrower */}
+        <div
+          className="rounded-[20px] p-2 md:p-3 lg:min-w-0"
+          style={{ background: "#F1F3F3", flex: "280 0 0" }}
+        >
+          <div
+            className="flex h-full flex-col gap-4 rounded-[12px] p-5 md:p-[21px]"
+            style={{
+              background: "#F9FBFB",
+              border: "1px solid #FFFFFF",
+              boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
+            }}
+          >
+            <div className="flex-1">
+              <div
+                style={{
+                  fontFamily: "var(--font-display, var(--font-sans))",
+                  fontWeight: 400,
+                  fontSize: 16,
+                  lineHeight: "24px",
+                  color: "#090B0C",
+                }}
+              >
+                Free
+              </div>
+              <div className="mt-6 flex flex-col gap-1">
+                <div style={{ height: 20 }} />
+                <div className="flex items-baseline gap-2">
+                  <span
+                    style={{
+                      fontFamily: "var(--font-display, var(--font-sans))",
+                      fontWeight: 400,
+                      fontSize: 32,
+                      lineHeight: 1.05,
+                      color: "#090B0C",
+                    }}
+                  >
+                    $0
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ul className="flex flex-col gap-3 py-2">
+              {freeFeatures.map((f) => (
+                <li key={f.label} className="flex items-center gap-2">
+                  {f.included ? (
+                    <span
+                      className="inline-flex shrink-0 items-center justify-center rounded-full"
+                      style={{ width: 16, height: 16, background: "#E3E7E8" }}
+                    >
+                      <IconCheck size={11} strokeWidth={2.5} style={{ color: "#67787C" }} />
+                    </span>
+                  ) : (
+                    <span
+                      className="inline-flex shrink-0 items-center justify-center"
+                      style={{ width: 16, height: 16 }}
+                      aria-hidden
+                    >
+                      <span style={{ width: 10, height: 2, background: "#D0D6D8", display: "block" }} />
+                    </span>
+                  )}
+                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 13, lineHeight: "19.5px", color: "#4B585B" }}>
+                    {f.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (isPlanFree) return;
+                  onDowngrade();
+                }}
+                disabled={isPlanFree}
+                className="w-full inline-flex items-center justify-center"
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid #E3E7E8",
+                  color: "#090B0C",
+                  borderRadius: 4,
+                  padding: "13px 17px",
+                  fontFamily: "var(--font-sans)",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "20px",
+                  opacity: isPlanFree ? 0.6 : 1,
+                  cursor: isPlanFree ? "default" : "pointer",
+                }}
+              >
+                {isPlanFree ? "Current plan" : "Downgrade to Free"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dev toggle for prototyping trial eligibility */}
+      <div className="mt-3 flex items-center gap-2 text-[11px] text-[color:var(--color-text-muted)]">
+        <span>Dev:</span>
+        <label className="inline-flex items-center gap-1">
+          <input
+            type="checkbox"
+            checked={hasHadPro}
+            onChange={(e) => setHasHadPro(e.target.checked)}
+          />
+          <span>hasHadPro</span>
+        </label>
+        <span className="opacity-60">· current plan: {plan}</span>
+      </div>
+    </div>
   );
 }
 
