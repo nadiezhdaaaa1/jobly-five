@@ -288,7 +288,7 @@ function PlanCardsBlock({
     { label: "Matches per digest — Top 5", included: true },
     { label: "Digest frequency — Weekly", included: true },
     { label: "AI match score and \u201Cwhy it fits\u201D", included: false },
-    { label: "Application tracker", included: true },
+    { label: "Application tracker", included: false },
     { label: "Follow-up reminders", included: false },
     { label: "\u201CFound a job\u201D pause", included: false },
   ];
