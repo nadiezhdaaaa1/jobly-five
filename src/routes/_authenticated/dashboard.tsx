@@ -222,7 +222,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Software / Solutions Architect",
     "Director / VP Engineering / CTO",
   ],
-  "Program, Project & Technical-Adjacent": [
+  "Program, Project and Technical-Adjacent": [
     "Technical Program Manager (TPM)",
     "Project Manager (Tech)",
     "Scrum Master / Agile Coach",
