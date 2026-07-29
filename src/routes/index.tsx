@@ -849,6 +849,21 @@ function Pricing() {
   const [period, setPeriod] = useState<"monthly" | "annual">("monthly");
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["monthly", "annual"];
+  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const measure = () => {
+      const idx = periods.indexOf(period);
+      const btn = btnRefs.current[idx];
+      const container = tabsRef.current;
+      if (!btn || !container) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [period]);
 
   const paid =
     period === "monthly"
