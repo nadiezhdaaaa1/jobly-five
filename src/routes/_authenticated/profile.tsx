@@ -2013,7 +2013,7 @@ function JobEntry({
             {entry.dates ? <span className="text-[color:var(--color-text-muted)]">· {entry.dates}</span> : null}
           </div>
           {(entry.description || entry.bullets.length) ? (
-            <p className="mt-1 line-clamp-4 break-words text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            <p className="mt-2 line-clamp-4 break-words text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               {entry.description || entry.bullets.join(" ")}
             </p>
           ) : null}
