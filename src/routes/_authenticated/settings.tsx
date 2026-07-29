@@ -48,7 +48,6 @@ function SettingsScreen() {
             <BlockedCompaniesCard onFlash={flashMsg} />
           </div>
           <aside className="flex flex-col gap-3">
-            <BillingCard plan={plan} />
             <SecurityCard onFlash={flashMsg} />
             <DangerZoneCard onFlash={flashMsg} />
           </aside>
