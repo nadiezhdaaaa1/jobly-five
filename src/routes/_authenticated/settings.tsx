@@ -839,7 +839,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               {g.rows.map((r) => (
                 <div key={r.key} className="flex items-center justify-between gap-4 py-3">
                   <div className="min-w-0">
-                    <h6 className="text-[16px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>{r.label}</h6>
+                    <h6 className="text-[16px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, lineHeight: 1.4 }}>{r.label}</h6>
                     {r.caption ? (
                       <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
                     ) : null}
