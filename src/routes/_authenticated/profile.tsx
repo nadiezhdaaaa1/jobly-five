@@ -1583,8 +1583,9 @@ function PortfolioTab({
             const ok = addLink({ type: cfg.portfolioTypes[0] ?? "Other", url: "" });
             if (!ok) onToast("Link limit reached");
           }}
-          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
+          <Plus size={16} stroke={2} />
           Add link
         </button>
       </CardBig>
@@ -1666,8 +1667,9 @@ function PortfolioTab({
         <button
           type="button"
           onClick={() => addSocial({ network: "LinkedIn", url: "" })}
-          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
+          <Plus size={16} stroke={2} />
           Add profile
         </button>
       </CardBig>
@@ -1926,8 +1928,9 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingExp(addExperience())}
-          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
+          <Plus size={16} stroke={2} />
           Add previous job
         </button>
       </CardBig>
@@ -1952,8 +1955,9 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingEdu(addEducation())}
-          className="mt-3 inline-flex h-8 items-center self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
+          <Plus size={16} stroke={2} />
           Add education
         </button>
       </CardBig>
