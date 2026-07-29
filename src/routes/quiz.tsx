@@ -2619,7 +2619,7 @@ export function AxesStep({
 
   return (
     <div>
-      <StepHeading>Scope & focus</StepHeading>
+      <StepHeading>Scope and focus</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         A few details we use to weight matches.
       </p>
