@@ -866,33 +866,53 @@ function DocumentsTab({
                 </div>
               )}
               {!pro && (
-                <div className="mt-1 flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-mint)]/40 p-4">
+                <div
+                  className="relative isolate mt-1 flex flex-col items-start gap-4 overflow-hidden rounded-[12px] border border-white bg-white/80 p-5 md:flex-row md:items-center md:gap-7"
+                  style={{
+                    boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
+                    padding: undefined,
+                  }}
+                >
                   <div
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px]"
-                    style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
                     aria-hidden
-                  >
-                    <Lock size={16} strokeWidth={1.8} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
-                      <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
-                        {overLimit ? "Extra resumes are locked" : "Store up to 5 resumes with Pro"}
-                      </div>
+                    className="pointer-events-none absolute right-[-32px] top-4 z-[1] hidden h-[140px] w-[140px] md:block"
+                    style={{
+                      right: "-64px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      width: 200,
+                      height: 200,
+                      background:
+                        "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                      filter: "blur(40px)",
+                      opacity: 0.45,
+                    }}
+                  />
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute right-[-32px] top-[-32px] z-[1] block h-[140px] w-[140px] md:hidden"
+                    style={{
+                      background:
+                        "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+                      filter: "blur(40px)",
+                      opacity: 0.45,
+                    }}
+                  />
+                  <div className="relative z-[3] flex min-w-0 flex-1 flex-col gap-1">
+                    <div className="text-[16px] leading-[24px] text-[#090B0C]" style={{ fontWeight: 400 }}>
+                      Store up to 5 resumes with Pro
                     </div>
-                    <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-                      {overLimit
-                        ? "Your Free plan keeps 1 resume active — your primary. Upgrade to Pro to unlock the others, or delete the ones you don't need."
-                        : "Free plan is limited to 1 resume. Upgrade to Pro to tailor separate resumes for different roles."}
-                    </p>
-                    <Link
-                      to="/settings"
-                      className="mt-3 inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
-                    >
-                      Upgrade to Pro
-                    </Link>
+                    <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
+                      Free plan is limited to 1 resume. Upgrade to Pro to tailor separate resumes for different roles.
+                    </div>
                   </div>
+                  <Link
+                    to="/settings"
+                    className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
+                    style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+                  >
+                    Upgrade to Pro
+                  </Link>
                 </div>
               )}
               {pro && atLimit && (
