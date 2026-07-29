@@ -9,9 +9,9 @@ const CANONICAL = "https://jobly-five.lovable.app/legal/email";
 export const Route = createFileRoute("/legal/email")({
   head: () => ({
     meta: [
-      { title: "Email & Communications Consent — Jobly" },
+      { title: "Email and Communications Consent — Jobly" },
       { name: "description", content: "What messages Jobly sends, how you consent, and how to opt out." },
-      { property: "og:title", content: "Email & Communications Consent — Jobly" },
+      { property: "og:title", content: "Email and Communications Consent — Jobly" },
       { property: "og:description", content: "What messages Jobly sends, how you consent, and how to opt out." },
       { property: "og:url", content: CANONICAL },
       { property: "og:type", content: "website" },

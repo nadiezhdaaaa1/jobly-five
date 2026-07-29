@@ -287,15 +287,15 @@ function PlanCardsBlock({
   const freeFeatures: Array<{ label: string; included: boolean }> = [
     { label: "Matches per digest — Top 5", included: true },
     { label: "Digest frequency — Weekly", included: true },
-    { label: "AI match score & \u201Cwhy it fits\u201D", included: false },
-    { label: "Application tracker", included: false },
+    { label: "AI match score and \u201Cwhy it fits\u201D", included: false },
+    { label: "Application tracker", included: true },
     { label: "Follow-up reminders", included: false },
     { label: "\u201CFound a job\u201D pause", included: false },
   ];
   const proFeatures: string[] = [
     "Matches per digest — Top 5",
     "Digest frequency — Daily",
-    "AI match score & \u201Cwhy it fits\u201D",
+    "AI match score and \u201Cwhy it fits\u201D",
     "Application tracker",
     "Follow-up reminders",
     "\u201CFound a job\u201D pause",

@@ -876,7 +876,7 @@ function Pricing() {
       label: (plan) => (plan === "free" ? "Digest frequency — Weekly" : "Digest frequency — Daily"),
       freeIncluded: true,
     },
-    { label: () => 'AI match score & "why it fits"', freeIncluded: false },
+    { label: () => 'AI match score and "why it fits"', freeIncluded: false },
     { label: () => "Application tracker", freeIncluded: false },
     { label: () => "Follow-up reminders", freeIncluded: false },
     { label: () => '"Found a job" pause', freeIncluded: false },

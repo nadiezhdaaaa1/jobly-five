@@ -9,9 +9,9 @@ const CANONICAL = "https://jobly-five.lovable.app/legal/billing";
 export const Route = createFileRoute("/legal/billing")({
   head: () => ({
     meta: [
-      { title: "Subscription & Billing Terms — Jobly" },
+      { title: "Subscription and Billing Terms — Jobly" },
       { name: "description", content: "How Jobly subscriptions, trials, auto-renewal, and billing work." },
-      { property: "og:title", content: "Subscription & Billing Terms — Jobly" },
+      { property: "og:title", content: "Subscription and Billing Terms — Jobly" },
       { property: "og:description", content: "How Jobly subscriptions, trials, auto-renewal, and billing work." },
       { property: "og:url", content: CANONICAL },
       { property: "og:type", content: "website" },

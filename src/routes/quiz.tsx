@@ -727,11 +727,11 @@ export function StepShell({
 export const SUMMARY_LABEL: Record<StepKey, string> = {
   field: "Field",
   role: "Role",
-  stack: "Stack",
-  hard: "Hard skills",
-  tools: "Tools",
-  soft: "Soft skills",
-  axes: "Scope & focus",
+   stack: "Stack",
+   hard: "Hard skills",
+   tools: "Tools",
+   soft: "Soft skills",
+   axes: "Scope and focus",
   level: "Experience",
   loc: "Location and salary",
   email: "Email",
@@ -831,19 +831,19 @@ export function FieldStep({
 }) {
   const FIELD_ORDER = [
     "Engineering",
-    "Data & AI / ML",
+    "Data and AI / ML",
     "Product",
     "Design",
-    "Infrastructure, DevOps & Cloud",
-    "QA & Testing",
+    "Infrastructure, DevOps and Cloud",
+    "QA and Testing",
     "Security",
-    "Engineering Leadership & Architecture",
+    "Engineering Leadership and Architecture",
     "Sales",
     "Marketing",
-    "Program, Project & Technical-Adjacent",
+    "Program, Project and Technical-Adjacent",
     "C-level / Executive",
-    "Support & Customer Success",
-    "HR & Recruitment / People",
+    "Support and Customer Success",
+    "HR and Recruitment / People",
     "Emerging / Specialized",
   ];
   const available = getGroups();
@@ -2619,7 +2619,7 @@ export function AxesStep({
 
   return (
     <div>
-      <StepHeading>Scope & focus</StepHeading>
+      <StepHeading>Scope and focus</StepHeading>
       <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
         A few details we use to weight matches.
       </p>

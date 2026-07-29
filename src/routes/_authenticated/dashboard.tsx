@@ -160,7 +160,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Systems / Low-level Engineer",
     "Desktop / Enterprise Application Developer",
   ],
-  "Data & AI / ML": [
+  "Data and AI / ML": [
     "Data Analyst",
     "Data Scientist",
     "Data Engineer",
@@ -175,7 +175,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Data Architect",
     "Database Administrator (DBA)",
   ],
-  "Infrastructure, DevOps & Cloud": [
+  "Infrastructure, DevOps and Cloud": [
     "DevOps Engineer",
     "Site Reliability Engineer (SRE)",
     "Platform Engineer",
@@ -193,7 +193,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "GRC / Security Compliance",
     "Incident Response / Threat Intelligence",
   ],
-  "QA & Testing": ["QA Engineer (Manual)", "QA Automation Engineer", "SDET"],
+  "QA and Testing": ["QA Engineer (Manual)", "QA Automation Engineer", "SDET"],
   Product: [
     "Product Manager",
     "Technical Product Manager",
@@ -215,14 +215,14 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Visual / Graphic Designer",
     "Motion Designer",
   ],
-  "Engineering Leadership & Architecture": [
+  "Engineering Leadership and Architecture": [
     "Tech Lead",
     "Staff / Principal Engineer",
     "Engineering Manager",
     "Software / Solutions Architect",
     "Director / VP Engineering / CTO",
   ],
-  "Program, Project & Technical-Adjacent": [
+  "Program, Project and Technical-Adjacent": [
     "Technical Program Manager (TPM)",
     "Project Manager (Tech)",
     "Scrum Master / Agile Coach",
