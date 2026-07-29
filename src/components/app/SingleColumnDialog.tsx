@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  IconArrowDown as ArrowDown,
-  IconArrowUp as ArrowUp,
-  IconPlus as Plus,
-  IconTrash as Trash,
-  IconX as X,
-} from "@tabler/icons-react";
+import { IconPlus as Plus, IconTrash as Trash, IconX as X } from "@tabler/icons-react";
 import {
   addStage,
   canDeleteColumn,
@@ -13,7 +7,6 @@ import {
   deleteStage,
   findColumn,
   KIND_LABEL,
-  moveStage,
   renameColumn,
   renameStage,
   useColumns,
