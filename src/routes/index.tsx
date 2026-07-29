@@ -849,6 +849,21 @@ function Pricing() {
   const [period, setPeriod] = useState<"monthly" | "annual">("monthly");
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["monthly", "annual"];
+  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const measure = () => {
+      const idx = periods.indexOf(period);
+      const btn = btnRefs.current[idx];
+      const container = tabsRef.current;
+      if (!btn || !container) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [period]);
 
   const paid =
     period === "monthly"
@@ -981,13 +996,13 @@ function Pricing() {
             style={{
               top: 8,
               bottom: 8,
-              left: period === "monthly" ? 8 : "calc(50% + 4px)",
-              right: period === "monthly" ? "calc(50% + 4px)" : 8,
+              left: indicator.left,
+              width: indicator.width,
               background: "#FFFFFF",
               border: "1px solid #E3E7E8",
               borderRadius: 8,
               boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-              transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), right 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           />
           {periods.map((p, idx) => {
@@ -996,6 +1011,7 @@ function Pricing() {
             return (
               <button
                 key={p}
+                ref={(el) => { btnRefs.current[idx] = el; }}
                 type="button"
                 role="tab"
                 aria-selected={active}
@@ -1004,8 +1020,6 @@ function Pricing() {
                 onKeyDown={(e) => onTabKey(e, idx)}
                 className="inline-flex items-center group relative"
                 style={{
-                  flex: "1 1 0",
-                  justifyContent: "center",
                   gap: 8,
                   borderRadius: 8,
                   padding: p === "annual" ? "9px 9px 9px 13px" : "9px 13px",
