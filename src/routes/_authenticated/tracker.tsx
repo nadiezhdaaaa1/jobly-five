@@ -434,44 +434,17 @@ function KanbanCard({
 }
 
 function Row3({ kind, record }: { kind: ColumnKind; record: JobRecord }) {
-  if (kind === "saved") {
-    return (
-      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
-        Saved {dateHelpers.shortDate(record.savedAt)}
-      </div>
-    );
-  }
-  if (kind === "applied") {
-    return (
-      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
-        Applied {dateHelpers.shortDate(record.appliedAt)}
-      </div>
-    );
-  }
-  if (kind === "rejected") {
-    return (
-      <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
-        Rejected on {dateHelpers.shortDate(record.rejectionAt)}
-      </div>
-    );
+  if (kind === "saved" || kind === "applied" || kind === "rejected") {
+    return null;
   }
   if (kind === "interview") {
-    const movedLabel = "Moved in";
-    const movedDate = record.interviewAt ?? record.movedAt;
     return (
-      <>
-        {movedDate ? (
-          <div className="text-[12px] font-light" style={{ color: META_GREY, lineHeight: "16px" }}>
-            {movedLabel} {dateHelpers.shortDate(movedDate)}
-          </div>
-        ) : null}
-        {(record.interviewStage || record.reminderAt) ? (
-          <div className="flex flex-wrap gap-1">
-            {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
-            {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
-          </div>
-        ) : null}
-      </>
+      (record.interviewStage || record.reminderAt) ? (
+        <div className="flex flex-wrap gap-1">
+          {record.interviewStage ? <Chip>{record.interviewStage}</Chip> : null}
+          {record.reminderAt ? <Chip>{dateHelpers.shortDateTime(record.reminderAt)}</Chip> : null}
+        </div>
+      ) : null
     );
   }
   // offer
