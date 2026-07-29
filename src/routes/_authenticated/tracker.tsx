@@ -709,13 +709,7 @@ function TrackerScreen() {
       <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
         <AppHeader active="tracker" />
         <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
-          {/* Header row (title only on Free) */}
-          <div className="flex flex-wrap items-center justify-between gap-4" style={{ minHeight: 36 }}>
-            <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
-              Tracker
-            </h1>
-          </div>
-          <div className="mx-auto mt-8 w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
+          <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
             <div
               data-tracker-upsell
               className="relative isolate flex flex-col items-center justify-center overflow-hidden rounded-[12px] border border-white bg-white/80"
