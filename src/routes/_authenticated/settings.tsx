@@ -94,7 +94,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026 · started with a 14-day free trial";
+  const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026";
   const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
