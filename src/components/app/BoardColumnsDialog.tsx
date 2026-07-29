@@ -123,7 +123,10 @@ export function BoardColumnsDialog({
           </button>
         </div>
 
-        <div className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] p-1" style={{ background: "#F1F3F3" }}>
+        <div
+          className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] border p-1"
+          style={{ background: "#F1F3F3", borderColor: "#F1F3F3" }}
+        >
           {columns.map((c, idx) => (
             <div
               key={c.id}
