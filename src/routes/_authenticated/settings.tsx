@@ -763,7 +763,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
   });
   const groups: { label: string; rows: { key: string; label: string; caption?: string }[] }[] = [
     {
-      label: "Digest & matches",
+      label: "Digest and matches",
       rows: [
         { key: "digest_ready", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
         { key: "hi_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
@@ -772,18 +772,18 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       ],
     },
     {
-      label: "Applications & tracker",
+      label: "Applications and tracker",
       rows: [
-        { key: "interview", label: "Interview reminders & prep", caption: "The day before, plus your prep pack." },
+        { key: "interview", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
         { key: "followup", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
         { key: "stale", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
         { key: "gmail", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
       ],
     },
     {
-      label: "Account & lifecycle",
+      label: "Account and lifecycle",
       rows: [
-        { key: "product", label: "Product updates & tips" },
+        { key: "product", label: "Product updates and tips" },
         { key: "reengage", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
       ],
     },
