@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import {
   IconArrowDown as ArrowDown,
   IconArrowUp as ArrowUp,
   IconCheck as Check,
+  IconLock as Lock,
   IconPencil as Pencil,
   IconPlus as Plus,
   IconTrash as Trash,
