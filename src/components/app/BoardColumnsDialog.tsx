@@ -19,6 +19,7 @@ import {
   resetColumns,
   useColumns,
 } from "@/lib/board-columns-store";
+import { countActiveInColumn } from "@/lib/tracker-store";
 
 export function BoardColumnsDialog({
   open,
