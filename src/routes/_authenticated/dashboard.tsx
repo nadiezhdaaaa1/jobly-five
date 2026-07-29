@@ -671,7 +671,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <div className="body-medium text-[color:var(--color-foreground)]">
+        <div className="body-small text-[color:var(--color-foreground)]">
           {job.salary}
         </div>
         <div className="ml-auto flex items-center gap-1">
