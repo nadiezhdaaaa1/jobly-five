@@ -612,7 +612,7 @@ function KanbanColumn({
       </div>
       {/* Cards */}
       <div
-        className={`flex-col lg:min-h-full lg:flex-1 ${collapsed ? "hidden lg:flex" : "flex"}`}
+        className={`flex-col ${collapsed ? "hidden lg:flex" : "flex"}`}
         style={{ gap: 4, background: "#F1F3F3", padding: 4, borderRadius: 12 }}
       >
         {isDropTarget ? (
@@ -881,7 +881,7 @@ function TrackerScreen() {
 
         {/* Board */}
         <div className="mt-6 lg:mx-[calc(50%-50vw)]">
-        <div className="flex flex-col gap-4 lg:min-h-[calc(100vh-160px)] lg:flex-row lg:items-stretch lg:gap-2 lg:overflow-x-auto lg:pb-2 lg:px-[max(24px,calc(50vw-600px))]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-2 lg:overflow-x-auto lg:pb-2 lg:px-[max(24px,calc(50vw-600px))]">
             {columns.map((c) => (
               <KanbanColumn
                 key={c.id}
