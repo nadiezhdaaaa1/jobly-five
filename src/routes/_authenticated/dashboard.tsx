@@ -175,7 +175,7 @@ const FIELD_ROLES: Record<string, string[]> = {
     "Data Architect",
     "Database Administrator (DBA)",
   ],
-  "Infrastructure, DevOps & Cloud": [
+  "Infrastructure, DevOps and Cloud": [
     "DevOps Engineer",
     "Site Reliability Engineer (SRE)",
     "Platform Engineer",
