@@ -1887,10 +1887,6 @@ function ExperienceTab({
     ? "Pulled from your resume so you don't retype it — edit or add. Structured history sharpens matching; the PDF alone isn't enough."
     : "Add your work history manually, or upload a resume on the Documents tab to auto-fill it.";
 
-  const source = hasResume
-    ? `Parsed from ${resume.filename ?? "your resume"} — edit or add more.`
-    : "No resume yet — entries below are added manually.";
-
   return (
     <>
       <CardBig>
