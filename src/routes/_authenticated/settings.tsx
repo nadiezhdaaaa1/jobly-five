@@ -62,7 +62,12 @@ function Card({ title, children, actions }: { title: string; children: React.Rea
   return (
     <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
       <div className="flex items-center justify-between gap-4">
-        <h2 className="text-[15px] font-semibold text-[color:var(--color-foreground)]">{title}</h2>
+        <h2
+          className="text-[18px] text-[color:var(--color-foreground)]"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400, letterSpacing: "-0.01em" }}
+        >
+          {title}
+        </h2>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
       <div className="mt-4">{children}</div>
