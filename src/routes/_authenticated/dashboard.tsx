@@ -1303,7 +1303,7 @@ function JobsScreen() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
-      <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
+      <main className="mx-auto max-w-[1200px] px-6 pt-6">
         <div className={`grid gap-6 lg:gap-8 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
           <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
             {pro ? <TrackerWidget /> : <TrackerUpsell />}
