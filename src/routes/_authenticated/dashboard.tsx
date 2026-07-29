@@ -482,6 +482,47 @@ function TrackerWidget() {
   );
 }
 
+function TrackerUpsell() {
+  return (
+    <aside className="rounded-[12px] bg-[#F1F3F3] p-[4px]">
+      <div
+        data-tracker-upsell-mini
+        className="relative isolate flex flex-col items-start gap-3 overflow-hidden rounded-[8px] border border-white bg-white/80"
+        style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", padding: 16 }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute z-[1]"
+          style={{
+            right: -60,
+            top: -60,
+            width: 160,
+            height: 160,
+            background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+            filter: "blur(40px)",
+            opacity: 0.45,
+          }}
+        />
+        <div className="relative z-[3] flex flex-col gap-1">
+          <div className="text-[16px] leading-[24px] text-[#090B0C]" style={{ fontWeight: 400 }}>
+            Track applications with Pro
+          </div>
+          <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
+            Unlock the tracker to manage every job from saved to offer.
+          </div>
+        </div>
+        <Link
+          to="/settings"
+          className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
+          style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+        >
+          Upgrade to Pro
+        </Link>
+      </div>
+    </aside>
+  );
+}
+
 function SalaryTeaser() {
   return (
     <aside className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
@@ -1258,14 +1299,9 @@ function JobsScreen() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
       <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
-        {!pro ? (
-          <div className="mb-6 rounded-[6px] border border-[color:var(--color-green)] bg-[color:var(--color-mint)]/40 px-4 py-3 text-[13px]">
-            You're on <span className="font-semibold">Free</span> — weekly digest, top 5 matches. Match scores and the tracker are Pro.
-          </div>
-        ) : null}
         <div className={`grid gap-6 lg:gap-8 ${filtersOpen ? "lg:grid-cols-[200px_minmax(0,1fr)_304px]" : "lg:grid-cols-[200px_minmax(0,1fr)_0px]"}`}>
           <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:self-start">
-            <TrackerWidget />
+            {pro ? <TrackerWidget /> : <TrackerUpsell />}
             <SalaryTeaser />
           </div>
 
