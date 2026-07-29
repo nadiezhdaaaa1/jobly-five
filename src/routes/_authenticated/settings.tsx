@@ -873,7 +873,7 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } }}
-          placeholder="Company name (e.g. Acme Corp)"
+          placeholder="Company name"
           className="h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
         />
         <button
