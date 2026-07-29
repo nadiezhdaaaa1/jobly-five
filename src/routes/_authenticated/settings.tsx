@@ -256,6 +256,27 @@ function PlanCardsBlock({
 }) {
   const hasHadPro = useHasHadPro();
   const [period, setPeriod] = useState<"annual" | "monthly">("annual");
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [indicator, setIndicator] = useState<{ left: number; width: number; height: number; top: number }>({ left: 0, width: 0, height: 0, top: 0 });
+  const segments = ["annual", "monthly"] as const;
+
+  useEffect(() => {
+    const measure = () => {
+      const idx = segments.indexOf(period);
+      const btn = btnRefs.current[idx];
+      if (!btn) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth, height: btn.offsetHeight, top: btn.offsetTop });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (tabsRef.current) ro.observe(tabsRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [period]);
 
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
