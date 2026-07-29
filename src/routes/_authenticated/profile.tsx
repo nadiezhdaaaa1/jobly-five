@@ -2014,7 +2014,11 @@ function JobEntry({
           </h6>
           <div className="mt-1.5 flex flex-wrap items-baseline gap-2" style={{ fontWeight: 300, fontSize: 14, lineHeight: 1.5 }}>
             <span className="text-[color:var(--color-text-secondary)]">{entry.company}</span>
-            {entry.dates ? <span className="text-[color:var(--color-text-muted)]">· {entry.dates}</span> : null}
+            {entry.dates ? (
+              <span className="text-[color:var(--color-text-muted)]">
+                · {(entry.dates.match(/^\s*(\d{4}\s*[—-]\s*(?:Present|\d{4}))/i)?.[1] ?? entry.dates).trim()}
+              </span>
+            ) : null}
           </div>
           {(entry.description || entry.bullets.length) ? (
             <p className="mt-2 line-clamp-4 break-words text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
