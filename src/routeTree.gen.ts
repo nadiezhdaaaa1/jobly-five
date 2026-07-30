@@ -27,6 +27,7 @@ import { Route as LegalDmcaRouteImport } from './routes/legal.dmca'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
+import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -123,6 +124,11 @@ const LegalBillingRoute = LegalBillingRouteImport.update({
   path: '/legal/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRssDotxmlRoute = BlogRssDotxmlRouteImport.update({
+  id: '/blog/rss.xml',
+  path: '/blog/rss.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -221,6 +229,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -248,6 +257,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tracker'
     | '/blog/$slug'
+    | '/blog/rss.xml'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -273,6 +283,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/tracker'
     | '/blog/$slug'
+    | '/blog/rss.xml'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/tracker'
     | '/blog/$slug'
+    | '/blog/rss.xml'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BlogRssDotxmlRoute: typeof BlogRssDotxmlRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
@@ -460,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalBillingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/rss.xml': {
+      id: '/blog/rss.xml'
+      path: '/blog/rss.xml'
+      fullPath: '/blog/rss.xml'
+      preLoaderRoute: typeof BlogRssDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/blog/$slug'
@@ -535,6 +555,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BlogRssDotxmlRoute: BlogRssDotxmlRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
