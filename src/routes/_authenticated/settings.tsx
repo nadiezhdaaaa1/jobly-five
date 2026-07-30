@@ -41,16 +41,12 @@ function SettingsScreen() {
           </div>
         ) : null}
 
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="flex flex-col gap-5">
-            <PlanCard plan={plan} onFlash={flashMsg} />
-            <NotificationsCard plan={plan} />
-          </div>
-          <aside className="flex flex-col gap-5">
-            <BlockedCompaniesCard onFlash={flashMsg} />
-            <SecurityCard onFlash={flashMsg} />
-            <DangerZoneCard onFlash={flashMsg} />
-          </aside>
+        <div className="mt-6 flex flex-col gap-5">
+          <PlanCard plan={plan} onFlash={flashMsg} />
+          <NotificationsCard plan={plan} />
+          <BlockedCompaniesCard onFlash={flashMsg} />
+          <SecurityCard onFlash={flashMsg} />
+          <DangerZoneCard onFlash={flashMsg} />
         </div>
       </main>
       <MobileTabBar active="settings" />
