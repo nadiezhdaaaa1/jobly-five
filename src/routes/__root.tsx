@@ -84,11 +84,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Jobly — Relevant jobs, first. Scored to you." },
       { property: "og:description", content: "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily — with an AI match score and why each fits." },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Jobly" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Jobly — Relevant jobs, first. Scored to you." },
       { name: "twitter:description", content: "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily — with an AI match score and why each fits." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f965be-a71c-408c-88e4-7c07755b768b/id-preview-a2e56716--b6a571a3-355e-4f02-baa7-954b5019600e.lovable.app-1784218758072.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f965be-a71c-408c-88e4-7c07755b768b/id-preview-a2e56716--b6a571a3-355e-4f02-baa7-954b5019600e.lovable.app-1784218758072.png" },
     ],
     links: [
       {

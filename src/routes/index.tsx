@@ -20,6 +20,10 @@ import {
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 
+const ORIGIN = "https://jobly-five.lovable.app";
+const OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f965be-a71c-408c-88e4-7c07755b768b/id-preview-a2e56716--b6a571a3-355e-4f02-baa7-954b5019600e.lovable.app-1784218758072.png";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -34,6 +38,79 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content:
           "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily — with an AI match score and why each fits.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${ORIGIN}/` },
+      { property: "og:image", content: OG_IMAGE },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
+    ],
+    links: [{ rel: "canonical", href: `${ORIGIN}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Jobly",
+          url: ORIGIN,
+          description:
+            "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Jobly",
+          url: ORIGIN,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "Jobly",
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web",
+          url: ORIGIN,
+          offers: [
+            {
+              "@type": "Offer",
+              name: "Free",
+              price: "0",
+              priceCurrency: "USD",
+            },
+            {
+              "@type": "Offer",
+              name: "Pro (monthly)",
+              price: "9.99",
+              priceCurrency: "USD",
+              category: "Monthly subscription",
+            },
+            {
+              "@type": "Offer",
+              name: "Pro (annual)",
+              price: "69.48",
+              priceCurrency: "USD",
+              category: "Annual subscription",
+            },
+          ],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
       },
     ],
   }),
@@ -221,6 +298,8 @@ function HeroCard() {
       <img
         src={heroAsset.url}
         alt="A person checking Jobly matches on their phone"
+        fetchPriority="high"
+        decoding="async"
         className="absolute bottom-0 right-0 z-10 h-[320px] w-full rounded-xl object-cover object-right-top md:h-[420px] lg:h-[520px]"
       />
     </div>
@@ -272,7 +351,7 @@ function InboxToOffer() {
               key={t.name}
               className="relative h-[520px] overflow-hidden rounded-xl bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
-              <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
+              <img src={t.photo} alt={t.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-8">
                 <h5 className="text-xl">"{t.quote}"</h5>
                 <p className="body-medium mt-3 opacity-80">
@@ -634,19 +713,19 @@ function QuizChip({ label }: { label: string }) {
 
 function QuizPreview() {
   return (
-    <img src={how1Asset.url} alt="Quiz preview" className="block w-full h-auto" />
+    <img src={how1Asset.url} alt="Quiz preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 
 function MatchPreview() {
   return (
-    <img src={how2Asset.url} alt="Match preview" className="block w-full h-auto" />
+    <img src={how2Asset.url} alt="Match preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 
 function InboxPreview() {
   return (
-    <img src={how3Asset.url} alt="Inbox preview" className="block w-full h-auto" />
+    <img src={how3Asset.url} alt="Inbox preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 

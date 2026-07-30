@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
     meta: [
       { title: "Jobs — Jobly" },
       { name: "description", content: "Your live wall of matched roles. Filter by role, skills, level, sources, and match score." },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: JobsScreen,

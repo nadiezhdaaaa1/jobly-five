@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as QuizRouteImport } from './routes/quiz'
@@ -33,6 +34,11 @@ import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/quiz': typeof QuizRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resume': typeof AuthenticatedResumeRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/quiz': typeof QuizRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resume': typeof AuthenticatedResumeRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/quiz': typeof QuizRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/resume': typeof AuthenticatedResumeRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/dashboard'
     | '/profile'
     | '/resume'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/dashboard'
     | '/profile'
     | '/resume'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/reset-password'
     | '/signup'
+    | '/sitemap.xml'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
     | '/_authenticated/resume'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   QuizRoute: typeof QuizRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
@@ -321,6 +334,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   QuizRoute: QuizRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,

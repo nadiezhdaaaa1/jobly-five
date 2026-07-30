@@ -10,7 +10,7 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Sign up — Jobly" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: SignupPage,

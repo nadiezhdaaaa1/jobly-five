@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /quiz
+Disallow: /matches
+Disallow: /dashboard
+Disallow: /tracker
+Disallow: /profile
+Disallow: /resume
+Disallow: /settings
+
+Sitemap: https://jobly-five.lovable.app/sitemap.xml

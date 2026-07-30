@@ -52,6 +52,8 @@ export const Route = createFileRoute("/blog/$slug")({
             image: abs,
             author: { "@type": "Person", name: post.author },
             datePublished: post.date,
+            dateModified: post.date,
+            publisher: { "@type": "Organization", name: "Jobly", url: ORIGIN },
             mainEntityOfPage: url,
           }),
         },

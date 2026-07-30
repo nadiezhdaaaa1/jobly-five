@@ -13,7 +13,7 @@ export const Route = createFileRoute("/matches")({
   head: () => ({
     meta: [
       { title: "Your top matches — Jobly" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: MatchesPage,
