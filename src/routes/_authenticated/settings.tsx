@@ -909,7 +909,7 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
                 type="button"
                 aria-label={`Show jobs from ${c} again`}
                 onClick={() => { unblockCompany(c); onFlash(`${c} is visible again.`); }}
-                className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[rgba(0,0,0,0.08)]"
               >
                 <IconX size={12} strokeWidth={1.8} />
               </button>
