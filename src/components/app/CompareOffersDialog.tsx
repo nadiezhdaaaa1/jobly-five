@@ -48,15 +48,7 @@ type Row = {
 };
 
 const ROWS: Row[] = [
-  { label: "Stage", value: (e) => e.rec.offerStatus ?? "" },
-  { label: "Salary", value: (e) => e.job.salary ?? "" },
-  { label: "Location", value: (e) => e.job.location ?? "" },
-  { label: "Workplace", value: (e) => e.job.details?.workplace ?? "" },
-  { label: "Employment", value: (e) => e.job.employmentType ?? e.job.details?.employmentType ?? "" },
-  { label: "Experience", value: (e) => e.job.details?.experienceLevel ?? "" },
-  { label: "Match score", value: (e) => (typeof e.job.score === "number" ? `${e.job.score}%` : "") },
-  { label: "Offer received", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
-  { label: "Reminder", value: (e) => fmtDateTime(e.rec.reminderAt) },
+  { label: "Move to offer", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
   { label: "Offer details", value: (e) => e.rec.offerDetails ?? "", multiline: true },
   { label: "Notes", value: (e) => e.rec.notes ?? "", multiline: true },
 ];
