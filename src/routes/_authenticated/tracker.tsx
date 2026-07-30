@@ -679,6 +679,7 @@ function TrackerScreen() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   if (!isPro(plan)) {
     return (
