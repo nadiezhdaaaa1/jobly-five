@@ -28,7 +28,7 @@ function SettingsScreen() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="settings" />
-      <main className="mx-auto max-w-[1200px] px-6 pb-24 pt-6">
+      <main className="mx-auto max-w-[880px] px-6 pb-24 pt-6">
         <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
           Settings
         </h1>
