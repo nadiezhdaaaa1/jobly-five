@@ -1175,7 +1175,7 @@ function FiltersSidebar({
         </FilterSection>
       </div>
 
-      <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:bg-[color:var(--color-background)] lg:px-0">
+      <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:border-t-0 lg:bg-[#F1F3F3] lg:px-0 lg:pb-0">
         <button type="button" onClick={onSave} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Save</button>
         <button
           type="button"
