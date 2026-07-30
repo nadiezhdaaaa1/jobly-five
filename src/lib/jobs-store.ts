@@ -166,12 +166,27 @@ export async function loadJobs(): Promise<void> {
   if (loaded) return;
   if (loading) return loading;
   loading = (async () => {
-    const { data, error } = await supabase.from("jobs").select("*").order("posted_days_ago", { ascending: true }).limit(15000);
-    if (error || !data) {
+    // PostgREST caps every response at 1000 rows, so `.limit(15000)` silently
+    // returned only the 1000 newest jobs. Page through the table instead.
+    const PAGE = 1000;
+    const rows: Record<string, unknown>[] = [];
+    for (let from = 0; from < 30000; from += PAGE) {
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .order("posted_days_ago", { ascending: true })
+        .order("id", { ascending: true })
+        .range(from, from + PAGE - 1);
+      if (error) break;
+      if (!data || data.length === 0) break;
+      rows.push(...(data as Record<string, unknown>[]));
+      if (data.length < PAGE) break;
+    }
+    if (rows.length === 0) {
       loading = null;
       return;
     }
-    dbJobs = data.map((row: Record<string, unknown>) => ({
+    dbJobs = rows.map((row: Record<string, unknown>) => ({
       id: row.id as string,
       title: row.title as string,
       company: (row.company as string) ?? "",
