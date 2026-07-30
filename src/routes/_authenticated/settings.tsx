@@ -1147,18 +1147,6 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
           </button>
         </div>
 
-        <div className="mt-6 border-t pt-4">
-          <button
-            type="button"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate({ to: "/login" });
-            }}
-            className="text-[13px] text-[color:var(--color-text-secondary)] hover:underline"
-          >
-            Log out{email ? ` — ${email}` : ""}
-          </button>
-        </div>
       </Card>
 
       {confirmOpen ? (
