@@ -27,6 +27,20 @@ export const Route = createFileRoute("/contact")({
       { name: "twitter:description", content: "Get in touch with the Jobly team." },
     ],
     links: [{ rel: "canonical", href: CANONICAL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: CONTACT_FAQ.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      },
+    ],
   }),
   component: ContactPage,
 });
