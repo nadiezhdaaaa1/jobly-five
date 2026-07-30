@@ -878,6 +878,23 @@ function TrackerScreen() {
               <LayoutColumns size={14} strokeWidth={1.8} />
               Edit columns
             </button>
+            {canCompareOffers ? (
+              <button
+                type="button"
+                onClick={() => setCompareOpen(true)}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[4px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                style={{ color: MUTED_TEXT }}
+              >
+                <Columns size={14} strokeWidth={1.8} />
+                Compare offers
+                <span
+                  className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[4px] px-1 text-[11px]"
+                  style={{ background: "#E3E7E8", color: DARK }}
+                >
+                  {offerEntries.length}
+                </span>
+              </button>
+            ) : null}
           </div>
           <div className="flex items-center gap-6" style={{ height: 24 }}>
             <label className="flex cursor-pointer items-center gap-2">
@@ -939,6 +956,16 @@ function TrackerScreen() {
         onBack={() => {
           setEditColumnId(null);
           setColumnsDialogOpen(true);
+        }}
+      />
+
+      <CompareOffersDialog
+        open={compareOpen && canCompareOffers}
+        offers={offerEntries}
+        onClose={() => setCompareOpen(false)}
+        onOpenJob={(j) => {
+          setCompareOpen(false);
+          setOpenJob(j);
         }}
       />
 
