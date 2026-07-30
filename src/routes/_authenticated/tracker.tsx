@@ -850,7 +850,7 @@ function TrackerScreen() {
   const offerEntries = columns
     .filter((c) => c.kind === "offer")
     .flatMap((c) => (buckets[c.id] ?? []).filter((e) => !e.rec.archived));
-  const canCompareOffers = offerEntries.length > 2;
+  const canCompareOffers = offerEntries.length >= 2;
 
   // Dispatcher: any move (drag OR "Move to") funnels through here.
   // Applied routes to the ApplyModal; interview/test/offer/rejection open their
