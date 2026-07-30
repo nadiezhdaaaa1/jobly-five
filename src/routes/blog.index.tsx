@@ -48,10 +48,17 @@ export const Route = createFileRoute("/blog/")({
       : "Data, career tips, and behind-the-scenes stories on how tech hiring actually works — from the Jobly team.";
     const self = buildUrl(page, category);
 
-    const links: { rel: string; href: string }[] = [{ rel: "canonical", href: self }];
+    const links: { rel: string; href: string; type?: string; title?: string }[] = [
+      { rel: "canonical", href: self },
+    ];
     if (page > 1) links.push({ rel: "prev", href: buildUrl(page - 1, category) });
     if (page < totalPages) links.push({ rel: "next", href: buildUrl(page + 1, category) });
-    links.push({ rel: "alternate", href: `${ORIGIN}/blog/rss.xml` });
+    links.push({
+      rel: "alternate",
+      type: "application/rss+xml",
+      title: "The Jobly blog RSS feed",
+      href: `${ORIGIN}/blog/rss.xml`,
+    });
 
     return {
       meta: [
