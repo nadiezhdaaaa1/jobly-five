@@ -95,7 +95,7 @@ function MatchesPage() {
           </p>
           <h1 className="mt-1 text-3xl sm:text-4xl">Your top matches</h1>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            Ranked by fit against {(answers.roles && answers.roles[0]) || answers.role || "your role"}
+            Ranked by fit against {(answers.roles && answers.roles.length ? answers.roles.join(", ") : answers.role) || "your role"}
             {answers.level ? `, ${answers.level.toLowerCase()} level` : ""}.
           </p>
         </div>
