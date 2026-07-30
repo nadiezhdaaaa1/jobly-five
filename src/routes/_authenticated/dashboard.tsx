@@ -983,9 +983,9 @@ function FiltersSidebar({
         />
       ) : null}
       {open ? (
-      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:border-0 lg:bg-[#F1F3F3] lg:rounded-[12px] lg:p-[12px] lg:max-h-[calc(100vh-6rem)]">
+      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[6px] lg:border lg:border-[#E3E7E8] lg:bg-white lg:p-[12px] lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:border-b-0 lg:bg-[#F1F3F3] lg:px-0 lg:pt-0">
+        <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:border-b-0 lg:bg-white lg:px-0 lg:pt-0">
           <select
             className="h-[40px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] font-normal leading-none"
             value=""
