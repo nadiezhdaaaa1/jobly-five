@@ -33,7 +33,7 @@ function SettingsScreen() {
           Settings
         </h1>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Plan, billing, notifications, blocked companies, security and account.
+          Plan, billing, notifications, hidden companies, security and account.
         </p>
         {flash ? (
           <div className="mt-4 rounded-[6px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
@@ -899,16 +899,16 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
       <div className="mt-4 flex flex-wrap gap-2">
         {list.length === 0 ? (
           <p className="text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            No blocked companies yet.
+            No hidden companies yet.
           </p>
         ) : list.map((c) => (
           <span key={c} className="inline-flex items-center gap-2 rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
             {c}
-            <IconTooltip label={`Unblock ${c}`}>
+            <IconTooltip label={`Show jobs from ${c} again`}>
               <button
                 type="button"
-                aria-label={`Unblock ${c}`}
-                onClick={() => { unblockCompany(c); onFlash(`Unblocked ${c}.`); }}
+                aria-label={`Show jobs from ${c} again`}
+                onClick={() => { unblockCompany(c); onFlash(`${c} is visible again.`); }}
                 className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <IconX size={12} strokeWidth={1.8} />
