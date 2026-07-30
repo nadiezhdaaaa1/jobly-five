@@ -927,6 +927,10 @@ function TrackerScreen() {
         columnId={editColumnId}
         open={editColumnId !== null}
         onClose={() => setEditColumnId(null)}
+        onBack={() => {
+          setEditColumnId(null);
+          setColumnsDialogOpen(true);
+        }}
       />
 
       {openJob ? <JobDrawer job={openJob} onClose={() => setOpenJob(null)} /> : null}
