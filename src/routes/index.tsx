@@ -351,7 +351,7 @@ function InboxToOffer() {
               key={t.name}
               className="relative h-[520px] overflow-hidden rounded-xl bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
-              <img src={t.photo} alt={t.name} className="h-full w-full object-cover" />
+              <img src={t.photo} alt={t.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-8">
                 <h5 className="text-xl">"{t.quote}"</h5>
                 <p className="body-medium mt-3 opacity-80">
@@ -713,19 +713,19 @@ function QuizChip({ label }: { label: string }) {
 
 function QuizPreview() {
   return (
-    <img src={how1Asset.url} alt="Quiz preview" className="block w-full h-auto" />
+    <img src={how1Asset.url} alt="Quiz preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 
 function MatchPreview() {
   return (
-    <img src={how2Asset.url} alt="Match preview" className="block w-full h-auto" />
+    <img src={how2Asset.url} alt="Match preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 
 function InboxPreview() {
   return (
-    <img src={how3Asset.url} alt="Inbox preview" className="block w-full h-auto" />
+    <img src={how3Asset.url} alt="Inbox preview" loading="lazy" decoding="async" className="block w-full h-auto" />
   );
 }
 
