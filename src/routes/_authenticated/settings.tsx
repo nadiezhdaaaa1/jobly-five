@@ -1105,13 +1105,9 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
 }
 
 function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [deleted, setDeleted] = useState(false);
-
-  const email = user?.email ?? "";
 
   if (deleted) {
     return (
