@@ -910,11 +910,12 @@ function TrackerScreen() {
       <main className="mx-auto max-w-[1200px] px-6 pt-6">
         {/* Header row */}
         <div className="flex flex-wrap items-center justify-between gap-4" style={{ minHeight: 36 }}>
-          <div className="flex items-center gap-4">
+          <div className="flex w-full flex-col items-start gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
             <h1 className="text-[28px]" style={{ fontFamily: "var(--font-display)", color: DARK, lineHeight: 1.1 }}>
               Tracker
             </h1>
-            <span aria-hidden style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
+            <span aria-hidden className="hidden sm:block" style={{ width: 1, height: 24, background: BORDER_LIGHT }} />
+            <div className="flex flex-wrap items-center gap-2 sm:contents">
             <button
               type="button"
               onClick={() => setColumnsDialogOpen(true)}
@@ -941,6 +942,7 @@ function TrackerScreen() {
                 </span>
               </button>
             ) : null}
+            </div>
           </div>
           <div className="flex items-center gap-6" style={{ height: 24 }}>
             <label className="flex cursor-pointer items-center gap-2">
