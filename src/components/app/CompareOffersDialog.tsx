@@ -97,7 +97,7 @@ export function CompareOffersDialog({
     <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Compare offers">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] flex-col rounded-[8px] border bg-white"
+        className="relative z-10 flex max-h-[90vh] flex-col overflow-hidden rounded-[8px] border bg-white"
         style={{
           borderColor: BORDER_LIGHT,
           boxShadow: "0 8px 24px rgba(0,0,0,.12)",
@@ -140,7 +140,7 @@ export function CompareOffersDialog({
         </div>
 
         {/* Matrix */}
-        <div ref={scrollRef} className="flex-1 overflow-auto">
+        <div ref={scrollRef} className="flex-1 overflow-auto rounded-b-[8px]">
           <table className="w-max border-separate" style={{ borderSpacing: 0 }}>
             <thead>
               <tr>
