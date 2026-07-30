@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import {
   IconBookmark as Bookmark,
   IconChevronLeft,
@@ -757,7 +758,11 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               type="button"
               aria-label="Save"
               aria-pressed={saved}
-              onClick={(e) => { e.stopPropagation(); setStatus(job.id, saved ? "default" : "saved"); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatus(job.id, saved ? "default" : "saved");
+                if (!saved) toast("Saved to the Tracker");
+              }}
               className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
