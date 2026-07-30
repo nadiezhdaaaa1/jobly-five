@@ -1231,7 +1231,7 @@ function CoverLettersTab({
                     key={l.id}
                     name={l.name}
                     meta={stripHtml(l.body).slice(0, 96)}
-                    isActive={isActive}
+                    isActive={!pro && isActive}
                     locked={locked}
                     onEdit={locked ? undefined : () => setEditing(l)}
                     onDuplicate={
