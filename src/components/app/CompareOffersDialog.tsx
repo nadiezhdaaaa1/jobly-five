@@ -140,7 +140,7 @@ export function CompareOffersDialog({
         </div>
 
         {/* Matrix */}
-        <div ref={scrollRef} className="flex-1 overflow-auto">
+        <div ref={scrollRef} className="flex-1 overflow-auto rounded-b-[8px]">
           <table className="w-max border-separate" style={{ borderSpacing: 0 }}>
             <thead>
               <tr>
