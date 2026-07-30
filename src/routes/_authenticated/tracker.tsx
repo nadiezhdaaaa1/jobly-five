@@ -102,6 +102,9 @@ function useOutsideClose(open: boolean, onClose: () => void) {
   useEffect(() => {
     if (!open) return;
     function onDoc(e: MouseEvent) {
+      const target = e.target as HTMLElement | null;
+      // Menus render in a portal (outside `ref`), so treat them as "inside".
+      if (target?.closest("[data-menu-pop]")) return;
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     }
     function onKey(e: KeyboardEvent) {
