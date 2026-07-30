@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { IconPlus as Plus, IconTrash as Trash, IconX as X } from "@tabler/icons-react";
+import {
+  IconArrowLeft as ArrowLeft,
+  IconPlus as Plus,
+  IconTrash as Trash,
+  IconX as X,
+} from "@tabler/icons-react";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import {
   addStage,
@@ -18,10 +23,12 @@ export function SingleColumnDialog({
   columnId,
   open,
   onClose,
+  onBack,
 }: {
   columnId: string | null;
   open: boolean;
   onClose: () => void;
+  onBack?: () => void;
 }) {
   // Subscribe to columns so rename/stage edits re-render live.
   useColumns();
@@ -101,6 +108,16 @@ export function SingleColumnDialog({
         >
           <X size={16} strokeWidth={1.6} />
         </button>
+        {onBack ? (
+          <button
+            type="button"
+            onClick={onBack}
+            className="-ml-2 mb-2 inline-flex h-7 w-fit items-center gap-1 rounded-[4px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <ArrowLeft size={14} strokeWidth={1.8} />
+            Back to all
+          </button>
+        ) : null}
         <h2 className="pr-6 text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit column
         </h2>
