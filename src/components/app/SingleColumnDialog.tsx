@@ -118,7 +118,7 @@ export function SingleColumnDialog({
             Back to all
           </button>
         ) : null}
-        <h2 className={`pr-6 text-[18px] font-semibold ${onBack ? "mt-6" : ""}`} style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className={`pr-6 text-[18px] font-semibold ${onBack ? "mt-8" : ""}`} style={{ fontFamily: "var(--font-display)" }}>
           Edit column
         </h2>
         <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
