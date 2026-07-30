@@ -112,7 +112,7 @@ export function SingleColumnDialog({
           <button
             type="button"
             onClick={onBack}
-            className="mb-3 inline-flex h-8 w-fit items-center justify-center gap-1.5 rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="-ml-2 mb-2 inline-flex h-7 w-fit items-center gap-1 rounded-[4px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             <LayoutColumns size={14} strokeWidth={1.8} />
             Back to all
