@@ -12,6 +12,7 @@ import {
   IconBan as Cancel,
   IconBolt as Zap,
   IconPencil as Pencil,
+  IconColumns as Columns,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
@@ -26,6 +27,7 @@ import {
 } from "@/components/app/TrackerTransitionDialogs";
 import { BoardColumnsDialog } from "@/components/app/BoardColumnsDialog";
 import { SingleColumnDialog } from "@/components/app/SingleColumnDialog";
+import { CompareOffersDialog } from "@/components/app/CompareOffersDialog";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
@@ -797,6 +799,12 @@ function TrackerScreen() {
       buckets[c.id].sort(byMovedDesc);
     }
   }
+
+  // Active (non-archived) cards sitting in Offer columns — the compare set.
+  const offerEntries = columns
+    .filter((c) => c.kind === "offer")
+    .flatMap((c) => (buckets[c.id] ?? []).filter((e) => !e.rec.archived));
+  const canCompareOffers = offerEntries.length > 2;
 
   // Dispatcher: any move (drag OR "Move to") funnels through here.
   // Applied routes to the ApplyModal; interview/test/offer/rejection open their
