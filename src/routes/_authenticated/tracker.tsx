@@ -54,7 +54,7 @@ export const Route = createFileRoute("/_authenticated/tracker")({
   head: () => ({
     meta: [
       { title: "Tracker — Jobly" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: TrackerScreen,
