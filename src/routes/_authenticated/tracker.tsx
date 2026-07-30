@@ -529,6 +529,7 @@ function MenuPop({
         <div
           ref={menuRef}
           role="menu"
+          data-menu-pop
           className="fixed z-[70] overflow-y-auto rounded-[6px] border bg-white"
           style={{
             boxShadow: "0 8px 24px rgba(0,0,0,.12)",
