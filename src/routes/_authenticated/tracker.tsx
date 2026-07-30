@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   IconBookmark as Bookmark,
   IconChevronDown as ChevronDown,
@@ -101,6 +102,9 @@ function useOutsideClose(open: boolean, onClose: () => void) {
   useEffect(() => {
     if (!open) return;
     function onDoc(e: MouseEvent) {
+      const target = e.target as HTMLElement | null;
+      // Menus render in a portal (outside `ref`), so treat them as "inside".
+      if (target?.closest("[data-menu-pop]")) return;
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     }
     function onKey(e: KeyboardEvent) {
@@ -487,18 +491,60 @@ function MenuPop({
   align?: "left" | "right";
   minWidth?: number;
 }) {
+  // Rendered in a portal: the board row uses overflow-x-auto and each column
+  // clips its content, so an absolutely positioned menu gets cut off.
+  const anchorRef = useRef<HTMLSpanElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useLayoutEffect(() => {
+    function place() {
+      const parent = anchorRef.current?.parentElement;
+      const menu = menuRef.current;
+      if (!parent || !menu) return;
+      const r = parent.getBoundingClientRect();
+      const width = Math.max(minWidth, menu.offsetWidth);
+      const height = menu.offsetHeight;
+      let left = align === "right" ? r.right - width : r.left;
+      left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+      let top = r.bottom + 4;
+      if (top + height > window.innerHeight - 8) {
+        top = Math.max(8, r.top - 4 - height);
+      }
+      setPos({ top, left });
+    }
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+    };
+  }, [align, minWidth]);
+
   return (
-    <div
-      role="menu"
-      className="absolute top-[34px] z-30 overflow-hidden rounded-[6px] border bg-white"
-      style={{
-        boxShadow: "0 8px 24px rgba(0,0,0,.12)",
-        minWidth,
-        [align === "right" ? "right" : "left"]: 0,
-      } as React.CSSProperties}
-    >
-      {children}
-    </div>
+    <>
+      <span ref={anchorRef} className="hidden" aria-hidden />
+      {createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          data-menu-pop
+          className="fixed z-[70] overflow-y-auto rounded-[6px] border bg-white"
+          style={{
+            boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+            minWidth,
+            maxHeight: "min(320px, 70vh)",
+            top: pos?.top ?? -9999,
+            left: pos?.left ?? -9999,
+            visibility: pos ? "visible" : "hidden",
+          }}
+        >
+          {children}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
 
