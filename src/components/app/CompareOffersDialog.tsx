@@ -146,7 +146,7 @@ export function CompareOffersDialog({
               <tr>
                 <th
                   className="sticky left-0 top-0 z-30 border-b border-r bg-white px-4 py-3 text-left align-bottom text-[12px] font-light"
-                  style={{ width: 160, minWidth: 160, borderColor: BORDER_LIGHT, color: META_GREY }}
+                  style={{ width: labelWidth, minWidth: labelWidth, borderColor: BORDER_LIGHT, color: META_GREY }}
                   scope="col"
                 >
                   Offer
@@ -196,7 +196,7 @@ export function CompareOffersDialog({
                   <th
                     scope="row"
                     className="sticky left-0 z-10 border-b border-r bg-white px-4 py-3 text-left align-top text-[13px] font-light"
-                    style={{ width: 160, minWidth: 160, borderColor: BORDER_LIGHT, color: META_GREY }}
+                    style={{ width: labelWidth, minWidth: labelWidth, borderColor: BORDER_LIGHT, color: META_GREY }}
                   >
                     {r.label}
                   </th>
