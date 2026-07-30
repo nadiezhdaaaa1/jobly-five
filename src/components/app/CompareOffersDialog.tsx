@@ -32,15 +32,6 @@ function fmtDate(iso?: string) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function fmtDateTime(iso?: string) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const date = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  return `${date} · ${time}`;
-}
-
 type Row = {
   label: string;
   value: (e: OfferEntry) => string;
@@ -48,15 +39,7 @@ type Row = {
 };
 
 const ROWS: Row[] = [
-  { label: "Stage", value: (e) => e.rec.offerStatus ?? "" },
-  { label: "Salary", value: (e) => e.job.salary ?? "" },
-  { label: "Location", value: (e) => e.job.location ?? "" },
-  { label: "Workplace", value: (e) => e.job.details?.workplace ?? "" },
-  { label: "Employment", value: (e) => e.job.employmentType ?? e.job.details?.employmentType ?? "" },
-  { label: "Experience", value: (e) => e.job.details?.experienceLevel ?? "" },
-  { label: "Match score", value: (e) => (typeof e.job.score === "number" ? `${e.job.score}%` : "") },
-  { label: "Offer received", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
-  { label: "Reminder", value: (e) => fmtDateTime(e.rec.reminderAt) },
+  { label: "Move to offer", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
   { label: "Offer details", value: (e) => e.rec.offerDetails ?? "", multiline: true },
   { label: "Notes", value: (e) => e.rec.notes ?? "", multiline: true },
 ];
@@ -106,14 +89,20 @@ export function CompareOffersDialog({
 
   if (!open) return null;
 
-  const colWidth = 260;
+  const colWidth = 300;
+  const labelWidth = 160;
+  const naturalWidth = labelWidth + offers.length * colWidth + 2;
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Compare offers">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] w-[94%] max-w-[1100px] flex-col rounded-[8px] border bg-white"
-        style={{ borderColor: BORDER_LIGHT, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+        className="relative z-10 flex max-h-[90vh] flex-col rounded-[8px] border bg-white"
+        style={{
+          borderColor: BORDER_LIGHT,
+          boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+          width: `min(${naturalWidth}px, calc(100vw - 48px))`,
+        }}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b px-6 py-4" style={{ borderColor: BORDER_LIGHT }}>
@@ -157,7 +146,7 @@ export function CompareOffersDialog({
               <tr>
                 <th
                   className="sticky left-0 top-0 z-30 border-b border-r bg-white px-4 py-3 text-left align-bottom text-[12px] font-light"
-                  style={{ width: 160, minWidth: 160, borderColor: BORDER_LIGHT, color: META_GREY }}
+                  style={{ width: labelWidth, minWidth: labelWidth, borderColor: BORDER_LIGHT, color: META_GREY }}
                   scope="col"
                 >
                   Offer
@@ -207,7 +196,7 @@ export function CompareOffersDialog({
                   <th
                     scope="row"
                     className="sticky left-0 z-10 border-b border-r bg-white px-4 py-3 text-left align-top text-[13px] font-light"
-                    style={{ width: 160, minWidth: 160, borderColor: BORDER_LIGHT, color: META_GREY }}
+                    style={{ width: labelWidth, minWidth: labelWidth, borderColor: BORDER_LIGHT, color: META_GREY }}
                   >
                     {r.label}
                   </th>
