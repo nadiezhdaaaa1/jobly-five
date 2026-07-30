@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { CtaBlock } from "../components/site/CtaBlock";
@@ -8,52 +8,87 @@ import { CategoryChip } from "../components/blog/CategoryChip";
 import { BLOG_CATEGORIES, BLOG_POSTS } from "../lib/blog-data";
 
 const PAGE_SIZE = 9;
-const CANONICAL = "https://jobly-five.lovable.app/blog";
+const ORIGIN = "https://jobly-five.lovable.app";
+const CANONICAL = `${ORIGIN}/blog`;
+
+type BlogSearch = { page?: number; category?: string };
+
+function buildUrl(page: number, category?: string) {
+  const params = new URLSearchParams();
+  if (category && category !== "All") params.set("category", category);
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `${CANONICAL}?${qs}` : CANONICAL;
+}
+
+function pageCount(category?: string) {
+  const total =
+    !category || category === "All"
+      ? BLOG_POSTS.length
+      : BLOG_POSTS.filter((p) => p.category === category).length;
+  return Math.max(1, Math.ceil(total / PAGE_SIZE));
+}
 
 export const Route = createFileRoute("/blog/")({
-  head: () => ({
-    meta: [
-      { title: "The Jobly blog — Job market signal, not noise" },
-      { name: "description", content: "Data, career tips, and behind-the-scenes stories on how tech hiring actually works — from the Jobly team." },
-      { property: "og:title", content: "The Jobly blog" },
-      { property: "og:description", content: "Data, career tips, and behind-the-scenes stories on how tech hiring actually works." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: CANONICAL },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "The Jobly blog" },
-      { name: "twitter:description", content: "Data, career tips, and behind-the-scenes stories on how tech hiring actually works." },
-    ],
-    links: [{ rel: "canonical", href: CANONICAL }],
-  }),
+  validateSearch: (search: Record<string, unknown>): BlogSearch => {
+    const rawPage = Number(search.page);
+    const page = Number.isFinite(rawPage) && rawPage > 1 ? Math.floor(rawPage) : undefined;
+    const raw = typeof search.category === "string" ? search.category : undefined;
+    const category = raw && (BLOG_CATEGORIES as readonly string[]).includes(raw) ? raw : undefined;
+    return { page, category };
+  },
+  head: ({ match }) => {
+    const { page = 1, category } = match.search as BlogSearch;
+    const totalPages = pageCount(category);
+    const suffix = page > 1 ? ` — Page ${page}` : "";
+    const catSuffix = category ? ` · ${category}` : "";
+    const title = `The Jobly blog${catSuffix}${suffix} — Job market signal, not noise`;
+    const description = category
+      ? `${category} articles from the Jobly team — data, career tips, and honest takes on how tech hiring actually works.`
+      : "Data, career tips, and behind-the-scenes stories on how tech hiring actually works — from the Jobly team.";
+    const self = buildUrl(page, category);
+
+    const links: { rel: string; href: string; type?: string; title?: string }[] = [
+      { rel: "canonical", href: self },
+    ];
+    if (page > 1) links.push({ rel: "prev", href: buildUrl(page - 1, category) });
+    if (page < totalPages) links.push({ rel: "next", href: buildUrl(page + 1, category) });
+    links.push({
+      rel: "alternate",
+      type: "application/rss+xml",
+      title: "The Jobly blog RSS feed",
+      href: `${ORIGIN}/blog/rss.xml`,
+    });
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: `The Jobly blog${catSuffix}${suffix}` },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: self },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `The Jobly blog${catSuffix}` },
+        { name: "twitter:description", content: description },
+      ],
+      links,
+    };
+  },
   component: BlogListPage,
 });
 
 function BlogListPage() {
-  const [active, setActive] = useState<string>("All");
-  const [visible, setVisible] = useState(PAGE_SIZE);
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const { page = 1, category } = Route.useSearch();
+  const active = category ?? "All";
 
   const filtered = useMemo(
     () => (active === "All" ? BLOG_POSTS : BLOG_POSTS.filter((p) => p.category === active)),
     [active],
   );
-  const shown = filtered.slice(0, visible);
-  const hasMore = visible < filtered.length;
-
-  useEffect(() => {
-    setVisible(PAGE_SIZE);
-  }, [active]);
-
-  useEffect(() => {
-    if (!hasMore) return;
-    const el = sentinelRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) setVisible((v) => v + PAGE_SIZE);
-    }, { rootMargin: "300px" });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [hasMore]);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const current = Math.min(page, totalPages);
+  const shown = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -67,7 +102,14 @@ function BlogListPage() {
 
           <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
             {["All", ...BLOG_CATEGORIES].map((c) => (
-              <CategoryChip key={c} label={c} active={active === c} onClick={() => setActive(c)} />
+              <Link
+                key={c}
+                to="/blog"
+                search={c === "All" ? {} : { category: c }}
+                className="focus-visible:outline-none"
+              >
+                <CategoryChip label={c} active={active === c} />
+              </Link>
             ))}
           </div>
         </section>
@@ -83,16 +125,50 @@ function BlogListPage() {
             </div>
           )}
 
-          {hasMore && (
-            <div ref={sentinelRef} className="mt-10 flex justify-center">
-              <button
-                type="button"
-                onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-              >
-                Load more
-              </button>
-            </div>
+          {totalPages > 1 && (
+            <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Blog pagination">
+              {current > 1 && (
+                <Link
+                  to="/blog"
+                  search={{
+                    ...(category ? { category } : {}),
+                    ...(current - 1 > 1 ? { page: current - 1 } : {}),
+                  }}
+                  rel="prev"
+                  className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                >
+                  Previous
+                </Link>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <Link
+                  key={n}
+                  to="/blog"
+                  search={{
+                    ...(category ? { category } : {}),
+                    ...(n > 1 ? { page: n } : {}),
+                  }}
+                  aria-current={n === current ? "page" : undefined}
+                  className={`inline-flex h-11 min-w-11 items-center justify-center rounded-button border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${
+                    n === current
+                      ? "border-[color:var(--color-foreground)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+                      : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  }`}
+                >
+                  {n}
+                </Link>
+              ))}
+              {current < totalPages && (
+                <Link
+                  to="/blog"
+                  search={{ ...(category ? { category } : {}), page: current + 1 }}
+                  rel="next"
+                  className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                >
+                  Next
+                </Link>
+              )}
+            </nav>
           )}
         </section>
 

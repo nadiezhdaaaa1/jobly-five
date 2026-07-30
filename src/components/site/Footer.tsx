@@ -35,6 +35,7 @@ const COLS: { title: string; items: FooterLink[] }[] = [
     title: "Company",
     items: [
       { label: "Blog", to: "/blog" },
+      { label: "RSS feed", href: "/blog/rss.xml" },
       { label: "Contact", to: "/contact" },
     ],
   },
