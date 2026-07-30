@@ -89,14 +89,20 @@ export function CompareOffersDialog({
 
   if (!open) return null;
 
-  const colWidth = 260;
+  const colWidth = 300;
+  const labelWidth = 160;
+  const naturalWidth = labelWidth + offers.length * colWidth + 2;
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Compare offers">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] w-[94%] max-w-[1100px] flex-col rounded-[8px] border bg-white"
-        style={{ borderColor: BORDER_LIGHT, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+        className="relative z-10 flex max-h-[90vh] flex-col rounded-[8px] border bg-white"
+        style={{
+          borderColor: BORDER_LIGHT,
+          boxShadow: "0 8px 24px rgba(0,0,0,.12)",
+          width: `min(${naturalWidth}px, calc(100vw - 48px))`,
+        }}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b px-6 py-4" style={{ borderColor: BORDER_LIGHT }}>
