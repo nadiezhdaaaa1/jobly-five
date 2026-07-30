@@ -298,6 +298,8 @@ function HeroCard() {
       <img
         src={heroAsset.url}
         alt="A person checking Jobly matches on their phone"
+        fetchPriority="high"
+        decoding="async"
         className="absolute bottom-0 right-0 z-10 h-[320px] w-full rounded-xl object-cover object-right-top md:h-[420px] lg:h-[520px]"
       />
     </div>
