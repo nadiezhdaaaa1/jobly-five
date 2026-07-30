@@ -41,16 +41,12 @@ function SettingsScreen() {
           </div>
         ) : null}
 
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="flex flex-col gap-5">
-            <PlanCard plan={plan} onFlash={flashMsg} />
-            <NotificationsCard plan={plan} />
-          </div>
-          <aside className="flex flex-col gap-5">
-            <BlockedCompaniesCard onFlash={flashMsg} />
-            <SecurityCard onFlash={flashMsg} />
-            <DangerZoneCard onFlash={flashMsg} />
-          </aside>
+        <div className="mt-6 flex flex-col gap-5">
+          <PlanCard plan={plan} onFlash={flashMsg} />
+          <NotificationsCard plan={plan} />
+          <BlockedCompaniesCard onFlash={flashMsg} />
+          <SecurityCard onFlash={flashMsg} />
+          <DangerZoneCard onFlash={flashMsg} />
         </div>
       </main>
       <MobileTabBar active="settings" />
@@ -964,6 +960,8 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -1036,6 +1034,19 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         </div>
       </div>
 
+      <div className="mt-6 border-t pt-4">
+        <button
+          type="button"
+          onClick={async () => {
+            await supabase.auth.signOut();
+            navigate({ to: "/login" });
+          }}
+          className="text-[13px] text-[color:var(--color-text-secondary)] hover:underline"
+        >
+          Log out{user?.email ? ` — ${user.email}` : ""}
+        </button>
+      </div>
+
       {gConfirm ? (
         <Modal onClose={() => setGConfirm(false)} title="Disconnect Google?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
@@ -1094,13 +1105,9 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
 }
 
 function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [deleted, setDeleted] = useState(false);
-
-  const email = user?.email ?? "";
 
   if (deleted) {
     return (
@@ -1136,18 +1143,6 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
           </button>
         </div>
 
-        <div className="mt-6 border-t pt-4">
-          <button
-            type="button"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate({ to: "/login" });
-            }}
-            className="text-[13px] text-[color:var(--color-text-secondary)] hover:underline"
-          >
-            Log out{email ? ` — ${email}` : ""}
-          </button>
-        </div>
       </Card>
 
       {confirmOpen ? (
