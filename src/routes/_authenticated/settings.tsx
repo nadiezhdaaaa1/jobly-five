@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconX } from "@tabler/icons-react";
+import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconPlus, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { supabase } from "@/integrations/supabase/client";
@@ -866,33 +866,34 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
     const v = value.trim();
     if (!v) return;
     if (list.some((c) => c.toLowerCase() === v.toLowerCase())) {
-      onFlash(`${v} is already blocked.`);
+      onFlash(`${v} is already hidden.`);
       setValue("");
       return;
     }
     blockCompany(v);
-    onFlash(`Blocked ${v}.`);
+    onFlash(`Hidden jobs from ${v}.`);
     setValue("");
   }
   return (
-    <Card title="Blocked companies">
+    <Card title="Hide jobs from companies">
       <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        Never show jobs from these employers — current employer, past ones, agencies you'd rather skip.
+        These companies won't appear in your digest or search results — your current employer, past ones, agencies you'd rather skip.
       </p>
       <div className="flex items-center gap-2">
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } }}
-          placeholder="Company name"
+          placeholder="Add a company to hide from"
           className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
         />
         <button
           type="button"
           onClick={submit}
-          className="inline-flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
-          Block company
+          <IconPlus size={14} strokeWidth={1.8} />
+          Add company
         </button>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
