@@ -112,13 +112,13 @@ export function SingleColumnDialog({
           <button
             type="button"
             onClick={onBack}
-            className="-ml-2 mb-2 inline-flex h-7 w-fit items-center gap-1 rounded-[4px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute left-3 top-3 inline-flex h-8 w-fit items-center gap-1 rounded-[4px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             <LayoutColumns size={14} strokeWidth={1.8} />
             Back to all
           </button>
         ) : null}
-        <h2 className="pr-6 text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className={`pr-6 text-[18px] font-semibold ${onBack ? "mt-6" : ""}`} style={{ fontFamily: "var(--font-display)" }}>
           Edit column
         </h2>
         <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
