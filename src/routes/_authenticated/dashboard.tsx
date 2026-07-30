@@ -678,7 +678,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <div
             className={
               "relative transition-opacity duration-150 max-lg:opacity-100 " +
-              (flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+              (flagOpen ? "opacity-100" : "max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100")
             }
           >
             <IconTooltip label="Report this job">
@@ -714,7 +714,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <div
             className={
               "relative -ml-1 transition-opacity duration-150 max-lg:opacity-100 " +
-              (dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100")
+              (dislikeOpen ? "opacity-100" : "max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100")
             }
           >
             <IconTooltip label="Not interested">

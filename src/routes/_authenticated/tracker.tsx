@@ -283,7 +283,7 @@ function KanbanCard({
         ) : kind === "saved" ? (
           <>
             <div
-              className={`relative transition-opacity ${flagOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              className={`relative transition-opacity ${flagOpen ? "opacity-100" : "max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100"}`}
               ref={flagRef}
             >
               <IconBtn label="Report this job" noBorder onClick={() => setFlagOpen((v) => !v)}>
@@ -298,7 +298,7 @@ function KanbanCard({
               ) : null}
             </div>
             <div
-              className={`relative -ml-1 transition-opacity ${dislikeOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100"}`}
+              className={`relative -ml-1 transition-opacity ${dislikeOpen ? "opacity-100" : "max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100"}`}
               ref={dislikeRef}
             >
               <IconBtn label="Not interested" noBorder onClick={() => setDislikeOpen((v) => !v)}>
@@ -338,7 +338,7 @@ function KanbanCard({
         ) : (
           // Applied / Interview / Rejected / Offer
           <>
-            <div className="transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+            <div className="transition-opacity max-lg:opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100">
               <IconBtn label="Archive" noBorder onClick={() => setConfirmArchiveOpen(true)}>
                 <Cancel size={16} strokeWidth={1.8} />
               </IconBtn>
