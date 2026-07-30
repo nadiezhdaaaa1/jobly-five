@@ -12,6 +12,7 @@ import {
   IconBan as Cancel,
   IconBolt as Zap,
   IconPencil as Pencil,
+  IconColumns as Columns,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
@@ -26,6 +27,7 @@ import {
 } from "@/components/app/TrackerTransitionDialogs";
 import { BoardColumnsDialog } from "@/components/app/BoardColumnsDialog";
 import { SingleColumnDialog } from "@/components/app/SingleColumnDialog";
+import { CompareOffersDialog } from "@/components/app/CompareOffersDialog";
 import { useJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import {
@@ -679,6 +681,7 @@ function TrackerScreen() {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
+  const [compareOpen, setCompareOpen] = useState(false);
 
   if (!isPro(plan)) {
     return (
@@ -797,6 +800,12 @@ function TrackerScreen() {
     }
   }
 
+  // Active (non-archived) cards sitting in Offer columns — the compare set.
+  const offerEntries = columns
+    .filter((c) => c.kind === "offer")
+    .flatMap((c) => (buckets[c.id] ?? []).filter((e) => !e.rec.archived));
+  const canCompareOffers = offerEntries.length > 2;
+
   // Dispatcher: any move (drag OR "Move to") funnels through here.
   // Applied routes to the ApplyModal; interview/test/offer/rejection open their
   // transition popups. Saved is a simple status update.
@@ -869,6 +878,23 @@ function TrackerScreen() {
               <LayoutColumns size={14} strokeWidth={1.8} />
               Edit columns
             </button>
+            {canCompareOffers ? (
+              <button
+                type="button"
+                onClick={() => setCompareOpen(true)}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[4px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                style={{ color: MUTED_TEXT }}
+              >
+                <Columns size={14} strokeWidth={1.8} />
+                Compare offers
+                <span
+                  className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[4px] px-1 text-[11px]"
+                  style={{ background: "#E3E7E8", color: DARK }}
+                >
+                  {offerEntries.length}
+                </span>
+              </button>
+            ) : null}
           </div>
           <div className="flex items-center gap-6" style={{ height: 24 }}>
             <label className="flex cursor-pointer items-center gap-2">
@@ -930,6 +956,16 @@ function TrackerScreen() {
         onBack={() => {
           setEditColumnId(null);
           setColumnsDialogOpen(true);
+        }}
+      />
+
+      <CompareOffersDialog
+        open={compareOpen && canCompareOffers}
+        offers={offerEntries}
+        onClose={() => setCompareOpen(false)}
+        onOpenJob={(j) => {
+          setCompareOpen(false);
+          setOpenJob(j);
         }}
       />
 
