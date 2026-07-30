@@ -960,6 +960,8 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
