@@ -39,7 +39,7 @@ type Row = {
 };
 
 const ROWS: Row[] = [
-  { label: "Move to offer", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
+  { label: "Moved to offer", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
   { label: "Offer details", value: (e) => e.rec.offerDetails ?? "", multiline: true },
   { label: "Notes", value: (e) => e.rec.notes ?? "", multiline: true },
 ];
