@@ -740,19 +740,6 @@ function PlanCardsBlock({
         </div>
       </div>
 
-      {/* Dev toggle for prototyping trial eligibility */}
-      <div className="mt-3 flex items-center gap-2 text-[11px] text-[color:var(--color-text-muted)]">
-        <span>Dev:</span>
-        <label className="inline-flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={hasHadPro}
-            onChange={(e) => setHasHadPro(e.target.checked)}
-          />
-          <span>hasHadPro</span>
-        </label>
-        <span className="opacity-60">· current plan: {plan}</span>
-      </div>
     </div>
   );
 }
