@@ -46,6 +46,8 @@ import {
   setStatus,
   setCardColumn,
   useJobRecord,
+  getTrackerEntries,
+  useTrackerHydrated,
   type JobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
@@ -567,6 +569,34 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
 
 // ---------- Column ----------
 
+// Loading placeholder mirroring the real Kanban card shell (same padding,
+// radius, border and row rhythm) so nothing shifts when data arrives.
+function KanbanCardSkeleton() {
+  return (
+    <div
+      aria-hidden
+      className="rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]"
+      style={{ padding: 13 }}
+    >
+      <div className="flex flex-col" style={{ gap: 8 }}>
+        <div className="flex items-start justify-between gap-2">
+          <div className="skeleton h-7 w-7 shrink-0 rounded-[4px]" />
+          <div className="skeleton h-[20px] w-[42px] rounded-[4px]" />
+        </div>
+        <div className="min-w-0">
+          <div className="skeleton h-[14px] w-[80%] rounded-[4px]" />
+          <div className="skeleton mt-2 h-[10px] w-[60%] rounded-[4px]" />
+        </div>
+        <div className="skeleton h-[16px] w-[45%] rounded-[4px]" />
+      </div>
+      <div className="mt-4 flex items-center gap-1">
+        <div className="skeleton h-[30px] w-[30px] rounded-[4px]" />
+        <div className="skeleton ml-auto h-[30px] w-[76px] rounded-[4px]" />
+      </div>
+    </div>
+  );
+}
+
 function KanbanColumn({
   column,
   jobs,
@@ -586,9 +616,11 @@ function KanbanColumn({
   onToggleCollapse,
   moveColumns,
   onEditColumn,
+  skeletonCount,
 }: {
   column: BoardColumn;
   jobs: { job: Job; rec: JobRecord }[];
+  skeletonCount?: number;
   isDropTarget: boolean;
   placeholderHeight: number;
   onDragEnter: () => void;
@@ -637,7 +669,7 @@ function KanbanColumn({
             className="inline-flex items-center justify-center text-[14px]"
             style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
           >
-            {jobs.length}
+            {skeletonCount ? skeletonCount : jobs.length}
           </span>
         </button>
         <IconTooltip label="Edit column">
@@ -672,7 +704,12 @@ function KanbanColumn({
             style={{ borderColor: "#D0D6D8", height: placeholderHeight || 96 }}
           />
         ) : null}
-        {jobs.length === 0 && !isDropTarget ? (
+        {skeletonCount ? (
+          Array.from({ length: skeletonCount }).map((_, i) => (
+            <KanbanCardSkeleton key={`sk-${i}`} />
+          ))
+        ) : null}
+        {!skeletonCount && jobs.length === 0 && !isDropTarget ? (
           <div
             className="rounded-[8px] border border-dashed p-4 text-center text-[12px]"
             style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
@@ -680,7 +717,7 @@ function KanbanColumn({
             Nothing here yet
           </div>
         ) : null}
-        {jobs.map(({ job }) => (
+        {(skeletonCount ? [] : jobs).map(({ job }) => (
           <KanbanCard
             key={job.id}
             job={job}
@@ -711,7 +748,8 @@ function KanbanColumn({
 function TrackerScreen() {
   const plan = usePlan();
   useTrackerVersion();
-  const { jobs: allJobs } = useJobs();
+  const { jobs: allJobs, loaded: jobsLoaded } = useJobs();
+  const trackerHydrated = useTrackerHydrated();
   const columns = useColumns();
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -832,6 +870,23 @@ function TrackerScreen() {
   }
   const byMovedDesc = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
     (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
+  // Skeleton sizing: tracker state (small, per-user) loads well before the
+  // jobs dataset, so we know each column's exact card count up front.
+  const skeletonCounts: Record<string, number> = {};
+  if (!jobsLoaded) {
+    for (const c of columns) skeletonCounts[c.id] = 0;
+    if (trackerHydrated) {
+      for (const { rec } of getTrackerEntries()) {
+        const raw = rec.archived ? rec.lastStatus : rec.status;
+        if (!raw || raw === "default") continue;
+        if (rec.archived && !showArchived) continue;
+        const col = resolveColumnForCard(rec.columnId, raw);
+        if (col && skeletonCounts[col.id] !== undefined) skeletonCounts[col.id]++;
+      }
+    } else {
+      for (const c of columns) skeletonCounts[c.id] = 3;
+    }
+  }
   for (const c of columns) {
     if (c.kind === "interview") {
       buckets[c.id].sort((a, b) => {
@@ -964,6 +1019,7 @@ function TrackerScreen() {
                 key={c.id}
                 column={c}
                 jobs={buckets[c.id] ?? []}
+                skeletonCount={jobsLoaded ? 0 : (skeletonCounts[c.id] ?? 0)}
                 isDropTarget={dragOver === c.id && draggingId !== null}
                 placeholderHeight={dragHeight}
                 onDragEnter={() => setDragOver(c.id)}
