@@ -226,7 +226,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             </button>
             <button
               type="button"
-              onClick={() => { scheduleCancelAtPeriodEnd(); setCancelStep(0); onFlash(`Subscription canceled — Pro until ${periodEndLabel}, then Free.`); }}
+              onClick={() => { setPlan("free"); setCancelStep(0); onFlash("Subscription canceled — moved to Free."); }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
@@ -261,6 +261,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
+      <DevPlanOverrideRow onFlash={onFlash} />
     </Card>
   );
 }
