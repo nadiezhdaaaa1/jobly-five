@@ -870,6 +870,26 @@ function TrackerScreen() {
   }
   const byMovedDesc = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
     (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
+  // Skeleton sizing: tracker state (small, per-user) loads well before the
+  // jobs dataset, so we know each column's exact card count up front.
+  const skeletonCounts: Record<string, number> = {};
+  if (!jobsLoaded) {
+    for (const c of columns) skeletonCounts[c.id] = 0;
+    if (trackerHydrated) {
+      for (const { rec } of getTrackerEntries()) {
+        const raw = rec.archived ? rec.lastStatus : rec.status;
+        if (!raw || raw === "default") continue;
+        if (rec.archived && !showArchived) continue;
+        const col = resolveColumnForCard(rec.columnId, raw);
+        if (col && skeletonCounts[col.id] !== undefined) skeletonCounts[col.id]++;
+      }
+    } else {
+      for (const c of columns) skeletonCounts[c.id] = 3;
+    }
+  }
+  const unusedByMoved = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
+    (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
+  void unusedByMoved;
   for (const c of columns) {
     if (c.kind === "interview") {
       buckets[c.id].sort((a, b) => {
