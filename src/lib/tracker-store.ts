@@ -512,6 +512,21 @@ export function getJobRecord(id: string): JobRecord {
   return ensure(id);
 }
 
+// All tracker records currently in memory. Used to size loading skeletons
+// before the (much larger) jobs dataset has finished loading.
+export function getTrackerEntries(): { id: string; rec: JobRecord }[] {
+  const out: { id: string; rec: JobRecord }[] = [];
+  for (const [id, rec] of records) out.push({ id, rec });
+  return out;
+}
+
+// True once the per-user tracker state has been read from the database.
+export function useTrackerHydrated(): boolean {
+  const get = () => getVersion();
+  useSyncExternalStore(subscribe, get, get);
+  return hydratedUserId !== null;
+}
+
 // Reminder-conflict helper — returns ids of other tracker records whose
 // reminder falls on the same wall-clock minute as `iso`. Used by the
 // reminder dialogs to warn (not block) the user about overlapping reminders.
