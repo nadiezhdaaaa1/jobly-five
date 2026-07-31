@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlan, setPlan, useHasHadPro, setHasHadPro, type Plan } from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
-import { PRICING, money, savings as annualSavings, total, usd } from "@/config/pricing";
+import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -231,7 +231,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   );
 }
 
-const TRIAL_DAYS = 14;
 const PRO_MONTHLY = PRICING.monthly.perMonth;
 const PRO_ANNUAL_MONTHLY = PRICING.annual.perMonth;
 const PRO_ANNUAL_TOTAL = total(PRICING.annual);

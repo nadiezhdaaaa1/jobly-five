@@ -10,7 +10,7 @@ import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
-import { PRICING, money, savings, total, usd } from "@/config/pricing";
+import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
   AshbyLogo,
   GreenhouseLogo,
@@ -1363,7 +1363,7 @@ function Pricing() {
                   zIndex: 2,
                 }}
               >
-                Start 3-day free trial
+                Start {TRIAL_DAYS}-day free trial
               </Link>
             </div>
           </div>
