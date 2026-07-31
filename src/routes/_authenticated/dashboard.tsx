@@ -812,6 +812,32 @@ function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   );
 }
 
+function JobRowSkeleton() {
+  return (
+    <div className="rounded-[12px] bg-[#F1F3F3] p-1" aria-hidden>
+      <div className="rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 shrink-0 rounded-[4px] skeleton" />
+          <div className="min-w-0 flex-1">
+            <div className="h-[15px] w-[52%] rounded-[4px] skeleton" />
+            <div className="mt-2 h-[13px] w-[34%] rounded-[4px] skeleton" />
+          </div>
+          <div className="h-[52px] w-[52px] shrink-0 rounded-full skeleton" />
+        </div>
+        <div className="mt-4 h-[6px] w-full rounded-[4px] skeleton" />
+        <div className="mt-4 flex items-center gap-2">
+          <div className="h-[18px] w-[110px] rounded-[4px] skeleton" />
+          <div className="ml-auto flex items-center gap-1">
+            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
+            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
+            <div className="h-[30px] w-[84px] rounded-[4px] skeleton" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============================================================
 // Filters sidebar
 // ============================================================
@@ -1329,15 +1355,20 @@ function JobsScreen() {
 
             <div className="mt-6 flex flex-col gap-2">
               {!loaded && allJobs.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                  Loading jobs…
+                <div className="flex flex-col gap-2" role="status" aria-live="polite" aria-busy="true">
+                  <span className="sr-only">Loading jobs…</span>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <JobRowSkeleton key={i} />
+                  ))}
                 </div>
               ) : shown.length === 0 ? (
                 <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   No matches for your current filters
                 </div>
               ) : shown.map((j) => (
-                <JobRowCard key={j.id} job={j} onOpen={() => setOpenJob(j)} />
+                <div key={j.id} className="animate-fade-in">
+                  <JobRowCard job={j} onOpen={() => setOpenJob(j)} />
+                </div>
               ))}
               {pageCount > 1 ? (
                 <Pagination page={currentPage} pageCount={pageCount} onChange={setPage} />
