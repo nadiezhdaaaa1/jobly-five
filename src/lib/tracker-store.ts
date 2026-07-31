@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { findColumn } from "@/lib/board-columns-store";
 import type { Json } from "@/integrations/supabase/types";
 import type { Job } from "@/lib/jobs-data";
 
@@ -313,7 +314,9 @@ export function setStatus(id: string, next: JobStatus) {
   } else if (prev === "saved" && next === "default") {
     logHistory(r, "saved", "Unsaved");
   } else if (trackerCols.includes(prev) && trackerCols.includes(next)) {
-    logHistory(r, "status", `Moved from ${STATUS_LABELS[prev]} to ${STATUS_LABELS[next]}`);
+    if (next === "saved") logHistory(r, "saved", "Saved");
+    else if (next === "applied") logHistory(r, "applied", "Applied");
+    else logHistory(r, "status", `Moved to ${STATUS_LABELS[next]}`);
   }
   sync(id);
   emit();
@@ -469,10 +472,24 @@ export function logFollowUp(
 export function setCardColumn(id: string, columnId: string, stage?: JobStatus) {
   const r = ensure(id);
   if (r.columnId === columnId && (!stage || r.status === stage)) return;
+  const prevColumnId = r.columnId;
+  const prevStatus = r.status;
   r.columnId = columnId;
   if (stage && r.status !== stage) {
     r.status = stage;
     r.movedAt = today();
+  }
+  if (prevColumnId !== columnId) {
+    const col = findColumn(columnId);
+    if (col) {
+      if (col.kind === "saved") {
+        if (prevStatus !== "saved") logHistory(r, "saved", "Saved");
+      } else if (col.kind === "applied") {
+        if (prevStatus !== "applied") logHistory(r, "applied", "Applied");
+      } else {
+        logHistory(r, "status", `Moved to ${col.title}`);
+      }
+    }
   }
   sync(id);
   emit();
