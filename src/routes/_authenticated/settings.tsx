@@ -90,7 +90,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling = "Billed annually · $71.88/yr · renews Aug 20, 2026";
+  const proBilling = `Billed annually · ${usd(total(PRICING.annual))}/yr · renews Aug 20, 2026`;
   const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
@@ -231,9 +231,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 }
 
 const TRIAL_DAYS = 14;
-const PRO_MONTHLY = 9.99;
-const PRO_ANNUAL_MONTHLY = 5.79;
-const PRO_ANNUAL_TOTAL = 69.48;
+const PRO_MONTHLY = PRICING.monthly.perMonth;
+const PRO_ANNUAL_MONTHLY = PRICING.annual.perMonth;
+const PRO_ANNUAL_TOTAL = total(PRICING.annual);
 
 function PlanCardsBlock({
   plan,
@@ -271,7 +271,7 @@ function PlanCardsBlock({
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
 
-  const savings = (PRO_MONTHLY * 12 - PRO_ANNUAL_MONTHLY * 12).toFixed(2);
+  const savings = money(annualSavings(PRICING.annual));
 
   const proLabel =
     isPlanPro
