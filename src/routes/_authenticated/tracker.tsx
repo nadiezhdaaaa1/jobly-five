@@ -887,9 +887,6 @@ function TrackerScreen() {
       for (const c of columns) skeletonCounts[c.id] = 3;
     }
   }
-  const unusedByMoved = (a: { rec: JobRecord }, b: { rec: JobRecord }) =>
-    (b.rec.movedAt ?? "").localeCompare(a.rec.movedAt ?? "");
-  void unusedByMoved;
   for (const c of columns) {
     if (c.kind === "interview") {
       buckets[c.id].sort((a, b) => {
