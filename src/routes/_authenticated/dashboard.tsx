@@ -1355,15 +1355,20 @@ function JobsScreen() {
 
             <div className="mt-6 flex flex-col gap-2">
               {!loaded && allJobs.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                  Loading jobs…
+                <div className="flex flex-col gap-2" role="status" aria-live="polite" aria-busy="true">
+                  <span className="sr-only">Loading jobs…</span>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <JobRowSkeleton key={i} />
+                  ))}
                 </div>
               ) : shown.length === 0 ? (
                 <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
                   No matches for your current filters
                 </div>
               ) : shown.map((j) => (
-                <JobRowCard key={j.id} job={j} onOpen={() => setOpenJob(j)} />
+                <div key={j.id} className="animate-fade-in">
+                  <JobRowCard job={j} onOpen={() => setOpenJob(j)} />
+                </div>
               ))}
               {pageCount > 1 ? (
                 <Pagination page={currentPage} pageCount={pageCount} onChange={setPage} />
