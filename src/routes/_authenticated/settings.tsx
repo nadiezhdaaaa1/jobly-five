@@ -20,6 +20,15 @@ import {
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
 import { CANCEL_REASONS, recordCancelFeedback, type CancelReason } from "@/lib/cancel-feedback-store";
 import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
+import { toast } from "sonner";
+import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
+import {
+  requestAccountDeletion,
+  restoreAccount,
+  devSetPendingDeletion,
+  devFastForwardPastGrace,
+  useAccount,
+} from "@/lib/account-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -354,6 +363,7 @@ function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
 function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) {
   const plan = usePlan();
   const hasHadPro = useHasHadPro();
+  const account = useAccount();
   return (
     <div className="mt-4 border-t pt-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -384,6 +394,22 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Restore Pro
+        </button>
+        <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5"
+            checked={account.accountStatus === "pending_deletion"}
+            onChange={(e) => { devSetPendingDeletion(e.target.checked); onFlash("DEV ONLY — account status changed."); }}
+          />
+          <span>pending_deletion</span>
+        </label>
+        <button
+          type="button"
+          onClick={() => { devFastForwardPastGrace(); onFlash("DEV ONLY — grace period moved into the past."); }}
+          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Fast-forward past grace
         </button>
       </div>
     </div>
@@ -1254,20 +1280,25 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
 function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
-  const [deleted, setDeleted] = useState(false);
+  const scheduledFor = formatDeletionDate(deletionDateFrom(new Date()));
 
-  if (deleted) {
-    return (
-      <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center gap-4 bg-[color:var(--color-background)] p-6 text-center">
-        <h2 className="text-[24px]" style={{ fontFamily: "var(--font-display)" }}>Account deleted</h2>
-        <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          Your profile, resume, and tracker data have been removed from this preview.
-        </p>
-        <a href="/" className="text-[14px] font-semibold text-[color:var(--color-green)] hover:underline">
-          Back to home
-        </a>
-      </div>
-    );
+  async function confirmDeletion() {
+    const now = new Date();
+    requestAccountDeletion(now);
+    const date = formatDeletionDate(deletionDateFrom(now));
+    setConfirmOpen(false);
+    toast.success(DELETION_COPY.scheduledToast(date), {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          restoreAccount();
+          toast.success(DELETION_COPY.restoredToast);
+        },
+      },
+    });
+    // Logged out immediately — data stays intact for the grace window.
+    await supabase.auth.signOut();
+    window.location.href = "/";
   }
 
   return (
@@ -1277,7 +1308,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
           <div className="min-w-0">
             <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Delete account</div>
             <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              Permanently deletes your profile, resume, matches, and tracker. This can't be undone.
+              {DELETION_COPY.dangerCaption}
             </p>
           </div>
           <button
@@ -1295,7 +1326,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
       {confirmOpen ? (
         <Modal onClose={() => setConfirmOpen(false)} title="Delete your account?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            This permanently removes your profile, resume, saved matches, and tracker history. This can't be undone. Type <b>DELETE</b> to confirm.
+            {DELETION_COPY.confirmBody(scheduledFor)} Type <b>DELETE</b> to confirm.
           </p>
           <input
             autoFocus
@@ -1309,18 +1340,18 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="button"
               disabled={confirmText !== "DELETE"}
-              onClick={() => { setConfirmOpen(false); setDeleted(true); onFlash("Account deleted."); }}
+              onClick={() => { void confirmDeletion(); }}
               className="h-11 w-full rounded-[4px] px-4 button-small text-white"
               style={{ background: confirmText === "DELETE" ? "#D00D01" : "var(--color-surface-2)", color: confirmText === "DELETE" ? "#fff" : "var(--color-alt-light-mist)", cursor: confirmText === "DELETE" ? "pointer" : "not-allowed" }}
             >
-              Delete my account
+              Delete account
             </button>
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
-              Cancel
+              Keep my account
             </button>
           </div>
         </Modal>
