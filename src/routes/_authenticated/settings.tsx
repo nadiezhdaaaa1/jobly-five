@@ -275,34 +275,37 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
   const plan = usePlan();
   const hasHadPro = useHasHadPro();
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-3 border-t pt-4">
-      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-        Dev only
-      </span>
-      <button
-        type="button"
-        onClick={() => { devDowngradeNow(); onFlash("DEV ONLY — downgraded to Free instantly."); }}
-        className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-      >
-        Downgrade to Free now
-      </button>
-      <button
-        type="button"
-        onClick={() => { devRestorePro(); onFlash("DEV ONLY — Pro restored."); }}
-        className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-      >
-        Restore Pro
-      </button>
-      <span className="text-[11px] text-[color:var(--color-text-muted)]">Local state only — no billing calls.</span>
-      <label className="inline-flex items-center gap-1 text-[11px] text-[color:var(--color-text-muted)]">
-        <input
-          type="checkbox"
-          checked={hasHadPro}
-          onChange={(e) => setHasHadPro(e.target.checked)}
-        />
-        <span>hasHadPro</span>
-      </label>
-      <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">· current plan: {plan}</span>
+    <div className="mt-4 border-t pt-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+          Dev tools
+        </span>
+        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">plan: {plan}</span>
+        <span className="flex-1" />
+        <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5"
+            checked={hasHadPro}
+            onChange={(e) => setHasHadPro(e.target.checked)}
+          />
+          <span>hasHadPro</span>
+        </label>
+        <button
+          type="button"
+          onClick={() => { devDowngradeNow(); onFlash("DEV ONLY — downgraded to Free instantly."); }}
+          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Free now
+        </button>
+        <button
+          type="button"
+          onClick={() => { devRestorePro(); onFlash("DEV ONLY — Pro restored."); }}
+          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Restore Pro
+        </button>
+      </div>
     </div>
   );
 }
