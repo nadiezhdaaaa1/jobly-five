@@ -363,6 +363,7 @@ function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
 function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) {
   const plan = usePlan();
   const hasHadPro = useHasHadPro();
+  const account = useAccount();
   return (
     <div className="mt-4 border-t pt-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -393,6 +394,22 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Restore Pro
+        </button>
+        <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5"
+            checked={account.accountStatus === "pending_deletion"}
+            onChange={(e) => { devSetPendingDeletion(e.target.checked); onFlash("DEV ONLY — account status changed."); }}
+          />
+          <span>pending_deletion</span>
+        </label>
+        <button
+          type="button"
+          onClick={() => { devFastForwardPastGrace(); onFlash("DEV ONLY — grace period moved into the past."); }}
+          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Fast-forward past grace
         </button>
       </div>
     </div>
