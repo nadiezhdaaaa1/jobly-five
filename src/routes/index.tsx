@@ -10,6 +10,7 @@ import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
+import { PRICING, money, savings, total, usd } from "@/config/pricing";
 import {
   AshbyLogo,
   GreenhouseLogo,
@@ -86,14 +87,14 @@ export const Route = createFileRoute("/")({
             {
               "@type": "Offer",
               name: "Pro (monthly)",
-              price: "9.99",
+              price: money(total(PRICING.monthly)),
               priceCurrency: "USD",
               category: "Monthly subscription",
             },
             {
               "@type": "Offer",
               name: "Pro (annual)",
-              price: "69.48",
+              price: money(total(PRICING.annual)),
               priceCurrency: "USD",
               category: "Annual subscription",
             },
@@ -946,8 +947,14 @@ function Pricing() {
 
   const paid =
     period === "monthly"
-      ? { name: "Monthly", struck: "", price: "$9.99", suffix: "per month", pill: "" }
-      : { name: "Annual", struck: "$9.99", price: "$5.79", suffix: "per month", pill: "Save $50.40" };
+      ? { name: "Monthly", struck: "", price: usd(PRICING.monthly.perMonth), suffix: "per month", pill: "" }
+      : {
+          name: "Annual",
+          struck: usd(PRICING.monthly.perMonth),
+          price: usd(PRICING.annual.perMonth),
+          suffix: "per month",
+          pill: `Save ${usd(savings(PRICING.annual))}`,
+        };
 
   const features: { label: (plan: "free" | "paid") => string; freeIncluded: boolean }[] = [
     { label: () => "Matches per digest — Top 5", freeIncluded: true },
