@@ -669,7 +669,7 @@ function KanbanColumn({
             className="inline-flex items-center justify-center text-[14px]"
             style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
           >
-            {jobs.length}
+            {skeletonCount ? skeletonCount : jobs.length}
           </span>
         </button>
         <IconTooltip label="Edit column">
