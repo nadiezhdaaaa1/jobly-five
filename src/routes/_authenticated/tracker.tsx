@@ -569,6 +569,34 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
 
 // ---------- Column ----------
 
+// Loading placeholder mirroring the real Kanban card shell (same padding,
+// radius, border and row rhythm) so nothing shifts when data arrives.
+function KanbanCardSkeleton() {
+  return (
+    <div
+      aria-hidden
+      className="rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]"
+      style={{ padding: 13 }}
+    >
+      <div className="flex flex-col" style={{ gap: 8 }}>
+        <div className="flex items-start justify-between gap-2">
+          <div className="skeleton h-7 w-7 shrink-0 rounded-[4px]" />
+          <div className="skeleton h-[20px] w-[42px] rounded-[4px]" />
+        </div>
+        <div className="min-w-0">
+          <div className="skeleton h-[14px] w-[80%] rounded-[4px]" />
+          <div className="skeleton mt-2 h-[10px] w-[60%] rounded-[4px]" />
+        </div>
+        <div className="skeleton h-[16px] w-[45%] rounded-[4px]" />
+      </div>
+      <div className="mt-4 flex items-center gap-1">
+        <div className="skeleton h-[30px] w-[30px] rounded-[4px]" />
+        <div className="skeleton ml-auto h-[30px] w-[76px] rounded-[4px]" />
+      </div>
+    </div>
+  );
+}
+
 function KanbanColumn({
   column,
   jobs,
