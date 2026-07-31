@@ -5,7 +5,18 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { usePlan, setPlan, useHasHadPro, setHasHadPro, type Plan } from "@/lib/plan-store";
+import {
+  usePlan,
+  setPlan,
+  useHasHadPro,
+  setHasHadPro,
+  useSubscription,
+  scheduleCancelAtPeriodEnd,
+  resumeSubscription,
+  devDowngradeNow,
+  devRestorePro,
+  type Plan,
+} from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
 import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
 
@@ -89,17 +100,25 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
+  const sub = useSubscription();
+  const periodEndLabel = new Date(sub.currentPeriodEnd).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const scheduledEnd = sub.cancelAtPeriodEnd && plan === "pro";
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling = `Billed annually · ${usd(total(PRICING.annual))}/yr · renews Aug 20, 2026`;
-  const pausedLine = "Paused until Jan 20, 2027 · no charges while paused";
+  const proBilling = `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`;
+  const scheduledLine = `Pro until ${periodEndLabel} · then Free`;
+  const pausedLine = `Paused until ${periodEndLabel} · no charges while paused`;
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
 
   return (
     <Card
       title="Plan"
-      actions={plan === "pro" ? (
+      actions={plan === "pro" && !scheduledEnd ? (
         <button
           type="button"
           onClick={() => setCancelStep(1)}
@@ -118,11 +137,26 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               {plan === "free" ? freeSummary : proSummary}
             </p>
             <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              {plan === "pro" ? proBilling : plan === "paused" ? pausedLine : "Free plan — no billing"}
+              {scheduledEnd
+                ? scheduledLine
+                : plan === "pro"
+                  ? proBilling
+                  : plan === "paused"
+                    ? pausedLine
+                    : "Free plan — no billing"}
             </p>
           </div>
         </div>
         <div className="shrink-0 flex flex-col items-stretch gap-2">
+          {scheduledEnd ? (
+            <button
+              type="button"
+              onClick={() => { resumeSubscription(); onFlash("Cancellation undone — your Pro subscription continues."); }}
+              className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Resume subscription
+            </button>
+          ) : null}
           {plan === "paused" ? (
             <>
               <button
@@ -205,7 +239,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {cancelStep === 2 && plan !== "paused" ? (
         <Modal onClose={() => setCancelStep(0)} title="Cancel your Pro subscription?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You'll keep Pro until <b>Aug 20, 2026</b>, then move to Free. No more charges. You can resume anytime.
+            You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
@@ -217,7 +251,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             </button>
             <button
               type="button"
-              onClick={() => { setPlan("free"); setCancelStep(0); onFlash("Pro canceled — access until Aug 20."); }}
+              onClick={() => { scheduleCancelAtPeriodEnd(); setCancelStep(0); onFlash(`Pro canceled — access until ${periodEndLabel}.`); }}
               className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
@@ -227,7 +261,34 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
+      <DevPlanOverrideRow onFlash={onFlash} />
     </Card>
+  );
+}
+
+function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
+  if (!import.meta.env.DEV) return null;
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-3 border-t pt-4">
+      <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+        Dev only
+      </span>
+      <button
+        type="button"
+        onClick={() => { devDowngradeNow(); onFlash("DEV ONLY — downgraded to Free instantly."); }}
+        className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+      >
+        Downgrade to Free now
+      </button>
+      <button
+        type="button"
+        onClick={() => { devRestorePro(); onFlash("DEV ONLY — Pro restored."); }}
+        className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+      >
+        Restore Pro
+      </button>
+      <span className="text-[11px] text-[color:var(--color-text-muted)]">Local state only — no billing calls.</span>
+    </div>
   );
 }
 
