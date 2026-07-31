@@ -268,6 +268,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
 function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
   if (!import.meta.env.DEV) return null;
+  return <DevPlanOverrideRowInner onFlash={onFlash} />;
+}
+
+function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) {
+  const plan = usePlan();
+  const hasHadPro = useHasHadPro();
   return (
     <div className="mt-4 flex flex-wrap items-center gap-3 border-t pt-4">
       <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
@@ -288,6 +294,15 @@ function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
         Restore Pro
       </button>
       <span className="text-[11px] text-[color:var(--color-text-muted)]">Local state only — no billing calls.</span>
+      <label className="inline-flex items-center gap-1 text-[11px] text-[color:var(--color-text-muted)]">
+        <input
+          type="checkbox"
+          checked={hasHadPro}
+          onChange={(e) => setHasHadPro(e.target.checked)}
+        />
+        <span>hasHadPro</span>
+      </label>
+      <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">· current plan: {plan}</span>
     </div>
   );
 }
@@ -740,19 +755,6 @@ function PlanCardsBlock({
         </div>
       </div>
 
-      {/* Dev toggle for prototyping trial eligibility */}
-      <div className="mt-3 flex items-center gap-2 text-[11px] text-[color:var(--color-text-muted)]">
-        <span>Dev:</span>
-        <label className="inline-flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={hasHadPro}
-            onChange={(e) => setHasHadPro(e.target.checked)}
-          />
-          <span>hasHadPro</span>
-        </label>
-        <span className="opacity-60">· current plan: {plan}</span>
-      </div>
     </div>
   );
 }
