@@ -676,7 +676,12 @@ function KanbanColumn({
             style={{ borderColor: "#D0D6D8", height: placeholderHeight || 96 }}
           />
         ) : null}
-        {jobs.length === 0 && !isDropTarget ? (
+        {skeletonCount ? (
+          Array.from({ length: skeletonCount }).map((_, i) => (
+            <KanbanCardSkeleton key={`sk-${i}`} />
+          ))
+        ) : null}
+        {!skeletonCount && jobs.length === 0 && !isDropTarget ? (
           <div
             className="rounded-[8px] border border-dashed p-4 text-center text-[12px]"
             style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
@@ -684,7 +689,7 @@ function KanbanColumn({
             Nothing here yet
           </div>
         ) : null}
-        {jobs.map(({ job }) => (
+        {(skeletonCount ? [] : jobs).map(({ job }) => (
           <KanbanCard
             key={job.id}
             job={job}
