@@ -589,6 +589,7 @@ function KanbanColumn({
   moveColumns,
   onEditColumn,
 }: {
+  skeletonCount,
   column: BoardColumn;
   jobs: { job: Job; rec: JobRecord }[];
   skeletonCount?: number;
