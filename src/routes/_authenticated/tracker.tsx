@@ -1019,6 +1019,7 @@ function TrackerScreen() {
                 key={c.id}
                 column={c}
                 jobs={buckets[c.id] ?? []}
+                skeletonCount={jobsLoaded ? 0 : (skeletonCounts[c.id] ?? 0)}
                 isDropTarget={dragOver === c.id && draggingId !== null}
                 placeholderHeight={dragHeight}
                 onDragEnter={() => setDragOver(c.id)}
