@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IconX as X, IconArrowUpRight as ExternalLink } from "@tabler/icons-react";
+import { IconX as X, IconArrowUpRight as ExternalLink, IconPencil as Pencil } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
 import type { JobRecord } from "@/lib/tracker-store";
+import { setNotes, setOfferDetails } from "@/lib/tracker-store";
 
 const BORDER_LIGHT = "#E3E7E8";
 const META_GREY = "#67787C";
@@ -36,13 +37,109 @@ type Row = {
   label: string;
   value: (e: OfferEntry) => string;
   multiline?: boolean;
+  save?: (id: string, next: string) => void;
+  placeholder?: string;
 };
 
 const ROWS: Row[] = [
   { label: "Moved to offer", value: (e) => fmtDate(e.rec.offerAt ?? e.rec.movedAt) },
-  { label: "Offer details", value: (e) => e.rec.offerDetails ?? "", multiline: true },
-  { label: "Notes", value: (e) => e.rec.notes ?? "", multiline: true },
+  {
+    label: "Offer details",
+    value: (e) => e.rec.offerDetails ?? "",
+    multiline: true,
+    save: setOfferDetails,
+    placeholder: "Paste the offer letter or key terms…",
+  },
+  {
+    label: "Notes",
+    value: (e) => e.rec.notes ?? "",
+    multiline: true,
+    save: setNotes,
+    placeholder: "Your notes about this offer…",
+  },
 ];
+
+// Editable multiline cell: click to edit, Save / Cancel, Esc cancels.
+function EditableCell({
+  value,
+  placeholder,
+  onSave,
+}: {
+  value: string;
+  placeholder?: string;
+  onSave: (next: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+
+  if (editing) {
+    return (
+      <div>
+        <textarea
+          autoFocus
+          value={draft}
+          placeholder={placeholder}
+          onChange={(ev) => setDraft(ev.target.value)}
+          onKeyDown={(ev) => {
+            if (ev.key === "Escape") {
+              ev.stopPropagation();
+              setEditing(false);
+              setDraft(value);
+            }
+          }}
+          rows={8}
+          className="w-full resize-y rounded-[4px] border px-2 py-1.5 text-[14px] outline-none focus:border-[color:var(--color-foreground)]"
+          style={{ borderColor: BORDER_LIGHT }}
+        />
+        <div className="mt-2 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              onSave(draft);
+              setEditing(false);
+            }}
+            className="h-8 rounded-[4px] bg-[color:var(--color-foreground)] px-3 text-[13px] font-medium text-white"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setDraft(value);
+              setEditing(false);
+            }}
+            className="h-8 rounded-[4px] border px-3 text-[13px]"
+            style={{ borderColor: BORDER_LIGHT, color: META_GREY }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group relative">
+      {value ? (
+        <span className="block whitespace-pre-wrap">{value}</span>
+      ) : (
+        <span style={{ color: "#A6B2B5" }}>—</span>
+      )}
+      <button
+        type="button"
+        aria-label="Edit"
+        onClick={() => {
+          setDraft(value);
+          setEditing(true);
+        }}
+        className="absolute right-0 top-0 flex h-7 w-7 items-center justify-center rounded-[4px] bg-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 hover:bg-[color:var(--color-surface-2)]"
+        style={{ color: META_GREY }}
+      >
+        <Pencil size={14} strokeWidth={1.6} />
+      </button>
+    </div>
+  );
+}
 
 export function CompareOffersDialog({
   open,
@@ -209,7 +306,14 @@ export function CompareOffersDialog({
                         className="border-b border-r px-4 py-3 align-top text-[14px]"
                         style={{ width: colWidth, minWidth: colWidth, borderColor: BORDER_LIGHT }}
                       >
-                        {v ? (
+                        {r.save ? (
+                          <EditableCell
+                            key={`${e.job.id}:${v}`}
+                            value={v}
+                            placeholder={r.placeholder}
+                            onSave={(next) => r.save!(e.job.id, next)}
+                          />
+                        ) : v ? (
                           <span className={r.multiline ? "block whitespace-pre-wrap" : "block"}>
                             {v}
                             {isBestSalary ? (
