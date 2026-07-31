@@ -812,6 +812,32 @@ function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   );
 }
 
+function JobRowSkeleton() {
+  return (
+    <div className="rounded-[12px] bg-[#F1F3F3] p-1" aria-hidden>
+      <div className="rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 shrink-0 rounded-[4px] skeleton" />
+          <div className="min-w-0 flex-1">
+            <div className="h-[15px] w-[52%] rounded-[4px] skeleton" />
+            <div className="mt-2 h-[13px] w-[34%] rounded-[4px] skeleton" />
+          </div>
+          <div className="h-[52px] w-[52px] shrink-0 rounded-full skeleton" />
+        </div>
+        <div className="mt-4 h-[6px] w-full rounded-[4px] skeleton" />
+        <div className="mt-4 flex items-center gap-2">
+          <div className="h-[18px] w-[110px] rounded-[4px] skeleton" />
+          <div className="ml-auto flex items-center gap-1">
+            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
+            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
+            <div className="h-[30px] w-[84px] rounded-[4px] skeleton" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============================================================
 // Filters sidebar
 // ============================================================
