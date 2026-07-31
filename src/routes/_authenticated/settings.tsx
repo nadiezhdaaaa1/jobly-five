@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { usePlan, setPlan, useHasHadPro, setHasHadPro, type Plan } from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
+import { PRICING, money, savings as annualSavings, total, usd } from "@/config/pricing";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
