@@ -18,6 +18,7 @@ import {
   type Plan,
 } from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
+import { CANCEL_REASONS, recordCancelFeedback, type CancelReason } from "@/lib/cancel-feedback-store";
 import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -100,6 +101,17 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
+  const [reason, setReason] = useState<CancelReason | null>(null);
+  const [reasonOther, setReasonOther] = useState("");
+  const reasonReady = reason !== null && (reason !== "Other" || reasonOther.trim().length > 0);
+  function closeCancel() {
+    setCancelStep(0);
+    setReason(null);
+    setReasonOther("");
+  }
+  function saveReason() {
+    if (reason) recordCancelFeedback(reason, reason === "Other" ? reasonOther : undefined);
+  }
   const sub = useSubscription();
   const periodEndLabel = new Date(sub.currentPeriodEnd).toLocaleDateString("en-US", {
     month: "short",
@@ -187,14 +199,14 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
       {/* Cancel Step 1 (only from active Pro) */}
       {cancelStep === 1 ? (
-        <Modal onClose={() => setCancelStep(0)} title="Found a job?">
+        <Modal onClose={closeCancel} title="Found a job?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             Congrats! Pause Pro for 6 months instead — no emails, no charges, everything saved exactly as you left it.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); setCancelStep(0); onFlash("Pro paused for 6 months."); }}
+              onClick={() => { setPlan("paused"); closeCancel(); onFlash("Pro paused for 6 months."); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Pause Pro for 6 months
@@ -212,22 +224,29 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
       {/* Cancel Step 2 — differs by plan state */}
       {cancelStep === 2 && plan === "paused" ? (
-        <Modal onClose={() => setCancelStep(0)} title="Are you sure?">
+        <Modal onClose={closeCancel} title="Are you sure?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             Your pause will end and you'll move to Free immediately. Your tracker and profile are kept.
           </p>
+          <CancelReasonPicker
+            reason={reason}
+            onReason={setReason}
+            other={reasonOther}
+            onOther={setReasonOther}
+          />
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); setCancelStep(0); }}
+              onClick={() => { setPlan("paused"); closeCancel(); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Keep my pause
             </button>
             <button
               type="button"
-              onClick={() => { setPlan("free"); setCancelStep(0); onFlash("Subscription canceled — moved to Free."); }}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              disabled={!reasonReady}
+              onClick={() => { saveReason(); setPlan("free"); closeCancel(); onFlash("Subscription canceled — moved to Free."); }}
+              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -237,22 +256,29 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       ) : null}
 
       {cancelStep === 2 && plan !== "paused" ? (
-        <Modal onClose={() => setCancelStep(0)} title="Cancel your Pro subscription?">
+        <Modal onClose={closeCancel} title="Cancel your Pro subscription?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
             You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
           </p>
+          <CancelReasonPicker
+            reason={reason}
+            onReason={setReason}
+            other={reasonOther}
+            onOther={setReasonOther}
+          />
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => setCancelStep(0)}
+              onClick={closeCancel}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Keep Pro
             </button>
             <button
               type="button"
-              onClick={() => { scheduleCancelAtPeriodEnd(); setCancelStep(0); onFlash(`Pro canceled — access until ${periodEndLabel}.`); }}
-              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              disabled={!reasonReady}
+              onClick={() => { saveReason(); scheduleCancelAtPeriodEnd(); closeCancel(); onFlash(`Pro canceled — access until ${periodEndLabel}.`); }}
+              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -263,6 +289,60 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
       <DevPlanOverrideRow onFlash={onFlash} />
     </Card>
+  );
+}
+
+function CancelReasonPicker({
+  reason,
+  onReason,
+  other,
+  onOther,
+}: {
+  reason: CancelReason | null;
+  onReason: (r: CancelReason) => void;
+  other: string;
+  onOther: (v: string) => void;
+}) {
+  return (
+    <fieldset className="mt-5">
+      <legend className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 500 }}>
+        Why are you canceling?
+      </legend>
+      <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+        This helps us improve Jobly.
+      </p>
+      <div className="mt-3 flex flex-col gap-1">
+        {CANCEL_REASONS.map((r) => (
+          <label
+            key={r}
+            className="flex cursor-pointer items-center gap-2 rounded-[4px] px-2 py-1.5 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            style={{ fontWeight: 300 }}
+          >
+            <input
+              type="radio"
+              name="cancel-reason"
+              checked={reason === r}
+              onChange={() => onReason(r)}
+              className="h-4 w-4 accent-[color:var(--color-accent)]"
+            />
+            <span>{r}</span>
+          </label>
+        ))}
+      </div>
+      {reason === "Other" ? (
+        <textarea
+          autoFocus
+          value={other}
+          onChange={(e) => onOther(e.target.value)}
+          rows={3}
+          maxLength={500}
+          placeholder="Tell us what happened"
+          aria-label="Tell us why you're canceling"
+          className="mt-2 w-full resize-none rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 py-2 text-[13px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
+          style={{ fontWeight: 300 }}
+        />
+      ) : null}
+    </fieldset>
   );
 }
 
