@@ -46,6 +46,8 @@ import {
   setStatus,
   setCardColumn,
   useJobRecord,
+  getTrackerEntries,
+  useTrackerHydrated,
   type JobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
