@@ -878,7 +878,7 @@ function TrackerScreen() {
     if (trackerHydrated) {
       for (const { rec } of getTrackerEntries()) {
         const raw = rec.archived ? rec.lastStatus : rec.status;
-        if (!raw || raw === "default") continue;
+        if (!raw) continue;
         if (rec.archived && !showArchived) continue;
         const col = resolveColumnForCard(rec.columnId, raw);
         if (col && skeletonCounts[col.id] !== undefined) skeletonCounts[col.id]++;
