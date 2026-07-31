@@ -824,7 +824,6 @@ function JobRowSkeleton() {
           </div>
           <div className="h-[52px] w-[52px] shrink-0 rounded-full skeleton" />
         </div>
-        <div className="mt-4 h-[6px] w-full rounded-[4px] skeleton" />
         <div className="mt-4 flex items-center gap-2">
           <div className="h-[18px] w-[110px] rounded-[4px] skeleton" />
           <div className="ml-auto flex items-center gap-1">
