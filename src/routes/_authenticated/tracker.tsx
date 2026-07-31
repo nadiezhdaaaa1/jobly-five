@@ -748,7 +748,8 @@ function KanbanColumn({
 function TrackerScreen() {
   const plan = usePlan();
   useTrackerVersion();
-  const { jobs: allJobs } = useJobs();
+  const { jobs: allJobs, loaded: jobsLoaded } = useJobs();
+  const trackerHydrated = useTrackerHydrated();
   const columns = useColumns();
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
