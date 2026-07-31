@@ -8,6 +8,9 @@ export const PRICING = {
   annual: { months: 12, perMonth: 5.79 },
 } as const;
 
+// Canonical free-trial length. Never hardcode a trial length anywhere else.
+export const TRIAL_DAYS = 3;
+
 // Derived values — always compute, never hardcode.
 export const total = (p: PricingTier) => +(p.perMonth * p.months).toFixed(2);
 export const savings = (p: PricingTier) =>
