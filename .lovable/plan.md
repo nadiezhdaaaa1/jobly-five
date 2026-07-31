@@ -1,41 +1,16 @@
-Convert row action buttons on the Resume, Cover Letters, and Saved searches tabs from text buttons to icon-only buttons that follow the same reveal pattern already used on the Preferences rows: hidden on desktop until row hover/focus, always visible on tablet and mobile.
+# Skeleton loading for the Digest job list
 
-## Scope (single file: `src/routes/_authenticated/profile.tsx`)
+Not hard at all — the list already has a clean loading branch ("Loading jobs…"), so it's a drop-in replacement with a shimmer placeholder.
 
-### 1. Resume rows — `FileRow`
-Replace text `GhostBtn`s with 32px icon buttons, each with `aria-label` + `title`:
-- Preview → `Eye`
-- Make primary (when not primary) → `Star`
-- Replace (when provided) → `RefreshCw`
-- Delete → `Trash` (already icon, restyle to match)
+## What changes
 
-Wrap the row in `group/row`. The action cluster becomes:
-`flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100`.
+- Replace the plain "Loading jobs…" box on the Digest with 5 skeleton job rows that match the real card layout: grey logo square, two text bars (title / company), a round match-score placeholder, salary bar, and an Apply button block.
+- Each skeleton uses the same outer card shell as a real job row (12px grey wrapper, white 8px card, same border and padding), so nothing shifts when the real jobs appear.
+- Add a soft shimmer sweep animation (subtle left-to-right highlight, ~1.6s loop) plus a light fade-in for the real cards once loaded, so the swap feels smooth instead of snapping.
+- Respect reduced-motion: the shimmer falls back to a gentle static pulse.
 
-The `Primary` tag stays visible at all times (it's status, not an action).
+## Technical notes
 
-### 2. Cover Letters rows — `LetterRow`
-Same treatment:
-- Edit → `Pencil`
-- Duplicate → `Copy`
-- Delete → `Trash`
-
-### 3. Saved searches rows
-Same treatment for the default state only:
-- Rename → `Pencil`
-- Delete → `Trash`
-
-The inline rename input state (Save/Cancel) and the inline "Delete? / Keep" confirmation stay as text buttons and stay always visible — they're transient interaction states, not the default action row.
-
-## Visual spec (shared)
-- Button: `inline-flex size-8 items-center justify-center rounded-[4px] hover:bg-[color:var(--color-surface-2)]`
-- Icon: `size={16} strokeWidth={1.8}`
-- Delete keeps `text-[color:var(--color-danger)]`
-- Cluster gap: `gap-1`
-- Reveal: desktop-only fade (`lg:` breakpoint). Below `lg`, buttons are always visible.
-
-## Out of scope
-- No changes to Preferences (already done).
-- No changes to Portfolio, Social, Achievement, or other tabs.
-- No changes to the upload / editor dialogs — only the row action buttons.
-- No new icons imported that aren't already available from `lucide-react` / the existing `IconX` aliases used in the file.
+- New component `JobRowSkeleton` in `src/routes/_authenticated/dashboard.tsx` (or a small `src/components/app/JobRowSkeleton.tsx` if it keeps the route tidy), rendered 5x in the `!loaded && allJobs.length === 0` branch at line ~1331.
+- Shimmer keyframes added to `src/styles.css` as a reusable `skeleton` utility using existing tokens (`--color-surface-2` / Light Mist) — no hardcoded colors in components.
+- No data, store, or query changes; purely presentational.
