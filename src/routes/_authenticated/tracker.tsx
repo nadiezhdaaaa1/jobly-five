@@ -591,6 +591,7 @@ function KanbanColumn({
 }: {
   column: BoardColumn;
   jobs: { job: Job; rec: JobRecord }[];
+  skeletonCount?: number;
   isDropTarget: boolean;
   placeholderHeight: number;
   onDragEnter: () => void;
