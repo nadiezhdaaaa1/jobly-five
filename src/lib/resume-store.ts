@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Manual work-history store (Experience / Education tabs).
@@ -87,6 +88,7 @@ function emit() {
       // ignore
     }
   }
+  scheduleHistorySync();
   for (const l of listeners) l();
 }
 

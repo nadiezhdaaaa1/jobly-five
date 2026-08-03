@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // ------- Types -------
 
@@ -140,6 +141,7 @@ function persist() {
 
 function emit() {
   persist();
+  scheduleExtrasSync();
   for (const l of listeners) l();
 }
 
