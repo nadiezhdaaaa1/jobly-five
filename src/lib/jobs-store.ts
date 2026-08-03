@@ -194,7 +194,7 @@ export async function loadJobs(): Promise<void> {
       workMode: (row.work_mode as string | null) ?? null,
       seniority: (row.seniority as string | null) ?? null,
       minYearsExperience: (row.min_years_experience as number | null) ?? null,
-      englishLevel: null,
+      englishLevel: (row.english_level as string | null) ?? null,
       roles: (row.roles as string[] | null) ?? [],
       roleIds: (row.role_ids as string[] | null) ?? [],
       stack: (row.stack as string[] | null) ?? [],
