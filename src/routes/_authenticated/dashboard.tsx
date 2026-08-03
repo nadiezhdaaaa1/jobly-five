@@ -34,6 +34,7 @@ import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
+import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
 import {
   addSavedFilter,
@@ -1350,6 +1351,7 @@ function JobsScreen() {
   })();
 
   const { jobs: allJobsRaw, loaded } = useJobs();
+  const { at: digestAt, loading: digestLoading } = useLatestDigestAt();
   const allJobs = useMemo(() => allJobsRaw.map(enrich), [allJobsRaw]);
   const blocked = useBlockedCompanies();
   const hiddenIds = useTrackerHiddenIds();
@@ -1386,7 +1388,18 @@ function JobsScreen() {
               })()}
             </h1>
             <p className="mt-1 text-[14px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              Your latest digest arrived <span className="font-semibold text-[color:var(--color-text-secondary)]">Today at 9:02</span>
+              {digestLoading ? (
+                <span className="inline-block h-[14px] w-[220px] animate-pulse rounded-[4px] bg-[color:var(--color-border)] align-middle" aria-hidden />
+              ) : digestAt ? (
+                <>
+                  Your latest digest arrived{" "}
+                  <span className="font-semibold text-[color:var(--color-text-secondary)]">
+                    {formatDigestArrival(digestAt).replace("Your latest digest arrived ", "")}
+                  </span>
+                </>
+              ) : (
+                formatDigestArrival(null)
+              )}
             </p>
 
             <div className="mt-6 flex flex-col gap-2">
