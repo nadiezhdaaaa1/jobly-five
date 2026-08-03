@@ -187,7 +187,7 @@ export function CompareOffersDialog({
   if (!open) return null;
 
   const colWidth = 300;
-  const labelWidth = 160;
+  const labelWidth = 120;
   const naturalWidth = labelWidth + offers.length * colWidth + 2;
 
   return (
