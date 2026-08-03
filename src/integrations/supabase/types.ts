@@ -128,30 +128,78 @@ export type Database = {
       consent_records: {
         Row: {
           channel: Database["public"]["Enums"]["consent_channel"]
+          consent_text: string
           created_at: string
+          email: string
           granted: boolean
           id: string
+          ip_address: unknown
+          lawful_basis: string
+          policy_version: string
           source: string
-          user_id: string
-          wording: string
+          user_agent: string | null
+          user_id: string | null
         }
         Insert: {
           channel: Database["public"]["Enums"]["consent_channel"]
+          consent_text: string
           created_at?: string
+          email: string
           granted: boolean
           id?: string
+          ip_address?: unknown
+          lawful_basis?: string
+          policy_version?: string
           source: string
-          user_id: string
-          wording: string
+          user_agent?: string | null
+          user_id?: string | null
         }
         Update: {
           channel?: Database["public"]["Enums"]["consent_channel"]
+          consent_text?: string
           created_at?: string
+          email?: string
           granted?: boolean
           id?: string
+          ip_address?: unknown
+          lawful_basis?: string
+          policy_version?: string
           source?: string
-          user_id?: string
-          wording?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      email_contacts: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          suppressed_at: string | null
+          suppression_reason: string | null
+          unsubscribe_token: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          suppressed_at?: string | null
+          suppression_reason?: string | null
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          suppressed_at?: string | null
+          suppression_reason?: string | null
+          unsubscribe_token?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -654,11 +702,13 @@ export type Database = {
       current_consent: {
         Row: {
           channel: Database["public"]["Enums"]["consent_channel"] | null
+          consent_text: string | null
           created_at: string | null
+          email: string | null
           granted: boolean | null
+          policy_version: string | null
           source: string | null
           user_id: string | null
-          wording: string | null
         }
         Relationships: []
       }
@@ -684,6 +734,7 @@ export type Database = {
         | "reactivation"
         | "high_match_alerts"
         | "weekly_report"
+        | "billing_terms"
       job_status:
         | "default"
         | "saved"
@@ -839,6 +890,7 @@ export const Constants = {
         "reactivation",
         "high_match_alerts",
         "weekly_report",
+        "billing_terms",
       ],
       job_status: [
         "default",
