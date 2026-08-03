@@ -1,6 +1,11 @@
 import { useSyncExternalStore } from "react";
 import { deletionDateFrom } from "@/config/account";
 import { setPlan } from "@/lib/plan-store";
+import {
+  getAccountState,
+  requestDeletionOnServer,
+  restoreAccountOnServer,
+} from "@/lib/account.functions";
 
 // Account lifecycle status. Deliberately ORTHOGONAL to the plan enum
 // (free | pro | paused) — deletion state is never merged into it.
@@ -74,6 +79,32 @@ export function requestAccountDeletion(now: Date = new Date()) {
   commit(scheduleFor(now));
   // Immediate cancellation — NOT cancel-at-period-end.
   setPlan("free");
+}
+
+/** Server-of-record write. Local state is updated optimistically first. */
+export async function requestAccountDeletionServer(now: Date = new Date()) {
+  requestAccountDeletion(now);
+  const next = await requestDeletionOnServer({ data: { requestedAt: now.toISOString() } });
+  commit(next);
+  return next;
+}
+
+export async function restoreAccountServer() {
+  restoreAccount();
+  const next = await restoreAccountOnServer({});
+  commit(next);
+  return next;
+}
+
+/** Pull the authoritative status from the database after sign-in. */
+export async function hydrateAccountFromDb() {
+  try {
+    const next = await getAccountState({});
+    commit(next);
+    return next;
+  } catch {
+    return state;
+  }
 }
 
 /** Restore during the grace window. Data comes back as-is; plan stays Free. */

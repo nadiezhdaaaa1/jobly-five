@@ -23,12 +23,13 @@ import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from
 import { toast } from "sonner";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
 import {
-  requestAccountDeletion,
-  restoreAccount,
+  requestAccountDeletionServer,
+  restoreAccountServer,
   devSetPendingDeletion,
   devFastForwardPastGrace,
   useAccount,
 } from "@/lib/account-store";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -410,6 +411,24 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Fast-forward past grace
+        </button>
+        <button
+          type="button"
+          onClick={async () => {
+            const res = await fetch("/api/public/hooks/purge-deleted-accounts", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+              },
+              body: "{}",
+            });
+            const body = (await res.json()) as { purged?: number; due?: number };
+            onFlash(`DEV ONLY — purge run: ${body.purged ?? 0}/${body.due ?? 0} accounts deleted.`);
+          }}
+          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          Run purge now
         </button>
       </div>
     </div>
@@ -1280,19 +1299,81 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
 function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [password, setPassword] = useState("");
+  const [reauthOk, setReauthOk] = useState(false);
+  const [reauthError, setReauthError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
   const scheduledFor = formatDeletionDate(deletionDateFrom(new Date()));
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => {
+      const user = data.user;
+      setEmail(user?.email ?? null);
+      const providers = (user?.identities ?? []).map((i) => i.provider);
+      setHasPassword(providers.includes("email"));
+    });
+  }, []);
+
+  // Returning from the Google re-authentication round trip.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reauth") !== "google") return;
+    params.delete("reauth");
+    const qs = params.toString();
+    window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
+    setReauthOk(true);
+    setConfirmOpen(true);
+  }, []);
+
+  async function verifyPassword() {
+    if (!email) return;
+    setBusy(true);
+    setReauthError(null);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setBusy(false);
+    if (error) {
+      setReauthError("That password doesn't match. Try again.");
+      return;
+    }
+    setPassword("");
+    setReauthOk(true);
+  }
+
+  async function reauthWithGoogle() {
+    setReauthError(null);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/settings?reauth=google`,
+      extraParams: { prompt: "select_account" },
+    });
+    if (result.error) {
+      setReauthError("Google confirmation failed. Try again.");
+      return;
+    }
+    if (result.redirected) return;
+    setReauthOk(true);
+  }
 
   async function confirmDeletion() {
     const now = new Date();
-    requestAccountDeletion(now);
+    setBusy(true);
+    try {
+      await requestAccountDeletionServer(now);
+    } catch {
+      setBusy(false);
+      setReauthError("We couldn't schedule the deletion. Try again.");
+      return;
+    }
+    setBusy(false);
     const date = formatDeletionDate(deletionDateFrom(now));
     setConfirmOpen(false);
     toast.success(DELETION_COPY.scheduledToast(date), {
       action: {
         label: "Undo",
         onClick: () => {
-          restoreAccount();
-          toast.success(DELETION_COPY.restoredToast);
+          void restoreAccountServer().then(() => toast.success(DELETION_COPY.restoredToast));
         },
       },
     });
@@ -1300,6 +1381,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
     await supabase.auth.signOut();
     window.location.href = "/";
   }
+
+  const canDelete = confirmText === "DELETE" && reauthOk && !busy;
 
   return (
     <>
@@ -1313,7 +1396,13 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
           </div>
           <button
             type="button"
-            onClick={() => { setConfirmOpen(true); setConfirmText(""); }}
+            onClick={() => {
+              setConfirmOpen(true);
+              setConfirmText("");
+              setPassword("");
+              setReauthOk(false);
+              setReauthError(null);
+            }}
             className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
             style={{ borderColor: "#D00D01" }}
           >
@@ -1336,13 +1425,58 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             aria-label="Type DELETE to confirm"
             className="mt-4 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
+          {reauthOk ? (
+            <p className="mt-4 flex items-center gap-1.5 text-[13px] text-[color:var(--color-green)]" style={{ fontWeight: 300 }}>
+              <IconCheck size={15} strokeWidth={1.8} /> Identity confirmed
+            </p>
+          ) : hasPassword === null ? null : hasPassword ? (
+            <div className="mt-4">
+              <label className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                Confirm your password
+              </label>
+              <div className="mt-1.5 flex gap-2">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  aria-label="Confirm your password"
+                  autoComplete="current-password"
+                  className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                />
+                <button
+                  type="button"
+                  disabled={!password || busy}
+                  onClick={() => { void verifyPassword(); }}
+                  className="h-10 shrink-0 rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+                Your account uses Google sign-in. Confirm it's you before we schedule the deletion.
+              </p>
+              <button
+                type="button"
+                onClick={() => { void reauthWithGoogle(); }}
+                className="mt-2 h-10 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Confirm with Google
+              </button>
+            </div>
+          )}
+          {reauthError ? (
+            <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{reauthError}</p>
+          ) : null}
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              disabled={confirmText !== "DELETE"}
+              disabled={!canDelete}
               onClick={() => { void confirmDeletion(); }}
               className="h-11 w-full rounded-[4px] px-4 button-small text-white"
-              style={{ background: confirmText === "DELETE" ? "#D00D01" : "var(--color-surface-2)", color: confirmText === "DELETE" ? "#fff" : "var(--color-alt-light-mist)", cursor: confirmText === "DELETE" ? "pointer" : "not-allowed" }}
+              style={{ background: canDelete ? "#D00D01" : "var(--color-surface-2)", color: canDelete ? "#fff" : "var(--color-alt-light-mist)", cursor: canDelete ? "pointer" : "not-allowed" }}
             >
               Delete account
             </button>
