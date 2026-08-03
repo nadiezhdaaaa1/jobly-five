@@ -47,6 +47,27 @@ export function rolesOverlap(userRoles: string[], job: DbJob): boolean {
 }
 
 const SENIORITY_ORDER = ["Junior", "Middle", "Senior", "Lead", "Exec"];
+
+// English tiers on the job side, ranked. Higher rank = stricter requirement.
+const ENGLISH_RANK: Record<string, number> = {
+  conversational: 1,
+  professional: 2,
+  native: 3,
+};
+
+// Maps the user's CEFR-style answer to the same 1–3 scale.
+function userEnglishRank(level?: string): number | null {
+  if (!level) return null;
+  const l = level.toLowerCase();
+  if (l.includes("native")) return 3;
+  if (l.includes("c2") || l.includes("proficient")) return 3;
+  if (l.includes("c1") || l.includes("advanced")) return 2;
+  if (l.includes("b2") || l.includes("upper")) return 2;
+  if (l.includes("b1") || l.includes("intermediate")) return 1;
+  if (l.includes("a2") || l.includes("a1") || l.includes("no english")) return 0;
+  return null;
+}
+
 function seniorityFromLevel(level?: string): string | null {
   if (!level) return null;
   const l = level.toLowerCase();
