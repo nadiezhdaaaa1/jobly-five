@@ -188,6 +188,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          digest_frequency: string
+          pref_digest_tuned: boolean
+          pref_followup_nudges: boolean
+          pref_gmail_status: boolean
+          pref_interview_reminders: boolean
+          pref_stale_nudges: boolean
+          quiet_hours_end: number
+          quiet_hours_start: number
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          digest_frequency?: string
+          pref_digest_tuned?: boolean
+          pref_followup_nudges?: boolean
+          pref_gmail_status?: boolean
+          pref_interview_reminders?: boolean
+          pref_stale_nudges?: boolean
+          quiet_hours_end?: number
+          quiet_hours_start?: number
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          digest_frequency?: string
+          pref_digest_tuned?: boolean
+          pref_followup_nudges?: boolean
+          pref_gmail_status?: boolean
+          pref_interview_reminders?: boolean
+          pref_stale_nudges?: boolean
+          quiet_hours_end?: number
+          quiet_hours_start?: number
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: string
@@ -489,9 +534,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      current_consent: {
+        Row: {
+          channel: Database["public"]["Enums"]["consent_channel"] | null
+          created_at: string | null
+          granted: boolean | null
+          source: string | null
+          user_id: string | null
+          wording: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      can_send: {
+        Args: {
+          _channel: Database["public"]["Enums"]["consent_channel"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       get_entitlements: { Args: never; Returns: Json }
       has_pro: { Args: { p_user_id: string }; Returns: boolean }
     }
@@ -502,6 +564,9 @@ export type Database = {
         | "daily_digest"
         | "product_updates"
         | "marketing"
+        | "reactivation"
+        | "high_match_alerts"
+        | "weekly_report"
       job_status:
         | "default"
         | "saved"
@@ -654,6 +719,9 @@ export const Constants = {
         "daily_digest",
         "product_updates",
         "marketing",
+        "reactivation",
+        "high_match_alerts",
+        "weekly_report",
       ],
       job_status: [
         "default",
