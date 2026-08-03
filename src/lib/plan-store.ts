@@ -4,7 +4,7 @@ export type Plan = "free" | "pro" | "paused";
 
 // Subscription lifecycle status.
 // `canceling` = cancellation scheduled at period end, entitlements still live.
-export type SubStatus = "active" | "trialing" | "canceling" | "canceled" | "paused";
+export type SubStatus = "none" | "active" | "trialing" | "canceling" | "canceled" | "paused";
 
 export type Subscription = {
   status: SubStatus;
@@ -33,7 +33,8 @@ export function resolvePlan(sub: Subscription, now: number = Date.now()): Plan {
 }
 
 function defaultSub(): Subscription {
-  return { status: "active", cancelAtPeriodEnd: false, currentPeriodEnd: isoIn(30 * DAY) };
+  // Unknown state must resolve to Free — never Pro.
+  return { status: "none", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() };
 }
 
 function readSub(): Subscription {
@@ -175,7 +176,7 @@ function subscribe(l: () => void) {
 }
 
 export function usePlan(): Plan {
-  return useSyncExternalStore(subscribe, () => resolvePlan(sub), () => "pro");
+  return useSyncExternalStore(subscribe, () => resolvePlan(sub), () => "free");
 }
 
 export function useSubscription(): Subscription {
