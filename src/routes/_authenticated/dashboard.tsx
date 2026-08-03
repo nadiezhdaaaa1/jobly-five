@@ -1351,6 +1351,7 @@ function JobsScreen() {
   })();
 
   const { jobs: allJobsRaw, loaded } = useJobs();
+  const { at: digestAt, loading: digestLoading } = useLatestDigestAt();
   const allJobs = useMemo(() => allJobsRaw.map(enrich), [allJobsRaw]);
   const blocked = useBlockedCompanies();
   const hiddenIds = useTrackerHiddenIds();
