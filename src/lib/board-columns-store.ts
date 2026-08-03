@@ -446,3 +446,85 @@ export function moveStage(colId: string, name: string, dir: -1 | 1) {
     return next;
   });
 }
+
+// ---------- Account sync ----------
+// The column set belongs to the account; localStorage is only an offline cache.
+
+let currentUserId: string | null = null;
+let syncTimer: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleSync() {
+  if (!currentUserId) return;
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => {
+    syncTimer = null;
+    void pushColumns();
+  }, 400);
+}
+
+async function pushColumns() {
+  const userId = currentUserId;
+  if (!userId) return;
+  const snapshot = columns;
+  const rows = snapshot.map((c, i) => ({
+    user_id: userId,
+    column_id: c.id,
+    kind: c.kind,
+    title: c.title,
+    stages: c.stages,
+    position: i,
+  }));
+  const keep = snapshot.map((c) => c.id);
+  const { error } = await supabase.from("board_columns").upsert(rows, { onConflict: "user_id,column_id" });
+  if (error) return;
+  // Drop columns the user removed.
+  await supabase
+    .from("board_columns")
+    .delete()
+    .eq("user_id", userId)
+    .not("column_id", "in", `(${keep.map((id) => `"${id}"`).join(",")})`);
+}
+
+function applyRemote(next: BoardColumn[]) {
+  columns = ensureInvariants(next);
+  version++;
+  persist();
+  listeners.forEach((l) => l());
+}
+
+/**
+ * Loads the account's column set. When the account has none yet, the local set
+ * (or the defaults) is written once so existing cards keep resolving.
+ */
+export async function hydrateBoardColumnsFromDb(userId: string) {
+  currentUserId = userId;
+  const { data, error } = await supabase
+    .from("board_columns")
+    .select("column_id, kind, title, stages, position")
+    .eq("user_id", userId)
+    .order("position", { ascending: true });
+  if (error) return;
+  if (data && data.length) {
+    applyRemote(
+      data
+        .filter((r) => validKind(r.kind as ColumnKind))
+        .map((r) => ({
+          id: r.column_id,
+          kind: r.kind as ColumnKind,
+          title: r.title,
+          stages: Array.isArray(r.stages) ? (r.stages as string[]) : [],
+        })),
+    );
+  } else {
+    await pushColumns();
+  }
+}
+
+/** Another account signing in on this tab must not inherit these columns. */
+export function resetBoardColumnsForSignOut() {
+  currentUserId = null;
+  if (syncTimer) {
+    clearTimeout(syncTimer);
+    syncTimer = null;
+  }
+}
