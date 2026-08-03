@@ -15,6 +15,8 @@ import { hydrateProfileExtrasFromDb, resetProfileExtrasForSignOut } from "@/lib/
 import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resume-store";
 import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
+import { linkConsentToAccount } from "@/lib/consent.functions";
+import { migrateLegacyConsent } from "@/lib/consent-migration";
 
 /**
  * Claims the anonymous quiz draft for this account and copies the answers onto
@@ -45,6 +47,10 @@ function AuthedShell({ userId }: { userId: string }) {
     void hydrateWorkHistoryFromDb(userId);
     void hydrateSavedFiltersFromDb(userId);
     void hydrateBlockedCompaniesFromDb(userId);
+    // Consent lives only in Postgres: link any pre-account rows, then retire
+    // whatever the browser still holds.
+    void linkConsentToAccount().catch(() => undefined);
+    void migrateLegacyConsent();
     return () => {
       // Clear tracker if a different user signs in on the same tab.
       resetTrackerForSignOut();
