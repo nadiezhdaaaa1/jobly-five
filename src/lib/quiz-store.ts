@@ -1,5 +1,7 @@
-// Simple in-memory + sessionStorage store shared across quiz → matches → auth.
-// No backend yet; this survives client-side navigation and refresh.
+// Shared quiz answers store: in-memory working copy, persisted server-side.
+// Anonymous visitors are backed by a quiz_drafts row (see quiz-draft-store.ts);
+// signed-in users are backed by profiles.quiz_answers. Nothing lives in
+// sessionStorage any more — a closed tab used to destroy the whole onboarding.
 
 export type ProficiencyLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | "Native";
 export type WorkMode = "remote" | "onsite";
@@ -42,39 +44,81 @@ export type QuizAnswers = {
   visitedOptional?: ("stack" | "hard" | "tools" | "soft")[];
 };
 
-const KEY = "jobly.quiz";
+const LEGACY_KEY = "jobly.quiz";
+
+let answers: QuizAnswers = {};
+const listeners = new Set<() => void>();
 
 export function loadQuiz(): QuizAnswers {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.sessionStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as QuizAnswers) : {};
-  } catch {
-    return {};
-  }
+  return answers;
 }
 
 export function saveQuiz(a: QuizAnswers) {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(KEY, JSON.stringify(a));
-  } catch {
-    // ignore
-  }
+  answers = a ?? {};
+  for (const l of listeners) l();
 }
 
 export function clearQuiz() {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.removeItem(KEY);
-  } catch {
-    // ignore
-  }
+  saveQuiz({});
 }
 
 export function updateQuiz(patch: Partial<QuizAnswers>) {
-  const next = { ...loadQuiz(), ...patch };
-  saveQuiz(next);
+  saveQuiz({ ...answers, ...patch });
+  void persistQuizToProfile();
+}
+
+export function subscribeQuiz(l: () => void) {
+  listeners.add(l);
+  return () => {
+    listeners.delete(l);
+  };
+}
+
+/** Reads legacy sessionStorage answers once, then removes them. */
+export function takeLegacyQuiz(): QuizAnswers | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(LEGACY_KEY);
+    window.sessionStorage.removeItem(LEGACY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as QuizAnswers;
+    return parsed && Object.keys(parsed).length ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Hydrates from profiles.quiz_answers after sign-in. */
+export async function hydrateQuizFromProfile(): Promise<void> {
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("quiz_answers")
+      .eq("id", auth.user.id)
+      .maybeSingle();
+    const stored = (data?.quiz_answers ?? {}) as QuizAnswers;
+    if (stored && Object.keys(stored).length) saveQuiz(stored);
+  } catch {
+    // Preferences stay empty rather than blocking the app.
+  }
+}
+
+/** Writes the working copy back to the profile. Silent on failure. */
+export async function persistQuizToProfile(): Promise<void> {
+  try {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+    await supabase
+      .from("profiles")
+      .update({ quiz_answers: answers as never })
+      .eq("id", auth.user.id);
+  } catch {
+    // ignore
+  }
 }
 
 // Shared summary derived strictly from the quiz answers.

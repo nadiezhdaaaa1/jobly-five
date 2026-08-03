@@ -35,6 +35,8 @@ import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicHooksSweepResumeOrphansRouteImport } from './routes/api/public/hooks/sweep-resume-orphans'
+import { Route as ApiPublicHooksQuizDraftSaveRouteImport } from './routes/api/public/hooks/quiz-draft-save'
+import { Route as ApiPublicHooksPurgeQuizDraftsRouteImport } from './routes/api/public/hooks/purge-quiz-drafts'
 import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes/api/public/hooks/purge-deleted-accounts'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -167,6 +169,18 @@ const ApiPublicHooksSweepResumeOrphansRoute =
     path: '/api/public/hooks/sweep-resume-orphans',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksQuizDraftSaveRoute =
+  ApiPublicHooksQuizDraftSaveRouteImport.update({
+    id: '/api/public/hooks/quiz-draft-save',
+    path: '/api/public/hooks/quiz-draft-save',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksPurgeQuizDraftsRoute =
+  ApiPublicHooksPurgeQuizDraftsRouteImport.update({
+    id: '/api/public/hooks/purge-quiz-drafts',
+    path: '/api/public/hooks/purge-quiz-drafts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksPurgeDeletedAccountsRoute =
   ApiPublicHooksPurgeDeletedAccountsRouteImport.update({
     id: '/api/public/hooks/purge-deleted-accounts',
@@ -200,6 +214,8 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
+  '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRoutesByTo {
@@ -228,6 +244,8 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
+  '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRoutesById {
@@ -258,6 +276,8 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
+  '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRouteTypes {
@@ -288,6 +308,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/purge-quiz-drafts'
+    | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -316,6 +338,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/purge-quiz-drafts'
+    | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
   id:
     | '__root__'
@@ -345,6 +369,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/purge-quiz-drafts'
+    | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
   fileRoutesById: FileRoutesById
 }
@@ -370,6 +396,8 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  ApiPublicHooksPurgeQuizDraftsRoute: typeof ApiPublicHooksPurgeQuizDraftsRoute
+  ApiPublicHooksQuizDraftSaveRoute: typeof ApiPublicHooksQuizDraftSaveRoute
   ApiPublicHooksSweepResumeOrphansRoute: typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 
@@ -557,6 +585,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksSweepResumeOrphansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/quiz-draft-save': {
+      id: '/api/public/hooks/quiz-draft-save'
+      path: '/api/public/hooks/quiz-draft-save'
+      fullPath: '/api/public/hooks/quiz-draft-save'
+      preLoaderRoute: typeof ApiPublicHooksQuizDraftSaveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/purge-quiz-drafts': {
+      id: '/api/public/hooks/purge-quiz-drafts'
+      path: '/api/public/hooks/purge-quiz-drafts'
+      fullPath: '/api/public/hooks/purge-quiz-drafts'
+      preLoaderRoute: typeof ApiPublicHooksPurgeQuizDraftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/purge-deleted-accounts': {
       id: '/api/public/hooks/purge-deleted-accounts'
       path: '/api/public/hooks/purge-deleted-accounts'
@@ -609,6 +651,8 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
     ApiPublicHooksPurgeDeletedAccountsRoute,
+  ApiPublicHooksPurgeQuizDraftsRoute: ApiPublicHooksPurgeQuizDraftsRoute,
+  ApiPublicHooksQuizDraftSaveRoute: ApiPublicHooksQuizDraftSaveRoute,
   ApiPublicHooksSweepResumeOrphansRoute: ApiPublicHooksSweepResumeOrphansRoute,
 }
 export const routeTree = rootRouteImport
