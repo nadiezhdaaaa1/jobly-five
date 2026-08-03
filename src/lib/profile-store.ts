@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // ------- Types -------
 
@@ -140,6 +141,7 @@ function persist() {
 
 function emit() {
   persist();
+  scheduleExtrasSync();
   for (const l of listeners) l();
 }
 
@@ -514,3 +516,51 @@ export const ALL_SOCIAL_NETWORKS = [
   "Muck Rack",
   "Other",
 ];
+// ---------- Account sync ----------
+// Profile extras belong to the account; localStorage is only an offline cache.
+
+let extrasUserId: string | null = null;
+let extrasTimer: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleExtrasSync() {
+  if (!extrasUserId) return;
+  if (extrasTimer) clearTimeout(extrasTimer);
+  extrasTimer = setTimeout(() => {
+    extrasTimer = null;
+    const userId = extrasUserId;
+    if (!userId) return;
+    void supabase.from("profiles").update({ profile_extras: state }).eq("id", userId);
+  }, 400);
+}
+
+/** Loads account-stored extras; writes the local set once when none exist yet. */
+export async function hydrateProfileExtrasFromDb(userId: string) {
+  extrasUserId = userId;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("profile_extras")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) return;
+  const remote = data?.profile_extras as Partial<ProfileExtras> | null;
+  if (remote && Object.keys(remote).length) {
+    const base = seed();
+    state = {
+      ...base,
+      ...remote,
+      achievements: { ...base.achievements, ...(remote.achievements ?? {}) },
+    };
+    persist();
+    for (const l of listeners) l();
+  } else {
+    scheduleExtrasSync();
+  }
+}
+
+export function resetProfileExtrasForSignOut() {
+  extrasUserId = null;
+  if (extrasTimer) {
+    clearTimeout(extrasTimer);
+    extrasTimer = null;
+  }
+}

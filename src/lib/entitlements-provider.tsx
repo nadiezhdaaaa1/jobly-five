@@ -8,7 +8,8 @@ import {
   toSubscription,
   type Entitlements,
 } from "@/lib/entitlements";
-import { hydrateSubscription, setEntitlementsReady } from "@/lib/plan-store";
+import { hydrateSubscription, setEntitlementsReady, setSubscriptionSyncHandler } from "@/lib/plan-store";
+import { getSubscriptionRow } from "@/lib/subscription.functions";
 
 type Ctx = {
   entitlements: Entitlements;
@@ -41,7 +42,15 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
       const e = await fetchEntitlements();
       setEntitlements(e);
       setError(false);
-      hydrateSubscription(toSubscription(e), e.status !== "none");
+      // `get_entitlements` omits cancel-at-period-end / ever-subscribed, so read
+      // the account's own subscription row for those two details.
+      let row: Awaited<ReturnType<typeof getSubscriptionRow>> | null = null;
+      try {
+        row = await getSubscriptionRow();
+      } catch {
+        row = null;
+      }
+      hydrateSubscription(toSubscription(e, row), row?.everSubscribed ?? e.status !== "none");
     } catch {
       // Fail closed: unknown state is Free.
       setEntitlements(FREE_ENTITLEMENTS);
@@ -56,6 +65,14 @@ export function EntitlementProvider({ children }: { children: React.ReactNode })
     clearLegacyPlanKeys();
     setEntitlementsReady(false);
     void load();
+  }, [load]);
+
+  // Persisted subscription changes ask the provider to re-read the account.
+  useEffect(() => {
+    setSubscriptionSyncHandler(() => {
+      void load();
+    });
+    return () => setSubscriptionSyncHandler(null);
   }, [load]);
 
   const value = useMemo<Ctx>(

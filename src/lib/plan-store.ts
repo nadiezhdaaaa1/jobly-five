@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { applySubscriptionAction, type SubscriptionAction } from "@/lib/subscription.functions";
 
 export type Plan = "free" | "pro" | "paused";
 
@@ -55,6 +56,33 @@ function commit(next: Subscription) {
   emit();
 }
 
+// Server is the record of truth. Mutators commit optimistically for instant UI,
+// then reconcile with whatever the account actually stores.
+let onServerSync: (() => void) | null = null;
+
+/** Lets the entitlement provider refetch after a persisted change. */
+export function setSubscriptionSyncHandler(fn: (() => void) | null) {
+  onServerSync = fn;
+}
+
+function persist(action: SubscriptionAction, everSubscribed?: boolean) {
+  void applySubscriptionAction({ data: { action, everSubscribed } })
+    .then((row) => {
+      sub = {
+        status: (row.cancelAtPeriodEnd ? "canceling" : row.status) as SubStatus,
+        cancelAtPeriodEnd: row.cancelAtPeriodEnd,
+        currentPeriodEnd:
+          row.currentPeriodEnd ?? row.trialEndsAt ?? new Date(0).toISOString(),
+      };
+      hadPro = row.everSubscribed || resolveIsPro(sub);
+      emit();
+      onServerSync?.();
+    })
+    .catch(() => {
+      // Keep the optimistic state; the next entitlement load reconciles it.
+    });
+}
+
 /** Server is the source of truth — called by the entitlement provider only. */
 export function hydrateSubscription(next: Subscription, everSubscribed: boolean) {
   sub = next;
@@ -86,14 +114,17 @@ export function setPlan(next: Plan) {
   if (next === getPlan() && !(next === "pro" && sub.cancelAtPeriodEnd)) return;
   if (next === "pro") {
     const end = new Date(sub.currentPeriodEnd).getTime();
+    persist(getPlan() === "paused" ? "unpause" : "activate");
     commit({
       status: "active",
       cancelAtPeriodEnd: false,
       currentPeriodEnd: end > Date.now() ? sub.currentPeriodEnd : isoIn(30 * DAY),
     });
   } else if (next === "paused") {
+    persist("pause");
     commit({ status: "paused", cancelAtPeriodEnd: false, currentPeriodEnd: isoIn(180 * DAY) });
   } else {
+    persist("cancel_now");
     commit({ status: "canceled", cancelAtPeriodEnd: false, currentPeriodEnd: new Date().toISOString() });
   }
 }
@@ -101,6 +132,7 @@ export function setPlan(next: Plan) {
 /** Cancel = schedule termination at period end. Entitlements stay live. */
 export function scheduleCancelAtPeriodEnd() {
   const end = new Date(sub.currentPeriodEnd).getTime();
+  persist("cancel_at_period_end");
   commit({
     status: "canceling",
     cancelAtPeriodEnd: true,
@@ -110,16 +142,19 @@ export function scheduleCancelAtPeriodEnd() {
 
 /** Undo a scheduled cancellation — no new charge, no new trial. */
 export function resumeSubscription() {
+  persist("resume");
   commit({ ...sub, status: "active", cancelAtPeriodEnd: false });
 }
 
 /** DEV ONLY — local-state override, never touches the billing provider. */
 export function devDowngradeNow() {
+  persist("cancel_now");
   commit({ status: "canceled", cancelAtPeriodEnd: false, currentPeriodEnd: new Date().toISOString() });
 }
 
 /** DEV ONLY — local-state override, never touches the billing provider. */
 export function devRestorePro() {
+  persist("activate");
   commit({ status: "active", cancelAtPeriodEnd: false, currentPeriodEnd: isoIn(30 * DAY) });
 }
 
@@ -130,6 +165,7 @@ export function getHasHadPro(): boolean {
 export function setHasHadPro(next: boolean) {
   if (next === hadPro) return;
   hadPro = next;
+  persist("set_ever_subscribed", next);
   emit();
 }
 

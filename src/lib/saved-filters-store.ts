@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type SavedFilter<T = unknown> = {
   id: string;
@@ -36,6 +37,7 @@ function persist() {
 
 function emit() {
   persist();
+  scheduleFiltersSync();
   for (const l of listeners) l();
 }
 
@@ -60,7 +62,9 @@ export function useSavedFilters<T = unknown>(): SavedFilter<T>[] {
 
 function uid() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  // uuid-shaped fallback so rows keep a stable primary key on the account
+  const hex = () => Math.floor(Math.random() * 16).toString(16);
+  return "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, hex);
 }
 
 export function addSavedFilter<T>(name: string, filters: T): SavedFilter<T> | null {
@@ -85,4 +89,63 @@ export function deleteSavedFilter(id: string) {
 
 export function getSavedFilter<T = unknown>(id: string): SavedFilter<T> | undefined {
   return state.find((f) => f.id === id) as SavedFilter<T> | undefined;
+}
+// ---------- Account sync ----------
+
+let filtersUserId: string | null = null;
+let filtersTimer: ReturnType<typeof setTimeout> | null = null;
+
+function isUuid(id: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
+function scheduleFiltersSync() {
+  if (!filtersUserId) return;
+  if (filtersTimer) clearTimeout(filtersTimer);
+  filtersTimer = setTimeout(() => {
+    filtersTimer = null;
+    void pushFilters();
+  }, 300);
+}
+
+async function pushFilters() {
+  const userId = filtersUserId;
+  if (!userId) return;
+  const rows = state
+    .filter((f) => isUuid(f.id))
+    .map((f) => ({ id: f.id, user_id: userId, name: f.name, filters: f.filters as never }));
+  if (rows.length) {
+    const { error } = await supabase.from("saved_filters").upsert(rows, { onConflict: "id" });
+    if (error) return;
+  }
+  const keep = rows.map((r) => `"${r.id}"`).join(",");
+  let del = supabase.from("saved_filters").delete().eq("user_id", userId);
+  if (keep) del = del.not("id", "in", `(${keep})`);
+  await del;
+}
+
+export async function hydrateSavedFiltersFromDb(userId: string) {
+  filtersUserId = userId;
+  const { data, error } = await supabase
+    .from("saved_filters")
+    .select("id, name, filters")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) return;
+  if (data && data.length) {
+    state = data.map((r) => ({ id: r.id, name: r.name, filters: r.filters }));
+    persist();
+    for (const l of listeners) l();
+  } else if (state.length) {
+    // First sign-in on this account: keep what the browser already had.
+    scheduleFiltersSync();
+  }
+}
+
+export function resetSavedFiltersForSignOut() {
+  filtersUserId = null;
+  if (filtersTimer) {
+    clearTimeout(filtersTimer);
+    filtersTimer = null;
+  }
 }

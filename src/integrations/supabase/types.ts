@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocked_companies: {
+        Row: {
+          company: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      board_columns: {
+        Row: {
+          column_id: string
+          created_at: string
+          id: string
+          kind: string
+          position: number
+          stages: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          column_id: string
+          created_at?: string
+          id?: string
+          kind: string
+          position?: number
+          stages?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          column_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          position?: number
+          stages?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cancel_feedback: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cities: {
         Row: {
           city: string
@@ -243,9 +324,11 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          profile_extras: Json
           quiz_answers: Json
           quiz_schema_version: number | null
           updated_at: string
+          work_history: Json
         }
         Insert: {
           account_status?: string
@@ -256,9 +339,11 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          profile_extras?: Json
           quiz_answers?: Json
           quiz_schema_version?: number | null
           updated_at?: string
+          work_history?: Json
         }
         Update: {
           account_status?: string
@@ -269,9 +354,11 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          profile_extras?: Json
           quiz_answers?: Json
           quiz_schema_version?: number | null
           updated_at?: string
+          work_history?: Json
         }
         Relationships: []
       }
@@ -371,6 +458,33 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_filters: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           billing_period: string | null
@@ -378,6 +492,7 @@ export type Database = {
           canceled_at: string | null
           created_at: string
           current_period_end: string | null
+          ever_subscribed: boolean
           pause_ends_at: string | null
           paused_at: string | null
           plan: string
@@ -395,6 +510,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
+          ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
           plan?: string
@@ -412,6 +528,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
+          ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
           plan?: string

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Manual work-history store (Experience / Education tabs).
@@ -87,6 +88,7 @@ function emit() {
       // ignore
     }
   }
+  scheduleHistorySync();
   for (const l of listeners) l();
 }
 
@@ -171,4 +173,54 @@ export function updateEducation(id: string, patch: Partial<ResumeEducation>) {
 export function removeEducation(id: string) {
   state = { data: { ...state.data, education: state.data.education.filter((e) => e.id !== id) } };
   emit();
+}
+
+// ---------- Account sync ----------
+// Work history belongs to the account; localStorage is only an offline cache.
+
+let historyUserId: string | null = null;
+let historyTimer: ReturnType<typeof setTimeout> | null = null;
+
+function scheduleHistorySync() {
+  if (!historyUserId) return;
+  if (historyTimer) clearTimeout(historyTimer);
+  historyTimer = setTimeout(() => {
+    historyTimer = null;
+    const userId = historyUserId;
+    if (!userId) return;
+    void supabase.from("profiles").update({ work_history: state.data }).eq("id", userId);
+  }, 400);
+}
+
+/** Loads account-stored history; writes the local copy once when none exists. */
+export async function hydrateWorkHistoryFromDb(userId: string) {
+  historyUserId = userId;
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("work_history")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) return;
+  const remote = data?.work_history as Partial<ResumeData> | null;
+  if (remote && Object.keys(remote).length) {
+    state = { data: { ...EMPTY_RESUME, ...remote } };
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(KEY, JSON.stringify(state.data));
+      } catch {
+        // ignore
+      }
+    }
+    for (const l of listeners) l();
+  } else {
+    scheduleHistorySync();
+  }
+}
+
+export function resetWorkHistoryForSignOut() {
+  historyUserId = null;
+  if (historyTimer) {
+    clearTimeout(historyTimer);
+    historyTimer = null;
+  }
 }
