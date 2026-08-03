@@ -804,22 +804,29 @@ function PreferencesTab({
 
 function DocumentsTab({
   onToast,
-  resume,
+  docs,
+  loading,
+  refresh,
 }: {
   onToast: (m: string) => void;
-  resume: ReturnType<typeof useResumeState>;
+  docs: ResumeDocument[];
+  loading: boolean;
+  refresh: () => Promise<void>;
 }) {
   const [uploadOpen, setUploadOpen] = useState(false);
-  const [confirmDelId, setConfirmDelId] = useState<string | null>(null);
+  const [confirmDel, setConfirmDel] = useState<ResumeDocument | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [notice, setNotice] = useState(false);
+  useEffect(() => setNotice(legacyResumeNoticePending()), []);
   const plan = usePlan();
   const pro = isPro(plan);
   const MAX_FILES = pro ? 5 : 1;
   const MAX_MB = 5;
-  const files = [...resume.files].sort((a, b) =>
-    a.id === resume.primaryId ? -1 : b.id === resume.primaryId ? 1 : a.uploadedAt < b.uploadedAt ? 1 : -1
+  const primaryId = docs.find((d) => d.isPrimary)?.id ?? null;
+  const files = [...docs].sort((a, b) =>
+    a.isPrimary ? -1 : b.isPrimary ? 1 : a.createdAt < b.createdAt ? 1 : -1
   );
   const atLimit = files.length >= MAX_FILES;
-  const overLimit = !pro && files.length > MAX_FILES; // downgraded state
 
   return (
     <>
@@ -836,35 +843,81 @@ function DocumentsTab({
             ? `Upload up to ${MAX_FILES} resumes (PDF or DOCX, up to ${MAX_MB} MB each). Your primary resume is used for match scoring and applications; on upload we parse it into your Experience.`
             : `Free plan includes 1 resume (PDF or DOCX, up to ${MAX_MB} MB). Upgrade to Pro to keep up to 5.`}
         </p>
+
+        {notice && (
+          <div className="mt-3 flex items-start gap-2 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
+            <p className="min-w-0 flex-1 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              Resumes are now stored securely on your account. Files added before this update were only kept in
+              your browser, so please upload them again.
+            </p>
+            <button
+              type="button"
+              aria-label="Dismiss"
+              onClick={() => {
+                dismissLegacyResumeNotice();
+                setNotice(false);
+              }}
+              className="inline-flex size-6 shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              <X size={14} strokeWidth={1.8} />
+            </button>
+          </div>
+        )}
+
         <div className="mt-3 flex flex-col gap-2">
-          {files.length === 0 ? (
-            <DropzoneRow
-              hint={`PDF or DOCX, up to ${MAX_MB} MB`}
-              label="Upload resume"
-              onClick={() => setUploadOpen(true)}
-            />
+          {loading ? (
+            <div className="h-[64px] animate-pulse rounded-[6px] bg-[color:var(--color-surface-2)]" />
+          ) : files.length === 0 ? (
+            <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+                <FileText size={20} strokeWidth={1.6} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">No resumes yet</div>
+                <div className="text-[12px] text-[color:var(--color-text-muted)]">
+                  Upload a PDF or DOCX (up to {MAX_MB} MB) to use it for matching and applications.
+                </div>
+              </div>
+              <PrimaryBtn onClick={() => setUploadOpen(true)}>
+                <UploadCloud size={16} strokeWidth={1.8} />
+                Upload resume
+              </PrimaryBtn>
+            </div>
           ) : (
             <>
               {files.map((f) => {
-                const isPrimary = f.id === resume.primaryId;
+                const isPrimary = f.id === primaryId;
                 const locked = !pro && !isPrimary;
                 return (
                   <FileRow
                     key={f.id}
-                    name={`${f.name}.${f.ext}`}
-                    meta={`Uploaded ${new Date(f.uploadedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(f.size / 1024))} KB`}
+                    name={f.originalFilename}
+                    meta={`Uploaded ${new Date(f.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })} · ${Math.max(1, Math.round(f.sizeBytes / 1024))} KB`}
                     isPrimary={isPrimary}
                     locked={locked}
-                    onPreview={locked ? undefined : () => onToast("Preview coming soon")}
+                    busy={busyId === f.id}
+                    onDownload={
+                      locked
+                        ? undefined
+                        : async () => {
+                            setBusyId(f.id);
+                            const ok = await openResumeDownload(f.id);
+                            setBusyId(null);
+                            if (!ok) onToast("Couldn't open that file. Try again.");
+                          }
+                    }
                     onMakePrimary={
                       isPrimary || locked
                         ? undefined
-                        : () => {
-                            setPrimaryResumeFile(f.id);
-                            onToast("Primary resume updated");
+                        : async () => {
+                            setBusyId(f.id);
+                            const ok = await makeResumePrimary(f.id);
+                            await refresh();
+                            setBusyId(null);
+                            onToast(ok ? "Primary resume updated" : "Couldn't update primary resume");
                           }
                     }
-                    onDelete={() => setConfirmDelId(f.id)}
+                    onDelete={() => setConfirmDel(f)}
                   />
                 );
               })}
@@ -952,47 +1005,185 @@ function DocumentsTab({
         />
       </div>
 
-      <UploadModal
+      <ResumeUploadModal
         open={uploadOpen}
-        title="Upload resume"
         maxMB={MAX_MB}
+        planLimitReached={files.length >= MAX_FILES}
+        planLimitMessage={pro ? `Limit of ${MAX_FILES} resumes reached` : "Upgrade to Pro to store more resumes"}
         onClose={() => setUploadOpen(false)}
-        onFile={(file) => {
-          if (resume.files.length >= MAX_FILES) {
-            onToast(
-              pro
-                ? `Limit of ${MAX_FILES} resumes reached`
-                : "Upgrade to Pro to store more resumes"
-            );
-            setUploadOpen(false);
-            return;
-          }
-          const ext = file.name.toLowerCase().endsWith(".docx") ? "docx" : "pdf";
-          const base = file.name.replace(/\.[^.]+$/, "");
-          addResumeFile({ name: base, ext, size: file.size });
-          onToast(
-            resume.files.length === 0
-              ? "Resume uploaded · Experience updated"
-              : "Resume uploaded"
-          );
+        onDone={async () => {
+          await refresh();
           setUploadOpen(false);
+          onToast("Resume uploaded");
         }}
       />
 
       <ConfirmModal
-        open={confirmDelId !== null}
+        open={confirmDel !== null}
         title="Delete resume?"
-        body="This removes the file from your profile. You can upload it again anytime."
-        onClose={() => setConfirmDelId(null)}
-        onConfirm={() => {
-          if (confirmDelId) {
-            deleteResumeFile(confirmDelId);
-            onToast("Resume deleted");
-          }
-          setConfirmDelId(null);
+        body={
+          <>
+            <b>{confirmDel?.originalFilename}</b> will be permanently deleted. This cannot be undone.
+          </>
+        }
+        onClose={() => setConfirmDel(null)}
+        onConfirm={async () => {
+          const target = confirmDel;
+          setConfirmDel(null);
+          if (!target) return;
+          const ok = await removeResume(target.id);
+          await refresh();
+          onToast(ok ? "Resume deleted" : "Couldn't delete that resume. Try again.");
         }}
       />
     </>
+  );
+}
+
+/** Real upload: consent gate, progress, server validation errors. */
+function ResumeUploadModal({
+  open,
+  maxMB,
+  planLimitReached,
+  planLimitMessage,
+  onClose,
+  onDone,
+}: {
+  open: boolean;
+  maxMB: number;
+  planLimitReached: boolean;
+  planLimitMessage: string;
+  onClose: () => void;
+  onDone: () => void | Promise<void>;
+}) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [drag, setDrag] = useState(false);
+  const [pct, setPct] = useState<number | null>(null);
+  const [validating, setValidating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [consentKnown, setConsentKnown] = useState(false);
+  const [consented, setConsented] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setError(null);
+    setPct(null);
+    setValidating(false);
+    setChecked(false);
+    let active = true;
+    void hasResumeConsent().then((v) => {
+      if (!active) return;
+      setConsented(v);
+      setConsentKnown(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [open]);
+
+  const busy = pct !== null || validating;
+  const needsConsent = consentKnown && !consented;
+
+  const start = async (file: File) => {
+    if (busy) return;
+    setError(null);
+    if (planLimitReached) {
+      setError(planLimitMessage);
+      return;
+    }
+    if (needsConsent && !checked) {
+      setError("Please agree to resume storage before uploading.");
+      return;
+    }
+    setPct(0);
+    const res = await uploadResume(file, {
+      ...(needsConsent ? { consentWording: RESUME_CONSENT_WORDING } : {}),
+      onProgress: (p) => {
+        setPct(p);
+        if (p >= 80) setValidating(true);
+      },
+    });
+    setValidating(false);
+    setPct(null);
+    if (!res.ok) {
+      setError(UPLOAD_ERROR_COPY[res.code as UploadErrorCode] ?? UPLOAD_ERROR_COPY.server);
+      return;
+    }
+    await onDone();
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && !busy && onClose()}>
+      <DialogContent className="max-w-[480px] rounded-[8px] p-5">
+        <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+          Upload resume
+        </DialogTitle>
+        <div
+          className={`mt-4 flex flex-col items-center justify-center rounded-[6px] border border-dashed px-4 py-10 text-center transition-colors ${
+            drag ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-2)]" : "border-[color:var(--color-border-strong)]"
+          } ${busy ? "pointer-events-none opacity-60" : ""}`}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+          onDragLeave={() => setDrag(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDrag(false);
+            const f = e.dataTransfer.files?.[0];
+            if (f) void start(f);
+          }}
+          role="button"
+          tabIndex={0}
+        >
+          <UploadCloud size={26} strokeWidth={1.6} className="text-[color:var(--color-green)]" />
+          <p className="mt-3 text-[14px]">Drop file here or <span className="font-semibold text-[color:var(--color-green)] underline">browse</span></p>
+          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">PDF or DOCX, up to {maxMB} MB</p>
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".pdf,.docx"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              e.target.value = "";
+              if (f) void start(f);
+            }}
+          />
+        </div>
+
+        {needsConsent && (
+          <label className="mt-3 flex cursor-pointer items-start gap-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            <input
+              type="checkbox"
+              checked={checked}
+              disabled={busy}
+              onChange={(e) => setChecked(e.target.checked)}
+              className="mt-[2px] size-4 shrink-0 rounded-[4px]"
+            />
+            <span>{RESUME_CONSENT_WORDING}</span>
+          </label>
+        )}
+
+        {pct !== null && (
+          <>
+            <div className="mt-3 h-1 w-full bg-[color:var(--color-surface-2)]">
+              <div className="h-1 bg-[color:var(--color-accent)] transition-all" style={{ width: `${pct}%` }} />
+            </div>
+            <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
+              {validating ? "Checking file…" : `Uploading… ${pct}%`}
+            </p>
+          </>
+        )}
+
+        {error && (
+          <p className="mt-3 text-[12px] text-[color:var(--color-danger)]">{error}</p>
+        )}
+
+        <div className="mt-4 flex justify-end">
+          <SecondaryBtn onClick={onClose} disabled={busy}>Cancel</SecondaryBtn>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
