@@ -155,9 +155,10 @@ export function useNotificationSettings(): NotificationState {
       }
       const previous = prefs[key];
       setPrefs((p) => ({ ...p, [key]: value }));
+      const patch = { user_id: userId, [key]: value } as Database["public"]["Tables"]["notification_preferences"]["Insert"];
       const { data, error: upsertError } = await supabase
         .from("notification_preferences")
-        .upsert({ user_id: userId, [key]: value }, { onConflict: "user_id" })
+        .upsert(patch, { onConflict: "user_id" })
         .select("*")
         .maybeSingle();
       if (upsertError) {
