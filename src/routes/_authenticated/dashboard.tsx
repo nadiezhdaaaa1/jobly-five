@@ -1361,9 +1361,7 @@ function JobsScreen() {
                   ))}
                 </div>
               ) : shown.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                  No matches for your current filters
-                </div>
+                <EmptyMatchesState />
               ) : shown.map((j) => (
                 <div key={j.id} className="animate-fade-in">
                   <JobRowCard job={j} onOpen={() => setOpenJob(j)} />
