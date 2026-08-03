@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const KEY = "jobly.blockedCompanies";
 const SEED = ["Acme Staffing", "OldCo Inc"];
@@ -42,6 +43,11 @@ export function blockCompany(name: string) {
   if (current.some((c) => c.toLowerCase() === trimmed.toLowerCase())) return;
   current = [...current, trimmed];
   persist();
+  if (blockedUserId) {
+    void supabase
+      .from("blocked_companies")
+      .upsert({ user_id: blockedUserId, company: trimmed }, { onConflict: "user_id,company" });
+  }
   emit();
 }
 
@@ -50,6 +56,9 @@ export function unblockCompany(name: string) {
   if (next.length === current.length) return;
   current = next;
   persist();
+  if (blockedUserId) {
+    void supabase.from("blocked_companies").delete().eq("user_id", blockedUserId).eq("company", name);
+  }
   emit();
 }
 
@@ -67,4 +76,35 @@ export function useBlockedCompanies(): string[] {
 export function isBlocked(company: string): boolean {
   const c = company.toLowerCase();
   return current.some((b) => b.toLowerCase() === c);
+}
+
+// ---------- Account sync ----------
+
+let blockedUserId: string | null = null;
+
+/** Loads the account's hidden companies; seeds it from the browser copy once. */
+export async function hydrateBlockedCompaniesFromDb(userId: string) {
+  blockedUserId = userId;
+  const { data, error } = await supabase
+    .from("blocked_companies")
+    .select("company")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+  if (error) return;
+  if (data && data.length) {
+    current = data.map((r) => r.company);
+    persist();
+    emit();
+  } else if (current.length) {
+    await supabase
+      .from("blocked_companies")
+      .upsert(
+        current.map((company) => ({ user_id: userId, company })),
+        { onConflict: "user_id,company" },
+      );
+  }
+}
+
+export function resetBlockedCompaniesForSignOut() {
+  blockedUserId = null;
 }

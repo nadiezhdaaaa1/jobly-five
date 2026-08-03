@@ -1,4 +1,6 @@
-/** Local-only capture of why a user canceled. No billing provider is wired yet. */
+import { saveCancelFeedback } from "@/lib/subscription.functions";
+
+/** Why a user canceled. Recorded on the account; the browser copy is a cache. */
 export const CANCEL_REASONS = [
   "I found a job",
   "Too expensive",
@@ -26,6 +28,9 @@ export function recordCancelFeedback(reason: CancelReason, details?: string) {
     details: details?.trim() ? details.trim() : undefined,
     at: new Date().toISOString(),
   };
+  void saveCancelFeedback({ data: { reason: entry.reason, details: entry.details } }).catch(() => {
+    /* the local copy below keeps the answer if the write fails */
+  });
   try {
     const raw = window.localStorage.getItem(KEY);
     const list: CancelFeedback[] = raw ? JSON.parse(raw) : [];
