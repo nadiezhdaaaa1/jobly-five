@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type SavedFilter<T = unknown> = {
   id: string;
@@ -36,6 +37,7 @@ function persist() {
 
 function emit() {
   persist();
+  scheduleFiltersSync();
   for (const l of listeners) l();
 }
 
@@ -60,7 +62,9 @@ export function useSavedFilters<T = unknown>(): SavedFilter<T>[] {
 
 function uid() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  // uuid-shaped fallback so rows keep a stable primary key on the account
+  const hex = () => Math.floor(Math.random() * 16).toString(16);
+  return "xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx".replace(/x/g, hex);
 }
 
 export function addSavedFilter<T>(name: string, filters: T): SavedFilter<T> | null {
