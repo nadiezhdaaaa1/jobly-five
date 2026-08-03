@@ -955,7 +955,7 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const { consents, prefs, loading, error, setConsent, setPreference } = useNotificationSettings();
+  const { consents, prefs, loading, error, setConsent, setPreference, reload } = useNotificationSettings();
   const freq = prefs.digest_frequency;
   type Row =
     | { kind: "consent"; key: ConsentKey; label: string; caption?: string }
@@ -994,8 +994,11 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         Choose what lands in your inbox. We only email what's useful — no spam.
       </p>
       {error ? (
-        <div className="mb-4 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
-          {error}
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
+          <span>{error}</span>
+          <button type="button" onClick={() => void reload()} className="shrink-0 underline">
+            Retry
+          </button>
         </div>
       ) : null}
       <div>
@@ -1083,21 +1086,29 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             </div>
             <div className="mt-2 divide-y">
               {g.rows.map((r) => (
-                <div key={r.key} className="flex items-center justify-between gap-4 py-3">
+                <div
+                  key={r.key}
+                  className={`flex items-center justify-between gap-4 py-3 ${loading || error ? "opacity-60" : ""}`}
+                >
                   <div className="min-w-0">
                     <h6 className="text-[16px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, lineHeight: 1.4 }}>{r.label}</h6>
                     {r.caption ? (
                       <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
                     ) : null}
                   </div>
-                  {loading ? (
+                  {loading || (error && r.kind === "consent") ? (
+                    // Neutral state: no on/off position is implied while unknown.
                     <div className="skeleton h-6 w-11 shrink-0 rounded-full" aria-hidden />
                   ) : (
                     <Toggle
                       on={r.kind === "consent" ? consents[r.key] : prefs[r.key]}
                       onChange={(v) =>
                         r.kind === "consent"
-                          ? void setConsent(r.key, v)
+                          ? void setConsent(
+                              r.key,
+                              v,
+                              r.caption ? `${r.label} — ${r.caption}` : r.label,
+                            )
                           : void setPreference(r.key, v)
                       }
                       label={r.label}
