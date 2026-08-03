@@ -131,6 +131,10 @@ function RootComponent() {
   useEffect(() => {
     // Legacy client-side plan keys are not evidence of a subscription.
     void import("@/lib/entitlements").then(({ clearLegacyPlanKeys }) => clearLegacyPlanKeys());
+    // Legacy browser-only resume metadata described files that were never uploaded.
+    void import("@/lib/resume-documents-store").then(({ legacyResumeNoticePending }) =>
+      legacyResumeNoticePending(),
+    );
     // Lazy import so the browser client doesn't load during SSR.
     let unsub: (() => void) | undefined;
     import("@/integrations/supabase/client").then(({ supabase }) => {

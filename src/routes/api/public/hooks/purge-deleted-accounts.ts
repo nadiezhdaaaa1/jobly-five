@@ -7,7 +7,7 @@ import { ACCOUNT_DELETION_GRACE_DAYS } from "@/config/account";
  * Scheduled daily with Supabase `pg_cron` + `pg_net` against this route.
  * Caller must present the project's publishable/anon key in `apikey`.
  *
- * Deletes, per account: avatar objects, user_job_state, user_roles, the
+ * Deletes, per account: avatar and resume objects, user_job_state, user_roles, the
  * profile row and finally the auth user (cascades cover the rest).
  * Nothing else is retained today because no billing/email provider is wired
  * in — when Stripe or an ESP lands, invoices and the email suppression list
@@ -48,9 +48,11 @@ export const Route = createFileRoute("/api/public/hooks/purge-deleted-accounts")
         for (const row of due ?? []) {
           const id = row.id;
           try {
-            const { data: files } = await supabaseAdmin.storage.from("avatars").list(id);
-            if (files?.length) {
-              await supabaseAdmin.storage.from("avatars").remove(files.map((f) => `${id}/${f.name}`));
+            for (const bucket of ["avatars", "resumes"]) {
+              const { data: files } = await supabaseAdmin.storage.from(bucket).list(id);
+              if (files?.length) {
+                await supabaseAdmin.storage.from(bucket).remove(files.map((f) => `${id}/${f.name}`));
+              }
             }
             await supabaseAdmin.from("user_job_state").delete().eq("user_id", id);
             await supabaseAdmin.from("user_roles").delete().eq("user_id", id);
