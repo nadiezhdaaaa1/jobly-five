@@ -34,10 +34,13 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated/resume'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicHooksUnsubscribeRouteImport } from './routes/api/public/hooks/unsubscribe'
 import { Route as ApiPublicHooksSweepResumeOrphansRouteImport } from './routes/api/public/hooks/sweep-resume-orphans'
 import { Route as ApiPublicHooksQuizDraftSaveRouteImport } from './routes/api/public/hooks/quiz-draft-save'
 import { Route as ApiPublicHooksPurgeQuizDraftsRouteImport } from './routes/api/public/hooks/purge-quiz-drafts'
 import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes/api/public/hooks/purge-deleted-accounts'
+import { Route as ApiPublicHooksPostmarkWebhookRouteImport } from './routes/api/public/hooks/postmark-webhook'
+import { Route as ApiPublicHooksConfirmEmailRouteImport } from './routes/api/public/hooks/confirm-email'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -163,6 +166,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksUnsubscribeRoute =
+  ApiPublicHooksUnsubscribeRouteImport.update({
+    id: '/api/public/hooks/unsubscribe',
+    path: '/api/public/hooks/unsubscribe',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksSweepResumeOrphansRoute =
   ApiPublicHooksSweepResumeOrphansRouteImport.update({
     id: '/api/public/hooks/sweep-resume-orphans',
@@ -185,6 +194,18 @@ const ApiPublicHooksPurgeDeletedAccountsRoute =
   ApiPublicHooksPurgeDeletedAccountsRouteImport.update({
     id: '/api/public/hooks/purge-deleted-accounts',
     path: '/api/public/hooks/purge-deleted-accounts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksPostmarkWebhookRoute =
+  ApiPublicHooksPostmarkWebhookRouteImport.update({
+    id: '/api/public/hooks/postmark-webhook',
+    path: '/api/public/hooks/postmark-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksConfirmEmailRoute =
+  ApiPublicHooksConfirmEmailRouteImport.update({
+    id: '/api/public/hooks/confirm-email',
+    path: '/api/public/hooks/confirm-email',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -213,10 +234,13 @@ export interface FileRoutesByFullPath {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
+  '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
+  '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
   '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
   '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
+  '/api/public/hooks/unsubscribe': typeof ApiPublicHooksUnsubscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -243,10 +267,13 @@ export interface FileRoutesByTo {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
+  '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
+  '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
   '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
   '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
+  '/api/public/hooks/unsubscribe': typeof ApiPublicHooksUnsubscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -275,10 +302,13 @@ export interface FileRoutesById {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
+  '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
+  '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
   '/api/public/hooks/purge-quiz-drafts': typeof ApiPublicHooksPurgeQuizDraftsRoute
   '/api/public/hooks/quiz-draft-save': typeof ApiPublicHooksQuizDraftSaveRoute
   '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
+  '/api/public/hooks/unsubscribe': typeof ApiPublicHooksUnsubscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -307,10 +337,13 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
+    | '/api/public/hooks/confirm-email'
+    | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
     | '/api/public/hooks/purge-quiz-drafts'
     | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
+    | '/api/public/hooks/unsubscribe'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -337,10 +370,13 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog'
+    | '/api/public/hooks/confirm-email'
+    | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
     | '/api/public/hooks/purge-quiz-drafts'
     | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
+    | '/api/public/hooks/unsubscribe'
   id:
     | '__root__'
     | '/'
@@ -368,10 +404,13 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
+    | '/api/public/hooks/confirm-email'
+    | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
     | '/api/public/hooks/purge-quiz-drafts'
     | '/api/public/hooks/quiz-draft-save'
     | '/api/public/hooks/sweep-resume-orphans'
+    | '/api/public/hooks/unsubscribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -395,10 +434,13 @@ export interface RootRouteChildren {
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
+  ApiPublicHooksPostmarkWebhookRoute: typeof ApiPublicHooksPostmarkWebhookRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
   ApiPublicHooksPurgeQuizDraftsRoute: typeof ApiPublicHooksPurgeQuizDraftsRoute
   ApiPublicHooksQuizDraftSaveRoute: typeof ApiPublicHooksQuizDraftSaveRoute
   ApiPublicHooksSweepResumeOrphansRoute: typeof ApiPublicHooksSweepResumeOrphansRoute
+  ApiPublicHooksUnsubscribeRoute: typeof ApiPublicHooksUnsubscribeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -578,6 +620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/unsubscribe': {
+      id: '/api/public/hooks/unsubscribe'
+      path: '/api/public/hooks/unsubscribe'
+      fullPath: '/api/public/hooks/unsubscribe'
+      preLoaderRoute: typeof ApiPublicHooksUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/sweep-resume-orphans': {
       id: '/api/public/hooks/sweep-resume-orphans'
       path: '/api/public/hooks/sweep-resume-orphans'
@@ -604,6 +653,20 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/purge-deleted-accounts'
       fullPath: '/api/public/hooks/purge-deleted-accounts'
       preLoaderRoute: typeof ApiPublicHooksPurgeDeletedAccountsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/postmark-webhook': {
+      id: '/api/public/hooks/postmark-webhook'
+      path: '/api/public/hooks/postmark-webhook'
+      fullPath: '/api/public/hooks/postmark-webhook'
+      preLoaderRoute: typeof ApiPublicHooksPostmarkWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/confirm-email': {
+      id: '/api/public/hooks/confirm-email'
+      path: '/api/public/hooks/confirm-email'
+      fullPath: '/api/public/hooks/confirm-email'
+      preLoaderRoute: typeof ApiPublicHooksConfirmEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -649,11 +712,14 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
   BlogIndexRoute: BlogIndexRoute,
+  ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
+  ApiPublicHooksPostmarkWebhookRoute: ApiPublicHooksPostmarkWebhookRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
     ApiPublicHooksPurgeDeletedAccountsRoute,
   ApiPublicHooksPurgeQuizDraftsRoute: ApiPublicHooksPurgeQuizDraftsRoute,
   ApiPublicHooksQuizDraftSaveRoute: ApiPublicHooksQuizDraftSaveRoute,
   ApiPublicHooksSweepResumeOrphansRoute: ApiPublicHooksSweepResumeOrphansRoute,
+  ApiPublicHooksUnsubscribeRoute: ApiPublicHooksUnsubscribeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

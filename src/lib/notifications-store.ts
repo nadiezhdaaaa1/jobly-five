@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { listMyConsent, recordConsent } from "@/lib/consent.functions";
+import { POLICY_VERSION } from "@/config/consent";
 
 export type ConsentChannel = Database["public"]["Enums"]["consent_channel"];
 
-/** Legal permission to email. Latest record per channel wins. */
+/**
+ * Legal permission to email. Latest record per channel wins. The strings below
+ * are fallbacks only — callers pass the verbatim on-screen wording, which is
+ * what gets stored as evidence.
+ */
 export const CONSENT_ROWS = {
   daily_digest: "Email me when a new digest is ready.",
   high_match_alerts: "Email me instantly when a top match posts between digests.",
@@ -48,7 +54,8 @@ export type NotificationState = {
   loading: boolean;
   /** Set when the last read or write failed. */
   error: string | null;
-  setConsent: (key: ConsentKey, granted: boolean) => Promise<void>;
+  /** `consentText` must be the verbatim string shown on screen. */
+  setConsent: (key: ConsentKey, granted: boolean, consentText?: string) => Promise<void>;
   setPreference: <K extends keyof Preferences>(key: K, value: Preferences[K]) => Promise<void>;
   reload: () => Promise<void>;
 };
