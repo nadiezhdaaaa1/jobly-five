@@ -75,17 +75,6 @@ const DIRECT_BOARDS: ReadonlySet<Board> = new Set(["Greenhouse", "Lever", "Ashby
 const SENIORITIES = ["Junior", "Middle", "Senior", "Lead", "Executive"] as const;
 type Seniority = (typeof SENIORITIES)[number];
 
-const ENGLISH_LEVELS = [
-  "Native speaker",
-  "Proficient · C2",
-  "Advanced · C1",
-  "Upper-intermediate · B2",
-  "Intermediate · B1",
-  "Pre-intermediate · A2",
-  "Elementary · A1",
-  "No English",
-] as const;
-
 function inferSeniority(title: string): Seniority {
   const t = title.toLowerCase();
   if (/\b(principal|staff)\b/.test(t)) return "Lead";
@@ -134,8 +123,6 @@ type FilterState = {
   field: string;
   roles: string[];
   seniority: Seniority[];
-  years: string[]; // year range chips
-  english: string;
   onlyRemote: boolean;
   locations: string[];
   sources: Board[];
@@ -145,8 +132,6 @@ type FilterState = {
 };
 
 type SavedFilterEntry = SavedFilter<FilterState>;
-
-const YEAR_CHIPS = ["No experience", "1–2 years", "3–5 years", "6–9 years", "10 years or more"] as const;
 
 // Field → Roles taxonomy (from docs/jobly-roles-and-stacks.md).
 const FIELD_ROLES: Record<string, string[]> = {
@@ -252,8 +237,6 @@ function defaultFilters(): FilterState {
     field: FIELD_ANY,
     roles: [],
     seniority: [],
-    years: [],
-    english: "",
     onlyRemote: false,
     locations: [],
     sources: [...ALL_BOARDS] as Board[],
@@ -274,25 +257,12 @@ function nearestSalaryStep(v: number): number {
   return best;
 }
 
-function yearsToChip(y: number): (typeof YEAR_CHIPS)[number] | null {
-  if (y <= 0) return "No experience";
-  if (y <= 2) return "1–2 years";
-  if (y <= 5) return "3–5 years";
-  if (y <= 9) return "6–9 years";
-  return "10 years or more";
-}
-
 function defaultsFromQuiz(q: QuizAnswers): FilterState {
   const base = defaultFilters();
   const roles = q.roles?.length ? q.roles : q.role ? [q.role] : [];
   const locs = q.locations ?? [];
   const onlyRemote = locs.length === 0;
   const minSalary = typeof q.salaryMin === "number" ? nearestSalaryStep(q.salaryMin < 1000 ? q.salaryMin * 1000 : q.salaryMin) : 0;
-  const rawEnglish = q.primaryLanguage ?? "";
-  // Quiz stores English levels with a bullet (•); the filter uses a middle dot (·).
-  const normalizedEnglish = rawEnglish.replace(/\s•\s/g, " · ");
-  const english = (ENGLISH_LEVELS as readonly string[]).includes(normalizedEnglish) ? normalizedEnglish : "";
-  const yearChip = typeof q.years === "number" ? yearsToChip(q.years) : null;
   const seniority = levelToSeniority(q.level);
   return {
     ...base,
@@ -300,8 +270,6 @@ function defaultsFromQuiz(q: QuizAnswers): FilterState {
     onlyRemote,
     locations: locs,
     minSalary,
-    english,
-    years: yearChip ? [yearChip] : [],
     seniority: seniority ? [seniority] : [],
   };
 }
@@ -327,8 +295,6 @@ function activeFilterCount(f: FilterState, profileRoles: string[] = []): number 
   if (profileRoles.length > 0 && f.roles.length !== profileRoles.length) n++;
   else if (profileRoles.length === 0 && f.roles.length) n++;
   if (f.seniority.length) n++;
-  if (f.years.length) n++;
-  if (f.english) n++;
   if (f.onlyRemote || f.locations.length) n++;
   if (f.sources.length !== d.sources.length || f.sources.some((s) => !d.sources.includes(s))) n++;
   if (f.minMatch !== d.minMatch) n++;
@@ -1203,14 +1169,6 @@ function FiltersSidebar({
                 selected={p.seniority.includes(s)}
                 onClick={() => set({ seniority: p.seniority.includes(s) ? p.seniority.filter((x) => x !== s) : [...p.seniority, s] })}
               />
-            ))}
-          </div>
-        </FilterSection>
-
-        <FilterSection title="Experience" collapseSignal={collapseSignal}>
-          <div className="flex flex-wrap gap-1.5">
-            {YEAR_CHIPS.map((y) => (
-              <SelectChip key={y} label={y} selected={p.years.includes(y)} onClick={() => set({ years: p.years.includes(y) ? p.years.filter((x) => x !== y) : [...p.years, y] })} />
             ))}
           </div>
         </FilterSection>
