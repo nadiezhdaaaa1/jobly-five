@@ -144,16 +144,21 @@ export async function uploadResume(
   }
 }
 
-/** Fresh 60-second signed URL, minted per click. */
-export async function openResumeDownload(resumeId: string): Promise<boolean> {
+/** Fresh 60-second signed URL, minted per click and never cached. */
+export async function openResumeSignedUrl(resumeId: string): Promise<string | null> {
   try {
     const res = await getResumeDownloadUrl({ data: { resumeId } });
-    if (!res.ok) return false;
-    window.open(res.url, "_blank", "noopener,noreferrer");
-    return true;
+    return res.ok ? res.url : null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export async function openResumeDownload(resumeId: string): Promise<boolean> {
+  const url = await openResumeSignedUrl(resumeId);
+  if (!url) return false;
+  window.open(url, "_blank", "noopener,noreferrer");
+  return true;
 }
 
 export async function removeResume(resumeId: string): Promise<boolean> {

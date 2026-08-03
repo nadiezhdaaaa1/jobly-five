@@ -175,6 +175,7 @@ function ProfileScreen() {
   const refreshQuiz = () => setQuiz({ ...loadQuiz() });
 
   const resume = useResumeState();
+  const { docs: resumeDocs, loading: resumeDocsLoading, refresh: refreshResumeDocs } = useResumeDocuments();
   const extras = useProfileExtras();
   const cfg = fieldConfig(quiz.field);
   const toast = useToast();
@@ -224,14 +225,14 @@ function ProfileScreen() {
     const hasPortfolio = (extras.links?.length ?? 0) > 0 || !!extras.portfolioFile;
     const items = [
       { key: "quiz", label: "Quiz completed", done: (quiz.roles?.length ?? 0) > 0 },
-      { key: "resume", label: "Resume added", done: resume.hasResume },
+      { key: "resume", label: "Resume added", done: resumeDocs.length > 0 },
       { key: "jobs", label: "Previous jobs", done: resume.data.experience.length > 0 },
       { key: "edu", label: "Education", done: resume.data.education.length > 0 },
       { key: "verify", label: "Verify your email", done: false },
     ];
     const done = items.filter((i) => i.done).length;
     return { items, pct: Math.round((done / 5) * 100), hasPortfolio };
-  }, [quiz.roles, resume, extras.links, extras.portfolioFile]);
+  }, [quiz.roles, resume, resumeDocs, extras.links, extras.portfolioFile]);
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
@@ -303,7 +304,9 @@ function ProfileScreen() {
             {tab === "documents" && (
               <DocumentsTab
                 onToast={toast.show}
-                resume={resume}
+                docs={resumeDocs}
+                loading={resumeDocsLoading}
+                refresh={refreshResumeDocs}
               />
             )}
             {tab === "letters" && (
@@ -1188,16 +1191,18 @@ function ResumeUploadModal({
 }
 
 function FileRow({
-  name, meta, onPreview, onReplace, onDelete, isPrimary, onMakePrimary, locked,
+  name, meta, onPreview, onReplace, onDownload, onDelete, isPrimary, onMakePrimary, locked, busy,
 }: {
   name: string;
   meta: string;
   onPreview?: () => void;
   onReplace?: () => void;
+  onDownload?: () => void;
   onDelete: () => void;
   isPrimary?: boolean;
   onMakePrimary?: () => void;
   locked?: boolean;
+  busy?: boolean;
 }) {
   return (
     <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
@@ -1220,11 +1225,16 @@ function FileRow({
             </IconTooltip>
           )}
         </div>
-        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
+        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
+          {busy ? "Preparing…" : meta}
+        </div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
         {onPreview && (
           <RowIconBtn onClick={onPreview} label="Preview"><Eye size={16} strokeWidth={1.8} /></RowIconBtn>
+        )}
+        {onDownload && (
+          <RowIconBtn onClick={onDownload} label={busy ? "Preparing…" : "Download"}><Download size={16} strokeWidth={1.8} /></RowIconBtn>
         )}
         {onMakePrimary && (
           <RowIconBtn onClick={onMakePrimary} label="Make primary"><Star size={16} strokeWidth={1.8} /></RowIconBtn>
@@ -1602,7 +1612,9 @@ function LetterRow({
             </IconTooltip>
           )}
         </div>
-        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
+        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
+          {busy ? "Preparing…" : meta}
+        </div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
         {onEdit && <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>}
@@ -2084,7 +2096,7 @@ function ExperienceTab({
   const [editingEdu, setEditingEdu] = useState<string | null>(null);
   const [confirmReimport, setConfirmReimport] = useState(false);
 
-  const hasResume = resume.hasResume;
+  const hasResume = resume.data.experience.length > 0 || resume.data.education.length > 0;
   const lead = hasResume
     ? "Pulled from your resume so you don't retype it — edit or add. Structured history sharpens matching; the PDF alone isn't enough."
     : "Add your work history manually, or upload a resume on the Documents tab to auto-fill it.";
