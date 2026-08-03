@@ -102,14 +102,13 @@ export function computeMatch(
   const jobSkillsLc = jobSkills.map((s) => s.toLowerCase());
 
   const roleMatch = rolesOverlap(userRoles, job) ? 1 : 0;
-  const roleScore = 40 * roleMatch;
   if (roleMatch) criteria.push({ status: "full", text: `Role: ${job.roles.slice(0, 2).join(", ") || job.title} — matches` });
   else if (userRoles.length) criteria.push({ status: "partial", text: `Role: ${job.roles[0] ?? job.title} — adjacent` });
 
   const overlap = userSkills.size ? jobSkillsLc.filter((s) => userSkills.has(s)).length : 0;
   const needed = Math.max(3, Math.min(jobSkillsLc.length, 8));
-  const skillRatio = jobSkillsLc.length ? Math.min(1, overlap / needed) : 0.5;
-  const skillScore = 25 * skillRatio;
+  const skillRatio =
+    jobSkillsLc.length && userSkills.size ? Math.min(1, overlap / needed) : null;
   const matchedSkills = jobSkills.filter((s) => userSkills.has(s.toLowerCase())).slice(0, 3);
   const missingSkills = jobSkills
     .filter((s) => !userSkills.has(s.toLowerCase()))
@@ -117,44 +116,72 @@ export function computeMatch(
   if (matchedSkills.length) criteria.push({ status: "full", text: `Stack: ${matchedSkills.join(", ")} — matches` });
 
   const userSen = seniorityFromLevel(quiz.level);
-  let senScore = 15 * 0.6;
+  let senRatio: number | null = null;
   if (userSen && job.seniority) {
     const ui = SENIORITY_ORDER.indexOf(userSen);
     const ji = SENIORITY_ORDER.indexOf(job.seniority);
     if (ui >= 0 && ji >= 0) {
       const diff = Math.abs(ui - ji);
-      senScore = 15 * Math.max(0, 1 - diff * 0.35);
+      senRatio = Math.max(0, 1 - diff * 0.35);
       if (diff === 0) criteria.push({ status: "full", text: `Level: ${job.seniority} — matches` });
       else if (diff === 1) criteria.push({ status: "partial", text: `Level: ${job.seniority} — adjacent` });
     }
   }
 
-  let expScore = 10 * 0.7;
+  // Years of experience — absent, not zero: skipped entirely when either side
+  // has no value. Partial credit when the user is 1–3 years short.
+  let expRatio: number | null = null;
   if (typeof quiz.years === "number" && typeof job.minYearsExperience === "number") {
-    if (quiz.years >= job.minYearsExperience) expScore = 10;
-    else expScore = 10 * Math.max(0.2, quiz.years / Math.max(1, job.minYearsExperience));
+    const gap = job.minYearsExperience - quiz.years;
+    if (gap <= 0) expRatio = 1;
+    else if (gap <= 3) expRatio = Math.max(0, 1 - gap * 0.2);
+    else expRatio = 0.15;
+  }
+
+  // English — only scored when the job actually states a requirement.
+  let engRatio: number | null = null;
+  const jobEng = job.englishLevel ? ENGLISH_RANK[job.englishLevel.toLowerCase()] : undefined;
+  const userEng = userEnglishRank(quiz.primaryLanguage);
+  if (jobEng && userEng !== null) {
+    const diff = jobEng - userEng;
+    engRatio = diff <= 0 ? 1 : diff === 1 ? 0.5 : 0;
   }
 
   const wm = (job.workMode ?? "").toLowerCase();
   const remote = /remote/.test(wm) || /remote/i.test(job.location);
   const userLocs = (quiz.locations ?? []).map((l) => l.toLowerCase());
-  let locScore = 10 * 0.5;
+  let locRatio: number | null = null;
   const jobLocLc = job.location.toLowerCase();
   if (remote) {
-    locScore = 10;
+    locRatio = 1;
     criteria.push({ status: "full", text: `Location: Remote — matches` });
   } else if (userLocs.some((l) => jobLocLc.includes(l) || l.includes(jobLocLc))) {
-    locScore = 10;
+    locRatio = 1;
     criteria.push({ status: "full", text: `Location: ${job.location} — matches` });
   } else if (userLocs.length) {
-    locScore = 3;
+    locRatio = 0.3;
   }
 
-  const raw = roleScore + skillScore + senScore + expScore + locScore;
-  let h = 0;
-  for (let i = 0; i < job.id.length; i++) h = (h * 31 + job.id.charCodeAt(i)) >>> 0;
-  const jitter = (h % 7) - 3;
-  const score = Math.max(30, Math.min(96, Math.round(raw + jitter)));
+  // "Absent, not zero": every signal without data drops out of both the
+  // numerator and the denominator, so a job can still reach 100%.
+  const signals: Array<{ weight: number; ratio: number | null }> = [
+    { weight: 40, ratio: userRoles.length ? roleMatch : null },
+    { weight: 25, ratio: skillRatio },
+    { weight: 15, ratio: senRatio },
+    { weight: 10, ratio: expRatio },
+    { weight: 10, ratio: engRatio },
+    { weight: 10, ratio: locRatio },
+  ];
+  let earned = 0;
+  let possible = 0;
+  for (const s of signals) {
+    if (s.ratio === null) continue;
+    earned += s.weight * s.ratio;
+    possible += s.weight;
+  }
+  const score = possible
+    ? Math.max(30, Math.min(100, Math.round((earned / possible) * 100)))
+    : 50;
 
   const whyBits: string[] = [];
   if (matchedSkills.length) whyBits.push(matchedSkills.slice(0, 2).join(" + "));
