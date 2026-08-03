@@ -31,6 +31,13 @@ import {
   useAccount,
 } from "@/lib/account-store";
 import { lovable } from "@/integrations/lovable/index";
+import {
+  HOUR_OPTIONS,
+  timezoneOptions,
+  useNotificationSettings,
+  type ConsentKey,
+  type PreferenceKey,
+} from "@/lib/notifications-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
