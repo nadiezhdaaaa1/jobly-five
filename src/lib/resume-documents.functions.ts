@@ -81,11 +81,14 @@ export const registerResume = createServerFn({ method: "POST" })
       .maybeSingle();
     let consented = consent?.granted === true;
     if (!consented && data.consentWording === RESUME_CONSENT_WORDING) {
+      const { POLICY_VERSION } = await import("@/config/consent");
       const { error: consentError } = await supabaseAdmin.from("consent_records").insert({
         user_id: userId,
+        email: String(context.claims["email"] ?? "").toLowerCase(),
         channel: "resume_storage",
         granted: true,
-        wording: RESUME_CONSENT_WORDING,
+        consent_text: RESUME_CONSENT_WORDING,
+        policy_version: POLICY_VERSION,
         source: "resume_upload",
       });
       if (consentError) {
