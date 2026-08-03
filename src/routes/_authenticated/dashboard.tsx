@@ -27,6 +27,7 @@ import { getDbJobById } from "@/lib/jobs-store";
 import { rolesOverlap } from "@/lib/match";
 import type { Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
@@ -394,6 +395,16 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
 
 function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
   const plan = usePlan();
+  const { loading: entLoading } = useEntitlements();
+  if (entLoading) {
+    return (
+      <div
+        className="shrink-0 animate-pulse rounded-full"
+        style={{ width: size, height: size, background: "var(--color-surface-2)" }}
+        aria-label="Loading match score"
+      />
+    );
+  }
   if (!isPro(plan)) {
     return (
       <div

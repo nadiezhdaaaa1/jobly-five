@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveIsPro, resolvePlan, type Subscription } from "./plan-store";
+import { getPlan, resolveIsPro, resolvePlan, type Subscription } from "./plan-store";
 
 const sub = (o: Partial<Subscription>): Subscription => ({
   status: "canceling",
@@ -26,5 +26,16 @@ describe("entitlement resolution", () => {
   it("canceled is Free, paused keeps entitlements", () => {
     expect(resolveIsPro(sub({ status: "canceled", cancelAtPeriodEnd: false }))).toBe(false);
     expect(resolvePlan(sub({ status: "paused", cancelAtPeriodEnd: false }))).toBe("paused");
+  });
+});
+
+describe("fail-closed entitlements", () => {
+  it("unknown status resolves to Free", () => {
+    const s = sub({ status: "none", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() });
+    expect(resolveIsPro(s)).toBe(false);
+    expect(resolvePlan(s)).toBe("free");
+  });
+  it("store starts Free before the server answers", () => {
+    expect(getPlan()).toBe("free");
   });
 });

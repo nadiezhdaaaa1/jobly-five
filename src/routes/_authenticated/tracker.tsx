@@ -53,6 +53,7 @@ import {
 } from "@/lib/tracker-store";
 import { resolveColumnForCard, useColumns, statusForKind, type BoardColumn, type ColumnKind } from "@/lib/board-columns-store";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { useEntitlements } from "@/lib/entitlements-provider";
 import { blockCompany } from "@/lib/blocked-companies-store";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
@@ -747,6 +748,7 @@ function KanbanColumn({
 
 function TrackerScreen() {
   const plan = usePlan();
+  const { loading: entLoading } = useEntitlements();
   useTrackerVersion();
   const { jobs: allJobs, loaded: jobsLoaded } = useJobs();
   const trackerHydrated = useTrackerHydrated();
@@ -766,6 +768,23 @@ function TrackerScreen() {
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
+
+  if (entLoading) {
+    return (
+      <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
+        <AppHeader active="tracker" />
+        <main className="mx-auto max-w-[1200px] px-6 pt-6">
+          <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
+            <div
+              className="animate-pulse rounded-[12px] border border-white bg-white/80"
+              style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", height: 320 }}
+              aria-label="Loading your plan"
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (!isPro(plan)) {
     return (

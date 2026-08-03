@@ -129,6 +129,8 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    // Legacy client-side plan keys are not evidence of a subscription.
+    void import("@/lib/entitlements").then(({ clearLegacyPlanKeys }) => clearLegacyPlanKeys());
     // Lazy import so the browser client doesn't load during SSR.
     let unsub: (() => void) | undefined;
     import("@/integrations/supabase/client").then(({ supabase }) => {

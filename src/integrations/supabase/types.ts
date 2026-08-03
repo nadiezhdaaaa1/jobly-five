@@ -194,6 +194,60 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          billing_period: string | null
+          cancel_at_period_end: boolean
+          canceled_at: string | null
+          created_at: string
+          current_period_end: string | null
+          pause_ends_at: string | null
+          paused_at: string | null
+          plan: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_ends_at: string | null
+          trial_started_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_period?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          pause_ends_at?: string | null
+          paused_at?: string | null
+          plan?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_period?: string | null
+          cancel_at_period_end?: boolean
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          pause_ends_at?: string | null
+          paused_at?: string | null
+          plan?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_job_state: {
         Row: {
           applied_at: string | null
@@ -306,7 +360,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_entitlements: { Args: never; Returns: Json }
+      has_pro: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -322,6 +377,13 @@ export type Database = {
         | "interview_screen"
         | "interview_tech"
         | "test_task"
+      subscription_status:
+        | "none"
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "paused"
+        | "canceled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -462,6 +524,14 @@ export const Constants = {
         "interview_screen",
         "interview_tech",
         "test_task",
+      ],
+      subscription_status: [
+        "none",
+        "trialing",
+        "active",
+        "past_due",
+        "paused",
+        "canceled",
       ],
     },
   },

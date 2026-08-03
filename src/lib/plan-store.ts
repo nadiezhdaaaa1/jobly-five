@@ -13,10 +13,6 @@ export type Subscription = {
   currentPeriodEnd: string;
 };
 
-const KEY = "jobly.plan"; // legacy key, still read for migration
-const SUB_KEY = "jobly.subscription";
-const HAD_PRO_KEY = "jobly.hasHadPro";
-
 const DAY = 86_400_000;
 const isoIn = (ms: number) => new Date(Date.now() + ms).toISOString();
 
@@ -37,51 +33,12 @@ function defaultSub(): Subscription {
   return { status: "none", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() };
 }
 
-function readSub(): Subscription {
-  if (typeof window === "undefined") return defaultSub();
-  try {
-    const raw = window.localStorage.getItem(SUB_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<Subscription>;
-      if (parsed && typeof parsed.status === "string") {
-        return {
-          status: parsed.status as SubStatus,
-          cancelAtPeriodEnd: Boolean(parsed.cancelAtPeriodEnd),
-          currentPeriodEnd: parsed.currentPeriodEnd ?? isoIn(30 * DAY),
-        };
-      }
-    }
-    // Migrate the legacy plan-only value.
-    const legacy = window.localStorage.getItem(KEY);
-    if (legacy === "free") return { status: "canceled", cancelAtPeriodEnd: false, currentPeriodEnd: new Date().toISOString() };
-    if (legacy === "paused") return { status: "paused", cancelAtPeriodEnd: false, currentPeriodEnd: isoIn(180 * DAY) };
-  } catch {
-    /* ignore */
-  }
-  return defaultSub();
-}
-
-let sub: Subscription = readSub();
-let hadPro: boolean = readHadProInitial();
+// In-memory only: entitlements come from the server (get_entitlements) and are
+// never read from or written to browser storage.
+let sub: Subscription = defaultSub();
+let hadPro = false;
+let ready = false;
 const listeners = new Set<() => void>();
-
-function readHadProInitial(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(HAD_PRO_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-function persist() {
-  try {
-    window.localStorage.setItem(SUB_KEY, JSON.stringify(sub));
-    window.localStorage.setItem(KEY, resolvePlan(sub));
-  } catch {
-    /* ignore */
-  }
-}
 
 function emit() {
   listeners.forEach((l) => l());
@@ -90,18 +47,31 @@ function emit() {
 function markHadPro() {
   if (hadPro) return;
   hadPro = true;
-  try {
-    window.localStorage.setItem(HAD_PRO_KEY, "1");
-  } catch {
-    /* ignore */
-  }
 }
 
 function commit(next: Subscription) {
   sub = next;
   if (resolveIsPro(sub)) markHadPro();
-  persist();
   emit();
+}
+
+/** Server is the source of truth — called by the entitlement provider only. */
+export function hydrateSubscription(next: Subscription, everSubscribed: boolean) {
+  sub = next;
+  hadPro = everSubscribed || resolveIsPro(next);
+  ready = true;
+  emit();
+}
+
+export function setEntitlementsReady(next: boolean) {
+  if (ready === next) return;
+  ready = next;
+  emit();
+}
+
+/** False while entitlements are loading or errored — callers must render Free. */
+export function useEntitlementsReady(): boolean {
+  return useSyncExternalStore(subscribe, () => ready, () => false);
 }
 
 export function getSubscription(): Subscription {
@@ -160,11 +130,6 @@ export function getHasHadPro(): boolean {
 export function setHasHadPro(next: boolean) {
   if (next === hadPro) return;
   hadPro = next;
-  try {
-    window.localStorage.setItem(HAD_PRO_KEY, next ? "1" : "0");
-  } catch {
-    /* ignore */
-  }
   emit();
 }
 
