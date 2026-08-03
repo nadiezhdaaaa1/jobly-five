@@ -10,6 +10,11 @@ import { EntitlementProvider } from "@/lib/entitlements-provider";
 import { claimQuizDraft } from "@/lib/quiz-draft.functions";
 import { clearDraftToken, getDraftToken } from "@/lib/quiz-draft-store";
 import { hydrateQuizFromProfile } from "@/lib/quiz-store";
+import { hydrateBoardColumnsFromDb, resetBoardColumnsForSignOut } from "@/lib/board-columns-store";
+import { hydrateProfileExtrasFromDb, resetProfileExtrasForSignOut } from "@/lib/profile-store";
+import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resume-store";
+import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
+import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 
 /**
  * Claims the anonymous quiz draft for this account and copies the answers onto
@@ -35,9 +40,19 @@ function AuthedShell({ userId }: { userId: string }) {
     void hydrateTrackerFromDb(userId);
     void hydrateAccountFromDb();
     void claimAndHydrateQuiz();
+    void hydrateBoardColumnsFromDb(userId);
+    void hydrateProfileExtrasFromDb(userId);
+    void hydrateWorkHistoryFromDb(userId);
+    void hydrateSavedFiltersFromDb(userId);
+    void hydrateBlockedCompaniesFromDb(userId);
     return () => {
       // Clear tracker if a different user signs in on the same tab.
       resetTrackerForSignOut();
+      resetBoardColumnsForSignOut();
+      resetProfileExtrasForSignOut();
+      resetWorkHistoryForSignOut();
+      resetSavedFiltersForSignOut();
+      resetBlockedCompaniesForSignOut();
     };
   }, [userId]);
   // Grace window elapsed: the purge job owns the server side, so all we can do
