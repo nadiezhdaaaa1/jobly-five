@@ -198,6 +198,8 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          quiz_answers: Json
+          quiz_schema_version: number | null
           updated_at: string
         }
         Insert: {
@@ -209,6 +211,8 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          quiz_answers?: Json
+          quiz_schema_version?: number | null
           updated_at?: string
         }
         Update: {
@@ -220,7 +224,57 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          quiz_answers?: Json
+          quiz_schema_version?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      quiz_drafts: {
+        Row: {
+          answers: Json
+          claimed_at: string | null
+          completed_steps: string[]
+          created_at: string
+          current_step: string | null
+          email: string | null
+          id: string
+          last_seen_at: string
+          schema_version: number
+          status: string
+          token_hash: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          answers?: Json
+          claimed_at?: string | null
+          completed_steps?: string[]
+          created_at?: string
+          current_step?: string | null
+          email?: string | null
+          id?: string
+          last_seen_at?: string
+          schema_version?: number
+          status?: string
+          token_hash: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          answers?: Json
+          claimed_at?: string | null
+          completed_steps?: string[]
+          created_at?: string
+          current_step?: string | null
+          email?: string | null
+          id?: string
+          last_seen_at?: string
+          schema_version?: number
+          status?: string
+          token_hash?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
