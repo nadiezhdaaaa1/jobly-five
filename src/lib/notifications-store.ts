@@ -88,18 +88,18 @@ export function useNotificationSettings(): NotificationState {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [consentRes, prefRes] = await Promise.all([
-      supabase.from("current_consent").select("channel, granted"),
+    const [consentRows, prefRes] = await Promise.all([
+      listMyConsent().catch(() => null),
       supabase.from("notification_preferences").select("*").maybeSingle(),
     ]);
     if (!mounted.current) return;
-    if (consentRes.error || prefRes.error) {
+    if (!consentRows || prefRes.error) {
       setError("We couldn't load your notification settings. Try again in a moment.");
       setLoading(false);
       return;
     }
     const next = { ...EMPTY_CONSENTS };
-    for (const row of consentRes.data ?? []) {
+    for (const row of consentRows) {
       const ch = row.channel as ConsentKey | null;
       if (ch && ch in next) next[ch] = row.granted === true;
     }
@@ -128,29 +128,36 @@ export function useNotificationSettings(): NotificationState {
     void load();
   }, [load]);
 
-  const setConsent = useCallback(async (key: ConsentKey, granted: boolean) => {
-    const { data: auth } = await supabase.auth.getUser();
-    const userId = auth.user?.id;
-    if (!userId) {
-      setError("You're signed out. Sign in again to change this.");
-      return;
-    }
-    const previous = consents[key];
-    setConsents((c) => ({ ...c, [key]: granted }));
-    const { error: insertError } = await supabase.from("consent_records").insert({
-      user_id: userId,
-      channel: key,
-      granted,
-      wording: CONSENT_ROWS[key],
-      source: "settings_notifications",
-    });
-    if (insertError) {
-      setConsents((c) => ({ ...c, [key]: previous }));
-      setError("That change didn't save. Try again.");
-      return;
-    }
-    setError(null);
-  }, [consents]);
+  const setConsent = useCallback(
+    async (key: ConsentKey, granted: boolean, consentText?: string) => {
+      const { data: auth } = await supabase.auth.getUser();
+      const email = auth.user?.email;
+      if (!email) {
+        setError("You're signed out. Sign in again to change this.");
+        return;
+      }
+      const previous = consents[key];
+      setConsents((c) => ({ ...c, [key]: granted }));
+      // Writes go through the server; the client has no grant on consent_records.
+      const res = await recordConsent({
+        data: {
+          email,
+          channel: key,
+          granted,
+          source: "settings",
+          consentText: consentText ?? CONSENT_ROWS[key],
+          policyVersion: POLICY_VERSION,
+        },
+      }).catch(() => ({ ok: false as const }));
+      if (!res.ok) {
+        setConsents((c) => ({ ...c, [key]: previous }));
+        setError("That change didn't save. Try again.");
+        return;
+      }
+      setError(null);
+    },
+    [consents],
+  );
 
   const setPreference = useCallback(
     async <K extends keyof Preferences>(key: K, value: Preferences[K]) => {
