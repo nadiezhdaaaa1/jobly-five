@@ -25,6 +25,60 @@ function ago(days: number) {
   return `Posted ${days} days ago`;
 }
 
+const SEARCH_STEPS = [
+  "Scanning fresh job postings…",
+  "Comparing your stack and seniority…",
+  "Checking salary and location fit…",
+  "Ranking your best matches…",
+];
+
+function MatchesSearching() {
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    const id = setInterval(
+      () => setStep((s) => (s + 1) % SEARCH_STEPS.length),
+      1600,
+    );
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <>
+      <li
+        className="flex items-center gap-3 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 text-[13px] text-[color:var(--color-text-secondary)]"
+        aria-live="polite"
+      >
+        <Loader2 className="size-4 shrink-0 animate-spin text-[color:var(--color-green)]" />
+        <span key={step} className="animate-fade-in">
+          {SEARCH_STEPS[step]}
+        </span>
+      </li>
+      {[0, 1, 2].map((i) => (
+        <li
+          key={`sk-${i}`}
+          className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4"
+          style={{ opacity: 1 - i * 0.25 }}
+          aria-hidden
+        >
+          <div className="flex items-center gap-3">
+            <div className="skeleton size-12 shrink-0 rounded-[6px]" />
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-4 w-1/2 rounded-[4px]" />
+              <div className="skeleton h-3 w-1/3 rounded-[4px]" />
+            </div>
+            <div className="skeleton size-12 shrink-0 rounded-full" />
+          </div>
+          <div className="mt-3 flex gap-2">
+            <div className="skeleton h-5 w-20 rounded-[4px]" />
+            <div className="skeleton h-5 w-16 rounded-[4px]" />
+            <div className="skeleton h-5 w-24 rounded-[4px]" />
+          </div>
+        </li>
+      ))}
+    </>
+  );
+}
+
 function MatchesPage() {
   const navigate = useNavigate();
   const [answers, setAnswers] = useState<QuizAnswers>({});
@@ -102,9 +156,7 @@ function MatchesPage() {
 
         <ol className="mt-6 flex flex-col gap-3">
           {topJobs.length === 0 ? (
-            <li className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 text-[13px] text-[color:var(--color-text-muted)]">
-              Finding your best matches…
-            </li>
+            <MatchesSearching />
           ) : (
             topJobs.map((j) => <JobCard key={j.id} job={j} />)
           )}
