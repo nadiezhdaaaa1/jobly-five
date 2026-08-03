@@ -955,7 +955,7 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const { consents, prefs, loading, error, setConsent, setPreference } = useNotificationSettings();
+  const { consents, prefs, loading, error, setConsent, setPreference, reload } = useNotificationSettings();
   const freq = prefs.digest_frequency;
   type Row =
     | { kind: "consent"; key: ConsentKey; label: string; caption?: string }
@@ -994,8 +994,11 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         Choose what lands in your inbox. We only email what's useful — no spam.
       </p>
       {error ? (
-        <div className="mb-4 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
-          {error}
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
+          <span>{error}</span>
+          <button type="button" onClick={() => void reload()} className="shrink-0 underline">
+            Retry
+          </button>
         </div>
       ) : null}
       <div>
