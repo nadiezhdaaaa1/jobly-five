@@ -716,8 +716,8 @@ export type Database = {
     Functions: {
       can_send: {
         Args: {
-          _channel: Database["public"]["Enums"]["consent_channel"]
-          _user_id: string
+          p_channel: Database["public"]["Enums"]["consent_channel"]
+          p_email: string
         }
         Returns: boolean
       }
