@@ -1386,7 +1386,18 @@ function JobsScreen() {
               })()}
             </h1>
             <p className="mt-1 text-[14px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-              Your latest digest arrived <span className="font-semibold text-[color:var(--color-text-secondary)]">Today at 9:02</span>
+              {digestLoading ? (
+                <span className="inline-block h-[14px] w-[220px] animate-pulse rounded-[4px] bg-[color:var(--color-border)] align-middle" aria-hidden />
+              ) : digestAt ? (
+                <>
+                  Your latest digest arrived{" "}
+                  <span className="font-semibold text-[color:var(--color-text-secondary)]">
+                    {formatDigestArrival(digestAt).replace("Your latest digest arrived ", "")}
+                  </span>
+                </>
+              ) : (
+                formatDigestArrival(null)
+              )}
             </p>
 
             <div className="mt-6 flex flex-col gap-2">
