@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 // ---------- Types ----------
 
@@ -248,6 +249,7 @@ function emit() {
   version++;
   persist();
   listeners.forEach((l) => l());
+  scheduleSync();
 }
 
 export function getColumns(): BoardColumn[] {
