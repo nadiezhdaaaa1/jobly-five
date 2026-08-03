@@ -16,6 +16,7 @@ import {
   IconArrowUpRight,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import emptyStateAsset from "@/assets/empty-state.png.asset.json";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
@@ -813,6 +814,31 @@ function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 }
 
 function JobRowSkeleton() {
+  return <JobRowSkeletonInner />;
+}
+
+function EmptyMatchesState() {
+  return (
+    <div className="w-full rounded-[16px] bg-[color:var(--color-surface-2)] p-2">
+      <div className="flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-10">
+        <img
+          src={emptyStateAsset.url}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none h-12 w-12 shrink-0 object-cover opacity-50"
+        />
+        <p
+          className="px-4 text-center text-[14px] leading-[20px] text-[color:var(--color-text-muted)] md:px-10"
+          style={{ fontWeight: 300 }}
+        >
+          No matches for your current filters
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function JobRowSkeletonInner() {
   return (
     <div className="rounded-[12px] bg-[#F1F3F3] p-1" aria-hidden>
       <div className="rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]">
@@ -1361,9 +1387,7 @@ function JobsScreen() {
                   ))}
                 </div>
               ) : shown.length === 0 ? (
-                <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-8 text-center text-[13px] text-[color:var(--color-text-muted)]">
-                  No matches for your current filters
-                </div>
+                <EmptyMatchesState />
               ) : shown.map((j) => (
                 <div key={j.id} className="animate-fade-in">
                   <JobRowCard job={j} onOpen={() => setOpenJob(j)} />
