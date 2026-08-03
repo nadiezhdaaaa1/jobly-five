@@ -385,7 +385,7 @@ function QuizPage() {
     for (const k of STEP_ORDER) if (!completed[k]) { next = k; break; }
     setCurrent(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, resumeOffer, answers]);
+  }, [hydrated, resumeOffer]);
 
   const activeStep = editing ?? current;
 
@@ -499,7 +499,73 @@ function QuizPage() {
           </p>
         </div>
 
-        <ol className="flex flex-col gap-3">
+        {resumeOffer ? (
+          <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">
+              Pick up where you left off?
+            </h2>
+            <p className="body-small mt-1 text-[color:var(--color-text-secondary)]">
+              We saved your answers from your last visit.
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={acceptResume}
+                className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-green)] px-4 text-[color:var(--color-green-foreground)]"
+              >
+                Continue
+              </button>
+              <button
+                type="button"
+                onClick={() => void startFresh()}
+                className="button-small inline-flex h-10 items-center rounded-[4px] border border-[color:var(--color-border-strong)] px-4 text-[color:var(--color-foreground)]"
+              >
+                Start fresh
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {!resumeOffer && completedKeys.length > 0 ? (
+          <div className="mb-3 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setConfirmStartOver(true)}
+              className="text-[13px] text-[color:var(--color-text-muted)] underline-offset-2 hover:underline"
+            >
+              Start over
+            </button>
+          </div>
+        ) : null}
+
+        {confirmStartOver ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-[400px] rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+              <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Start over?</h2>
+              <p className="body-small mt-1 text-[color:var(--color-text-secondary)]">
+                Your saved answers will be discarded.
+              </p>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmStartOver(false)}
+                  className="button-small inline-flex h-10 items-center rounded-[4px] border border-[color:var(--color-border-strong)] px-4 text-[color:var(--color-foreground)]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void startFresh()}
+                  className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-red,#C0392B)] px-4 text-white"
+                >
+                  Start over
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        <ol className={cn("flex flex-col gap-3", resumeOffer && "hidden")}>
           {STEP_ORDER.map((key) => {
             // Hide skill sections whose union flag is 'na', stack for roles with
             // a `stackNote`, and axes if none of scope/segment/motion apply.
