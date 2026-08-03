@@ -511,14 +511,14 @@ function QuizPage() {
               <button
                 type="button"
                 onClick={acceptResume}
-                className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-green)] px-4 text-[color:var(--color-green-foreground)]"
+                className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Continue
               </button>
               <button
                 type="button"
                 onClick={() => void startFresh()}
-                className="button-small inline-flex h-10 items-center rounded-[4px] border border-[color:var(--color-border-strong)] px-4 text-[color:var(--color-foreground)]"
+                className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Start fresh
               </button>
@@ -549,14 +549,14 @@ function QuizPage() {
                 <button
                   type="button"
                   onClick={() => setConfirmStartOver(false)}
-                  className="button-small inline-flex h-10 items-center rounded-[4px] border border-[color:var(--color-border-strong)] px-4 text-[color:var(--color-foreground)]"
+                  className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => void startFresh()}
-                  className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-danger)] px-4 text-[color:var(--color-surface-1)]"
+                  className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-danger)] px-5 text-[color:var(--color-surface-1)] transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
                 >
                   Start over
                 </button>
