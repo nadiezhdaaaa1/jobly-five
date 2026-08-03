@@ -394,6 +394,16 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
 
 function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
   const plan = usePlan();
+  const { loading: entLoading } = useEntitlements();
+  if (entLoading) {
+    return (
+      <div
+        className="shrink-0 animate-pulse rounded-full"
+        style={{ width: size, height: size, background: "var(--color-surface-2)" }}
+        aria-label="Loading match score"
+      />
+    );
+  }
   if (!isPro(plan)) {
     return (
       <div
