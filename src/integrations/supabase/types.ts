@@ -251,6 +251,7 @@ export type Database = {
           company_domain: string | null
           company_sector: string | null
           description: string | null
+          english_level: string | null
           group_name: string
           hard_skills: Json
           id: string
@@ -274,6 +275,7 @@ export type Database = {
           company_domain?: string | null
           company_sector?: string | null
           description?: string | null
+          english_level?: string | null
           group_name: string
           hard_skills?: Json
           id: string
@@ -297,6 +299,7 @@ export type Database = {
           company_domain?: string | null
           company_sector?: string | null
           description?: string | null
+          english_level?: string | null
           group_name?: string
           hard_skills?: Json
           id?: string
