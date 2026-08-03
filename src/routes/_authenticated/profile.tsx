@@ -41,12 +41,23 @@ import {
   updateEducation,
   updateExperience,
   useResumeState,
-  addResumeFile,
-  deleteResumeFile,
-  setPrimaryResumeFile,
   type ResumeEducation,
   type ResumeExperience,
 } from "@/lib/resume-store";
+import {
+  RESUME_CONSENT_WORDING,
+  UPLOAD_ERROR_COPY,
+  dismissLegacyResumeNotice,
+  hasResumeConsent,
+  legacyResumeNoticePending,
+  makeResumePrimary,
+  openResumeDownload,
+  removeResume,
+  uploadResume,
+  useResumeDocuments,
+  type ResumeDocument,
+  type UploadErrorCode,
+} from "@/lib/resume-documents-store";
 import { usePlan, isPro } from "@/lib/plan-store";
 import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
