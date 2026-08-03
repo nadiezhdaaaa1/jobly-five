@@ -44,6 +44,36 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_records: {
+        Row: {
+          channel: Database["public"]["Enums"]["consent_channel"]
+          created_at: string
+          granted: boolean
+          id: string
+          source: string
+          user_id: string
+          wording: string
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["consent_channel"]
+          created_at?: string
+          granted: boolean
+          id?: string
+          source: string
+          user_id: string
+          wording: string
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["consent_channel"]
+          created_at?: string
+          granted?: boolean
+          id?: string
+          source?: string
+          user_id?: string
+          wording?: string
+        }
+        Relationships: []
+      }
       job_sources: {
         Row: {
           ats: string
@@ -191,6 +221,54 @@ export type Database = {
           email?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      resume_documents: {
+        Row: {
+          checksum_sha256: string | null
+          created_at: string
+          deleted_at: string | null
+          file_path: string
+          id: string
+          is_primary: boolean
+          mime_type: string
+          original_filename: string
+          parse_status: string
+          parsed_at: string | null
+          size_bytes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checksum_sha256?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          file_path: string
+          id?: string
+          is_primary?: boolean
+          mime_type: string
+          original_filename: string
+          parse_status?: string
+          parsed_at?: string | null
+          size_bytes: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checksum_sha256?: string | null
+          created_at?: string
+          deleted_at?: string | null
+          file_path?: string
+          id?: string
+          is_primary?: boolean
+          mime_type?: string
+          original_filename?: string
+          parse_status?: string
+          parsed_at?: string | null
+          size_bytes?: number
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -365,6 +443,11 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      consent_channel:
+        | "resume_storage"
+        | "daily_digest"
+        | "product_updates"
+        | "marketing"
       job_status:
         | "default"
         | "saved"
@@ -512,6 +595,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      consent_channel: [
+        "resume_storage",
+        "daily_digest",
+        "product_updates",
+        "marketing",
+      ],
       job_status: [
         "default",
         "saved",

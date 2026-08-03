@@ -5,7 +5,7 @@ import JSZip from "jszip";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";
-import { useResumeState } from "@/lib/resume-store";
+import { openResumeSignedUrl, useResumeDocuments } from "@/lib/resume-documents-store";
 import { useProfileExtras } from "@/lib/profile-store";
 import { logFollowUp } from "@/lib/tracker-store";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,12 +23,12 @@ export function ApplyModal({
   onClose: () => void;
   onApplied?: (r: ApplyResult) => void;
 }) {
-  const resume = useResumeState();
   const extras = useProfileExtras();
-  const resumes = resume.files;
+  const { docs: resumes } = useResumeDocuments();
   const letters = extras.coverLetters;
 
-  const defaultResumeId = resume.primaryId ?? resumes[0]?.id ?? "";
+  const primaryResumeId = resumes.find((r) => r.isPrimary)?.id ?? null;
+  const defaultResumeId = primaryResumeId ?? resumes[0]?.id ?? "";
   const defaultLetterId = extras.defaultCoverLetterId ?? letters[0]?.id ?? "";
 
   const [resumeId, setResumeId] = useState(defaultResumeId);
@@ -61,7 +61,7 @@ export function ApplyModal({
 
   function commitApplied() {
     const result: ApplyResult = {
-      resumeName: selectedResume ? `${selectedResume.name}.${selectedResume.ext}` : undefined,
+      resumeName: selectedResume?.originalFilename,
       coverLetterName: selectedLetter?.name,
     };
     markApplied(job.id, result);
@@ -84,10 +84,12 @@ export function ApplyModal({
     const zip = new JSZip();
     const dir = zip.folder(folder)!;
     if (selectedResume) {
-      dir.file(
-        `${selectedResume.name}.${selectedResume.ext}`,
-        `(Demo placeholder for resume "${selectedResume.name}")`,
-      );
+      // Fetched through a short-lived signed URL — the bytes live in private storage.
+      const url = await openResumeSignedUrl(selectedResume.id);
+      if (url) {
+        const res = await fetch(url);
+        dir.file(selectedResume.originalFilename, await res.blob());
+      }
     }
     if (selectedLetter) {
       const text = selectedLetter.body.replace(/<[^>]+>/g, "\n").replace(/\n{2,}/g, "\n\n").trim();
@@ -161,8 +163,8 @@ export function ApplyModal({
             >
               {resumes.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.name}.{r.ext}
-                  {r.id === resume.primaryId ? " · Default" : ""}
+                  {r.originalFilename}
+                  {r.isPrimary ? " · Default" : ""}
                 </option>
               ))}
             </select>

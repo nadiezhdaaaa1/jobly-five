@@ -34,6 +34,7 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated/resume'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as ApiPublicHooksSweepResumeOrphansRouteImport } from './routes/api/public/hooks/sweep-resume-orphans'
 import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes/api/public/hooks/purge-deleted-accounts'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -160,6 +161,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicHooksSweepResumeOrphansRoute =
+  ApiPublicHooksSweepResumeOrphansRouteImport.update({
+    id: '/api/public/hooks/sweep-resume-orphans',
+    path: '/api/public/hooks/sweep-resume-orphans',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksPurgeDeletedAccountsRoute =
   ApiPublicHooksPurgeDeletedAccountsRouteImport.update({
     id: '/api/public/hooks/purge-deleted-accounts',
@@ -193,6 +200,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -220,6 +228,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -249,6 +258,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  '/api/public/hooks/sweep-resume-orphans': typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/sweep-resume-orphans'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/sweep-resume-orphans'
   id:
     | '__root__'
     | '/'
@@ -333,6 +345,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/api/public/hooks/purge-deleted-accounts'
+    | '/api/public/hooks/sweep-resume-orphans'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -357,6 +370,7 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
+  ApiPublicHooksSweepResumeOrphansRoute: typeof ApiPublicHooksSweepResumeOrphansRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -536,6 +550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/hooks/sweep-resume-orphans': {
+      id: '/api/public/hooks/sweep-resume-orphans'
+      path: '/api/public/hooks/sweep-resume-orphans'
+      fullPath: '/api/public/hooks/sweep-resume-orphans'
+      preLoaderRoute: typeof ApiPublicHooksSweepResumeOrphansRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/purge-deleted-accounts': {
       id: '/api/public/hooks/purge-deleted-accounts'
       path: '/api/public/hooks/purge-deleted-accounts'
@@ -588,6 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
     ApiPublicHooksPurgeDeletedAccountsRoute,
+  ApiPublicHooksSweepResumeOrphansRoute: ApiPublicHooksSweepResumeOrphansRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
