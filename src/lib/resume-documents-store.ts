@@ -173,3 +173,33 @@ export async function makeResumePrimary(resumeId: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * One-time notice for testers whose old browser-only "library" is gone.
+ * Returns true once if a legacy `jobly.resume` blob existed; the flag then
+ * survives until dismissed.
+ */
+export function legacyResumeNoticePending(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const legacy =
+      window.sessionStorage.getItem("jobly.resume") ?? window.localStorage.getItem("jobly.resume");
+    if (legacy) {
+      window.sessionStorage.removeItem("jobly.resume");
+      window.localStorage.removeItem("jobly.resume");
+      window.localStorage.setItem("jobly.resumeNotice", "1");
+    }
+    return window.localStorage.getItem("jobly.resumeNotice") === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function dismissLegacyResumeNotice() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem("jobly.resumeNotice");
+  } catch {
+    /* ignore */
+  }
+}
