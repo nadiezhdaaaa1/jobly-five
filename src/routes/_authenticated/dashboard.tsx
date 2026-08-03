@@ -27,6 +27,7 @@ import { getDbJobById } from "@/lib/jobs-store";
 import { rolesOverlap } from "@/lib/match";
 import type { Job } from "@/lib/jobs-data";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
