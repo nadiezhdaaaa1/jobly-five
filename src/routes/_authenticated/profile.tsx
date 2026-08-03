@@ -1612,9 +1612,7 @@ function LetterRow({
             </IconTooltip>
           )}
         </div>
-        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
-          {busy ? "Preparing…" : meta}
-        </div>
+        <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">{meta}</div>
       </div>
       <div className="flex items-center gap-1 lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100 lg:focus-within:opacity-100">
         {onEdit && <RowIconBtn onClick={onEdit} label="Edit"><Pencil size={16} strokeWidth={1.8} /></RowIconBtn>}
