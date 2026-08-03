@@ -556,7 +556,7 @@ function QuizPage() {
                 <button
                   type="button"
                   onClick={() => void startFresh()}
-                  className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-red,#C0392B)] px-4 text-white"
+                  className="button-small inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-danger)] px-4 text-[color:var(--color-surface-1)]"
                 >
                   Start over
                 </button>
