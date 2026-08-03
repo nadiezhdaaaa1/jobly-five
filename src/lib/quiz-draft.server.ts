@@ -1,5 +1,6 @@
 // Server-only draft logic. Shared by the quiz server functions and the
 // sendBeacon HTTP route so both paths behave identically.
+import type { Json } from "@/integrations/supabase/types";
 import type { QuizAnswers } from "./quiz-store";
 
 export const QUIZ_SCHEMA_VERSION = 1;
@@ -110,7 +111,7 @@ export async function saveDraft(input: SaveDraftInput): Promise<{ ok: boolean }>
   const status = existing?.status === "claimed" ? "claimed" : email ? "completed" : "in_progress";
 
   const row = {
-    answers: merged,
+    answers: merged as Json,
     completed_steps: completed.length ? completed : (existing?.completed_steps ?? []),
     current_step: typeof input.current_step === "string" ? input.current_step : null,
     email,
