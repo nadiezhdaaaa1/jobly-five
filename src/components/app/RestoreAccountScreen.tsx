@@ -1,7 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { DELETION_COPY, formatDeletionDate } from "@/config/account";
-import { restoreAccount, useAccount } from "@/lib/account-store";
+import { restoreAccountServer, useAccount } from "@/lib/account-store";
+import { clearLocalUserData } from "@/lib/local-data";
 import { supabase } from "@/integrations/supabase/client";
 
 /** Full-width screen shown when a signed-in account is pending deletion. */
@@ -24,8 +25,13 @@ export function RestoreAccountScreen() {
         </p>
         <button
           type="button"
-          onClick={() => {
-            restoreAccount();
+          onClick={async () => {
+            try {
+              await restoreAccountServer();
+            } catch {
+              toast.error("Could not restore your account. Try again.");
+              return;
+            }
             toast.success(DELETION_COPY.restoredToast);
             void navigate({ to: "/dashboard" });
           }}
@@ -36,6 +42,7 @@ export function RestoreAccountScreen() {
         <button
           type="button"
           onClick={async () => {
+            clearLocalUserData();
             await supabase.auth.signOut();
             window.location.href = "/";
           }}
