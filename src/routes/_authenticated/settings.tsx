@@ -5,6 +5,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useEntitlements } from "@/lib/entitlements-provider";
 import {
   usePlan,
   setPlan,
@@ -123,6 +124,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     if (reason) recordCancelFeedback(reason, reason === "Other" ? reasonOther : undefined);
   }
   const sub = useSubscription();
+  const { loading: entLoading } = useEntitlements();
   const periodEndLabel = new Date(sub.currentPeriodEnd).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -135,6 +137,18 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   const scheduledLine = `Pro until ${periodEndLabel} · then Free`;
   const pausedLine = `Paused until ${periodEndLabel} · no charges while paused`;
   const freeSummary = "Weekly digest · match scores · basic tracker";
+
+  if (entLoading) {
+    return (
+      <Card title="Plan">
+        <div className="animate-pulse space-y-3" aria-label="Loading your plan">
+          <div className="h-5 w-32 rounded-[4px] bg-[color:var(--color-surface-2)]" />
+          <div className="h-4 w-64 rounded-[4px] bg-[color:var(--color-surface-2)]" />
+          <div className="h-9 w-40 rounded-[4px] bg-[color:var(--color-surface-2)]" />
+        </div>
+      </Card>
+    );
+  }
 
 
   return (
