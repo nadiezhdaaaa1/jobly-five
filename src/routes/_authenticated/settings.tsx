@@ -948,44 +948,35 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const [freq, setFreq] = useState<"daily" | "weekly">(pro ? "daily" : "weekly");
-  useEffect(() => { if (!pro && freq !== "weekly") setFreq("weekly"); }, [pro, freq]);
-  const [toggles, setToggles] = useState<Record<string, boolean>>({
-    digest_ready: true,
-    hi_alerts: true,
-    weekly_report: true,
-    tuned: true,
-    interview: true,
-    followup: true,
-    stale: true,
-    gmail: true,
-    product: false,
-    reengage: true,
-  });
-  const groups: { label: string; rows: { key: string; label: string; caption?: string }[] }[] = [
+  const { consents, prefs, loading, error, setConsent, setPreference } = useNotificationSettings();
+  const freq = prefs.digest_frequency;
+  type Row =
+    | { kind: "consent"; key: ConsentKey; label: string; caption?: string }
+    | { kind: "pref"; key: PreferenceKey; label: string; caption?: string };
+  const groups: { label: string; rows: Row[] }[] = [
     {
       label: "Digest and matches",
       rows: [
-        { key: "digest_ready", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
-        { key: "hi_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
-        { key: "weekly_report", label: "Weekly search report", caption: "Your week in numbers — matches, applied, replies." },
-        { key: "tuned", label: `"We tuned your digest"`, caption: "When your feedback changes what you see." },
+        { kind: "consent", key: "daily_digest", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
+        { kind: "consent", key: "high_match_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
+        { kind: "consent", key: "weekly_report", label: "Weekly search report", caption: "Your week in numbers — matches, applied, replies." },
+        { kind: "pref", key: "pref_digest_tuned", label: `"We tuned your digest"`, caption: "When your feedback changes what you see." },
       ],
     },
     {
       label: "Applications and tracker",
       rows: [
-        { key: "interview", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
-        { key: "followup", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
-        { key: "stale", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
-        { key: "gmail", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
+        { kind: "pref", key: "pref_interview_reminders", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
+        { kind: "pref", key: "pref_followup_nudges", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
+        { kind: "pref", key: "pref_stale_nudges", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
+        { kind: "pref", key: "pref_gmail_status", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
       ],
     },
     {
       label: "Account and lifecycle",
       rows: [
-        { key: "product", label: "Product updates and tips" },
-        { key: "reengage", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
+        { kind: "consent", key: "product_updates", label: "Product updates and tips" },
+        { kind: "consent", key: "reactivation", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
       ],
     },
   ];
@@ -995,18 +986,23 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
         Choose what lands in your inbox. We only email what's useful — no spam.
       </p>
+      {error ? (
+        <div className="mb-4 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
+          {error}
+        </div>
+      ) : null}
       <div>
         <h6 className="text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }}>Digest frequency</h6>
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
-            disabled={!pro}
-            onClick={() => pro && setFreq("daily")}
+            disabled={!pro || loading}
+            onClick={() => pro && void setPreference("digest_frequency", "daily")}
             className={`inline-flex h-10 items-center gap-1.5 rounded-[4px] border px-4 text-[14px] transition-colors ${
               freq === "daily"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            } ${!pro ? "cursor-not-allowed opacity-60" : ""}`}
+            } ${!pro || loading ? "cursor-not-allowed opacity-60" : ""}`}
           >
             Daily
             {!pro ? (
@@ -1015,18 +1011,60 @@ function NotificationsCard({ plan }: { plan: Plan }) {
           </button>
           <button
             type="button"
-            onClick={() => setFreq("weekly")}
+            disabled={loading}
+            onClick={() => void setPreference("digest_frequency", "weekly")}
             className={`inline-flex h-10 items-center rounded-[4px] border px-4 text-[14px] transition-colors ${
               freq === "weekly"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-            }`}
+            } ${loading ? "cursor-not-allowed opacity-60" : ""}`}
           >
             Weekly
           </button>
         </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Quiet hours from</span>
+            <select
+              disabled={loading}
+              value={prefs.quiet_hours_start}
+              onChange={(e) => void setPreference("quiet_hours_start", Number(e.target.value))}
+              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            >
+              {HOUR_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>to</span>
+            <select
+              disabled={loading}
+              value={prefs.quiet_hours_end}
+              onChange={(e) => void setPreference("quiet_hours_end", Number(e.target.value))}
+              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            >
+              {HOUR_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="flex min-w-0 flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
+            <span>Timezone</span>
+            <select
+              disabled={loading}
+              value={prefs.timezone}
+              onChange={(e) => void setPreference("timezone", e.target.value)}
+              className="h-10 w-[220px] max-w-full rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            >
+              {timezoneOptions(prefs.timezone).map((tz) => (
+                <option key={tz} value={tz}>{tz.replace(/_/g, " ")}</option>
+              ))}
+            </select>
+          </label>
+        </div>
         <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-          Quiet hours 9pm–7am · pause anytime under "Found a job?"
+          We hold emails during quiet hours · pause anytime under "Found a job?"
         </p>
       </div>
 
@@ -1045,11 +1083,19 @@ function NotificationsCard({ plan }: { plan: Plan }) {
                       <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
                     ) : null}
                   </div>
-                  <Toggle
-                    on={!!toggles[r.key]}
-                    onChange={(v) => setToggles((t) => ({ ...t, [r.key]: v }))}
-                    label={typeof r.label === "string" ? r.label : r.key}
-                  />
+                  {loading ? (
+                    <div className="skeleton h-6 w-11 shrink-0 rounded-full" aria-hidden />
+                  ) : (
+                    <Toggle
+                      on={r.kind === "consent" ? consents[r.key] : prefs[r.key]}
+                      onChange={(v) =>
+                        r.kind === "consent"
+                          ? void setConsent(r.key, v)
+                          : void setPreference(r.key, v)
+                      }
+                      label={r.label}
+                    />
+                  )}
                 </div>
               ))}
             </div>
