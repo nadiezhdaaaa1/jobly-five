@@ -16,6 +16,7 @@ import {
   IconArrowUpRight,
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
+import emptyStateAsset from "@/assets/empty-state.png.asset.json";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { JobDrawer } from "@/components/app/JobDrawer";
