@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   loadQuiz,
   saveQuiz,
+  takeLegacyQuiz,
   type QuizAnswers,
   type ProficiencyLevel,
   type WorkMode,
@@ -28,6 +29,14 @@ import {
   PROFICIENCY_LEVELS,
   RELO_TRAVEL_FIELDS,
 } from "@/lib/quiz-data";
+import {
+  abandonDraft,
+  beaconDraftSave,
+  ensureDraftToken,
+  fetchDraft,
+  queueDraftSave,
+  type DraftSnapshot,
+} from "@/lib/quiz-draft-store";
 import {
   getGroups,
   getRolesByGroup,
@@ -133,15 +142,57 @@ function QuizPage() {
   const [current, setCurrent] = useState<StepKey>("field");
   const [editing, setEditing] = useState<StepKey | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Draft found on the server; nothing is restored until the user chooses.
+  const [resumeOffer, setResumeOffer] = useState<DraftSnapshot | null>(null);
+  const [confirmStartOver, setConfirmStartOver] = useState(false);
+  const stepsRef = useRef<{ completed: StepKey[]; current: StepKey }>({ completed: [], current: "field" });
 
   useEffect(() => {
-    setAnswers(loadQuiz());
-    setHydrated(true);
+    let alive = true;
+    ensureDraftToken();
+    void (async () => {
+      // Legacy sessionStorage answers (tab still open from a previous build)
+      // move to the server draft once, then disappear.
+      const legacy = takeLegacyQuiz();
+      if (legacy) queueDraftSave({ answers: legacy, completedSteps: [], currentStep: null });
+      const memory = loadQuiz();
+      if (memory && Object.keys(memory).length) {
+        if (!alive) return;
+        setAnswers(memory);
+        setHydrated(true);
+        return;
+      }
+      const draft = legacy ? null : await fetchDraft();
+      if (!alive) return;
+      if (draft && draft.completedSteps.length) {
+        setResumeOffer(draft);
+      } else if (legacy) {
+        setAnswers(legacy);
+      }
+      setHydrated(true);
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   useEffect(() => {
     if (hydrated) saveQuiz(answers);
   }, [answers, hydrated]);
+
+  // Catches the in-progress step when the tab is closed mid-answer.
+  useEffect(() => {
+    function onHidden() {
+      if (document.visibilityState !== "hidden") return;
+      beaconDraftSave({
+        answers,
+        completedSteps: stepsRef.current.completed,
+        currentStep: stepsRef.current.current,
+      });
+    }
+    document.addEventListener("visibilitychange", onHidden);
+    return () => document.removeEventListener("visibilitychange", onHidden);
+  }, [answers]);
 
   const rolesList = answers.roles ?? (answers.role ? [answers.role] : []);
   const roleDefs = useMemo(() => taxRoleDefs(rolesList), [rolesList]);
@@ -287,6 +338,16 @@ function QuizPage() {
     email: !!answers.email,
   };
 
+  const completedKeys = STEP_ORDER.filter((k) => completed[k]);
+  stepsRef.current = { completed: completedKeys, current: editing ?? current };
+
+  /** Background write on explicit Continue / re-confirm. Never blocks the UI. */
+  function persistDraft(patch: Partial<QuizAnswers>, from: StepKey) {
+    const merged = { ...answers, ...patch };
+    const done = Array.from(new Set([...completedKeys, from]));
+    queueDraftSave({ answers: merged, completedSteps: done, currentStep: from });
+  }
+
   const isSkillStepHidden = (k: SkillSectionKey): boolean => {
     if (sectionFlag[k] === "na") return true;
     if (k === "stack" && stackPoolSuppressed) return true;
@@ -301,17 +362,35 @@ function QuizPage() {
     return false;
   };
 
+  function acceptResume() {
+    const draft = resumeOffer;
+    if (!draft) return;
+    setResumeOffer(null);
+    setAnswers(draft.answers ?? {});
+  }
+
+  async function startFresh() {
+    setConfirmStartOver(false);
+    setResumeOffer(null);
+    setAnswers({});
+    setCurrent("field");
+    setEditing(null);
+    await abandonDraft();
+    ensureDraftToken();
+  }
+
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || resumeOffer) return;
     let next: StepKey = "email";
     for (const k of STEP_ORDER) if (!completed[k]) { next = k; break; }
     setCurrent(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
+  }, [hydrated, resumeOffer, answers]);
 
   const activeStep = editing ?? current;
 
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
+    persistDraft(patch, nextFrom);
     setAnswers((a) => {
       const merged = { ...a, ...patch };
       // Mark optional skill sections as visited when the user continues past them.
