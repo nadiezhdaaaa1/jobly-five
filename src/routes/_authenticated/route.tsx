@@ -7,6 +7,26 @@ import { hydrateAccountFromDb, isPastGrace, useAccount } from "@/lib/account-sto
 import { clearLocalUserData } from "@/lib/local-data";
 import { RestoreAccountScreen } from "@/components/app/RestoreAccountScreen";
 import { EntitlementProvider } from "@/lib/entitlements-provider";
+import { claimQuizDraft } from "@/lib/quiz-draft.functions";
+import { clearDraftToken, getDraftToken } from "@/lib/quiz-draft-store";
+import { hydrateQuizFromProfile } from "@/lib/quiz-store";
+
+/**
+ * Claims the anonymous quiz draft for this account and copies the answers onto
+ * the profile, then hydrates the in-memory preferences. Idempotent; a failure
+ * leaves preferences empty rather than blocking the app.
+ */
+async function claimAndHydrateQuiz() {
+  const token = getDraftToken();
+  try {
+    // No token means the fallback path: a completed draft matching this email.
+    const res = await claimQuizDraft({ data: { token } });
+    if (res.ok && token) clearDraftToken();
+  } catch {
+    // ignore
+  }
+  await hydrateQuizFromProfile();
+}
 
 function AuthedShell({ userId }: { userId: string }) {
   const account = useAccount();
@@ -14,6 +34,7 @@ function AuthedShell({ userId }: { userId: string }) {
     void loadJobs();
     void hydrateTrackerFromDb(userId);
     void hydrateAccountFromDb();
+    void claimAndHydrateQuiz();
     return () => {
       // Clear tracker if a different user signs in on the same tab.
       resetTrackerForSignOut();
