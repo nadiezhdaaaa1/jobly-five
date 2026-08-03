@@ -6,6 +6,7 @@ import { loadJobs } from "@/lib/jobs-store";
 import { hydrateAccountFromDb, isPastGrace, useAccount } from "@/lib/account-store";
 import { clearLocalUserData } from "@/lib/local-data";
 import { RestoreAccountScreen } from "@/components/app/RestoreAccountScreen";
+import { EntitlementProvider } from "@/lib/entitlements-provider";
 
 function AuthedShell({ userId }: { userId: string }) {
   const account = useAccount();
@@ -44,6 +45,10 @@ export const Route = createFileRoute("/_authenticated")({
   },
   component: function AuthedRoute() {
     const { user } = Route.useRouteContext();
-    return <AuthedShell userId={user.id} />;
+    return (
+      <EntitlementProvider>
+        <AuthedShell userId={user.id} />
+      </EntitlementProvider>
+    );
   },
 });
