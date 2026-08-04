@@ -301,7 +301,13 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {cancelStep === 2 && plan !== "paused" ? (
         <Modal onClose={closeCancel} title="Cancel your Pro subscription?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
+            {periodEndLabel ? (
+              <>
+                You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
+              </>
+            ) : (
+              <>You'll keep Pro until the end of your current period, then move to Free. No more charges. You can resume anytime.</>
+            )}
           </p>
           <CancelReasonPicker
             reason={reason}
@@ -320,7 +326,16 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               disabled={!reasonReady}
-              onClick={() => { saveReason(); scheduleCancelAtPeriodEnd(); closeCancel(); onFlash(`Pro canceled — access until ${periodEndLabel}.`); }}
+              onClick={() => {
+                saveReason();
+                scheduleCancelAtPeriodEnd();
+                closeCancel();
+                onFlash(
+                  periodEndLabel
+                    ? `Pro canceled — access until ${periodEndLabel}.`
+                    : "Pro canceled — access until the end of your current period.",
+                );
+              }}
               className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
               style={{ borderColor: "#D00D01" }}
             >
