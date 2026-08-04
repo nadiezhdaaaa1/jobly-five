@@ -917,7 +917,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 onCancel={() => setPendingHide(null)}
                 onConfirm={() => {
                   const { kind, reason } = pendingHide;
-                  if (saved) setStatus(job.id, "default");
+                  if (saved) removeFromTracker(job.id);
                   setJobInteraction(job.id, kind, reason);
                   setPendingHide(null);
                   toast(kind === "reported" ? "Job reported and hidden" : "Job hidden", {

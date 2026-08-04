@@ -912,7 +912,8 @@ function TrackerScreen() {
     if (rec.archived) {
       if (!showArchived) continue;
       const col = resolveColumnForCard(rec.columnId, raw);
-      if (col) buckets[col.id].push({ job: j, rec });
+      // Archived cards never appear in a Saved column.
+      if (col && col.kind !== "saved") buckets[col.id].push({ job: j, rec });
       continue;
     }
     const col = resolveColumnForCard(rec.columnId, raw);

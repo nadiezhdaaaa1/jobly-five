@@ -791,7 +791,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             onConfirm={() => {
               const { kind, reason } = pendingHide;
               // Reporting or disliking a saved job unsaves it first.
-              if (saved) setStatus(job.id, "default");
+              if (saved) removeFromTracker(job.id);
               if (reason === "Don't recommend the company") blockCompany(job.company);
               setJobInteraction(job.id, kind, reason);
               setPendingHide(null);
