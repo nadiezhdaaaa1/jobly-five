@@ -2465,12 +2465,12 @@ function ApplyToggle({ on, onChange, label }: { on: boolean; onChange: (v: boole
       aria-checked={on}
       aria-label={label}
       onClick={() => onChange(!on)}
-      className="relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+      className="relative mt-0.5 inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors"
       style={{ background: on ? "#0E735A" : "#E3E7E8" }}
     >
       <span
-        className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
-        style={{ transform: `translateX(${on ? 18 : 2}px)` }}
+        className="inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform"
+        style={{ transform: `translateX(${on ? 22 : 2}px)` }}
       />
     </button>
   );
