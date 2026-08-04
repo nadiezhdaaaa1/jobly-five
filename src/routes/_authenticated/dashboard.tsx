@@ -746,7 +746,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               aria-pressed={saved}
               onClick={(e) => {
                 e.stopPropagation();
-                setStatus(job.id, saved ? "default" : "saved");
+                if (saved) removeFromTracker(job.id);
+                else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
               className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
