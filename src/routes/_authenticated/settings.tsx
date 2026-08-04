@@ -945,37 +945,13 @@ function BillingCard({ plan }: { plan: Plan }) {
       </Card>
     );
   }
-  const invoices = [
-    { date: "Jul 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-    { date: "Jun 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-    { date: "May 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-  ];
   return (
     <Card title="Billing and payment">
-      <div className="flex flex-col gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-4">
-        <div className="flex h-8 w-12 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] text-[11px] font-semibold text-[color:var(--color-text-muted)]">
-          CARD
-        </div>
-        <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
-          •••• 4242 · expires 08/27
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">Soon</span>
-          <span className="text-[13px] text-[color:var(--color-text-muted)]">Change</span>
-        </div>
-      </div>
-      <ul className="mt-4 divide-y">
-        {invoices.map((r) => (
-          <li key={r.date} className="flex items-center justify-between py-3 text-[13px]">
-            <div className="text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              {r.date} · {r.label}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[color:var(--color-foreground)]">{r.amount}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {/* No provider is wired yet, so there is no payment method and no invoice
+          history to read. Nothing here is invented. */}
+      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        No invoices yet — payments aren't live in this preview.
+      </p>
     </Card>
   );
 }
