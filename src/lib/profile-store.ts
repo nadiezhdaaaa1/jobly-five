@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 // ------- Types -------
 
@@ -63,7 +64,8 @@ export type ProfileExtras = {
   applyBlocks: AchievementBlockKey[];
 };
 
-const KEY = "jobly.profile.extras";
+const LEGACY_KEY = "jobly.profile.extras";
+const CACHE = "profile.extras";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -110,33 +112,22 @@ function seed(): ProfileExtras {
   };
 }
 
-function load(): ProfileExtras {
-  if (typeof window === "undefined") return seed();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return seed();
-    const parsed = JSON.parse(raw) as Partial<ProfileExtras>;
-    const base = seed();
-    return {
-      ...base,
-      ...parsed,
-      achievements: { ...base.achievements, ...(parsed.achievements ?? {}) },
-    };
-  } catch {
-    return seed();
-  }
+function merge(partial: Partial<ProfileExtras> | null | undefined): ProfileExtras {
+  const base = seed();
+  if (!partial) return base;
+  return {
+    ...base,
+    ...partial,
+    achievements: { ...base.achievements, ...(partial.achievements ?? {}) },
+  };
 }
 
-let state: ProfileExtras = load();
+// Starts from defaults: the cache is only read once we know the account.
+let state: ProfileExtras = seed();
 const listeners = new Set<() => void>();
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, extrasUserId, state);
 }
 
 function emit() {
