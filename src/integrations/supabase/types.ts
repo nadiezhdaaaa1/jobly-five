@@ -865,6 +865,14 @@ export type Database = {
       ensure_user_provisioned: { Args: never; Returns: undefined }
       get_entitlements: { Args: never; Returns: Json }
       has_pro: { Args: { p_user_id: string }; Returns: boolean }
+      policies_needing_reconsent: {
+        Args: { p_user_id: string }
+        Returns: {
+          change_summary: string
+          document_key: string
+          version: string
+        }[]
+      }
       provision_user: {
         Args: { _email: string; _meta: Json; _user_id: string }
         Returns: undefined
