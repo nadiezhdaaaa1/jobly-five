@@ -724,8 +724,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      ensure_user_provisioned: { Args: never; Returns: undefined }
       get_entitlements: { Args: never; Returns: Json }
       has_pro: { Args: { p_user_id: string }; Returns: boolean }
+      provision_user: {
+        Args: { _email: string; _meta: Json; _user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
