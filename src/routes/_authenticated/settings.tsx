@@ -1381,41 +1381,50 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             )}
           </div>
           <div className="flex shrink-0 justify-end">
-            {hasPassword === null ? null : googleIdentity ? (
-              <IconTooltip
-                label={
-                  canDisconnectGoogle
-                    ? "Disconnect Google"
-                    : "Set a password first so you don't lose access."
-                }
-              >
-                <button
-                  type="button"
-                  disabled={!canDisconnectGoogle}
-                  onClick={() => setGConfirm(true)}
-                  className="text-[13px] text-[color:var(--color-text-muted)] hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
-                >
-                  Disconnect
-                </button>
-              </IconTooltip>
-            ) : (
+            {hasPassword === null || !googleIdentity || !canDisconnectGoogle ? null : (
               <button
                 type="button"
-                onClick={async () => {
-                  const { error } = await supabase.auth.linkIdentity({ provider: "google" });
-                  if (error) onFlash("Couldn't connect Google. Try again.");
+                disabled={identityBusy}
+                onClick={() => {
+                  setIdentityError(null);
+                  setGConfirm(true);
                 }}
-                className="inline-flex h-9 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="text-[13px] text-[color:var(--color-text-muted)] hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
               >
-                Connect
+                {identityBusy ? "Removing…" : "Remove sign-in"}
               </button>
             )}
           </div>
         </div>
         {hasPassword === false && googleIdentity ? (
           <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            Google is your only way to sign in right now.
+            Google is your only way to sign in. Set a password first, then you can remove it.{" "}
+            <button
+              type="button"
+              onClick={() => setSettingPw(true)}
+              className="underline hover:text-[color:var(--color-foreground)]"
+            >
+              Set a password
+            </button>
           </p>
+        ) : null}
+        {googleIdentity ? (
+          <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            Removing this only changes how you sign in to Jobly. To remove Jobly&apos;s access inside your
+            Google account, visit{" "}
+            <a
+              href="https://myaccount.google.com/permissions"
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-[color:var(--color-foreground)]"
+            >
+              Google account permissions
+            </a>
+            .
+          </p>
+        ) : null}
+        {identityError ? (
+          <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{identityError}</p>
         ) : null}
       </div>
 
