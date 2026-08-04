@@ -13,7 +13,6 @@ import { hydrateQuizFromProfile, resetQuizForSignOut } from "@/lib/quiz-store";
 import { hydrateBoardColumnsFromDb, resetBoardColumnsForSignOut } from "@/lib/board-columns-store";
 import { hydrateProfileExtrasFromDb, resetProfileExtrasForSignOut } from "@/lib/profile-store";
 import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resume-store";
-import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 import { hydrateJobInteractionsFromDb, resetJobInteractionsForSignOut } from "@/lib/job-interactions-store";
 import { linkConsentToAccount } from "@/lib/consent.functions";
@@ -65,7 +64,6 @@ function AuthedShell({ userId }: { userId: string }) {
       void hydrateBoardColumnsFromDb(userId);
       void hydrateProfileExtrasFromDb(userId);
       void hydrateWorkHistoryFromDb(userId);
-      void hydrateSavedFiltersFromDb(userId);
       void hydrateBlockedCompaniesFromDb(userId);
       void hydrateJobInteractionsFromDb(userId);
       // Consent lives only in Postgres: link any pre-account rows, then retire
@@ -81,7 +79,6 @@ function AuthedShell({ userId }: { userId: string }) {
       resetBoardColumnsForSignOut();
       resetProfileExtrasForSignOut();
       resetWorkHistoryForSignOut();
-      resetSavedFiltersForSignOut();
       resetBlockedCompaniesForSignOut();
       resetJobInteractionsForSignOut();
       resetQuizForSignOut();
