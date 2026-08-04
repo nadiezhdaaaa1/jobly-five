@@ -1752,7 +1752,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
         className="relative z-10 w-full max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 pr-10">
           <h2 className="text-[18px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
             {title}
           </h2>
@@ -1760,7 +1760,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconX size={16} strokeWidth={1.6} />
           </button>
