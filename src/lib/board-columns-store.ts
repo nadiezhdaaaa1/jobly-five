@@ -218,18 +218,22 @@ export function findColumn(id: string): BoardColumn | undefined {
 // Find the display column for a card given its persisted (columnId?, status).
 // Handles both fresh v2 columnIds and legacy v1 columnIds/stages.
 export function resolveColumnForCard(cardColumnId: string | undefined, status: string): BoardColumn | undefined {
+  const wantedKind = statusToKind(status);
   if (cardColumnId) {
     const hit = columns.find((c) => c.id === cardColumnId);
-    if (hit) return hit;
+    // Only honour the stored column when it still matches the card's status.
+    // A mismatch means the status changed without the column following (e.g. a
+    // drag to Applied whose confirm dialog was dismissed) — fall back to status.
+    if (hit && (!wantedKind || hit.kind === wantedKind)) return hit;
     // Legacy column id (v1 stage identifier) → remap
     const remapped = LEGACY_STAGE_TO_COLUMN_ID[cardColumnId];
     if (remapped) {
       const hit2 = columns.find((c) => c.id === remapped);
-      if (hit2) return hit2;
+      if (hit2 && (!wantedKind || hit2.kind === wantedKind)) return hit2;
     }
   }
   // Fall back to status: map to the corresponding kind's column.
-  const kind = statusToKind(status);
+  const kind = wantedKind;
   if (!kind) return undefined;
   if (kind === "interview") {
     // First interview column in the current layout.
