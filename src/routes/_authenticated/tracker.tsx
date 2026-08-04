@@ -226,6 +226,7 @@ function KanbanCard({
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
   const [archiveReason, setArchiveReason] = useState("");
+  const [pendingHide, setPendingHide] = useState<{ kind: InteractionKind; reason: string } | null>(null);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
@@ -310,7 +311,7 @@ function KanbanCard({
               {flagOpen ? (
                 <MenuPop>
                   {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
-                    <MenuItem key={label} danger onClick={() => { setStatus(job.id, "reported"); archiveJob(job.id); setFlagOpen(false); }}>{label}</MenuItem>
+                    <MenuItem key={label} danger onClick={() => { setFlagOpen(false); setPendingHide({ kind: "reported", reason: label }); }}>{label}</MenuItem>
                   ))}
                 </MenuPop>
               ) : null}
@@ -328,10 +329,8 @@ function KanbanCard({
                     <MenuItem
                       key={label}
                       onClick={() => {
-                        if (label === "Don't recommend the company") blockCompany(job.company);
-                        setStatus(job.id, "dismissed");
-                        archiveJob(job.id);
                         setDislikeOpen(false);
+                        setPendingHide({ kind: "disliked", reason: label });
                       }}
                     >
                       {label}
