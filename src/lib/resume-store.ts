@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 /**
  * Manual work-history store (Experience / Education tabs).
@@ -60,34 +61,15 @@ export const EMPTY_RESUME: ResumeData = {
   languages: [],
 };
 
-const KEY = "jobly.experience";
+const LEGACY_KEY = "jobly.experience";
+const CACHE = "experience";
 
-function initialState(): ResumeState {
-  if (typeof window !== "undefined") {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<ResumeData>;
-        return { data: { ...EMPTY_RESUME, ...parsed } };
-      }
-    } catch {
-      // ignore
-    }
-  }
-  return { data: EMPTY_RESUME };
-}
-
-let state: ResumeState = initialState();
+// Starts empty: the cache is only read once we know which account is signed in.
+let state: ResumeState = { data: EMPTY_RESUME };
 const listeners = new Set<() => void>();
 
 function emit() {
-  if (typeof window !== "undefined") {
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify(state.data));
-    } catch {
-      // ignore
-    }
-  }
+  writeUserCache(CACHE, historyUserId, state.data);
   scheduleHistorySync();
   for (const l of listeners) l();
 }
@@ -192,35 +174,34 @@ function scheduleHistorySync() {
   }, 400);
 }
 
-/** Loads account-stored history; writes the local copy once when none exists. */
+/** Loads this account's history. The server is the only source of truth. */
 export async function hydrateWorkHistoryFromDb(userId: string) {
   historyUserId = userId;
+  dropLegacyCache(LEGACY_KEY);
+  // Paint this account's own cached copy first, if it has one.
+  const cached = readUserCache<Partial<ResumeData>>(CACHE, userId);
+  if (cached && Object.keys(cached).length) {
+    state = { data: { ...EMPTY_RESUME, ...cached } };
+    for (const l of listeners) l();
+  }
   const { data, error } = await supabase
     .from("profiles")
     .select("work_history")
     .eq("id", userId)
     .maybeSingle();
   if (error) return;
-  const remote = data?.work_history as Partial<ResumeData> | null;
-  if (remote && Object.keys(remote).length) {
-    state = { data: { ...EMPTY_RESUME, ...remote } };
-    if (typeof window !== "undefined") {
-      try {
-        window.localStorage.setItem(KEY, JSON.stringify(state.data));
-      } catch {
-        // ignore
-      }
-    }
-    for (const l of listeners) l();
-  } else {
-    scheduleHistorySync();
-  }
+  const remote = (data?.work_history ?? {}) as Partial<ResumeData>;
+  state = { data: { ...EMPTY_RESUME, ...remote } };
+  writeUserCache(CACHE, userId, state.data);
+  for (const l of listeners) l();
 }
 
 export function resetWorkHistoryForSignOut() {
   historyUserId = null;
+  state = { data: EMPTY_RESUME };
   if (historyTimer) {
     clearTimeout(historyTimer);
     historyTimer = null;
   }
+  for (const l of listeners) l();
 }
