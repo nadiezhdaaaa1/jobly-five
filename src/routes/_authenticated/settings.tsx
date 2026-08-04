@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconPlus, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
+import { logSecurityEvent } from "@/lib/security-events.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useEntitlements } from "@/lib/entitlements-provider";
@@ -976,7 +977,6 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         { kind: "pref", key: "pref_interview_reminders", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
         { kind: "pref", key: "pref_followup_nudges", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
         { kind: "pref", key: "pref_stale_nudges", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
-        { kind: "pref", key: "pref_gmail_status", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
       ],
     },
     {
@@ -1245,15 +1245,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [settingPw, setSettingPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [identityBusy, setIdentityBusy] = useState(false);
+  const [identityError, setIdentityError] = useState<string | null>(null);
 
   const loadIdentities = async () => {
-    const { data } = await supabase.auth.getUser();
-    const ids = data.user?.identities ?? [];
+    const { data, error } = await supabase.auth.getUserIdentities();
+    if (error) {
+      setIdentityError("We couldn't read your sign-in methods. Reload the page to try again.");
+      return;
+    }
+    const ids = data?.identities ?? [];
     setHasPassword(ids.some((i) => i.provider === "email"));
     const g = ids.find((i) => i.provider === "google");
     setGoogleIdentity((g as { identity_id?: string } | undefined) ?? null);
     setGoogleEmail(
-      g ? ((g.identity_data?.["email"] as string | undefined) ?? data.user?.email ?? null) : null
+      g ? ((g.identity_data?.["email"] as string | undefined) ?? user?.email ?? null) : null
     );
   };
 
@@ -1376,41 +1382,50 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             )}
           </div>
           <div className="flex shrink-0 justify-end">
-            {hasPassword === null ? null : googleIdentity ? (
-              <IconTooltip
-                label={
-                  canDisconnectGoogle
-                    ? "Disconnect Google"
-                    : "Set a password first so you don't lose access."
-                }
-              >
-                <button
-                  type="button"
-                  disabled={!canDisconnectGoogle}
-                  onClick={() => setGConfirm(true)}
-                  className="text-[13px] text-[color:var(--color-text-muted)] hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
-                >
-                  Disconnect
-                </button>
-              </IconTooltip>
-            ) : (
+            {hasPassword === null || !googleIdentity || !canDisconnectGoogle ? null : (
               <button
                 type="button"
-                onClick={async () => {
-                  const { error } = await supabase.auth.linkIdentity({ provider: "google" });
-                  if (error) onFlash("Couldn't connect Google. Try again.");
+                disabled={identityBusy}
+                onClick={() => {
+                  setIdentityError(null);
+                  setGConfirm(true);
                 }}
-                className="inline-flex h-9 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="text-[13px] text-[color:var(--color-text-muted)] hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
               >
-                Connect
+                {identityBusy ? "Removing…" : "Remove sign-in"}
               </button>
             )}
           </div>
         </div>
         {hasPassword === false && googleIdentity ? (
           <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            Google is your only way to sign in right now.
+            Google is your only way to sign in. Set a password first, then you can remove it.{" "}
+            <button
+              type="button"
+              onClick={() => setSettingPw(true)}
+              className="underline hover:text-[color:var(--color-foreground)]"
+            >
+              Set a password
+            </button>
           </p>
+        ) : null}
+        {googleIdentity ? (
+          <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            Removing this only changes how you sign in to Jobly. To remove Jobly&apos;s access inside your
+            Google account, visit{" "}
+            <a
+              href="https://myaccount.google.com/permissions"
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-[color:var(--color-foreground)]"
+            >
+              Google account permissions
+            </a>
+            .
+          </p>
+        ) : null}
+        {identityError ? (
+          <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{identityError}</p>
         ) : null}
       </div>
 
@@ -1428,31 +1443,66 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       </div>
 
       {gConfirm ? (
-        <Modal onClose={() => setGConfirm(false)} title="Disconnect Google?">
+        <Modal onClose={() => setGConfirm(false)} title="Remove Google sign-in?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You&apos;ll sign in with {user?.email ?? "your email"} and your password instead.
+            This removes Google as a way to sign in to Jobly. You&apos;ll sign in with{" "}
+            {user?.email ?? "your email"} and your password instead. Nothing changes in your Google account.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
+              disabled={identityBusy}
               onClick={async () => {
-                if (!googleIdentity) return;
-                const { error } = await supabase.auth.unlinkIdentity(googleIdentity as never);
-                setGConfirm(false);
-                if (error) {
-                  onFlash("Couldn't disconnect Google. Try again.");
-                  return;
+                if (identityBusy) return;
+                setIdentityBusy(true);
+                setIdentityError(null);
+                try {
+                  // Re-check against the server right before acting: never unlink
+                  // the last usable way in.
+                  const { data: fresh, error: readErr } = await supabase.auth.getUserIdentities();
+                  if (readErr) {
+                    setIdentityError("We couldn't check your sign-in methods. Nothing was changed.");
+                    return;
+                  }
+                  const ids = fresh?.identities ?? [];
+                  const google = ids.find((i) => i.provider === "google");
+                  const hasOtherCredential = ids.some((i) => i.provider === "email");
+                  if (!google || ids.length < 2 || !hasOtherCredential) {
+                    setGConfirm(false);
+                    await loadIdentities();
+                    setIdentityError(
+                      "Google is your only way to sign in. Set a password first, then you can remove it."
+                    );
+                    void logSecurityEvent({
+                      data: { event: "identity_unlink_refused", reason: "no_other_credential" },
+                    }).catch(() => {});
+                    return;
+                  }
+                  const { error } = await supabase.auth.unlinkIdentity(google as never);
+                  if (error) {
+                    setGConfirm(false);
+                    setIdentityError(`We couldn't remove Google sign-in. ${error.message}`);
+                    void logSecurityEvent({
+                      data: { event: "identity_unlink_refused", reason: error.message },
+                    }).catch(() => {});
+                    return;
+                  }
+                  setGConfirm(false);
+                  await loadIdentities();
+                  void logSecurityEvent({ data: { event: "identity_unlinked" } }).catch(() => {});
+                  onFlash("Google sign-in removed.");
+                } finally {
+                  setIdentityBusy(false);
                 }
-                await loadIdentities();
-                onFlash("Google disconnected.");
               }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
-              Disconnect
+              {identityBusy ? "Removing…" : "Remove Google sign-in"}
             </button>
             <button
               type="button"
+              disabled={identityBusy}
               onClick={() => setGConfirm(false)}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
