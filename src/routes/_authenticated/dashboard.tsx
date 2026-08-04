@@ -286,21 +286,6 @@ function filterEqual(a: FilterState, b: FilterState) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function activeFilterCount(f: FilterState, profileRoles: string[] = []): number {
-  const d = defaultFilters();
-  let n = 0;
-  if (f.field !== d.field) n++;
-  if (profileRoles.length > 0 && f.roles.length !== profileRoles.length) n++;
-  else if (profileRoles.length === 0 && f.roles.length) n++;
-  if (f.seniority.length) n++;
-  if (f.onlyRemote || f.locations.length) n++;
-  if (f.sources.length !== d.sources.length || f.sources.some((s) => !d.sources.includes(s))) n++;
-  if (f.minMatch !== d.minMatch) n++;
-  if (f.minSalary !== d.minSalary) n++;
-  if (f.postedWithin !== d.postedWithin) n++;
-  return n;
-}
-
 function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
   return jobs.filter((j) => {
     // Blocked companies filter (managed in Settings)
@@ -992,7 +977,6 @@ function FiltersSidebar({
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
-  const activeCount = activeFilterCount(applied, profileRoles);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
@@ -1008,14 +992,6 @@ function FiltersSidebar({
         className={`fixed top-[72px] right-4 lg:right-[max(24px,calc((100vw-1200px)/2+24px))] z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[color:var(--color-surface-2)] ${open ? "hidden" : "inline-flex"}`}
       >
         <IconAdjustmentsHorizontal size={22} strokeWidth={1.8} />
-        {activeCount > 0 ? (
-          <span
-            aria-label={`${activeCount} active filters`}
-            className="absolute -bottom-1 -left-1 inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-full bg-[color:var(--color-accent)] px-1 text-[11px] font-semibold leading-none text-[color:var(--color-on-accent)] ring-2 ring-[color:var(--color-background)]"
-          >
-            {activeCount}
-          </span>
-        ) : null}
       </button>
       {/* Mobile/Tablet drawer backdrop */}
       {open ? (
