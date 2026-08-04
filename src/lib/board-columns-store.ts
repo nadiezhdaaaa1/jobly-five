@@ -72,8 +72,9 @@ export const DEFAULT_COLUMNS: BoardColumn[] = [
   { id: SINGLETON_IDS.rejected, kind: "rejected", title: "Rejected", stages: [] },
 ];
 
-const STORAGE_KEY = "jobly:board-columns:v2";
-const LEGACY_STORAGE_KEY = "jobly:board-columns:v1";
+const CACHE = "board-columns";
+// Pre-namespacing keys: dropped on hydrate, never uploaded to an account.
+const LEGACY_STORAGE_KEYS = ["jobly:board-columns:v2", "jobly:board-columns:v1"];
 
 // Map legacy v1 stage identifiers → new column ids (used when migrating a
 // v1-persisted layout and when translating cards whose `columnId` still
