@@ -1344,9 +1344,6 @@ function JobsScreen() {
     () => typeof window === "undefined" || window.innerWidth >= 1024,
   );
   const [collapseSignal, setCollapseSignal] = useState(0);
-  const saved = useSavedFilters<FilterState>();
-  const [saveOpen, setSaveOpen] = useState(false);
-  const [saveName, setSaveName] = useState("");
 
   const [displayName, setDisplayName] = useState<string | null>(null);
   useEffect(() => {
@@ -1447,22 +1444,15 @@ function JobsScreen() {
                 setPending(f);
               }}
               onApply={() => setApplied(pending)}
-              onSave={() => {
-                setSaveName(`Filter ${saved.length + 1}`);
-                setSaveOpen(true);
+              onReset={() => {
+                touched.current = false;
+                setPending(seed);
+                setApplied(seed);
+                setCollapseSignal((v) => v + 1);
               }}
               open={filtersOpen}
               onToggle={() => setFiltersOpen((v) => !v)}
               collapseSignal={collapseSignal}
-              saved={saved}
-              onLoadSaved={(id) => {
-                const s = saved.find((x) => x.id === id);
-                if (s) {
-                  touched.current = true;
-                  setPending(s.filters);
-                  setApplied(s.filters);
-                }
-              }}
             />
           </div>
         </div>
