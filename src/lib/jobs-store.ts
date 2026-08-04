@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { loadQuiz } from "./quiz-store";
+import { loadQuiz, subscribeQuiz } from "./quiz-store";
 import { computeMatch, rolesOverlap, type DbJob } from "./match";
 import type { Job, JobSource, Source, DescriptionSection } from "./jobs-data";
 
@@ -248,4 +248,9 @@ export function useMatchedJobs(minScore = 70): Job[] {
 
 if (typeof window !== "undefined") {
   void loadJobs();
+  // Profile answers arrive asynchronously after sign-in; jobs scored before
+  // that must be re-scored or every match ring reflects an empty profile.
+  subscribeQuiz(() => {
+    if (dbJobs.length) recomputeJobs();
+  });
 }

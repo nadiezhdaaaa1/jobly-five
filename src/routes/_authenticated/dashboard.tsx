@@ -31,7 +31,7 @@ import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
-import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { useQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
@@ -966,22 +966,17 @@ function FiltersSidebar({
   saved: SavedFilterEntry[];
   onLoadSaved: (id: string) => void;
 }) {
-  // profileRoles computed below; use it for accurate active count
-  const profileRolesForCount = useMemo(() => {
-    const q = loadQuiz();
-    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
-  }, []);
-  const activeCount = activeFilterCount(applied, profileRolesForCount);
+  // Roles universe comes from the user's profile (quiz). The filter can only
+  // toggle which of those roles are active — never add/remove them here.
+  // Read reactively: the profile hydrates from the server after mount.
+  const quiz = useQuiz();
+  const profileRoles = useMemo(() => {
+    return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
+  }, [quiz]);
+  const activeCount = activeFilterCount(applied, profileRoles);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
-
-  // Roles universe comes from the user's profile (quiz). The filter can only
-  // toggle which of those roles are active — never add/remove them here.
-  const profileRoles = useMemo(() => {
-    const q = loadQuiz();
-    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
-  }, []);
 
   return (
     <aside className="contents lg:block lg:relative lg:sticky lg:top-20">
@@ -1279,13 +1274,25 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const quiz = useMemo(() => loadQuiz(), []);
+  const quiz = useQuiz();
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
   const seed = useMemo(() => ({ ...defaultsFromQuiz(quiz), roles: [...profileRoles] }), [quiz, profileRoles]);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
+  // The profile hydrates from the server after mount, so the initial seed can
+  // be empty. Re-seed once real answers arrive, unless the user already
+  // touched the filters.
+  const touched = useRef(false);
+  const seeded = useRef(Object.keys(quiz).length > 0);
+  useEffect(() => {
+    if (seeded.current || touched.current) return;
+    if (Object.keys(quiz).length === 0) return;
+    seeded.current = true;
+    setApplied(seed);
+    setPending(seed);
+  }, [quiz, seed]);
   const [filtersOpen, setFiltersOpen] = useState(
     () => typeof window === "undefined" || window.innerWidth >= 1024,
   );
@@ -1385,7 +1392,10 @@ function JobsScreen() {
             <FiltersSidebar
               pending={pending}
               applied={applied}
-              onChange={setPending}
+              onChange={(f) => {
+                touched.current = true;
+                setPending(f);
+              }}
               onApply={() => setApplied(pending)}
               onSave={() => {
                 setSaveName(`Filter ${saved.length + 1}`);
@@ -1398,6 +1408,7 @@ function JobsScreen() {
               onLoadSaved={(id) => {
                 const s = saved.find((x) => x.id === id);
                 if (s) {
+                  touched.current = true;
                   setPending(s.filters);
                   setApplied(s.filters);
                 }
