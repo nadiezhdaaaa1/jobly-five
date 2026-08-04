@@ -59,7 +59,7 @@ import {
   type UploadErrorCode,
 } from "@/lib/resume-documents-store";
 import { usePlan, isPro } from "@/lib/plan-store";
-import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { quizSummary, updateQuiz, useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
   FieldStep,
@@ -170,9 +170,8 @@ function ProfileScreen() {
   const tab: TabKey = search.tab ?? "preferences";
   const setTab = (t: TabKey) => navigate({ to: "/profile", search: { tab: t }, replace: true });
 
-  const [quiz, setQuiz] = useState<QuizAnswers>(() => loadQuiz());
-  useEffect(() => setQuiz(loadQuiz()), []);
-  const refreshQuiz = () => setQuiz({ ...loadQuiz() });
+  const quiz = useQuiz();
+  const quizHydrated = useQuizHydrated();
 
   const resume = useResumeState();
   const { docs: resumeDocs, loading: resumeDocsLoading, refresh: refreshResumeDocs } = useResumeDocuments();
@@ -295,8 +294,8 @@ function ProfileScreen() {
               <PreferencesTab
                 quiz={quiz}
                 cfg={cfg}
+                loading={!quizHydrated}
                 onSaved={() => {
-                  refreshQuiz();
                   toast.show("Preferences updated");
                 }}
               />
@@ -641,10 +640,12 @@ type PrefKey =
 function PreferencesTab({
   quiz,
   cfg,
+  loading,
   onSaved,
 }: {
   quiz: QuizAnswers;
   cfg: ReturnType<typeof fieldConfig>;
+  loading?: boolean;
   onSaved: () => void;
 }) {
   const s = quizSummary(quiz);
