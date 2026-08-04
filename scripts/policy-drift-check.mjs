@@ -15,7 +15,7 @@ const MAP = { terms: "terms", privacy: "privacy", cookies: "cookies", billing_te
 const rows = JSON.parse(
   execFileSync("psql", [
     "-tAc",
-    "SELECT json_agg(row_to_json(c)) FROM current_policy_version c",
+    "SELECT json_agg(row_to_json(x)) FROM (SELECT c.document_key, c.version, v.content_hash FROM current_policy_version c JOIN policy_versions v ON v.document_key = c.document_key AND v.version = c.version) x",
   ]).toString().trim() || "[]",
 );
 
