@@ -88,7 +88,8 @@ export const LEGACY_STAGE_TO_COLUMN_ID: Record<string, string> = {
   rejection: SINGLETON_IDS.rejected,
 };
 
-let columns: BoardColumn[] = load();
+// Starts from defaults: the per-account cache is read on hydrate.
+let columns: BoardColumn[] = defaults();
 const listeners = new Set<() => void>();
 let version = 0;
 
@@ -199,51 +200,23 @@ function migrateFromV1(raw: string): BoardColumn[] | null {
   }
 }
 
-function load(): BoardColumn[] {
-  if (typeof window === "undefined") return defaults();
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as BoardColumn[];
-      if (Array.isArray(parsed) && parsed.length) {
-        const clean = parsed
-          .filter((c) => c && typeof c.id === "string" && typeof c.title === "string" && validKind(c.kind))
-          .map((c) => ({
-            id: c.id,
-            kind: c.kind,
-            title: c.title,
-            stages: Array.isArray(c.stages) ? c.stages.filter((s) => typeof s === "string") : [],
-          }));
-        if (clean.length) return ensureInvariants(clean);
-      }
-    }
-    // One-time migration from v1
-    const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY);
-    if (legacy) {
-      const migrated = migrateFromV1(legacy);
-      if (migrated) {
-        try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-          window.localStorage.removeItem(LEGACY_STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
-        return migrated;
-      }
-    }
-  } catch {
-    /* fall through */
-  }
-  return defaults();
+/** Reads this account's cached column set; null when there is nothing usable. */
+function loadCached(userId: string): BoardColumn[] | null {
+  const parsed = readUserCache<BoardColumn[]>(CACHE, userId);
+  if (!Array.isArray(parsed) || !parsed.length) return null;
+  const clean = parsed
+    .filter((c) => c && typeof c.id === "string" && typeof c.title === "string" && validKind(c.kind))
+    .map((c) => ({
+      id: c.id,
+      kind: c.kind,
+      title: c.title,
+      stages: Array.isArray(c.stages) ? c.stages.filter((s) => typeof s === "string") : [],
+    }));
+  return clean.length ? ensureInvariants(clean) : null;
 }
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(columns));
-  } catch {
-    // ignore quota errors
-  }
+  writeUserCache(CACHE, currentUserId, columns);
 }
 
 function emit() {
