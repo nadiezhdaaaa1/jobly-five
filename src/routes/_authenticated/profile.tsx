@@ -2228,63 +2228,208 @@ function AchievementsTab({
         </div>
       </CardBig>
 
-      <div className="flex flex-col gap-3">
-        {blocks.map((b) => {
-          const entries = extras.achievements[b];
-          const isSuggested = suggested.includes(b);
-          const open = openBlocks[b] ?? false;
-          return (
-            <CardSmall key={b}>
-              <button
-                type="button"
-                onClick={() => setOpenBlocks((s) => ({ ...s, [b]: !s[b] }))}
-                className="flex w-full items-center justify-between gap-3"
-                aria-expanded={open}
-              >
-                <span className="flex flex-col items-start gap-1 text-[14px] font-semibold text-[color:var(--color-foreground)]">
+      <CardBig>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Your achievements</h2>
+            <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              {total === 0
+                ? "Nothing added yet. Add talks, publications, awards, courses and more."
+                : `${total} ${total === 1 ? "entry" : "entries"}, grouped by type.`}
+            </p>
+          </div>
+          {draft ? null : (
+            <PrimaryBtn onClick={() => setDraft({ mode: "new", type: blocks[0], dates: "", description: "", url: "" })}>
+              <Plus size={14} strokeWidth={1.8} />
+              Add
+            </PrimaryBtn>
+          )}
+        </div>
+
+        {draft ? (
+          <div className="mt-4">
+            <AchievementForm
+              draft={draft}
+              blocks={blocks}
+              suggested={suggested}
+              placeholder={cfg.achievementExamples?.[draft.type]}
+              onChange={(patch) => setDraft((d) => (d ? { ...d, ...patch } : d))}
+              onCancel={() => setDraft(null)}
+              onSave={saveDraft}
+            />
+          </div>
+        ) : null}
+
+        {total === 0 && !draft ? null : (
+          <div className="mt-4 flex flex-col gap-5">
+            {blocks.map((b) => {
+              const entries = extras.achievements[b];
+              if (!entries.length) return null;
+              return (
+                <section key={b}>
                   <div className="flex items-center gap-2">
-                    {ACHIEVEMENT_LABELS[b]}
-                    {isSuggested ? <Tag tone="mint">SUGGESTED</Tag> : null}
+                    <h3 className="text-[13px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                      {ACHIEVEMENT_LABELS[b]}
+                    </h3>
+                    <span className="text-[12px] text-[color:var(--color-text-muted)]">({entries.length})</span>
                   </div>
-                  <span className="text-[12px] font-normal text-[color:var(--color-text-muted)]">({entries.length})</span>
-                </span>
-                {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-              </button>
-              {open ? (
-                <div className="mt-3 flex flex-col gap-2">
-                  {entries.map((e) => (
-                    <div key={e.id} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_1fr_auto]">
-                      <input
-                        value={e.description}
-                        onChange={(ev) => updateAchievement(b, e.id, { description: ev.target.value })}
-                        placeholder={cfg.achievementExamples?.[b] ?? "Description"}
-                        className="h-10 rounded-[4px] border px-3 text-[13px]"
+                  <div className="mt-2 flex flex-col gap-2">
+                    {entries.map((e) => (
+                      <AchievementRow
+                        key={e.id}
+                        entry={e}
+                        onEdit={() =>
+                          setDraft({
+                            mode: e.id,
+                            block: b,
+                            type: b,
+                            dates: e.dates ?? "",
+                            description: e.description,
+                            url: e.url,
+                          })
+                        }
+                        onDelete={() => {
+                          removeAchievement(b, e.id);
+                          if (draft?.mode === e.id) setDraft(null);
+                          onToast("Achievement deleted");
+                        }}
                       />
-                      <input
-                        value={e.url}
-                        onChange={(ev) => updateAchievement(b, e.id, { url: ev.target.value })}
-                        placeholder="https://"
-                        className="h-10 rounded-[4px] border px-3 text-[13px]"
-                      />
-                      <button type="button" onClick={() => removeAchievement(b, e.id)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-                        <X size={16} strokeWidth={1.6} />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => addAchievement(b)}
-                    className="self-start text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
-                  >
-                    + Add entry
-                  </button>
-                </div>
-              ) : null}
-            </CardSmall>
-          );
-        })}
-      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
+      </CardBig>
     </>
+  );
+}
+
+type AchievementDraft = {
+  mode: "new" | string;
+  block?: AchievementBlockKey;
+  type: AchievementBlockKey;
+  dates: string;
+  description: string;
+  url: string;
+};
+
+function AchievementForm({
+  draft,
+  blocks,
+  suggested,
+  placeholder,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  draft: AchievementDraft;
+  blocks: AchievementBlockKey[];
+  suggested: AchievementBlockKey[];
+  placeholder?: string;
+  onChange: (patch: Partial<AchievementDraft>) => void;
+  onSave: () => string | null;
+  onCancel: () => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+  return (
+    <div className="rounded-[6px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[240px_1fr]">
+        <select
+          aria-label="Achievement type"
+          value={draft.type}
+          onChange={(e) => onChange({ type: e.target.value as AchievementBlockKey })}
+          className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
+        >
+          {blocks.map((b) => (
+            <option key={b} value={b}>
+              {ACHIEVEMENT_LABELS[b]}
+              {suggested.includes(b) ? " — suggested" : ""}
+            </option>
+          ))}
+        </select>
+        <input
+          aria-label="Dates (optional)"
+          placeholder="Dates (optional) — e.g. Jun 2025"
+          value={draft.dates}
+          onChange={(e) => onChange({ dates: e.target.value })}
+          className="h-10 rounded-[4px] border px-3 text-[13px]"
+        />
+      </div>
+      <textarea
+        autoFocus
+        aria-label="Description"
+        rows={4}
+        placeholder={placeholder ?? "What it was and why it matters"}
+        value={draft.description}
+        onChange={(e) => onChange({ description: e.target.value })}
+        className="mt-2 w-full rounded-[4px] border p-3 text-[13px]"
+      />
+      <input
+        aria-label="Link (optional)"
+        placeholder="Link (optional) — https://"
+        value={draft.url}
+        onChange={(e) => onChange({ url: e.target.value })}
+        className="mt-2 h-10 w-full rounded-[4px] border px-3 text-[13px]"
+      />
+      {error ? <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{error}</p> : null}
+      <div className="mt-3 flex items-center gap-2">
+        <PrimaryBtn onClick={() => setError(onSave())}>Save</PrimaryBtn>
+        <GhostBtn onClick={onCancel}>Cancel</GhostBtn>
+      </div>
+    </div>
+  );
+}
+
+function AchievementRow({
+  entry,
+  onEdit,
+  onDelete,
+}: {
+  entry: AchievementEntry;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-3 py-2">
+      <div className="min-w-0 flex-1">
+        {entry.dates ? (
+          <div className="text-[12px] text-[color:var(--color-text-muted)]">{entry.dates}</div>
+        ) : null}
+        <div className="whitespace-pre-wrap text-[13px] text-[color:var(--color-foreground)]">{entry.description}</div>
+        {entry.url ? (
+          <a
+            href={entry.url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="mt-1 block truncate text-[12px] text-[color:var(--color-text-secondary)] underline decoration-[color:var(--color-border-strong)] hover:text-[color:var(--color-foreground)]"
+          >
+            {prettyUrl(entry.url)}
+          </a>
+        ) : null}
+      </div>
+      <IconTooltip label="Edit">
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label="Edit"
+          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Pencil size={16} strokeWidth={1.6} />
+        </button>
+      </IconTooltip>
+      <IconTooltip label="Delete">
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label="Delete"
+          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Trash size={16} strokeWidth={1.6} />
+        </button>
+      </IconTooltip>
+    </div>
   );
 }
 
