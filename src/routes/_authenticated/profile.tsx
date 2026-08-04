@@ -96,20 +96,12 @@ import {
   type AchievementBlockKey,
   type CoverLetter,
 } from "@/lib/profile-store";
-import {
-  deleteSavedFilter,
-  renameSavedFilter,
-  useSavedFilters,
-  SAVED_FILTER_LIMIT,
-} from "@/lib/saved-filters-store";
-
 const TAB_KEYS = [
   "preferences",
   "documents",
   "letters",
   "portfolio",
   "experience",
-  "searches",
 ] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
@@ -119,7 +111,6 @@ const TAB_LABELS: Record<TabKey, string> = {
   letters: "Cover letters",
   portfolio: "Portfolio and links",
   experience: "Experience",
-  searches: "Saved searches",
 };
 
 const searchSchema = z.object({
@@ -324,9 +315,6 @@ function ProfileScreen() {
                 resume={resume}
                 onToast={toast.show}
               />
-            )}
-            {tab === "searches" && (
-              <SavedSearchesTab onToast={toast.show} />
             )}
           </div>
 
