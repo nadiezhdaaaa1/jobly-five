@@ -339,7 +339,7 @@ function KanbanCard({
                 </MenuPop>
               ) : null}
             </div>
-            <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
+            <IconBtn label="Saved" active onClick={() => removeFromTracker(job.id)}>
               <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
             </IconBtn>
             <button
