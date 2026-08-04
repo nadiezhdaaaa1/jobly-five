@@ -1386,6 +1386,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         </form>
       )}
 
+      {hasPassword === true ? (
+        <div className="mt-4 flex items-center justify-between gap-3 text-[13px]">
+          <span className="text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            Password last changed
+          </span>
+          {!pwChangedLoaded ? (
+            <span className="h-3 w-[90px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" aria-hidden />
+          ) : (
+            <span className="text-[color:var(--color-foreground)]">
+              {pwChangedLabel ?? "Never changed"}
+            </span>
+          )}
+        </div>
+      ) : null}
+
       <div className="mt-6 border-t pt-4">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>
         <div className="mt-3 flex items-center gap-3">
