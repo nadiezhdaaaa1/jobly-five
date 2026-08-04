@@ -902,6 +902,7 @@ function TrackerScreen() {
   let total = 0;
   for (const j of allJobs) {
     const rec = getJobRecord(j.id);
+    if (interactionHidden.has(j.id)) continue;
     const raw = rec.archived ? rec.lastStatus : rec.status;
     if (!raw) continue;
     if (rec.archived) {
