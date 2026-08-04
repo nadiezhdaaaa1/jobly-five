@@ -1008,14 +1008,6 @@ function FiltersSidebar({
         className={`fixed top-[72px] right-4 lg:right-[max(24px,calc((100vw-1200px)/2+24px))] z-40 h-[44px] w-[44px] items-center justify-center rounded-full border bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-[color:var(--color-surface-2)] ${open ? "hidden" : "inline-flex"}`}
       >
         <IconAdjustmentsHorizontal size={22} strokeWidth={1.8} />
-        {activeCount > 0 ? (
-          <span
-            aria-label={`${activeCount} active filters`}
-            className="absolute -bottom-1 -left-1 inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-full bg-[color:var(--color-accent)] px-1 text-[11px] font-semibold leading-none text-[color:var(--color-on-accent)] ring-2 ring-[color:var(--color-background)]"
-          >
-            {activeCount}
-          </span>
-        ) : null}
       </button>
       {/* Mobile/Tablet drawer backdrop */}
       {open ? (
