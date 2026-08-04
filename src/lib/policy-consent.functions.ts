@@ -53,7 +53,8 @@ export const acceptPolicies = createServerFn({ method: "POST" })
     if (!email) return { ok: false as const, inserted: 0 };
 
     // Stamp the version that is published right now, per document.
-    const { data: versions } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: versions } = await supabaseAdmin
       .from("current_policy_version")
       .select("document_key, version")
       .in("document_key", keys);
@@ -83,4 +84,30 @@ export const acceptPolicies = createServerFn({ method: "POST" })
       if (res.ok) inserted += res.inserted;
     }
     return { ok: true as const, inserted };
+  });
+
+/**
+ * True when the signed-in user has affirmatively accepted the currently
+ * published Billing Terms. Gates the paid path, nothing else.
+ */
+export const billingTermsAccepted = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ accepted: boolean; version: string | null }> => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: current } = await supabaseAdmin
+      .from("current_policy_version")
+      .select("version")
+      .eq("document_key", "billing_terms")
+      .maybeSingle();
+    const version = current?.version ? String(current.version) : null;
+    if (!version) return { accepted: true, version: null };
+    const { data: rows } = await supabaseAdmin
+      .from("consent_records")
+      .select("id")
+      .eq("user_id", context.userId)
+      .eq("channel", "billing_terms")
+      .eq("policy_version", version)
+      .eq("granted", true)
+      .limit(1);
+    return { accepted: (rows?.length ?? 0) > 0, version };
   });
