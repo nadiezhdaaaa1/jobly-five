@@ -400,6 +400,27 @@ function KanbanCard({
       </div>
     </article>
     <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
+    {pendingHide ? (
+      <HideJobDialog
+        open
+        kind={pendingHide.kind}
+        reason={pendingHide.reason}
+        jobTitle={job.title}
+        wasSaved={kind === "saved"}
+        onCancel={() => setPendingHide(null)}
+        onConfirm={() => {
+          const { kind: k, reason } = pendingHide;
+          if (reason === "Don't recommend the company") blockCompany(job.company);
+          // Leave the board entirely (and unsave) — no archived card behind.
+          removeFromTracker(job.id);
+          setJobInteraction(job.id, k, reason);
+          setPendingHide(null);
+          sonnerToast(k === "reported" ? "Job reported and hidden" : "Job hidden", {
+            action: { label: "Undo", onClick: () => clearJobInteraction(job.id) },
+          });
+        }}
+      />
+    ) : null}
     <Dialog
       open={confirmArchiveOpen}
       onOpenChange={(o) => {
