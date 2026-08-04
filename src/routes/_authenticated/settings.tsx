@@ -1409,21 +1409,6 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             </button>
           </p>
         ) : null}
-        {googleIdentity ? (
-          <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-            Removing this only changes how you sign in to Jobly. To remove Jobly&apos;s access inside your
-            Google account, visit{" "}
-            <a
-              href="https://myaccount.google.com/permissions"
-              target="_blank"
-              rel="noreferrer"
-              className="underline hover:text-[color:var(--color-foreground)]"
-            >
-              Google account permissions
-            </a>
-            .
-          </p>
-        ) : null}
         {identityError ? (
           <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{identityError}</p>
         ) : null}
