@@ -2354,7 +2354,7 @@ function AchievementForm({
   const [error, setError] = useState<string | null>(null);
   return (
     <div className="rounded-[6px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[240px_1fr]">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_200px]">
         <select
           aria-label="Achievement type"
           value={draft.type}
