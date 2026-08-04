@@ -2196,55 +2196,51 @@ function AchievementsTab({
       <CardBig>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Achievements and activity</h2>
+            <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">
+              Attach key blocks to cover letter
+            </h2>
             <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              Optional blocks of achievements and professional activity. Kept structured so they can be attached
-              to applications.
+              Keeps the letter short. Pick the blocks to include:
             </p>
           </div>
-          <SecondaryBtn onClick={() => onToast("PDF export coming soon")}>
-            <Download size={14} strokeWidth={1.8} />
-            Download achievements PDF
-          </SecondaryBtn>
+          <ApplyToggle
+            on={extras.applyMode === "blocks"}
+            onChange={(v) => setApplyMode(v ? "blocks" : "off")}
+            label="Attach key blocks to cover letter"
+          />
         </div>
-        <hr className="my-4 border-t border-[color:var(--color-border)]" />
-        <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-          On apply, your achievements are appended to the cover letter automatically — with a preview before
-          sending. If an employer caps the letter length, choose how to include them:
-        </p>
-        <div className="mt-3 flex flex-col gap-3">
-          <ApplyRadio
-            checked={extras.applyMode === "blocks"}
-            onClick={() => setApplyMode("blocks")}
-            title="Attach key blocks — you choose"
-            body="Keeps the letter short. Pick the blocks to include:"
-          >
-            <div className="mt-2 flex flex-wrap gap-2">
-              {blocks.map((b) => {
-                const on = extras.applyBlocks.includes(b);
-                return (
-                  <label key={b} className={`inline-flex cursor-pointer items-center gap-1.5 rounded-[4px] border px-2 py-1 text-[12px] ${on ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)] text-[color:var(--color-foreground)] font-semibold" : "border-[color:var(--color-border-strong)] text-[color:var(--color-foreground)]"}`}>
-                    <input type="checkbox" checked={on} onChange={() => toggleApplyBlock(b)} className="sr-only" />
-                    {ACHIEVEMENT_LABELS[b]}
-                  </label>
-                );
-              })}
-            </div>
-          </ApplyRadio>
-          <ApplyRadio
-            checked={extras.applyMode === "pdf"}
-            onClick={() => setApplyMode("pdf")}
-            title="Attach full profile as PDF"
-            body="A multi-page PDF of everything on this page, attached to the application."
-          >
-            <div className="mt-2">
-              <SecondaryBtn onClick={() => onToast("Download coming soon")}>
-                <Download size={14} strokeWidth={1.8} />
-                Download full profile (PDF)
-              </SecondaryBtn>
-            </div>
-          </ApplyRadio>
-        </div>
+        {extras.applyMode === "blocks" ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {blocks.map((b) => {
+              const selected = extras.applyBlocks.includes(b);
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => toggleApplyBlock(b)}
+                  className={`inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors ${
+                    selected
+                      ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                      : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                  }`}
+                  style={{ padding: "6px 10px 6px 8px", gap: 8 }}
+                >
+                  <span
+                    className={`grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border ${
+                      selected
+                        ? "border-[#0E735A] bg-[#0E735A]"
+                        : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
+                    }`}
+                  >
+                    {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                  </span>
+                  <span>{ACHIEVEMENT_LABELS[b]}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </CardBig>
 
       <CardBig>
@@ -2452,36 +2448,22 @@ function AchievementRow({
   );
 }
 
-function ApplyRadio({
-  checked, onClick, title, body, children,
-}: {
-  checked: boolean;
-  onClick: () => void;
-  title: string;
-  body: string;
-  children?: React.ReactNode;
-}) {
+function ApplyToggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
-    <div
-      className={`cursor-pointer rounded-[6px] border p-3 ${
-        checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-1)]" : "border-[color:var(--color-border)]"
-      }`}
-      onClick={onClick}
-      role="radio"
-      aria-checked={checked}
-      tabIndex={0}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={() => onChange(!on)}
+      className="relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+      style={{ background: on ? "#0E735A" : "#E3E7E8" }}
     >
-      <div className="flex items-start gap-3">
-        <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${checked ? "border-[color:var(--color-accent)]" : "border-[color:var(--color-border-strong)]"}`}>
-          {checked ? <span className="h-2 w-2 rounded-full bg-[color:var(--color-accent)]" /> : null}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">{title}</div>
-          <div className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>{body}</div>
-          {children}
-        </div>
-      </div>
-    </div>
+      <span
+        className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+        style={{ transform: `translateX(${on ? 18 : 2}px)` }}
+      />
+    </button>
   );
 }
 

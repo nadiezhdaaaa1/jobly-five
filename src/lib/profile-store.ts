@@ -51,7 +51,7 @@ export type AchievementBlockKey =
   | "courses"
   | "awards";
 
-export type ApplyMode = "blocks" | "pdf";
+export type ApplyMode = "blocks" | "pdf" | "off";
 
 export type ProfileExtras = {
   coverLetters: CoverLetter[];
