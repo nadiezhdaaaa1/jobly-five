@@ -389,6 +389,68 @@ export type Database = {
         }
         Relationships: []
       }
+      policy_documents: {
+        Row: {
+          display_name: string
+          key: string
+        }
+        Insert: {
+          display_name: string
+          key: string
+        }
+        Update: {
+          display_name?: string
+          key?: string
+        }
+        Relationships: []
+      }
+      policy_versions: {
+        Row: {
+          change_summary: string
+          content_hash: string | null
+          created_at: string
+          document_key: string
+          effective_from: string
+          id: string
+          is_material: boolean
+          published_at: string | null
+          requires_reconsent: boolean
+          version: string
+        }
+        Insert: {
+          change_summary: string
+          content_hash?: string | null
+          created_at?: string
+          document_key: string
+          effective_from: string
+          id?: string
+          is_material: boolean
+          published_at?: string | null
+          requires_reconsent: boolean
+          version: string
+        }
+        Update: {
+          change_summary?: string
+          content_hash?: string | null
+          created_at?: string
+          document_key?: string
+          effective_from?: string
+          id?: string
+          is_material?: boolean
+          published_at?: string | null
+          requires_reconsent?: boolean
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_versions_document_key_fkey"
+            columns: ["document_key"]
+            isOneToOne: false
+            referencedRelation: "policy_documents"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_status: string
@@ -772,6 +834,25 @@ export type Database = {
         }
         Relationships: []
       }
+      current_policy_version: {
+        Row: {
+          change_summary: string | null
+          document_key: string | null
+          effective_from: string | null
+          is_material: boolean | null
+          requires_reconsent: boolean | null
+          version: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "policy_versions_document_key_fkey"
+            columns: ["document_key"]
+            isOneToOne: false
+            referencedRelation: "policy_documents"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
     }
     Functions: {
       can_send: {
@@ -784,6 +865,14 @@ export type Database = {
       ensure_user_provisioned: { Args: never; Returns: undefined }
       get_entitlements: { Args: never; Returns: Json }
       has_pro: { Args: { p_user_id: string }; Returns: boolean }
+      policies_needing_reconsent: {
+        Args: { p_user_id: string }
+        Returns: {
+          change_summary: string
+          document_key: string
+          version: string
+        }[]
+      }
       provision_user: {
         Args: { _email: string; _meta: Json; _user_id: string }
         Returns: undefined
@@ -801,6 +890,8 @@ export type Database = {
         | "high_match_alerts"
         | "weekly_report"
         | "billing_terms"
+        | "terms"
+        | "privacy"
       job_status:
         | "default"
         | "saved"
@@ -957,6 +1048,8 @@ export const Constants = {
         "high_match_alerts",
         "weekly_report",
         "billing_terms",
+        "terms",
+        "privacy",
       ],
       job_status: [
         "default",
