@@ -45,8 +45,10 @@ import {
   type PreferenceKey,
 } from "@/lib/notifications-store";
 
-export const Route = createFileRoute("/_authenticated/settings")({
 // Derived from the canonical pause length — never hardcode the duration in copy.
+const PAUSE_MONTHS = Math.round(PAUSE_DAYS / 30);
+
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Jobly" },
