@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconPlus, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
+import { logSecurityEvent } from "@/lib/security-events.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useEntitlements } from "@/lib/entitlements-provider";
