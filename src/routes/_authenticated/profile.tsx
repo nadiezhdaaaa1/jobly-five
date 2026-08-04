@@ -2166,11 +2166,28 @@ function AchievementsTab({
 }) {
   const suggested = cfg.suggestedBlocks;
   const blocks = orderedBlocks(suggested);
-  const [openBlocks, setOpenBlocks] = useState<Record<AchievementBlockKey, boolean>>(() => {
-    const out = {} as Record<AchievementBlockKey, boolean>;
-    for (const b of blocks) out[b] = suggested.includes(b);
-    return out;
-  });
+  const [draft, setDraft] = useState<AchievementDraft | null>(null);
+  const total = blocks.reduce((n, b) => n + extras.achievements[b].length, 0);
+
+  /** Returns an error message, or null when saved. */
+  function saveDraft(): string | null {
+    if (!draft) return null;
+    const description = draft.description.trim();
+    if (!description) return "Add a description.";
+    const linkProblem = urlError(draft.url);
+    if (linkProblem) return linkProblem;
+    const url = draft.url.trim() ? (normalizeUrl(draft.url) ?? "") : "";
+    const data = { description, url, dates: draft.dates.trim() };
+    if (draft.mode === "new") {
+      createAchievement(draft.type, data);
+      onToast("Achievement added");
+    } else {
+      moveAchievement(draft.block ?? draft.type, draft.type, draft.mode, data);
+      onToast("Achievement updated");
+    }
+    setDraft(null);
+    return null;
+  }
 
   return (
     <>
