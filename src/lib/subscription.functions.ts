@@ -25,10 +25,16 @@ export type SubscriptionRow = {
   trialEndsAt: string | null;
   pauseEndsAt: string | null;
   everSubscribed: boolean;
+  /** "provider" once a real billing provider owns the row; "manual_preview" today. */
+  activationSource: string;
 };
 
 const DAY = 86_400_000;
+/** Canonical pause length. Never hardcode a pause duration anywhere else. */
+export const PAUSE_DAYS = 180;
 const isoIn = (ms: number) => new Date(Date.now() + ms).toISOString();
+const COLS =
+  "status, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed, activation_source";
 
 function shape(row: Record<string, unknown> | null): SubscriptionRow {
   return {
@@ -38,6 +44,7 @@ function shape(row: Record<string, unknown> | null): SubscriptionRow {
     trialEndsAt: (row?.["trial_ends_at"] as string | null) ?? null,
     pauseEndsAt: (row?.["pause_ends_at"] as string | null) ?? null,
     everSubscribed: Boolean(row?.["ever_subscribed"]),
+    activationSource: (row?.["activation_source"] as string | null) ?? "none",
   };
 }
 
@@ -47,7 +54,7 @@ export const getSubscriptionRow = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<SubscriptionRow> => {
     const { data } = await context.supabase
       .from("subscriptions")
-      .select("status, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed")
+      .select(COLS)
       .eq("user_id", context.userId)
       .maybeSingle();
     return shape(data as Record<string, unknown> | null);
@@ -72,7 +79,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin
       .from("subscriptions")
-      .select("status, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed")
+      .select(COLS)
       .eq("user_id", context.userId)
       .maybeSingle();
     const current = shape(existing as Record<string, unknown> | null);
@@ -93,20 +100,25 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           pause_ends_at: null,
           current_period_end: keepEnd ?? isoIn(30 * DAY),
           ever_subscribed: true,
+          activation_source: "manual_preview",
         };
         break;
-      case "pause":
+      case "pause": {
+        // Already paused: no-op, so re-clicking can never extend the pause.
+        if (current.status === "paused") return current;
         patch = {
           status: "paused",
           plan: "pro",
           cancel_at_period_end: false,
           canceled_at: null,
           paused_at: new Date().toISOString(),
-          pause_ends_at: isoIn(180 * DAY),
-          current_period_end: keepEnd ?? isoIn(180 * DAY),
+          pause_ends_at: isoIn(PAUSE_DAYS * DAY),
+          current_period_end: keepEnd ?? isoIn(PAUSE_DAYS * DAY),
           ever_subscribed: true,
+          activation_source: current.activationSource === "none" ? "manual_preview" : current.activationSource,
         };
         break;
+      }
       case "unpause":
       case "resume":
         patch = {
@@ -118,6 +130,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           pause_ends_at: null,
           current_period_end: keepEnd ?? isoIn(30 * DAY),
           ever_subscribed: true,
+          activation_source: current.activationSource === "none" ? "manual_preview" : current.activationSource,
         };
         break;
       case "cancel_at_period_end":
@@ -148,7 +161,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
     const { data: saved, error } = await supabaseAdmin
       .from("subscriptions")
       .upsert({ user_id: context.userId, ...patch }, { onConflict: "user_id" })
-      .select("status, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed")
+      .select(COLS)
       .maybeSingle();
     if (error) throw error;
     return shape(saved as Record<string, unknown> | null);

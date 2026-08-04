@@ -5,6 +5,9 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { GoogleMark } from "@/components/site/GoogleMark";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
+import { getLastPasswordChange } from "@/lib/security-events.functions";
+import { useDateLabel } from "@/lib/dates";
+import { PAUSE_DAYS } from "@/lib/subscription.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
@@ -41,6 +44,9 @@ import {
   type ConsentKey,
   type PreferenceKey,
 } from "@/lib/notifications-store";
+
+// Derived from the canonical pause length — never hardcode the duration in copy.
+const PAUSE_MONTHS = Math.round(PAUSE_DAYS / 30);
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -135,17 +141,24 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   }
   const sub = useSubscription();
   const { loading: entLoading } = useEntitlements();
-  const periodEndLabel = new Date(sub.currentPeriodEnd).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  // Dates are rendered only when we actually know them, in the account's zone.
+  const periodEndLabel = useDateLabel(sub.currentPeriodEnd);
+  const pauseEndLabel = useDateLabel(sub.pauseEndsAt ?? null);
   const scheduledEnd = sub.cancelAtPeriodEnd && plan === "pro";
+  // No billing provider owns this row, so there is no real renewal date to show.
+  const providerBilled = sub.activationSource === "provider";
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling = `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`;
-  const scheduledLine = `Pro until ${periodEndLabel} · then Free`;
-  const pausedLine = `Paused until ${periodEndLabel} · no charges while paused`;
+  const proBilling =
+    providerBilled && periodEndLabel
+      ? `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`
+      : `Billed annually · ${usd(total(PRICING.annual))}/yr`;
+  const scheduledLine = periodEndLabel
+    ? `Pro until ${periodEndLabel} · then Free`
+    : "Pro until your current period ends · then Free";
+  const pausedLine = pauseEndLabel
+    ? `Paused until ${pauseEndLabel} · no charges while paused`
+    : "Paused · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
   if (entLoading) {
@@ -235,15 +248,15 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {cancelStep === 1 ? (
         <Modal onClose={closeCancel} title="Found a job?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Congrats! Pause Pro for 6 months instead — no emails, no charges, everything saved exactly as you left it.
+            Congrats! Pause Pro for {PAUSE_MONTHS} months instead — no emails, no charges, everything saved exactly as you left it.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); closeCancel(); onFlash("Pro paused for 6 months."); }}
+              onClick={() => { setPlan("paused"); closeCancel(); onFlash(`Pro paused for ${PAUSE_MONTHS} months.`); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
-              Pause Pro for 6 months
+              Pause Pro for {PAUSE_MONTHS} months
             </button>
             <button
               type="button"
@@ -292,7 +305,13 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {cancelStep === 2 && plan !== "paused" ? (
         <Modal onClose={closeCancel} title="Cancel your Pro subscription?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
+            {periodEndLabel ? (
+              <>
+                You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
+              </>
+            ) : (
+              <>You'll keep Pro until the end of your current period, then move to Free. No more charges. You can resume anytime.</>
+            )}
           </p>
           <CancelReasonPicker
             reason={reason}
@@ -311,7 +330,16 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               disabled={!reasonReady}
-              onClick={() => { saveReason(); scheduleCancelAtPeriodEnd(); closeCancel(); onFlash(`Pro canceled — access until ${periodEndLabel}.`); }}
+              onClick={() => {
+                saveReason();
+                scheduleCancelAtPeriodEnd();
+                closeCancel();
+                onFlash(
+                  periodEndLabel
+                    ? `Pro canceled — access until ${periodEndLabel}.`
+                    : "Pro canceled — access until the end of your current period.",
+                );
+              }}
               className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
               style={{ borderColor: "#D00D01" }}
             >
@@ -921,37 +949,13 @@ function BillingCard({ plan }: { plan: Plan }) {
       </Card>
     );
   }
-  const invoices = [
-    { date: "Jul 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-    { date: "Jun 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-    { date: "May 20, 2026", label: "Jobly Pro — monthly", amount: "$9.99" },
-  ];
   return (
     <Card title="Billing and payment">
-      <div className="flex flex-col gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-4 py-4">
-        <div className="flex h-8 w-12 items-center justify-center rounded-[4px] bg-[color:var(--color-surface-2)] text-[11px] font-semibold text-[color:var(--color-text-muted)]">
-          CARD
-        </div>
-        <div className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
-          •••• 4242 · expires 08/27
-        </div>
-        <div className="flex items-center justify-end gap-2">
-          <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">Soon</span>
-          <span className="text-[13px] text-[color:var(--color-text-muted)]">Change</span>
-        </div>
-      </div>
-      <ul className="mt-4 divide-y">
-        {invoices.map((r) => (
-          <li key={r.date} className="flex items-center justify-between py-3 text-[13px]">
-            <div className="text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-              {r.date} · {r.label}
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[color:var(--color-foreground)]">{r.amount}</span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {/* No provider is wired yet, so there is no payment method and no invoice
+          history to read. Nothing here is invented. */}
+      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        No invoices yet — payments aren't live in this preview.
+      </p>
     </Card>
   );
 }
@@ -1249,6 +1253,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [identityBusy, setIdentityBusy] = useState(false);
   const [identityError, setIdentityError] = useState<string | null>(null);
+  // null = still reading; undefined-free: `false` means no record exists.
+  const [pwChangedAt, setPwChangedAt] = useState<string | null>(null);
+  const [pwChangedLoaded, setPwChangedLoaded] = useState(false);
+  const pwChangedLabel = useDateLabel(pwChangedAt);
+
+  const loadPasswordChange = async () => {
+    try {
+      const { at } = await getLastPasswordChange();
+      setPwChangedAt(at);
+    } catch {
+      setPwChangedAt(null);
+    } finally {
+      setPwChangedLoaded(true);
+    }
+  };
 
   const loadIdentities = async () => {
     const { data, error } = await supabase.auth.getUserIdentities();
@@ -1267,6 +1286,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
 
   useEffect(() => {
     void loadIdentities();
+    void loadPasswordChange();
   }, []);
 
   const needsCurrent = hasPassword === true;
@@ -1301,6 +1321,9 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       setConfirm("");
       setSettingPw(false);
       await loadIdentities();
+      void logSecurityEvent({ data: { event: needsCurrent ? "password_changed" : "password_set" } })
+        .then(() => loadPasswordChange())
+        .catch(() => {});
       onFlash(needsCurrent ? "Password updated." : "Password set. You can now sign in with your email too.");
     } finally {
       setBusy(false);
@@ -1366,6 +1389,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           </div>
         </form>
       )}
+
+      {hasPassword === true ? (
+        <div className="mt-4 flex items-center justify-between gap-3 text-[13px]">
+          <span className="text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            Password last changed
+          </span>
+          {!pwChangedLoaded ? (
+            <span className="h-3 w-[90px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" aria-hidden />
+          ) : (
+            <span className="text-[color:var(--color-foreground)]">
+              {pwChangedLabel ?? "Never changed"}
+            </span>
+          )}
+        </div>
+      ) : null}
 
       <div className="mt-6 border-t pt-4">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>

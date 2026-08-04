@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { applySubscriptionAction, type SubscriptionAction } from "@/lib/subscription.functions";
+import { PAUSE_DAYS, applySubscriptionAction, type SubscriptionAction } from "@/lib/subscription.functions";
 
 export type Plan = "free" | "pro" | "paused";
 
@@ -12,6 +12,10 @@ export type Subscription = {
   cancelAtPeriodEnd: boolean;
   /** ISO date — access lasts until this moment. */
   currentPeriodEnd: string;
+  /** ISO date the pause ends, when the server knows it. */
+  pauseEndsAt?: string | null;
+  /** How Pro was turned on: "manual_preview" today, "provider" once billing is live. */
+  activationSource?: string;
 };
 
 const DAY = 86_400_000;
@@ -31,7 +35,13 @@ export function resolvePlan(sub: Subscription, now: number = Date.now()): Plan {
 
 function defaultSub(): Subscription {
   // Unknown state must resolve to Free — never Pro.
-  return { status: "none", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() };
+  return {
+    status: "none",
+    cancelAtPeriodEnd: false,
+    currentPeriodEnd: new Date(0).toISOString(),
+    pauseEndsAt: null,
+    activationSource: "none",
+  };
 }
 
 // In-memory only: entitlements come from the server (get_entitlements) and are
@@ -73,6 +83,8 @@ function persist(action: SubscriptionAction, everSubscribed?: boolean) {
         cancelAtPeriodEnd: row.cancelAtPeriodEnd,
         currentPeriodEnd:
           row.currentPeriodEnd ?? row.trialEndsAt ?? new Date(0).toISOString(),
+        pauseEndsAt: row.pauseEndsAt,
+        activationSource: row.activationSource,
       };
       hadPro = row.everSubscribed || resolveIsPro(sub);
       emit();
@@ -121,11 +133,19 @@ export function setPlan(next: Plan) {
       currentPeriodEnd: end > Date.now() ? sub.currentPeriodEnd : isoIn(30 * DAY),
     });
   } else if (next === "paused") {
+    // Re-pausing must never extend an existing pause.
+    if (sub.status === "paused") return;
     persist("pause");
-    commit({ status: "paused", cancelAtPeriodEnd: false, currentPeriodEnd: isoIn(180 * DAY) });
+    commit({
+      ...sub,
+      status: "paused",
+      cancelAtPeriodEnd: false,
+      currentPeriodEnd: isoIn(PAUSE_DAYS * DAY),
+      pauseEndsAt: isoIn(PAUSE_DAYS * DAY),
+    });
   } else {
     persist("cancel_now");
-    commit({ status: "canceled", cancelAtPeriodEnd: false, currentPeriodEnd: new Date().toISOString() });
+    commit({ ...sub, status: "canceled", cancelAtPeriodEnd: false, currentPeriodEnd: new Date().toISOString(), pauseEndsAt: null });
   }
 }
 

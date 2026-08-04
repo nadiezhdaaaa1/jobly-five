@@ -11,6 +11,7 @@ import { resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 import { resetQuizForSignOut } from "@/lib/quiz-store";
 import { resetAccountForSignOut } from "@/lib/account-store";
+import { resetTimezoneCache } from "@/lib/dates";
 
 export function clearUserStateForSignOut() {
   resetTrackerForSignOut();
@@ -21,5 +22,6 @@ export function clearUserStateForSignOut() {
   resetBlockedCompaniesForSignOut();
   resetQuizForSignOut();
   resetAccountForSignOut();
+  resetTimezoneCache();
   clearLocalUserData();
 }
