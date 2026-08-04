@@ -30,6 +30,7 @@ import {
 } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
+import { normalizeUrl, prettyUrl, urlError } from "@/lib/url";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -74,8 +75,9 @@ import {
   ALL_SOCIAL_NETWORKS,
   COVER_LETTER_LIMIT,
   LINK_LIMIT,
-  addAchievement,
   addCoverLetter,
+  createAchievement,
+  moveAchievement,
   addLink,
   addSocial,
   deleteCoverLetter,
@@ -94,6 +96,7 @@ import {
   updateSocial,
   useProfileExtras,
   type AchievementBlockKey,
+  type AchievementEntry,
   type CoverLetter,
 } from "@/lib/profile-store";
 const TAB_KEYS = [
@@ -1722,24 +1725,6 @@ function CoverEditor({
 // ==========================================================================
 
 type LinkDraft = { mode: "new" | string; type: string; label: string; url: string };
-
-/** Accepts "example.com" and returns a normalised absolute https URL, or null. */
-function normalizeUrl(raw: string): string | null {
-  const v = raw.trim();
-  if (!v) return null;
-  const withProto = /^https?:\/\//i.test(v) ? v : `https://${v}`;
-  try {
-    const u = new URL(withProto);
-    if (!u.hostname.includes(".") || u.hostname.endsWith(".")) return null;
-    return u.toString().replace(/\/$/, "");
-  } catch {
-    return null;
-  }
-}
-
-function prettyUrl(url: string) {
-  return url.replace(/^https?:\/\//i, "");
-}
 
 function LinkDraftRow({
   draft,
