@@ -2169,15 +2169,9 @@ function AchievementsTab({
   const [draft, setDraft] = useState<AchievementDraft | null>(null);
   const total = blocks.reduce((n, b) => n + extras.achievements[b].length, 0);
 
-  // Clean up blank entries left by the previous inline-editing behaviour.
-  useEffect(() => {
-    for (const b of blocks) {
-      for (const e of extras.achievements[b]) {
-        if (!e.description.trim() && !e.url.trim()) removeAchievement(b, e.id);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [extras.achievements]);
+  // Blank rows left by the previous inline-editing behaviour are hidden, never counted.
+  const entriesFor = (b: AchievementBlockKey) =>
+    extras.achievements[b].filter((e) => e.description.trim() || e.url.trim());
 
   /** Returns an error message, or null when saved. */
   function saveDraft(): string | null {
