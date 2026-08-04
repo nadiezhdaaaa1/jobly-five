@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { deletionDateFrom } from "@/config/account";
 import { setPlan } from "@/lib/plan-store";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 import {
   getAccountState,
   requestDeletionOnServer,
@@ -89,7 +90,13 @@ export async function restoreAccountServer() {
 }
 
 /** Pull the authoritative status from the database after sign-in. */
-export async function hydrateAccountFromDb() {
+export async function hydrateAccountFromDb(userId?: string) {
+  if (userId) {
+    accountUserId = userId;
+    dropLegacyCache(LEGACY_KEY);
+    state = fromCache(readUserCache<Partial<AccountState>>(CACHE, userId));
+    listeners.forEach((l) => l());
+  }
   try {
     const next = await getAccountState({});
     commit(next);
@@ -97,6 +104,13 @@ export async function hydrateAccountFromDb() {
   } catch {
     return state;
   }
+}
+
+/** Another account signing in on this tab must not inherit this status. */
+export function resetAccountForSignOut() {
+  accountUserId = null;
+  state = activeState();
+  listeners.forEach((l) => l());
 }
 
 /** Restore during the grace window. Data comes back as-is; plan stays Free. */
