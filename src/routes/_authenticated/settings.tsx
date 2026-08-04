@@ -1369,8 +1369,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       <div className="mt-6 border-t pt-4">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>
         <div className="mt-3 flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white text-[13px] font-bold" aria-hidden>
-            G
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white" aria-hidden>
+            <GoogleMark size={18} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[14px] text-[color:var(--color-foreground)]">Google</div>
