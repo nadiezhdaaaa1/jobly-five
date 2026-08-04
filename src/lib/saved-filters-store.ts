@@ -112,26 +112,30 @@ async function pushFilters() {
 
 export async function hydrateSavedFiltersFromDb(userId: string) {
   filtersUserId = userId;
+  dropLegacyCache(LEGACY_KEY);
+  const cached = readUserCache<SavedFilter[]>(CACHE, userId);
+  if (Array.isArray(cached) && cached.length) {
+    state = cached;
+    for (const l of listeners) l();
+  }
   const { data, error } = await supabase
     .from("saved_filters")
     .select("id, name, filters")
     .eq("user_id", userId)
     .order("created_at", { ascending: true });
   if (error) return;
-  if (data && data.length) {
-    state = data.map((r) => ({ id: r.id, name: r.name, filters: r.filters }));
-    persist();
-    for (const l of listeners) l();
-  } else if (state.length) {
-    // First sign-in on this account: keep what the browser already had.
-    scheduleFiltersSync();
-  }
+  // Server is authoritative — an empty account stays empty.
+  state = (data ?? []).map((r) => ({ id: r.id, name: r.name, filters: r.filters }));
+  persist();
+  for (const l of listeners) l();
 }
 
 export function resetSavedFiltersForSignOut() {
   filtersUserId = null;
+  state = [];
   if (filtersTimer) {
     clearTimeout(filtersTimer);
     filtersTimer = null;
   }
+  for (const l of listeners) l();
 }
