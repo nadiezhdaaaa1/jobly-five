@@ -592,6 +592,7 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          activation_source: string
           billing_period: string | null
           cancel_at_period_end: boolean
           canceled_at: string | null
@@ -610,6 +611,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          activation_source?: string
           billing_period?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
@@ -628,6 +630,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          activation_source?: string
           billing_period?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
