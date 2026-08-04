@@ -592,6 +592,14 @@ function minuteKey(iso: string): string {
 }
 
 // Hooks
+// Re-renders on every tracker mutation. Use when reading non-reactive helpers
+// such as countActiveInColumn / countActiveWithStage from a component.
+export function useTrackerVersion(): number {
+  const get = () => getVersion();
+  useSyncExternalStore(subscribe, get, get);
+  return getVersion();
+}
+
 export function useJobRecord(id: string): JobRecord {
   const get = () => {
     ensure(id);
