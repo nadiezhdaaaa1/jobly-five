@@ -48,11 +48,13 @@ export function BoardColumnsDialog({
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape") return;
+      if (confirmReset) setConfirmReset(false);
+      else onClose();
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onClose, confirmReset]);
 
   const canAddInterview = useMemo(() => newInterviewTitle.trim().length > 0, [newInterviewTitle]);
 
