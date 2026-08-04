@@ -18,6 +18,8 @@ import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "
 import { linkConsentToAccount } from "@/lib/consent.functions";
 import { ensureUserProvisioned } from "@/lib/provisioning.functions";
 import { migrateLegacyConsent } from "@/lib/consent-migration";
+import { flushPendingSignupAcceptance } from "@/lib/policy-acceptance";
+import { ReconsentBanner } from "@/components/app/ReconsentBanner";
 
 /**
  * Claims the anonymous quiz draft for this account and copies the answers onto
@@ -68,6 +70,8 @@ function AuthedShell({ userId }: { userId: string }) {
       // whatever the browser still holds.
       void linkConsentToAccount().catch(() => undefined);
       void migrateLegacyConsent();
+      // Google signup parked its Terms/Privacy tick until an email existed.
+      void flushPendingSignupAcceptance();
     })();
     return () => {
       // Clear tracker if a different user signs in on the same tab.
@@ -93,7 +97,12 @@ function AuthedShell({ userId }: { userId: string }) {
   }, [account]);
   // Grace window: sign-in succeeds but lands on the restore screen, not the app.
   if (account.accountStatus === "pending_deletion") return <RestoreAccountScreen />;
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ReconsentBanner />
+    </>
+  );
 }
 
 export const Route = createFileRoute("/_authenticated")({
