@@ -992,7 +992,6 @@ function FiltersSidebar({
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
-  const activeCount = activeFilterCount(applied, profileRoles);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
