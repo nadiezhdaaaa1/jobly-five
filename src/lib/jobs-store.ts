@@ -248,4 +248,9 @@ export function useMatchedJobs(minScore = 70): Job[] {
 
 if (typeof window !== "undefined") {
   void loadJobs();
+  // Profile answers arrive asynchronously after sign-in; jobs scored before
+  // that must be re-scored or every match ring reflects an empty profile.
+  subscribeQuiz(() => {
+    if (dbJobs.length) recomputeJobs();
+  });
 }
