@@ -44,10 +44,13 @@ export type QuizAnswers = {
   visitedOptional?: ("stack" | "hard" | "tools" | "soft")[];
 };
 
+import { useSyncExternalStore } from "react";
+
 const LEGACY_KEY = "jobly.quiz";
 
 let answers: QuizAnswers = {};
 const listeners = new Set<() => void>();
+let version = 0;
 
 export function loadQuiz(): QuizAnswers {
   return answers;
@@ -55,6 +58,7 @@ export function loadQuiz(): QuizAnswers {
 
 export function saveQuiz(a: QuizAnswers) {
   answers = a ?? {};
+  version++;
   for (const l of listeners) l();
 }
 
@@ -72,6 +76,16 @@ export function subscribeQuiz(l: () => void) {
   return () => {
     listeners.delete(l);
   };
+}
+
+function getQuizVersion() {
+  return version;
+}
+
+/** Reactive read of the working answers; re-renders when the profile hydrates. */
+export function useQuiz(): QuizAnswers {
+  useSyncExternalStore(subscribeQuiz, getQuizVersion, getQuizVersion);
+  return answers;
 }
 
 /** Reads legacy sessionStorage answers once, then removes them. */

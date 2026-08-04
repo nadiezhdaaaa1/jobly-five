@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { loadQuiz } from "./quiz-store";
+import { loadQuiz, subscribeQuiz } from "./quiz-store";
 import { computeMatch, rolesOverlap, type DbJob } from "./match";
 import type { Job, JobSource, Source, DescriptionSection } from "./jobs-data";
 
