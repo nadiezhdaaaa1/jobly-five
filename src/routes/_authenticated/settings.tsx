@@ -1442,31 +1442,66 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       </div>
 
       {gConfirm ? (
-        <Modal onClose={() => setGConfirm(false)} title="Disconnect Google?">
+        <Modal onClose={() => setGConfirm(false)} title="Remove Google sign-in?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You&apos;ll sign in with {user?.email ?? "your email"} and your password instead.
+            This removes Google as a way to sign in to Jobly. You&apos;ll sign in with{" "}
+            {user?.email ?? "your email"} and your password instead. Nothing changes in your Google account.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
+              disabled={identityBusy}
               onClick={async () => {
-                if (!googleIdentity) return;
-                const { error } = await supabase.auth.unlinkIdentity(googleIdentity as never);
-                setGConfirm(false);
-                if (error) {
-                  onFlash("Couldn't disconnect Google. Try again.");
-                  return;
+                if (identityBusy) return;
+                setIdentityBusy(true);
+                setIdentityError(null);
+                try {
+                  // Re-check against the server right before acting: never unlink
+                  // the last usable way in.
+                  const { data: fresh, error: readErr } = await supabase.auth.getUserIdentities();
+                  if (readErr) {
+                    setIdentityError("We couldn't check your sign-in methods. Nothing was changed.");
+                    return;
+                  }
+                  const ids = fresh?.identities ?? [];
+                  const google = ids.find((i) => i.provider === "google");
+                  const hasOtherCredential = ids.some((i) => i.provider === "email");
+                  if (!google || ids.length < 2 || !hasOtherCredential) {
+                    setGConfirm(false);
+                    await loadIdentities();
+                    setIdentityError(
+                      "Google is your only way to sign in. Set a password first, then you can remove it."
+                    );
+                    void logSecurityEvent({
+                      data: { event: "identity_unlink_refused", reason: "no_other_credential" },
+                    }).catch(() => {});
+                    return;
+                  }
+                  const { error } = await supabase.auth.unlinkIdentity(google as never);
+                  if (error) {
+                    setGConfirm(false);
+                    setIdentityError(`We couldn't remove Google sign-in. ${error.message}`);
+                    void logSecurityEvent({
+                      data: { event: "identity_unlink_refused", reason: error.message },
+                    }).catch(() => {});
+                    return;
+                  }
+                  setGConfirm(false);
+                  await loadIdentities();
+                  void logSecurityEvent({ data: { event: "identity_unlinked" } }).catch(() => {});
+                  onFlash("Google sign-in removed.");
+                } finally {
+                  setIdentityBusy(false);
                 }
-                await loadIdentities();
-                onFlash("Google disconnected.");
               }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
-              Disconnect
+              {identityBusy ? "Removing…" : "Remove Google sign-in"}
             </button>
             <button
               type="button"
+              disabled={identityBusy}
               onClick={() => setGConfirm(false)}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
