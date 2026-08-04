@@ -46,6 +46,12 @@ import { MatchLine } from "@/components/app/MatchLine";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal, FollowUpDialog } from "@/components/app/ApplyModal";
 import { setDigestSession } from "@/lib/digest-session-store";
+import {
+  setJobInteraction,
+  clearJobInteraction,
+  type InteractionKind,
+} from "@/lib/job-interactions-store";
+import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
 
@@ -234,6 +240,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [reminderOpen, setReminderOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [dislikeOpen, setDislikeOpen] = useState(false);
+  const [pendingHide, setPendingHide] = useState<{ kind: InteractionKind; reason: string } | null>(null);
   const [applyOpen, setApplyOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
   const [followUpOpen, setFollowUpOpen] = useState(false);
@@ -824,7 +831,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       type="button"
                       role="menuitem"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                      onClick={() => { setStatus(job.id, "reported"); setFlagOpen(false); onClose(); }}
+                      onClick={() => { setFlagOpen(false); setPendingHide({ kind: "reported", reason: label }); }}
                     >
                       {label}
                     </button>
@@ -850,7 +857,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       type="button"
                       role="menuitem"
                       className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
-                      onClick={() => { setStatus(job.id, "dismissed"); setDislikeOpen(false); onClose(); }}
+                      onClick={() => { setDislikeOpen(false); setPendingHide({ kind: "disliked", reason: label }); }}
                     >
                       {label}
                     </button>
