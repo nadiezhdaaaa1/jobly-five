@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
+import { GoogleMark } from "@/components/site/GoogleMark";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
@@ -175,7 +176,7 @@ function MatchesPage() {
               disabled={submitting}
               className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
             >
-              <GoogleIcon />
+              <GoogleMark />
               Continue with Google
             </button>
 
@@ -302,16 +303,5 @@ function JobCard({ job }: { job: Job }) {
         ) : null}
       </article>
     </li>
-  );
-}
-
-function GoogleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.4 29.4 35.5 24 35.5c-6.4 0-11.5-5.1-11.5-11.5S17.6 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.9 6.4 29.2 4.5 24 4.5 13.2 4.5 4.5 13.2 4.5 24S13.2 43.5 24 43.5 43.5 34.8 43.5 24c0-1.2-.1-2.3-.3-3.5z" />
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.9 19 12.5 24 12.5c2.9 0 5.6 1.1 7.6 2.9l5.7-5.7C33.9 6.4 29.2 4.5 24 4.5 16.3 4.5 9.7 8.9 6.3 14.7z" />
-      <path fill="#4CAF50" d="M24 43.5c5.1 0 9.8-1.9 13.3-5.1l-6.2-5.1c-2 1.4-4.4 2.2-7.1 2.2-5.4 0-9.9-3.1-11.3-7.5l-6.5 5C9.6 39 16.2 43.5 24 43.5z" />
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.8-3.7 5l6.2 5.1c-.4.4 6.7-4.9 6.7-14.1 0-1.2-.1-2.3-.3-3.5z" />
-    </svg>
   );
 }
