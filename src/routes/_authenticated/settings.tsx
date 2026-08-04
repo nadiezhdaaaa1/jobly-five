@@ -1237,38 +1237,127 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [confirm, setConfirm] = useState("");
   const [showCur, setShowCur] = useState(false);
   const [showNew, setShowNew] = useState(false);
-  const [googleConnected, setGoogleConnected] = useState(true);
   const [gConfirm, setGConfirm] = useState(false);
+  // null = still reading the account's sign-in methods.
+  const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+  const [googleEmail, setGoogleEmail] = useState<string | null>(null);
+  const [googleIdentity, setGoogleIdentity] = useState<{ identity_id?: string } | null>(null);
+  const [settingPw, setSettingPw] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const valid = next.length >= 8 && next === confirm && current.length > 0;
+  const loadIdentities = async () => {
+    const { data } = await supabase.auth.getUser();
+    const ids = data.user?.identities ?? [];
+    setHasPassword(ids.some((i) => i.provider === "email"));
+    const g = ids.find((i) => i.provider === "google");
+    setGoogleIdentity((g as { identity_id?: string } | undefined) ?? null);
+    setGoogleEmail(
+      g ? ((g.identity_data?.["email"] as string | undefined) ?? data.user?.email ?? null) : null
+    );
+  };
+
+  useEffect(() => {
+    void loadIdentities();
+  }, []);
+
+  const needsCurrent = hasPassword === true;
   const mismatch = confirm.length > 0 && confirm !== next;
+  const valid = next.length >= 8 && next === confirm && (!needsCurrent || current.length > 0);
+  const canDisconnectGoogle = hasPassword === true;
+
+  async function submitPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!valid || busy) return;
+    setFormError(null);
+    setBusy(true);
+    try {
+      if (needsCurrent) {
+        const email = user?.email ?? "";
+        const { error: reauth } = await supabase.auth.signInWithPassword({
+          email,
+          password: current,
+        });
+        if (reauth) {
+          setFormError("That current password doesn't match. Try again.");
+          return;
+        }
+      }
+      const { error } = await supabase.auth.updateUser({ password: next });
+      if (error) {
+        setFormError(error.message);
+        return;
+      }
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+      setSettingPw(false);
+      await loadIdentities();
+      onFlash(needsCurrent ? "Password updated." : "Password set. You can now sign in with your email too.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <Card title="Security and sign in">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!valid) return;
-          setCurrent("");
-          setNext("");
-          setConfirm("");
-          onFlash("Password updated.");
-        }}
-        className="flex flex-col gap-3"
-      >
-        <PasswordField label="Current password" value={current} onChange={setCurrent} show={showCur} onToggle={() => setShowCur((v) => !v)} />
-        <PasswordField label="New password" value={next} onChange={setNext} show={showNew} onToggle={() => setShowNew((v) => !v)} hint="At least 8 characters" />
-        <PasswordField label="Confirm new password" value={confirm} onChange={setConfirm} show={showNew} onToggle={() => setShowNew((v) => !v)} error={mismatch ? "Passwords don't match" : undefined} />
-        <div>
+      {hasPassword === null ? (
+        <div className="flex flex-col gap-3" aria-hidden>
+          <div className="h-4 w-[130px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" />
+          <div className="h-10 w-full animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" />
+          <div className="h-10 w-[160px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" />
+        </div>
+      ) : hasPassword === false && !settingPw ? (
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            You sign in with Google. You don&apos;t have a password yet — you can add one as a second
+            way in, and Google will keep working.
+          </p>
           <button
-            type="submit"
-            disabled={!valid}
-            className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            type="button"
+            onClick={() => setSettingPw(true)}
+            className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
-            Update password
+            Set a password
           </button>
         </div>
-      </form>
+      ) : (
+        <form onSubmit={submitPassword} className="flex flex-col gap-3">
+          {needsCurrent ? (
+            <PasswordField label="Current password" value={current} onChange={setCurrent} show={showCur} onToggle={() => setShowCur((v) => !v)} />
+          ) : (
+            <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              Choose a password for {user?.email ?? "your email"}. Google sign-in keeps working.
+            </p>
+          )}
+          <PasswordField label="New password" value={next} onChange={setNext} show={showNew} onToggle={() => setShowNew((v) => !v)} hint="At least 8 characters" />
+          <PasswordField label="Confirm new password" value={confirm} onChange={setConfirm} show={showNew} onToggle={() => setShowNew((v) => !v)} error={mismatch ? "Passwords don't match" : undefined} />
+          {formError ? <span className="text-[12px] text-[color:var(--color-danger)]">{formError}</span> : null}
+          <div className="flex items-center gap-2">
+            <button
+              type="submit"
+              disabled={!valid || busy}
+              className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+            >
+              {busy ? "Saving…" : needsCurrent ? "Update password" : "Save password"}
+            </button>
+            {!needsCurrent ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSettingPw(false);
+                  setNext("");
+                  setConfirm("");
+                  setFormError(null);
+                }}
+                className="inline-flex h-10 items-center rounded-[4px] px-3 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
+        </form>
+      )}
 
       <div className="mt-6 border-t pt-4">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>
@@ -1278,23 +1367,39 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[14px] text-[color:var(--color-foreground)]">Google</div>
-            <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
-              {googleConnected ? "Connected as serjkrush@gmail.com" : "Not connected"}
-            </div>
+            {hasPassword === null ? (
+              <div className="mt-1 h-3 w-[160px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" aria-hidden />
+            ) : (
+              <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
+                {googleIdentity ? `Connected as ${googleEmail ?? "your Google account"}` : "Not connected"}
+              </div>
+            )}
           </div>
           <div className="flex shrink-0 justify-end">
-            {googleConnected ? (
-              <button
-                type="button"
-                onClick={() => setGConfirm(true)}
-                className="text-[13px] text-[color:var(--color-text-muted)] hover:underline"
+            {hasPassword === null ? null : googleIdentity ? (
+              <IconTooltip
+                label={
+                  canDisconnectGoogle
+                    ? "Disconnect Google"
+                    : "Set a password first so you don't lose access."
+                }
               >
-                Disconnect
-              </button>
+                <button
+                  type="button"
+                  disabled={!canDisconnectGoogle}
+                  onClick={() => setGConfirm(true)}
+                  className="text-[13px] text-[color:var(--color-text-muted)] hover:underline disabled:cursor-not-allowed disabled:no-underline disabled:opacity-50"
+                >
+                  Disconnect
+                </button>
+              </IconTooltip>
             ) : (
               <button
                 type="button"
-                onClick={() => { setGoogleConnected(true); onFlash("Google connected."); }}
+                onClick={async () => {
+                  const { error } = await supabase.auth.linkIdentity({ provider: "google" });
+                  if (error) onFlash("Couldn't connect Google. Try again.");
+                }}
                 className="inline-flex h-9 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Connect
@@ -1302,6 +1407,11 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             )}
           </div>
         </div>
+        {hasPassword === false && googleIdentity ? (
+          <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            Google is your only way to sign in right now.
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-6 border-t pt-4">
@@ -1320,12 +1430,22 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       {gConfirm ? (
         <Modal onClose={() => setGConfirm(false)} title="Disconnect Google?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You'll sign in with your email and password instead.
+            You&apos;ll sign in with {user?.email ?? "your email"} and your password instead.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setGoogleConnected(false); setGConfirm(false); onFlash("Google disconnected."); }}
+              onClick={async () => {
+                if (!googleIdentity) return;
+                const { error } = await supabase.auth.unlinkIdentity(googleIdentity as never);
+                setGConfirm(false);
+                if (error) {
+                  onFlash("Couldn't disconnect Google. Try again.");
+                  return;
+                }
+                await loadIdentities();
+                onFlash("Google disconnected.");
+              }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
