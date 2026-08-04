@@ -227,6 +227,44 @@ export type Database = {
         }
         Relationships: []
       }
+      job_interactions: {
+        Row: {
+          created_at: string
+          job_id: string
+          kind: string
+          note: string | null
+          reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          job_id: string
+          kind: string
+          note?: string | null
+          reason?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          job_id?: string
+          kind?: string
+          note?: string | null
+          reason?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_interactions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_sources: {
         Row: {
           ats: string
