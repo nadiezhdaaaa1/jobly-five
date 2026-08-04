@@ -780,6 +780,7 @@ function TrackerScreen() {
   const { loading: entLoading } = useEntitlements();
   useTrackerVersion();
   const { jobs: allJobs, loaded: jobsLoaded } = useJobs();
+  const interactionHidden = useHiddenJobIds();
   const trackerHydrated = useTrackerHydrated();
   const columns = useColumns();
   const [openJob, setOpenJob] = useState<Job | null>(null);
