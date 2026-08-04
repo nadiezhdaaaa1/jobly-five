@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      auth_attempts: {
+        Row: {
+          created_at: string
+          email_hash: string | null
+          id: string
+          ip: unknown
+          kind: string
+        }
+        Insert: {
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip?: unknown
+          kind: string
+        }
+        Update: {
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip?: unknown
+          kind?: string
+        }
+        Relationships: []
+      }
       blocked_companies: {
         Row: {
           company: string
@@ -761,6 +785,7 @@ export type Database = {
         Args: { _email: string; _meta: Json; _user_id: string }
         Returns: undefined
       }
+      purge_auth_attempts: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
