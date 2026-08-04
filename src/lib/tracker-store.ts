@@ -356,6 +356,7 @@ export function markApplied(
   if (prev !== "applied") {
     logHistory(r, "applied", `Applied${suffix}`);
   }
+  reconcileColumn(r);
   sync(id);
   emit();
 }
@@ -390,6 +391,7 @@ export function restoreArchived(id: string) {
   r.status = (r.lastStatus ?? "saved") as JobStatus;
   r.archived = false;
   r.movedAt = today();
+  reconcileColumn(r);
   sync(id);
   emit();
 }
@@ -735,6 +737,14 @@ export async function hydrateTrackerFromDb(userId: string): Promise<void> {
     }
     hydratedUserId = userId;
     syncEnabled = true;
+    // Repair rows persisted before column/status reconciliation existed.
+    const stale: string[] = [];
+    for (const [jobId, rec] of records) {
+      const before = rec.columnId;
+      reconcileColumn(rec);
+      if (before && rec.columnId !== before) stale.push(jobId);
+    }
+    for (const jobId of stale) sync(jobId);
     emit();
   })();
   try {
