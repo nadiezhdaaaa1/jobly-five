@@ -970,6 +970,7 @@ function FiltersSidebar({
   // toggle which of those roles are active — never add/remove them here.
   // Read reactively: the profile hydrates from the server after mount.
   const quiz = useQuiz();
+  const quizHydrated = useQuizHydrated();
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
@@ -1035,7 +1036,13 @@ function FiltersSidebar({
           </button>
         </div>
         <FilterSection title="Roles" collapseSignal={collapseSignal}>
-          {profileRoles.length === 0 ? (
+          {!quizHydrated ? (
+            <div className="flex flex-wrap gap-1.5" aria-label="Loading your roles">
+              {[86, 64, 108, 72].map((w) => (
+                <div key={w} className="h-[28px] rounded-[4px] skeleton" style={{ width: w }} />
+              ))}
+            </div>
+          ) : profileRoles.length === 0 ? (
             <p className="text-[12px] text-[color:var(--color-text-muted)]">
               Add roles in your{" "}
               <Link to="/profile" className="font-semibold text-[color:var(--color-green)] hover:underline">profile</Link>
