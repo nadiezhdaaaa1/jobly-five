@@ -498,6 +498,9 @@ export function setCardColumn(id: string, columnId: string, stage?: JobStatus) {
 export function removeFromTracker(id: string) {
   const r = ensure(id);
   r.status = "default";
+  r.archived = false;
+  delete r.lastStatus;
+  delete r.columnId;
   delete r.savedAt;
   delete r.appliedAt;
   delete r.interviewAt;
