@@ -5,6 +5,7 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
 import { useEntitlements } from "@/lib/entitlements-provider";
 import {
@@ -1418,6 +1419,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         <button
           type="button"
           onClick={async () => {
+            clearUserStateForSignOut();
             await supabase.auth.signOut();
             navigate({ to: "/login" });
           }}
@@ -1610,7 +1612,9 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
         },
       },
     });
-    // Logged out immediately — data stays intact for the grace window.
+    // Logged out immediately — server data stays intact for the grace window,
+    // but nothing about this account may linger in the browser.
+    clearUserStateForSignOut();
     await supabase.auth.signOut();
     window.location.href = "/";
   }
