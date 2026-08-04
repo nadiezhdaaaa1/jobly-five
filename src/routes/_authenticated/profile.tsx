@@ -59,7 +59,7 @@ import {
   type UploadErrorCode,
 } from "@/lib/resume-documents-store";
 import { usePlan, isPro } from "@/lib/plan-store";
-import { loadQuiz, quizSummary, updateQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { quizSummary, updateQuiz, useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
   FieldStep,
@@ -170,9 +170,8 @@ function ProfileScreen() {
   const tab: TabKey = search.tab ?? "preferences";
   const setTab = (t: TabKey) => navigate({ to: "/profile", search: { tab: t }, replace: true });
 
-  const [quiz, setQuiz] = useState<QuizAnswers>(() => loadQuiz());
-  useEffect(() => setQuiz(loadQuiz()), []);
-  const refreshQuiz = () => setQuiz({ ...loadQuiz() });
+  const quiz = useQuiz();
+  const quizHydrated = useQuizHydrated();
 
   const resume = useResumeState();
   const { docs: resumeDocs, loading: resumeDocsLoading, refresh: refreshResumeDocs } = useResumeDocuments();
@@ -295,8 +294,8 @@ function ProfileScreen() {
               <PreferencesTab
                 quiz={quiz}
                 cfg={cfg}
+                loading={!quizHydrated}
                 onSaved={() => {
-                  refreshQuiz();
                   toast.show("Preferences updated");
                 }}
               />
@@ -641,10 +640,12 @@ type PrefKey =
 function PreferencesTab({
   quiz,
   cfg,
+  loading,
   onSaved,
 }: {
   quiz: QuizAnswers;
   cfg: ReturnType<typeof fieldConfig>;
+  loading?: boolean;
   onSaved: () => void;
 }) {
   const s = quizSummary(quiz);
@@ -690,17 +691,24 @@ function PreferencesTab({
           .map((row, idx, arr) => (
             <div
               key={row.key}
-              role="button"
-              tabIndex={0}
-              onClick={() => setEditing(row.key)}
+              role={loading ? undefined : "button"}
+              tabIndex={loading ? -1 : 0}
+              onClick={() => {
+                if (loading) return;
+                setEditing(row.key);
+              }}
               onKeyDown={(e) => {
+                if (loading) return;
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   setEditing(row.key);
                 }
               }}
-              aria-label={`Edit ${row.label}`}
-              className={`group/row flex cursor-pointer flex-col gap-2 p-4 transition-colors hover:bg-[#F9FBFB] focus:outline-none focus-visible:bg-[#F9FBFB] sm:flex-row sm:items-start sm:gap-4 ${
+              aria-label={loading ? undefined : `Edit ${row.label}`}
+              aria-busy={loading || undefined}
+              className={`group/row flex flex-col gap-2 p-4 transition-colors focus:outline-none sm:flex-row sm:items-start sm:gap-4 ${
+                loading ? "" : "cursor-pointer hover:bg-[#F9FBFB] focus-visible:bg-[#F9FBFB]"
+              } ${
                 idx < arr.length - 1 ? "border-b border-[color:var(--color-border)]" : ""
               }`}
             >
@@ -708,6 +716,11 @@ function PreferencesTab({
                 <span className="body-small text-[#4B585B]">{row.label}</span>
                 {row.key === "stack" ? <Tag>optional</Tag> : null}
               </div>
+              {loading ? (
+                <div className="min-w-0 flex-1 pt-[3px]">
+                  <div className="h-[14px] w-2/3 animate-pulse rounded-[4px] bg-[color:var(--color-border)]" />
+                </div>
+              ) : (
               <div
                 className={`body-small min-w-0 flex-1 break-words ${
                   row.value
@@ -717,9 +730,12 @@ function PreferencesTab({
               >
                 {row.value || "Not set"}
               </div>
+              )}
               <span
                 aria-hidden="true"
-                className="pointer-events-none inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] lg:opacity-0 lg:transition-opacity lg:group-hover/row:opacity-100"
+                className={`pointer-events-none inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] lg:opacity-0 lg:transition-opacity ${
+                  loading ? "" : "lg:group-hover/row:opacity-100"
+                }`}
               >
                 <Pencil size={16} strokeWidth={1.8} />
               </span>
