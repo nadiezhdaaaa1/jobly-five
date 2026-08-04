@@ -45,6 +45,7 @@ import {
   setReminder as storeSetReminder,
   setStatus,
   setCardColumn,
+  removeFromTracker,
   useJobRecord,
   getTrackerEntries,
   useTrackerHydrated,
@@ -55,6 +56,14 @@ import { resolveColumnForCard, useColumns, statusForKind, type BoardColumn, type
 import { usePlan, isPro } from "@/lib/plan-store";
 import { useEntitlements } from "@/lib/entitlements-provider";
 import { blockCompany } from "@/lib/blocked-companies-store";
+import { toast as sonnerToast } from "sonner";
+import {
+  setJobInteraction,
+  clearJobInteraction,
+  useHiddenJobIds,
+  type InteractionKind,
+} from "@/lib/job-interactions-store";
+import { HideJobDialog } from "@/components/app/HideJobDialog";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: () => ({
