@@ -35,6 +35,8 @@ function LoginPage() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   /** Set by the server once this IP has failed sign-in three times. */
   const [needCaptcha, setNeedCaptcha] = useState(false);
+  /** Forgot-password was clicked, so the widget is shown for that request too. */
+  const [resetRequested, setResetRequested] = useState(false);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -205,6 +207,9 @@ function LoginPage() {
             </label>
             {error && (
               <span className="text-sm text-[color:var(--color-danger)]">{error}</span>
+            )}
+            {captchaConfigured && (needCaptcha || resetRequested) && (
+              <TurnstileWidget onToken={setCaptchaToken} className="mt-1" />
             )}
             <div className="flex justify-end">
               <button
