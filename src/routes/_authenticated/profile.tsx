@@ -2212,15 +2212,24 @@ function AchievementsTab({
         {extras.applyMode === "blocks" ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {blocks.map((b) => {
-              const selected = extras.applyBlocks.includes(b);
+              const empty = entriesFor(b).length === 0;
+              const selected = !empty && extras.applyBlocks.includes(b);
               return (
                 <button
                   key={b}
                   type="button"
                   aria-pressed={selected}
+                  disabled={empty}
+                  title={empty ? `No entries in ${ACHIEVEMENT_LABELS[b]} yet` : undefined}
                   onClick={() => toggleApplyBlock(b)}
-                  className={`inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors ${
-                    selected
+                  className={`inline-flex items-center rounded-[4px] border text-sm transition-colors ${
+                    empty
+                      ? "cursor-not-allowed border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] text-[color:var(--color-text-secondary)] opacity-60"
+                      : "text-[color:var(--color-foreground)]"
+                  } ${
+                    empty
+                      ? ""
+                      : selected
                       ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                       : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                   }`}
