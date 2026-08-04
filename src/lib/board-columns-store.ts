@@ -153,54 +153,6 @@ function ensureInvariants(list: BoardColumn[]): BoardColumn[] {
   return out;
 }
 
-function migrateFromV1(raw: string): BoardColumn[] | null {
-  try {
-    const parsed = JSON.parse(raw) as Array<{ id?: string; title?: string; stage?: string }>;
-    if (!Array.isArray(parsed) || !parsed.length) return null;
-    const stageToKind: Record<string, ColumnKind> = {
-      saved: "saved",
-      applied: "applied",
-      interview_screen: "interview",
-      interview_tech: "interview",
-      test_task: "interview",
-      offer: "offer",
-      rejection: "rejected",
-    };
-    const defaultStages: Record<string, string[]> = {
-      interview_screen: ["Recruiter screen", "Hiring manager screen"],
-      interview_tech: ["Tech screen", "System design"],
-      test_task: ["Assigned", "In progress", "Submitted"],
-      offer: ["Received", "Negotiating", "Accepted"],
-    };
-    const idMap: Record<string, string> = {
-      saved: SINGLETON_IDS.saved,
-      applied: SINGLETON_IDS.applied,
-      interview_screen: "col-interview-screen",
-      interview_tech: "col-interview-tech",
-      test_task: "col-interview-test",
-      offer: SINGLETON_IDS.offer,
-      rejection: SINGLETON_IDS.rejected,
-    };
-    const converted: BoardColumn[] = parsed
-      .map((c) => {
-        const stage = c.stage ?? "";
-        const kind = stageToKind[stage];
-        if (!kind) return null;
-        const id = idMap[stage] ?? c.id ?? `col-${Math.random().toString(36).slice(2, 9)}`;
-        return {
-          id,
-          kind,
-          title: c.title || KIND_LABEL[kind],
-          stages: kind === "interview" || kind === "offer" ? [...(defaultStages[stage] ?? [])] : [],
-        } as BoardColumn;
-      })
-      .filter(Boolean) as BoardColumn[];
-    return ensureInvariants(converted);
-  } catch {
-    return null;
-  }
-}
-
 /** Reads this account's cached column set; null when there is nothing usable. */
 function loadCached(userId: string): BoardColumn[] | null {
   const parsed = readUserCache<BoardColumn[]>(CACHE, userId);
