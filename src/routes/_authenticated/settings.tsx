@@ -821,10 +821,27 @@ function PlanCardsBlock({
 
             {/* Button */}
             <div className="relative" style={{ zIndex: 2 }}>
+              {!isPlanPro && needsBillingTerms && (
+                <label className="mb-3 flex items-start gap-2.5 text-[13px] leading-[19.5px] text-[#090B0C]">
+                  <input
+                    type="checkbox"
+                    checked={billingTermsTicked}
+                    onChange={(e) => setBillingTermsTicked(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded-[4px]"
+                  />
+                  <span>
+                    I accept the{" "}
+                    <Link to="/legal/billing" className="underline">
+                      Subscription and Billing Terms
+                    </Link>
+                    , including automatic renewal until cancelled.
+                  </span>
+                </label>
+              )}
               <button
                 type="button"
                 onClick={onProClick}
-                disabled={isPlanPro}
+                disabled={isPlanPro || (needsBillingTerms && !billingTermsTicked)}
                 className="w-full inline-flex items-center justify-center"
                 style={{
                   background: "#00F1A9",
@@ -836,8 +853,9 @@ function PlanCardsBlock({
                   fontWeight: 400,
                   fontSize: 14,
                   lineHeight: "20px",
-                  opacity: isPlanPro ? 0.6 : 1,
-                  cursor: isPlanPro ? "default" : "pointer",
+                  opacity: isPlanPro || (needsBillingTerms && !billingTermsTicked) ? 0.6 : 1,
+                  cursor:
+                    isPlanPro || (needsBillingTerms && !billingTermsTicked) ? "default" : "pointer",
                 }}
               >
                 {proLabel}
