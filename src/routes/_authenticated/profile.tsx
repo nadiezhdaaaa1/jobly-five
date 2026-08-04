@@ -1695,7 +1695,7 @@ function CoverEditor({
             );
           })}
           <IconTooltip label="Link">
-            <button type="button" aria-label="Link" onClick={() => { const url = window.prompt("Link URL"); if (url) exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+            <button type="button" aria-label="Link" onClick={() => { const raw = window.prompt("Link URL"); if (raw === null) return; const url = normalizeUrl(raw); if (!url) { sonnerToast("That doesn't look like a valid link."); return; } exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
               <LinkIcon size={15} strokeWidth={1.8} />
             </button>
           </IconTooltip>
