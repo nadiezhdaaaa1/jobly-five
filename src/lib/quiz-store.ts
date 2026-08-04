@@ -69,6 +69,14 @@ export function clearQuiz() {
   saveQuiz({});
 }
 
+/** Another account signing in on this tab must not inherit these answers. */
+export function resetQuizForSignOut() {
+  answers = {};
+  hydrated = false;
+  version++;
+  for (const l of listeners) l();
+}
+
 export function updateQuiz(patch: Partial<QuizAnswers>) {
   saveQuiz({ ...answers, ...patch });
   void persistQuizToProfile();

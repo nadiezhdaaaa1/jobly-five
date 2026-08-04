@@ -3,13 +3,13 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { hydrateTrackerFromDb, resetTrackerForSignOut } from "@/lib/tracker-store";
 import { loadJobs } from "@/lib/jobs-store";
-import { hydrateAccountFromDb, isPastGrace, useAccount } from "@/lib/account-store";
+import { hydrateAccountFromDb, isPastGrace, resetAccountForSignOut, useAccount } from "@/lib/account-store";
 import { clearLocalUserData } from "@/lib/local-data";
 import { RestoreAccountScreen } from "@/components/app/RestoreAccountScreen";
 import { EntitlementProvider } from "@/lib/entitlements-provider";
 import { claimQuizDraft } from "@/lib/quiz-draft.functions";
 import { clearDraftToken, getDraftToken } from "@/lib/quiz-draft-store";
-import { hydrateQuizFromProfile } from "@/lib/quiz-store";
+import { hydrateQuizFromProfile, resetQuizForSignOut } from "@/lib/quiz-store";
 import { hydrateBoardColumnsFromDb, resetBoardColumnsForSignOut } from "@/lib/board-columns-store";
 import { hydrateProfileExtrasFromDb, resetProfileExtrasForSignOut } from "@/lib/profile-store";
 import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resume-store";
@@ -57,7 +57,7 @@ function AuthedShell({ userId }: { userId: string }) {
       }
       void loadJobs();
       void hydrateTrackerFromDb(userId);
-      void hydrateAccountFromDb();
+      void hydrateAccountFromDb(userId);
       void claimAndHydrateQuiz();
       void hydrateBoardColumnsFromDb(userId);
       void hydrateProfileExtrasFromDb(userId);
@@ -77,6 +77,8 @@ function AuthedShell({ userId }: { userId: string }) {
       resetWorkHistoryForSignOut();
       resetSavedFiltersForSignOut();
       resetBlockedCompaniesForSignOut();
+      resetQuizForSignOut();
+      resetAccountForSignOut();
     };
   }, [userId]);
   // Grace window elapsed: the purge job owns the server side, so all we can do

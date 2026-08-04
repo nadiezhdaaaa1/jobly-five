@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 // ------- Types -------
 
@@ -63,7 +64,8 @@ export type ProfileExtras = {
   applyBlocks: AchievementBlockKey[];
 };
 
-const KEY = "jobly.profile.extras";
+const LEGACY_KEY = "jobly.profile.extras";
+const CACHE = "profile.extras";
 
 function uid() {
   return Math.random().toString(36).slice(2, 10);
@@ -110,33 +112,22 @@ function seed(): ProfileExtras {
   };
 }
 
-function load(): ProfileExtras {
-  if (typeof window === "undefined") return seed();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return seed();
-    const parsed = JSON.parse(raw) as Partial<ProfileExtras>;
-    const base = seed();
-    return {
-      ...base,
-      ...parsed,
-      achievements: { ...base.achievements, ...(parsed.achievements ?? {}) },
-    };
-  } catch {
-    return seed();
-  }
+function merge(partial: Partial<ProfileExtras> | null | undefined): ProfileExtras {
+  const base = seed();
+  if (!partial) return base;
+  return {
+    ...base,
+    ...partial,
+    achievements: { ...base.achievements, ...(partial.achievements ?? {}) },
+  };
 }
 
-let state: ProfileExtras = load();
+// Starts from defaults: the cache is only read once we know the account.
+let state: ProfileExtras = seed();
 const listeners = new Set<() => void>();
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, extrasUserId, state);
 }
 
 function emit() {
@@ -533,9 +524,15 @@ function scheduleExtrasSync() {
   }, 400);
 }
 
-/** Loads account-stored extras; writes the local set once when none exist yet. */
+/** Loads this account's extras. The server is the only source of truth. */
 export async function hydrateProfileExtrasFromDb(userId: string) {
   extrasUserId = userId;
+  dropLegacyCache(LEGACY_KEY);
+  const cached = readUserCache<Partial<ProfileExtras>>(CACHE, userId);
+  if (cached && Object.keys(cached).length) {
+    state = merge(cached);
+    for (const l of listeners) l();
+  }
   const { data, error } = await supabase
     .from("profiles")
     .select("profile_extras")
@@ -543,24 +540,17 @@ export async function hydrateProfileExtrasFromDb(userId: string) {
     .maybeSingle();
   if (error) return;
   const remote = data?.profile_extras as Partial<ProfileExtras> | null;
-  if (remote && Object.keys(remote).length) {
-    const base = seed();
-    state = {
-      ...base,
-      ...remote,
-      achievements: { ...base.achievements, ...(remote.achievements ?? {}) },
-    };
-    persist();
-    for (const l of listeners) l();
-  } else {
-    scheduleExtrasSync();
-  }
+  state = merge(remote);
+  persist();
+  for (const l of listeners) l();
 }
 
 export function resetProfileExtrasForSignOut() {
   extrasUserId = null;
+  state = seed();
   if (extrasTimer) {
     clearTimeout(extrasTimer);
     extrasTimer = null;
   }
+  for (const l of listeners) l();
 }

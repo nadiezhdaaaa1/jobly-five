@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 // ---------- Types ----------
 
@@ -71,8 +72,9 @@ export const DEFAULT_COLUMNS: BoardColumn[] = [
   { id: SINGLETON_IDS.rejected, kind: "rejected", title: "Rejected", stages: [] },
 ];
 
-const STORAGE_KEY = "jobly:board-columns:v2";
-const LEGACY_STORAGE_KEY = "jobly:board-columns:v1";
+const CACHE = "board-columns";
+// Pre-namespacing keys: dropped on hydrate, never uploaded to an account.
+const LEGACY_STORAGE_KEYS = ["jobly:board-columns:v2", "jobly:board-columns:v1"];
 
 // Map legacy v1 stage identifiers → new column ids (used when migrating a
 // v1-persisted layout and when translating cards whose `columnId` still
@@ -87,7 +89,8 @@ export const LEGACY_STAGE_TO_COLUMN_ID: Record<string, string> = {
   rejection: SINGLETON_IDS.rejected,
 };
 
-let columns: BoardColumn[] = load();
+// Starts from defaults: the per-account cache is read on hydrate.
+let columns: BoardColumn[] = defaults();
 const listeners = new Set<() => void>();
 let version = 0;
 
@@ -150,99 +153,23 @@ function ensureInvariants(list: BoardColumn[]): BoardColumn[] {
   return out;
 }
 
-function migrateFromV1(raw: string): BoardColumn[] | null {
-  try {
-    const parsed = JSON.parse(raw) as Array<{ id?: string; title?: string; stage?: string }>;
-    if (!Array.isArray(parsed) || !parsed.length) return null;
-    const stageToKind: Record<string, ColumnKind> = {
-      saved: "saved",
-      applied: "applied",
-      interview_screen: "interview",
-      interview_tech: "interview",
-      test_task: "interview",
-      offer: "offer",
-      rejection: "rejected",
-    };
-    const defaultStages: Record<string, string[]> = {
-      interview_screen: ["Recruiter screen", "Hiring manager screen"],
-      interview_tech: ["Tech screen", "System design"],
-      test_task: ["Assigned", "In progress", "Submitted"],
-      offer: ["Received", "Negotiating", "Accepted"],
-    };
-    const idMap: Record<string, string> = {
-      saved: SINGLETON_IDS.saved,
-      applied: SINGLETON_IDS.applied,
-      interview_screen: "col-interview-screen",
-      interview_tech: "col-interview-tech",
-      test_task: "col-interview-test",
-      offer: SINGLETON_IDS.offer,
-      rejection: SINGLETON_IDS.rejected,
-    };
-    const converted: BoardColumn[] = parsed
-      .map((c) => {
-        const stage = c.stage ?? "";
-        const kind = stageToKind[stage];
-        if (!kind) return null;
-        const id = idMap[stage] ?? c.id ?? `col-${Math.random().toString(36).slice(2, 9)}`;
-        return {
-          id,
-          kind,
-          title: c.title || KIND_LABEL[kind],
-          stages: kind === "interview" || kind === "offer" ? [...(defaultStages[stage] ?? [])] : [],
-        } as BoardColumn;
-      })
-      .filter(Boolean) as BoardColumn[];
-    return ensureInvariants(converted);
-  } catch {
-    return null;
-  }
-}
-
-function load(): BoardColumn[] {
-  if (typeof window === "undefined") return defaults();
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as BoardColumn[];
-      if (Array.isArray(parsed) && parsed.length) {
-        const clean = parsed
-          .filter((c) => c && typeof c.id === "string" && typeof c.title === "string" && validKind(c.kind))
-          .map((c) => ({
-            id: c.id,
-            kind: c.kind,
-            title: c.title,
-            stages: Array.isArray(c.stages) ? c.stages.filter((s) => typeof s === "string") : [],
-          }));
-        if (clean.length) return ensureInvariants(clean);
-      }
-    }
-    // One-time migration from v1
-    const legacy = window.localStorage.getItem(LEGACY_STORAGE_KEY);
-    if (legacy) {
-      const migrated = migrateFromV1(legacy);
-      if (migrated) {
-        try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-          window.localStorage.removeItem(LEGACY_STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
-        return migrated;
-      }
-    }
-  } catch {
-    /* fall through */
-  }
-  return defaults();
+/** Reads this account's cached column set; null when there is nothing usable. */
+function loadCached(userId: string): BoardColumn[] | null {
+  const parsed = readUserCache<BoardColumn[]>(CACHE, userId);
+  if (!Array.isArray(parsed) || !parsed.length) return null;
+  const clean = parsed
+    .filter((c) => c && typeof c.id === "string" && typeof c.title === "string" && validKind(c.kind))
+    .map((c) => ({
+      id: c.id,
+      kind: c.kind,
+      title: c.title,
+      stages: Array.isArray(c.stages) ? c.stages.filter((s) => typeof s === "string") : [],
+    }));
+  return clean.length ? ensureInvariants(clean) : null;
 }
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(columns));
-  } catch {
-    // ignore quota errors
-  }
+  writeUserCache(CACHE, currentUserId, columns);
 }
 
 function emit() {
@@ -493,11 +420,14 @@ function applyRemote(next: BoardColumn[]) {
 }
 
 /**
- * Loads the account's column set. When the account has none yet, the local set
- * (or the defaults) is written once so existing cards keep resolving.
+ * Loads the account's column set. The server is the only source of truth; when
+ * the account has none yet, the defaults are written for that account.
  */
 export async function hydrateBoardColumnsFromDb(userId: string) {
   currentUserId = userId;
+  dropLegacyCache(...LEGACY_STORAGE_KEYS);
+  const cached = loadCached(userId);
+  if (cached) applyRemote(cached);
   const { data, error } = await supabase
     .from("board_columns")
     .select("column_id, kind, title, stages, position")
@@ -516,6 +446,8 @@ export async function hydrateBoardColumnsFromDb(userId: string) {
         })),
     );
   } else {
+    // Fresh account: start from the defaults, not from whatever this browser held.
+    applyRemote(defaults());
     await pushColumns();
   }
 }
@@ -523,6 +455,9 @@ export async function hydrateBoardColumnsFromDb(userId: string) {
 /** Another account signing in on this tab must not inherit these columns. */
 export function resetBoardColumnsForSignOut() {
   currentUserId = null;
+  columns = defaults();
+  version++;
+  listeners.forEach((l) => l());
   if (syncTimer) {
     clearTimeout(syncTimer);
     syncTimer = null;

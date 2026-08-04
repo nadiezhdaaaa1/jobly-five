@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { deletionDateFrom } from "@/config/account";
 import { setPlan } from "@/lib/plan-store";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 import {
   getAccountState,
   requestDeletionOnServer,
@@ -18,42 +19,34 @@ export type AccountState = {
   deletionScheduledFor: string | null;
 };
 
-const KEY = "jobly.account";
+const LEGACY_KEY = "jobly.account";
+const CACHE = "account";
+
+// Set once the signed-in user is known; the cache is per account.
+let accountUserId: string | null = null;
 
 function activeState(): AccountState {
   return { accountStatus: "active", deletionRequestedAt: null, deletionScheduledFor: null };
 }
 
-function read(): AccountState {
-  if (typeof window === "undefined") return activeState();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return activeState();
-    const p = JSON.parse(raw) as Partial<AccountState>;
-    if (p?.accountStatus === "pending_deletion" && p.deletionRequestedAt) {
-      return {
-        accountStatus: "pending_deletion",
-        deletionRequestedAt: p.deletionRequestedAt,
-        deletionScheduledFor:
-          p.deletionScheduledFor ?? deletionDateFrom(new Date(p.deletionRequestedAt)).toISOString(),
-      };
-    }
-  } catch {
-    /* ignore */
+function fromCache(p: Partial<AccountState> | null): AccountState {
+  if (p?.accountStatus === "pending_deletion" && p.deletionRequestedAt) {
+    return {
+      accountStatus: "pending_deletion",
+      deletionRequestedAt: p.deletionRequestedAt,
+      deletionScheduledFor:
+        p.deletionScheduledFor ?? deletionDateFrom(new Date(p.deletionRequestedAt)).toISOString(),
+    };
   }
   return activeState();
 }
 
-let state: AccountState = read();
+let state: AccountState = activeState();
 const listeners = new Set<() => void>();
 
 function commit(next: AccountState) {
   state = next;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, accountUserId, state);
   listeners.forEach((l) => l());
 }
 
@@ -97,7 +90,13 @@ export async function restoreAccountServer() {
 }
 
 /** Pull the authoritative status from the database after sign-in. */
-export async function hydrateAccountFromDb() {
+export async function hydrateAccountFromDb(userId?: string) {
+  if (userId) {
+    accountUserId = userId;
+    dropLegacyCache(LEGACY_KEY);
+    state = fromCache(readUserCache<Partial<AccountState>>(CACHE, userId));
+    listeners.forEach((l) => l());
+  }
   try {
     const next = await getAccountState({});
     commit(next);
@@ -105,6 +104,13 @@ export async function hydrateAccountFromDb() {
   } catch {
     return state;
   }
+}
+
+/** Another account signing in on this tab must not inherit this status. */
+export function resetAccountForSignOut() {
+  accountUserId = null;
+  state = activeState();
+  listeners.forEach((l) => l());
 }
 
 /** Restore during the grace window. Data comes back as-is; plan stays Free. */

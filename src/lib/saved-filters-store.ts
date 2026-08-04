@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 export type SavedFilter<T = unknown> = {
   id: string;
@@ -7,32 +8,17 @@ export type SavedFilter<T = unknown> = {
   filters: T;
 };
 
-const KEY = "jobly.savedFilters.v1";
+const LEGACY_KEY = "jobly.savedFilters.v1";
+const CACHE = "savedFilters";
 
 export const SAVED_FILTER_LIMIT = 10;
 
-function load(): SavedFilter[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as SavedFilter[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-let state: SavedFilter[] = load();
+// Starts empty: the per-account cache is read on hydrate.
+let state: SavedFilter[] = [];
 const listeners = new Set<() => void>();
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, filtersUserId, state);
 }
 
 function emit() {
@@ -126,26 +112,30 @@ async function pushFilters() {
 
 export async function hydrateSavedFiltersFromDb(userId: string) {
   filtersUserId = userId;
+  dropLegacyCache(LEGACY_KEY);
+  const cached = readUserCache<SavedFilter[]>(CACHE, userId);
+  if (Array.isArray(cached) && cached.length) {
+    state = cached;
+    for (const l of listeners) l();
+  }
   const { data, error } = await supabase
     .from("saved_filters")
     .select("id, name, filters")
     .eq("user_id", userId)
     .order("created_at", { ascending: true });
   if (error) return;
-  if (data && data.length) {
-    state = data.map((r) => ({ id: r.id, name: r.name, filters: r.filters }));
-    persist();
-    for (const l of listeners) l();
-  } else if (state.length) {
-    // First sign-in on this account: keep what the browser already had.
-    scheduleFiltersSync();
-  }
+  // Server is authoritative — an empty account stays empty.
+  state = (data ?? []).map((r) => ({ id: r.id, name: r.name, filters: r.filters }));
+  persist();
+  for (const l of listeners) l();
 }
 
 export function resetSavedFiltersForSignOut() {
   filtersUserId = null;
+  state = [];
   if (filtersTimer) {
     clearTimeout(filtersTimer);
     filtersTimer = null;
   }
+  for (const l of listeners) l();
 }
