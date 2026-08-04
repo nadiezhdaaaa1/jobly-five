@@ -17,7 +17,7 @@ import {
   renameStage,
   useColumns,
 } from "@/lib/board-columns-store";
-import { countActiveInColumn, countActiveWithStage } from "@/lib/tracker-store";
+import { countActiveInColumn, countActiveWithStage, useTrackerVersion } from "@/lib/tracker-store";
 
 export function SingleColumnDialog({
   columnId,
@@ -32,6 +32,8 @@ export function SingleColumnDialog({
 }) {
   // Subscribe to columns so rename/stage edits re-render live.
   useColumns();
+  // Subscribe to tracker changes so card counts stay fresh after a card move.
+  const trackerVersion = useTrackerVersion();
   const col = columnId ? findColumn(columnId) : undefined;
   const [title, setTitle] = useState("");
   const [draftStages, setDraftStages] = useState<Record<string, string>>({});
@@ -55,7 +57,7 @@ export function SingleColumnDialog({
 
   const activeInColumn = useMemo(
     () => (col ? countActiveInColumn(col.id) : 0),
-    [col, open, draftStages],
+    [col, open, draftStages, trackerVersion],
   );
   const canDelete = col ? canDeleteColumn(col.id) && activeInColumn === 0 : false;
   const deleteBlockedReason = !col
