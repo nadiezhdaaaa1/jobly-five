@@ -788,6 +788,9 @@ function TrackerScreen() {
   const [dragOver, setDragOver] = useState<string | null>(null);
   const [dragHeight, setDragHeight] = useState<number>(0);
   const [applyJob, setApplyJob] = useState<Job | null>(null);
+  // Column the card should move into once the Apply modal is confirmed.
+  // Until then the card stays where it was (e.g. Saved).
+  const [applyTargetId, setApplyTargetId] = useState<string | null>(null);
   const [pending, setPending] = useState<
     | { jobId: string; column: BoardColumn; source: JobStatus }
     | null
@@ -969,7 +972,7 @@ function TrackerScreen() {
       if (target.kind === "applied") {
         const job = allJobs.find((j) => j.id === jobId);
         if (job) {
-          setCardColumn(jobId, target.id);
+          setApplyTargetId(target.id);
           setApplyJob(job);
         }
         return;
@@ -1129,8 +1132,12 @@ function TrackerScreen() {
         <ApplyModal
           job={applyJob}
           open={applyJob !== null}
-          onClose={() => setApplyJob(null)}
+          onClose={() => {
+            setApplyJob(null);
+            setApplyTargetId(null);
+          }}
           onApplied={({ resumeName, coverLetterName }) => {
+            if (applyTargetId) setCardColumn(applyJob.id, applyTargetId);
             markApplied(applyJob.id, { resumeName, coverLetterName });
           }}
         />
