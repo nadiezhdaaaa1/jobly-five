@@ -12,6 +12,7 @@ import { IconTooltip } from "@/components/app/IconTooltip";
 import {
   addInterviewColumn,
   canDeleteColumn,
+  DEFAULT_COLUMNS,
   deleteColumn,
   moveColumn,
   renameColumn,
@@ -35,11 +36,13 @@ export function BoardColumnsDialog({
   const [newInterviewTitle, setNewInterviewTitle] = useState("");
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setDraftTitles(Object.fromEntries(columns.map((c) => [c.id, c.title])));
     setNewInterviewTitle("");
+    setConfirmReset(false);
   }, [open, columns]);
 
   useEffect(() => {
@@ -52,6 +55,20 @@ export function BoardColumnsDialog({
   }, [open, onClose]);
 
   const canAddInterview = useMemo(() => newInterviewTitle.trim().length > 0, [newInterviewTitle]);
+
+  // Columns that reset would remove (anything not part of the default set),
+  // with the number of active cards currently sitting in each.
+  const removedColumns = useMemo(() => {
+    const defaultIds = new Set(DEFAULT_COLUMNS.map((c) => c.id));
+    return columns
+      .filter((c) => !defaultIds.has(c.id))
+      .map((c) => ({ id: c.id, title: c.title, count: countActiveInColumn(c.id) }));
+  }, [columns]);
+  const blockedByCards = removedColumns.some((c) => c.count > 0);
+  const renamedColumns = useMemo(() => {
+    const byId = new Map(DEFAULT_COLUMNS.map((c) => [c.id, c.title]));
+    return columns.filter((c) => byId.has(c.id) && byId.get(c.id) !== c.title);
+  }, [columns]);
 
   function handleDrop(targetId: string) {
     const sourceId = dragId;
@@ -251,7 +268,7 @@ export function BoardColumnsDialog({
         <div className="mt-5 flex items-center justify-between">
           <button
             type="button"
-            onClick={() => resetColumns()}
+            onClick={() => setConfirmReset(true)}
             className="h-9 rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             Reset to defaults
@@ -265,6 +282,96 @@ export function BoardColumnsDialog({
           </button>
         </div>
       </div>
+
+      {confirmReset ? (
+        <div className="absolute inset-0 z-20 flex items-center justify-center" role="dialog" aria-modal="true">
+          <div
+            className="absolute inset-0"
+            style={{ background: "rgba(9,11,12,.32)" }}
+            onClick={() => setConfirmReset(false)}
+            aria-hidden
+          />
+          <div
+            className="relative z-10 w-[92%] max-w-[480px] rounded-[8px] border bg-white p-6"
+            style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
+          >
+            <div className="absolute right-3 top-3">
+              <IconTooltip label="Close">
+                <button
+                  type="button"
+                  onClick={() => setConfirmReset(false)}
+                  aria-label="Close"
+                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                >
+                  <X size={16} strokeWidth={1.6} />
+                </button>
+              </IconTooltip>
+            </div>
+            <h3 className="pr-6 text-[18px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
+              Reset columns to defaults?
+            </h3>
+            <p className="body-small mt-1 text-[color:var(--color-text-muted)]">
+              This restores the default column set, order, and stages.
+            </p>
+
+            {removedColumns.length ? (
+              <div className="mt-4">
+                <p className="text-[13px] font-semibold">These columns will be deleted:</p>
+                <ul className="mt-2 flex flex-col gap-1">
+                  {removedColumns.map((c) => (
+                    <li key={c.id} className="body-small text-[color:var(--color-text-secondary)]">
+                      {c.title}
+                      {c.count > 0 ? ` — ${c.count} card${c.count === 1 ? "" : "s"}` : " — empty"}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="body-small mt-4 text-[color:var(--color-text-secondary)]">
+                No custom columns will be deleted.
+              </p>
+            )}
+
+            {renamedColumns.length ? (
+              <p className="body-small mt-3 text-[color:var(--color-text-secondary)]">
+                Renamed columns will go back to their default names:{" "}
+                {renamedColumns.map((c) => c.title).join(", ")}.
+              </p>
+            ) : null}
+
+            {blockedByCards ? (
+              <div
+                className="mt-4 rounded-[4px] border p-3 text-[13px]"
+                style={{ background: "#FDECEC", borderColor: "#F5C2C2", color: "#8E2A2A" }}
+              >
+                Move the cards out of these columns before resetting — they would otherwise lose their column.
+              </div>
+            ) : null}
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmReset(false)}
+                className="h-9 rounded-[4px] border px-4 text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                style={{ borderColor: "#E3E7E8" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={blockedByCards}
+                onClick={() => {
+                  resetColumns();
+                  setConfirmReset(false);
+                }}
+                className="h-9 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-40 disabled:hover:bg-[color:var(--color-accent)]"
+              >
+                Reset columns
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
