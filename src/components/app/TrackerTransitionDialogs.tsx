@@ -267,13 +267,13 @@ export function InterviewTransitionDialog({
   stages?: readonly string[];
   stageLabel?: string;
 }) {
-  const stageOptions = stages && stages.length ? stages : DEFAULT_INTERVIEW_STAGES;
-  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0]);
+  const stageOptions = stages ? stages : DEFAULT_INTERVIEW_STAGES;
+  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0] ?? "");
   const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
 
   useEffect(() => {
     if (!open) return;
-    setStage(initialStage ?? stageOptions[0]);
+    setStage(stageOptions.length ? (initialStage ?? stageOptions[0]) : "");
     setReminderIso(initialReminderIso ?? null);
   }, [open, initialStage, initialReminderIso, stageOptions]);
 
@@ -285,19 +285,22 @@ export function InterviewTransitionDialog({
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso })} />}
     >
       <div className="flex flex-col gap-1">
-        <p className="body-small text-[color:var(--color-text-secondary)]">
-          Pick the stage you're currently at in this interview.
-        </p>
         {stageOptions.length ? (
-          <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
+          <>
+            <p className="body-small text-[color:var(--color-text-secondary)]">
+              Pick the stage you're currently at in this interview.
+            </p>
+            <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
             {stageOptions.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
-          </select>
+            </select>
+          </>
         ) : (
-          <div className="text-[12px] font-light text-[color:var(--color-text-muted)]">
-            No stages defined. You can add stages in Edit columns.
-          </div>
+          <p className="body-small text-[color:var(--color-text-secondary)]">
+            No stages are set for {title ?? "this column"}. The card will move without a stage — you can add
+            stages later in Edit columns.
+          </p>
         )}
       </div>
       <div className="flex flex-col gap-2">
