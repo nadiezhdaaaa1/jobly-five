@@ -1392,7 +1392,10 @@ function JobsScreen() {
             <FiltersSidebar
               pending={pending}
               applied={applied}
-              onChange={setPending}
+              onChange={(f) => {
+                touched.current = true;
+                setPending(f);
+              }}
               onApply={() => setApplied(pending)}
               onSave={() => {
                 setSaveName(`Filter ${saved.length + 1}`);
@@ -1405,6 +1408,7 @@ function JobsScreen() {
               onLoadSaved={(id) => {
                 const s = saved.find((x) => x.id === id);
                 if (s) {
+                  touched.current = true;
                   setPending(s.filters);
                   setApplied(s.filters);
                 }
