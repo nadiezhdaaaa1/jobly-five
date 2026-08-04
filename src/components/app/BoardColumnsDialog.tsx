@@ -20,7 +20,7 @@ import {
   resetColumns,
   useColumns,
 } from "@/lib/board-columns-store";
-import { countActiveInColumn } from "@/lib/tracker-store";
+import { countActiveInColumn, useTrackerVersion } from "@/lib/tracker-store";
 
 export function BoardColumnsDialog({
   open,
@@ -32,6 +32,7 @@ export function BoardColumnsDialog({
   onEditStages?: (columnId: string) => void;
 }) {
   const columns = useColumns();
+  const trackerVersion = useTrackerVersion();
   const [draftTitles, setDraftTitles] = useState<Record<string, string>>({});
   const [newInterviewTitle, setNewInterviewTitle] = useState("");
   const [dragId, setDragId] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export function BoardColumnsDialog({
     return columns
       .filter((c) => !defaultIds.has(c.id))
       .map((c) => ({ id: c.id, title: c.title, count: countActiveInColumn(c.id) }));
-  }, [columns]);
+  }, [columns, trackerVersion]);
   const blockedByCards = removedColumns.some((c) => c.count > 0);
   const renamedColumns = useMemo(() => {
     const byId = new Map(DEFAULT_COLUMNS.map((c) => [c.id, c.title]));
