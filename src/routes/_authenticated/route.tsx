@@ -16,6 +16,7 @@ import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resu
 import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 import { linkConsentToAccount } from "@/lib/consent.functions";
+import { ensureUserProvisioned } from "@/lib/provisioning.functions";
 import { migrateLegacyConsent } from "@/lib/consent-migration";
 
 /**
