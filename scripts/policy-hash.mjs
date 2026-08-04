@@ -9,7 +9,7 @@ const SRC = "src/lib/legal-data.ts";
 const js = ts.transpileModule(readFileSync(SRC, "utf8"), {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const { LEGAL_DOCS } = await import("data:text/javascript," + encodeURIComponent(js));
+export const { LEGAL_DOCS } = await import("data:text/javascript," + encodeURIComponent(js));
 
 export function hashDoc(doc) {
   const parts = [doc.title, doc.lastUpdated, doc.intro];
@@ -23,6 +23,8 @@ export function hashDoc(doc) {
   return createHash("sha256").update(parts.join("\n"), "utf8").digest("hex");
 }
 
-for (const key of ["terms", "privacy", "cookies", "billing"]) {
-  console.log(key, LEGAL_DOCS[key].lastUpdated, hashDoc(LEGAL_DOCS[key]));
+if (process.argv[1]?.endsWith("policy-hash.mjs")) {
+  for (const key of ["terms", "privacy", "cookies", "billing"]) {
+    console.log(key, LEGAL_DOCS[key].lastUpdated, hashDoc(LEGAL_DOCS[key]));
+  }
 }
