@@ -7,6 +7,7 @@ import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
 import { getLastPasswordChange } from "@/lib/security-events.functions";
 import { useDateLabel } from "@/lib/dates";
+import { PAUSE_DAYS } from "@/lib/subscription.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
@@ -45,6 +46,7 @@ import {
 } from "@/lib/notifications-store";
 
 export const Route = createFileRoute("/_authenticated/settings")({
+// Derived from the canonical pause length — never hardcode the duration in copy.
   head: () => ({
     meta: [
       { title: "Settings — Jobly" },
