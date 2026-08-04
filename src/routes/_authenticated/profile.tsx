@@ -860,7 +860,7 @@ function DocumentsTab({
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           {pro
-            ? `Upload up to ${MAX_FILES} resumes (PDF or DOCX, up to ${MAX_MB} MB each). Your primary resume is used for match scoring and applications; on upload we parse it into your Experience.`
+            ? `Upload up to ${MAX_FILES} resumes (PDF or DOCX, up to ${MAX_MB} MB each). Your primary resume is used for match scoring and applications.`
             : `Free plan includes 1 resume (PDF or DOCX, up to ${MAX_MB} MB). Upgrade to Pro to keep up to 5.`}
         </p>
 
