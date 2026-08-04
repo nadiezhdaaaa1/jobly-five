@@ -102,6 +102,7 @@ const TAB_KEYS = [
   "letters",
   "portfolio",
   "experience",
+  "achievements",
 ] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
@@ -111,6 +112,7 @@ const TAB_LABELS: Record<TabKey, string> = {
   letters: "Cover letters",
   portfolio: "Portfolio and links",
   experience: "Experience",
+  achievements: "Achievements",
 };
 
 const searchSchema = z.object({
@@ -313,6 +315,13 @@ function ProfileScreen() {
             {tab === "experience" && (
               <ExperienceTab
                 resume={resume}
+                onToast={toast.show}
+              />
+            )}
+            {tab === "achievements" && (
+              <AchievementsTab
+                extras={extras}
+                cfg={cfg}
                 onToast={toast.show}
               />
             )}
