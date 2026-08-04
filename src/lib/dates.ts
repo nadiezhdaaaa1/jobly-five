@@ -24,18 +24,18 @@ let tzPromise: Promise<string> | null = null;
 export function displayTimezone(): Promise<string> {
   if (cachedTz) return Promise.resolve(cachedTz);
   if (!tzPromise) {
-    tzPromise = supabase
-      .from("notification_preferences")
-      .select("timezone")
-      .maybeSingle()
-      .then(({ data }) => {
+    tzPromise = (async () => {
+      try {
+        const { data } = await supabase
+          .from("notification_preferences")
+          .select("timezone")
+          .maybeSingle();
         cachedTz = data?.timezone || browserTimezone();
-        return cachedTz;
-      })
-      .catch(() => {
+      } catch {
         cachedTz = browserTimezone();
-        return cachedTz;
-      });
+      }
+      return cachedTz;
+    })();
   }
   return tzPromise;
 }
