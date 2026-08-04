@@ -39,6 +39,7 @@ export type AchievementEntry = {
   id: string;
   description: string;
   url: string;
+  dates?: string;
 };
 
 export type AchievementBlockKey =
@@ -266,6 +267,45 @@ export function addAchievement(block: AchievementBlockKey): AchievementEntry {
   };
   emit();
   return entry;
+}
+
+/** Adds a fully-filled entry (used by the Achievements form). */
+export function createAchievement(
+  block: AchievementBlockKey,
+  data: Omit<AchievementEntry, "id">,
+): AchievementEntry {
+  const entry: AchievementEntry = { id: uid(), ...data };
+  state = {
+    ...state,
+    achievements: {
+      ...state.achievements,
+      [block]: [...state.achievements[block], entry],
+    },
+  };
+  emit();
+  return entry;
+}
+
+/** Moves an entry between type blocks, keeping its content. */
+export function moveAchievement(
+  from: AchievementBlockKey,
+  to: AchievementBlockKey,
+  id: string,
+  data: Omit<AchievementEntry, "id">,
+) {
+  if (from === to) {
+    updateAchievement(from, id, data);
+    return;
+  }
+  state = {
+    ...state,
+    achievements: {
+      ...state.achievements,
+      [from]: state.achievements[from].filter((a) => a.id !== id),
+      [to]: [...state.achievements[to], { id, ...data }],
+    },
+  };
+  emit();
 }
 
 export function updateAchievement(
