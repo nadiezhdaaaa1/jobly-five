@@ -976,7 +976,6 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         { kind: "pref", key: "pref_interview_reminders", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
         { kind: "pref", key: "pref_followup_nudges", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
         { kind: "pref", key: "pref_stale_nudges", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
-        { kind: "pref", key: "pref_gmail_status", label: "Status detected from Gmail", caption: "Ask to update your tracker when a reply arrives." },
       ],
     },
     {
