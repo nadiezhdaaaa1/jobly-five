@@ -24,6 +24,7 @@ import {
   setRejectionDetails,
   setReminder,
   setStatus,
+  removeFromTracker,
   useJobRecord,
   type JobStatus,
 } from "@/lib/tracker-store";
@@ -871,7 +872,8 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               aria-label="Save"
               aria-pressed={saved}
               onClick={() => {
-                setStatus(job.id, saved ? "default" : "saved");
+                if (saved) removeFromTracker(job.id);
+                else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
               className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
