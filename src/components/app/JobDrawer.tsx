@@ -409,7 +409,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
         <div className="relative min-h-0 flex-1 overflow-y-auto">
         {/* Sticky close */}
-        <div className="sticky top-4 z-20 float-right mr-4 mt-4">
+        <div className="sticky top-3 z-20 float-right mr-3 mt-3">
           <IconTooltip label="Close" side="left">
             <button
               type="button"
