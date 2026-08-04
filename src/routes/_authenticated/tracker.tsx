@@ -930,12 +930,17 @@ function TrackerScreen() {
   if (!jobsLoaded) {
     for (const c of columns) skeletonCounts[c.id] = 0;
     if (trackerHydrated) {
-      for (const { rec } of getTrackerEntries()) {
+      for (const { id, rec } of getTrackerEntries()) {
+        // Mirror the real bucketing rules, otherwise the skeleton counter
+        // over-reports and then drops when the jobs dataset lands.
+        if (interactionHidden.has(id)) continue;
         const raw = rec.archived ? rec.lastStatus : rec.status;
         if (!raw) continue;
         if (rec.archived && !showArchived) continue;
         const col = resolveColumnForCard(rec.columnId, raw);
-        if (col && skeletonCounts[col.id] !== undefined) skeletonCounts[col.id]++;
+        if (!col) continue;
+        if (rec.archived && col.kind === "saved") continue;
+        if (skeletonCounts[col.id] !== undefined) skeletonCounts[col.id]++;
       }
     } else {
       for (const c of columns) skeletonCounts[c.id] = 3;
