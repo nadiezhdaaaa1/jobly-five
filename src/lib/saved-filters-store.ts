@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 export type SavedFilter<T = unknown> = {
   id: string;
@@ -7,32 +8,17 @@ export type SavedFilter<T = unknown> = {
   filters: T;
 };
 
-const KEY = "jobly.savedFilters.v1";
+const LEGACY_KEY = "jobly.savedFilters.v1";
+const CACHE = "savedFilters";
 
 export const SAVED_FILTER_LIMIT = 10;
 
-function load(): SavedFilter[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as SavedFilter[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-let state: SavedFilter[] = load();
+// Starts empty: the per-account cache is read on hydrate.
+let state: SavedFilter[] = [];
 const listeners = new Set<() => void>();
 
 function persist() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, filtersUserId, state);
 }
 
 function emit() {
