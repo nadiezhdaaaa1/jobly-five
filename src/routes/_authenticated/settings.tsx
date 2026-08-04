@@ -244,15 +244,15 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {cancelStep === 1 ? (
         <Modal onClose={closeCancel} title="Found a job?">
           <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Congrats! Pause Pro for 6 months instead — no emails, no charges, everything saved exactly as you left it.
+            Congrats! Pause Pro for {PAUSE_MONTHS} months instead — no emails, no charges, everything saved exactly as you left it.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); closeCancel(); onFlash("Pro paused for 6 months."); }}
+              onClick={() => { setPlan("paused"); closeCancel(); onFlash(`Pro paused for ${PAUSE_MONTHS} months.`); }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
-              Pause Pro for 6 months
+              Pause Pro for {PAUSE_MONTHS} months
             </button>
             <button
               type="button"
