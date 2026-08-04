@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
+import { GoogleMark } from "@/components/site/GoogleMark";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { TurnstileWidget } from "@/components/site/TurnstileWidget";
@@ -136,7 +137,7 @@ function SignupPage() {
             disabled={submitting || googleLoading}
             className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
           >
-            {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleIcon />}
+            {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleMark />}
             {googleLoading ? "Redirecting…" : "Continue with Google"}
           </button>
 
