@@ -7,7 +7,6 @@ import { resetTrackerForSignOut } from "@/lib/tracker-store";
 import { resetBoardColumnsForSignOut } from "@/lib/board-columns-store";
 import { resetProfileExtrasForSignOut } from "@/lib/profile-store";
 import { resetWorkHistoryForSignOut } from "@/lib/resume-store";
-import { resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 import { resetJobInteractionsForSignOut } from "@/lib/job-interactions-store";
 import { resetQuizForSignOut } from "@/lib/quiz-store";
@@ -19,7 +18,6 @@ export function clearUserStateForSignOut() {
   resetBoardColumnsForSignOut();
   resetProfileExtrasForSignOut();
   resetWorkHistoryForSignOut();
-  resetSavedFiltersForSignOut();
   resetBlockedCompaniesForSignOut();
   resetJobInteractionsForSignOut();
   resetQuizForSignOut();
