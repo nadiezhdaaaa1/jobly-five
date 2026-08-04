@@ -1244,15 +1244,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [settingPw, setSettingPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [identityBusy, setIdentityBusy] = useState(false);
+  const [identityError, setIdentityError] = useState<string | null>(null);
 
   const loadIdentities = async () => {
-    const { data } = await supabase.auth.getUser();
-    const ids = data.user?.identities ?? [];
+    const { data, error } = await supabase.auth.getUserIdentities();
+    if (error) {
+      setIdentityError("We couldn't read your sign-in methods. Reload the page to try again.");
+      return;
+    }
+    const ids = data?.identities ?? [];
     setHasPassword(ids.some((i) => i.provider === "email"));
     const g = ids.find((i) => i.provider === "google");
     setGoogleIdentity((g as { identity_id?: string } | undefined) ?? null);
     setGoogleEmail(
-      g ? ((g.identity_data?.["email"] as string | undefined) ?? data.user?.email ?? null) : null
+      g ? ((g.identity_data?.["email"] as string | undefined) ?? user?.email ?? null) : null
     );
   };
 
