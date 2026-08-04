@@ -2448,36 +2448,22 @@ function AchievementRow({
   );
 }
 
-function ApplyRadio({
-  checked, onClick, title, body, children,
-}: {
-  checked: boolean;
-  onClick: () => void;
-  title: string;
-  body: string;
-  children?: React.ReactNode;
-}) {
+function ApplyToggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
-    <div
-      className={`cursor-pointer rounded-[6px] border p-3 ${
-        checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-1)]" : "border-[color:var(--color-border)]"
-      }`}
-      onClick={onClick}
-      role="radio"
-      aria-checked={checked}
-      tabIndex={0}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={() => onChange(!on)}
+      className="relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors"
+      style={{ background: on ? "#0E735A" : "#E3E7E8" }}
     >
-      <div className="flex items-start gap-3">
-        <span className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${checked ? "border-[color:var(--color-accent)]" : "border-[color:var(--color-border-strong)]"}`}>
-          {checked ? <span className="h-2 w-2 rounded-full bg-[color:var(--color-accent)]" /> : null}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">{title}</div>
-          <div className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>{body}</div>
-          {children}
-        </div>
-      </div>
-    </div>
+      <span
+        className="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+        style={{ transform: `translateX(${on ? 18 : 2}px)` }}
+      />
+    </button>
   );
 }
 
