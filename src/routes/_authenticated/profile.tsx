@@ -224,10 +224,9 @@ function ProfileScreen() {
       { key: "resume", label: "Resume added", done: resumeDocs.length > 0 },
       { key: "jobs", label: "Previous jobs", done: resume.data.experience.length > 0 },
       { key: "edu", label: "Education", done: resume.data.education.length > 0 },
-      { key: "verify", label: "Verify your email", done: false },
     ];
     const done = items.filter((i) => i.done).length;
-    return { items, pct: Math.round((done / 5) * 100), hasPortfolio };
+    return { items, pct: Math.round((done / items.length) * 100), hasPortfolio };
   }, [quiz.roles, resume, resumeDocs, extras.links, extras.portfolioFile]);
 
   return (
