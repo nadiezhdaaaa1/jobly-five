@@ -27,7 +27,8 @@ export function clearLocalUserData() {
       const extra: string[] = [];
       for (let i = 0; i < store.length; i += 1) {
         const k = store.key(i);
-        if (k && k.startsWith("jobly.")) extra.push(k);
+        // Covers per-account keys (`jobly.<name>.<userId>`) and old `jobly:` keys.
+        if (k && (k.startsWith("jobly.") || k.startsWith("jobly:"))) extra.push(k);
       }
       for (const k of extra) store.removeItem(k);
     } catch {
