@@ -9,6 +9,7 @@ import { resetProfileExtrasForSignOut } from "@/lib/profile-store";
 import { resetWorkHistoryForSignOut } from "@/lib/resume-store";
 import { resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
+import { resetJobInteractionsForSignOut } from "@/lib/job-interactions-store";
 import { resetQuizForSignOut } from "@/lib/quiz-store";
 import { resetAccountForSignOut } from "@/lib/account-store";
 import { resetTimezoneCache } from "@/lib/dates";
@@ -20,6 +21,7 @@ export function clearUserStateForSignOut() {
   resetWorkHistoryForSignOut();
   resetSavedFiltersForSignOut();
   resetBlockedCompaniesForSignOut();
+  resetJobInteractionsForSignOut();
   resetQuizForSignOut();
   resetAccountForSignOut();
   resetTimezoneCache();
