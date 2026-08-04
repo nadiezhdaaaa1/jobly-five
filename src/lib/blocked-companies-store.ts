@@ -21,6 +21,23 @@ export function getBlockedCompanies(): string[] {
   return current;
 }
 
+async function pushBlock(userId: string, company: string) {
+  // The call MUST be awaited: an unawaited PostgREST builder is never sent.
+  const { error } = await supabase
+    .from("blocked_companies")
+    .upsert({ user_id: userId, company }, { onConflict: "user_id,company" });
+  if (error) console.error("hide-company sync failed", error);
+}
+
+async function pushUnblock(userId: string, company: string) {
+  const { error } = await supabase
+    .from("blocked_companies")
+    .delete()
+    .eq("user_id", userId)
+    .eq("company", company);
+  if (error) console.error("unhide-company sync failed", error);
+}
+
 export function blockCompany(name: string) {
   const trimmed = name.trim();
   if (!trimmed) return;
@@ -28,9 +45,7 @@ export function blockCompany(name: string) {
   current = [...current, trimmed];
   persist();
   if (blockedUserId) {
-    void supabase
-      .from("blocked_companies")
-      .upsert({ user_id: blockedUserId, company: trimmed }, { onConflict: "user_id,company" });
+    void pushBlock(blockedUserId, trimmed);
   }
   emit();
 }
@@ -41,7 +56,7 @@ export function unblockCompany(name: string) {
   current = next;
   persist();
   if (blockedUserId) {
-    void supabase.from("blocked_companies").delete().eq("user_id", blockedUserId).eq("company", name);
+    void pushUnblock(blockedUserId, name);
   }
   emit();
 }
