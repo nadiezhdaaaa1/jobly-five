@@ -527,6 +527,20 @@ function PlanCardsBlock({
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
 
+  // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
+  const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
+  const [billingTermsVersion, setBillingTermsVersion] = useState<string | null>(null);
+  const [billingTermsTicked, setBillingTermsTicked] = useState(false);
+  useEffect(() => {
+    if (isPlanPro) return;
+    void billingTermsAccepted()
+      .then((res) => {
+        setNeedsBillingTerms(!res.accepted);
+        setBillingTermsVersion(res.version);
+      })
+      .catch(() => undefined);
+  }, [isPlanPro]);
+
   const savings = money(annualSavings(PRICING.annual));
 
   const proLabel =
