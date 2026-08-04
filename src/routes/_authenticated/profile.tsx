@@ -2177,7 +2177,7 @@ function AchievementsTab({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [extras.achievements]);
 
   /** Returns an error message, or null when saved. */
   function saveDraft(): string | null {
