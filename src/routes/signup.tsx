@@ -10,6 +10,10 @@ import { TurnstileWidget } from "@/components/site/TurnstileWidget";
 import { captchaConfigured } from "@/config/turnstile";
 import { guardAuthAttempt } from "@/lib/auth-guard.functions";
 import { isDisposableEmail } from "@/lib/disposable-domains";
+import {
+  markPendingSignupAcceptance,
+  recordSignupAcceptance,
+} from "@/lib/policy-acceptance";
 
 /** Neutral copy: identical whether or not the address already has an account. */
 const SIGNUP_NEUTRAL_NOTICE =
@@ -36,6 +40,7 @@ function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [acceptedPolicies, setAcceptedPolicies] = useState(false);
   // Invisible bot checks: a field humans never see, and a floor on fill time.
   const [honeypot, setHoneypot] = useState("");
   const mountedAt = useRef(Date.now());
@@ -44,6 +49,12 @@ function SignupPage() {
 
   async function handleGoogle() {
     setError(null);
+    if (!acceptedPolicies) {
+      setError("Please accept the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
+    // No email until the callback returns; park the tick and record on boot.
+    markPendingSignupAcceptance();
     setGoogleLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
@@ -60,6 +71,8 @@ function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validEmail) return setError("Enter a valid email address.");
+    if (!acceptedPolicies)
+      return setError("Please accept the Terms of Service and Privacy Policy to continue.");
     if (password.length < 8) return setError("Password must be at least 8 characters.");
     if (isDisposableEmail(email)) return setError("Please use a permanent email address.");
     // Bots fill the hidden field or submit instantly. Same neutral outcome, no signup.
@@ -104,8 +117,10 @@ function SignupPage() {
       return;
     }
     if (data.session) {
+      void recordSignupAcceptance(email.trim());
       navigate({ to: "/dashboard" });
     } else {
+      void recordSignupAcceptance(email.trim());
       setNotice(SIGNUP_NEUTRAL_NOTICE);
     }
   }
@@ -204,9 +219,29 @@ function SignupPage() {
 
             {captchaConfigured && <TurnstileWidget onToken={setCaptchaToken} className="mt-1" />}
 
+            <label className="mt-1 flex items-start gap-2.5 text-sm text-[color:var(--color-text-secondary)]">
+              <input
+                type="checkbox"
+                checked={acceptedPolicies}
+                onChange={(e) => setAcceptedPolicies(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded-[4px]"
+              />
+              <span>
+                I agree to the{" "}
+                <Link to="/legal/terms" className="text-[color:var(--color-green)] hover:underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/legal/privacy" className="text-[color:var(--color-green)] hover:underline">
+                  Privacy Policy
+                </Link>
+                .
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !acceptedPolicies}
               className="button-medium inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
             >
               {submitting ? (

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconPlus, IconX } from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
@@ -28,6 +28,7 @@ import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked
 import { CANCEL_REASONS, recordCancelFeedback, type CancelReason } from "@/lib/cancel-feedback-store";
 import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
 import { toast } from "sonner";
+import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
 import {
   requestAccountDeletionServer,
@@ -527,6 +528,20 @@ function PlanCardsBlock({
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
 
+  // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
+  const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
+  const [billingTermsVersion, setBillingTermsVersion] = useState<string | null>(null);
+  const [billingTermsTicked, setBillingTermsTicked] = useState(false);
+  useEffect(() => {
+    if (isPlanPro) return;
+    void billingTermsAccepted()
+      .then((res) => {
+        setNeedsBillingTerms(!res.accepted);
+        setBillingTermsVersion(res.version);
+      })
+      .catch(() => undefined);
+  }, [isPlanPro]);
+
   const savings = money(annualSavings(PRICING.annual));
 
   const proLabel =
@@ -555,6 +570,18 @@ function PlanCardsBlock({
 
   function onProClick() {
     if (isPlanPro) return;
+    if (needsBillingTerms && !billingTermsTicked) return;
+    if (needsBillingTerms) {
+      void acceptPolicies({
+        data: {
+          documentKeys: ["billing_terms"],
+          consentText: `I accept the Jobly Subscription and Billing Terms (version ${billingTermsVersion ?? "current"}).`,
+          source: "checkout",
+        },
+      })
+        .then(() => setNeedsBillingTerms(false))
+        .catch(() => undefined);
+    }
     if (!hasHadPro) {
       setPlan("pro");
       onFlash(`Welcome to Pro — your ${TRIAL_DAYS}-day trial has started.`);
@@ -794,10 +821,27 @@ function PlanCardsBlock({
 
             {/* Button */}
             <div className="relative" style={{ zIndex: 2 }}>
+              {!isPlanPro && needsBillingTerms && (
+                <label className="mb-3 flex items-start gap-2.5 text-[13px] leading-[19.5px] text-[#090B0C]">
+                  <input
+                    type="checkbox"
+                    checked={billingTermsTicked}
+                    onChange={(e) => setBillingTermsTicked(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded-[4px]"
+                  />
+                  <span>
+                    I accept the{" "}
+                    <Link to="/legal/billing" className="underline">
+                      Subscription and Billing Terms
+                    </Link>
+                    , including automatic renewal until cancelled.
+                  </span>
+                </label>
+              )}
               <button
                 type="button"
                 onClick={onProClick}
-                disabled={isPlanPro}
+                disabled={isPlanPro || (needsBillingTerms && !billingTermsTicked)}
                 className="w-full inline-flex items-center justify-center"
                 style={{
                   background: "#00F1A9",
@@ -809,8 +853,9 @@ function PlanCardsBlock({
                   fontWeight: 400,
                   fontSize: 14,
                   lineHeight: "20px",
-                  opacity: isPlanPro ? 0.6 : 1,
-                  cursor: isPlanPro ? "default" : "pointer",
+                  opacity: isPlanPro || (needsBillingTerms && !billingTermsTicked) ? 0.6 : 1,
+                  cursor:
+                    isPlanPro || (needsBillingTerms && !billingTermsTicked) ? "default" : "pointer",
                 }}
               >
                 {proLabel}
