@@ -5,6 +5,8 @@ import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { GoogleMark } from "@/components/site/GoogleMark";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
+import { getLastPasswordChange } from "@/lib/security-events.functions";
+import { useDateLabel } from "@/lib/dates";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
