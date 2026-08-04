@@ -135,17 +135,24 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   }
   const sub = useSubscription();
   const { loading: entLoading } = useEntitlements();
-  const periodEndLabel = new Date(sub.currentPeriodEnd).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  // Dates are rendered only when we actually know them, in the account's zone.
+  const periodEndLabel = useDateLabel(sub.currentPeriodEnd);
+  const pauseEndLabel = useDateLabel(sub.pauseEndsAt ?? null);
   const scheduledEnd = sub.cancelAtPeriodEnd && plan === "pro";
+  // No billing provider owns this row, so there is no real renewal date to show.
+  const providerBilled = sub.activationSource === "provider";
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling = `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`;
-  const scheduledLine = `Pro until ${periodEndLabel} · then Free`;
-  const pausedLine = `Paused until ${periodEndLabel} · no charges while paused`;
+  const proBilling =
+    providerBilled && periodEndLabel
+      ? `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`
+      : `Billed annually · ${usd(total(PRICING.annual))}/yr`;
+  const scheduledLine = periodEndLabel
+    ? `Pro until ${periodEndLabel} · then Free`
+    : "Pro until your current period ends · then Free";
+  const pausedLine = pauseEndLabel
+    ? `Paused until ${pauseEndLabel} · no charges while paused`
+    : "Paused · no charges while paused";
   const freeSummary = "Weekly digest · match scores · basic tracker";
 
   if (entLoading) {
