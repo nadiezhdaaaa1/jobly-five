@@ -524,9 +524,15 @@ function scheduleExtrasSync() {
   }, 400);
 }
 
-/** Loads account-stored extras; writes the local set once when none exist yet. */
+/** Loads this account's extras. The server is the only source of truth. */
 export async function hydrateProfileExtrasFromDb(userId: string) {
   extrasUserId = userId;
+  dropLegacyCache(LEGACY_KEY);
+  const cached = readUserCache<Partial<ProfileExtras>>(CACHE, userId);
+  if (cached && Object.keys(cached).length) {
+    state = merge(cached);
+    for (const l of listeners) l();
+  }
   const { data, error } = await supabase
     .from("profiles")
     .select("profile_extras")
@@ -534,24 +540,17 @@ export async function hydrateProfileExtrasFromDb(userId: string) {
     .maybeSingle();
   if (error) return;
   const remote = data?.profile_extras as Partial<ProfileExtras> | null;
-  if (remote && Object.keys(remote).length) {
-    const base = seed();
-    state = {
-      ...base,
-      ...remote,
-      achievements: { ...base.achievements, ...(remote.achievements ?? {}) },
-    };
-    persist();
-    for (const l of listeners) l();
-  } else {
-    scheduleExtrasSync();
-  }
+  state = merge(remote);
+  persist();
+  for (const l of listeners) l();
 }
 
 export function resetProfileExtrasForSignOut() {
   extrasUserId = null;
+  state = seed();
   if (extrasTimer) {
     clearTimeout(extrasTimer);
     extrasTimer = null;
   }
+  for (const l of listeners) l();
 }
