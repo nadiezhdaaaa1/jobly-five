@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 
 // ---------- Types ----------
 
