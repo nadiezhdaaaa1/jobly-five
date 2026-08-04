@@ -373,13 +373,13 @@ export function OfferTransitionDialog({
   onCancel: () => void;
   onSave: (payload: { stage: string; reminderIso: string | null; details: string }) => void;
 }) {
-  const stageOptions = stages && stages.length ? stages : DEFAULT_OFFER_STAGES;
-  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0]);
+  const stageOptions = stages ? stages : DEFAULT_OFFER_STAGES;
+  const [stage, setStage] = useState<string>(initialStage ?? stageOptions[0] ?? "");
   const [reminderIso, setReminderIso] = useState<string | null>(initialReminderIso ?? null);
   const [details, setDetails] = useState(initialDetails ?? "");
   useEffect(() => {
     if (!open) return;
-    setStage(initialStage ?? stageOptions[0]);
+    setStage(stageOptions.length ? (initialStage ?? stageOptions[0]) : "");
     setReminderIso(initialReminderIso ?? null);
     setDetails(initialDetails ?? "");
   }, [open, initialStage, initialReminderIso, initialDetails, stageOptions]);
@@ -391,19 +391,22 @@ export function OfferTransitionDialog({
       footer={<FooterButtons onCancel={onCancel} onSave={() => onSave({ stage, reminderIso, details })} />}
     >
       <div className="flex flex-col gap-1">
-        <p className="body-small text-[color:var(--color-text-secondary)]">
-          Pick where this offer stands right now.
-        </p>
         {stageOptions.length ? (
-          <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
+          <>
+            <p className="body-small text-[color:var(--color-text-secondary)]">
+              Pick where this offer stands right now.
+            </p>
+            <select className={selectCls} value={stage} onChange={(e) => setStage(e.target.value)}>
             {stageOptions.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
-          </select>
+            </select>
+          </>
         ) : (
-          <div className="text-[12px] font-light text-[color:var(--color-text-muted)]">
-            No stages defined. You can add stages in Edit columns.
-          </div>
+          <p className="body-small text-[color:var(--color-text-secondary)]">
+            No stages are set for {title ?? "this column"}. The card will move without a stage — you can add
+            stages later in Edit columns.
+          </p>
         )}
       </div>
       <div className="flex flex-col gap-2">
