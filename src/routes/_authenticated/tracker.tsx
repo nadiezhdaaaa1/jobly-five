@@ -1160,7 +1160,7 @@ function TrackerScreen() {
           onCancel={cancelPending}
           onSave={({ stage, reminderIso }) => {
             setCardColumn(pending.jobId, pending.column.id, statusForKind(pending.column.kind));
-            setInterviewStage(pending.jobId, stage);
+            setInterviewStage(pending.jobId, stage || "");
             storeSetReminder(pending.jobId, reminderIso);
             setPending(null);
           }}
@@ -1192,7 +1192,7 @@ function TrackerScreen() {
           onCancel={cancelPending}
           onSave={({ stage, reminderIso, details }) => {
             setCardColumn(pending.jobId, pending.column.id, "offer");
-            setOfferStatus(pending.jobId, stage);
+            setOfferStatus(pending.jobId, stage || "");
             storeSetReminder(pending.jobId, reminderIso);
             if (details) setOfferDetails(pending.jobId, details);
             setPending(null);
