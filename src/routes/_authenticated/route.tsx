@@ -16,6 +16,7 @@ import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resu
 import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
 import { linkConsentToAccount } from "@/lib/consent.functions";
+import { ensureUserProvisioned } from "@/lib/provisioning.functions";
 import { migrateLegacyConsent } from "@/lib/consent-migration";
 
 /**
@@ -38,19 +39,28 @@ async function claimAndHydrateQuiz() {
 function AuthedShell({ userId }: { userId: string }) {
   const account = useAccount();
   useEffect(() => {
-    void loadJobs();
-    void hydrateTrackerFromDb(userId);
-    void hydrateAccountFromDb();
-    void claimAndHydrateQuiz();
-    void hydrateBoardColumnsFromDb(userId);
-    void hydrateProfileExtrasFromDb(userId);
-    void hydrateWorkHistoryFromDb(userId);
-    void hydrateSavedFiltersFromDb(userId);
-    void hydrateBlockedCompaniesFromDb(userId);
-    // Consent lives only in Postgres: link any pre-account rows, then retire
-    // whatever the browser still holds.
-    void linkConsentToAccount().catch(() => undefined);
-    void migrateLegacyConsent();
+    void (async () => {
+      // Backstop the auth trigger before anything reads those rows: if a row
+      // is missing the RPC creates it, otherwise this is a no-op.
+      try {
+        await ensureUserProvisioned();
+      } catch {
+        // Hydration below surfaces its own errors; don't block boot.
+      }
+      void loadJobs();
+      void hydrateTrackerFromDb(userId);
+      void hydrateAccountFromDb();
+      void claimAndHydrateQuiz();
+      void hydrateBoardColumnsFromDb(userId);
+      void hydrateProfileExtrasFromDb(userId);
+      void hydrateWorkHistoryFromDb(userId);
+      void hydrateSavedFiltersFromDb(userId);
+      void hydrateBlockedCompaniesFromDb(userId);
+      // Consent lives only in Postgres: link any pre-account rows, then retire
+      // whatever the browser still holds.
+      void linkConsentToAccount().catch(() => undefined);
+      void migrateLegacyConsent();
+    })();
     return () => {
       // Clear tracker if a different user signs in on the same tab.
       resetTrackerForSignOut();
