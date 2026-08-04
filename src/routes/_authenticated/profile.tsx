@@ -2167,11 +2167,10 @@ function AchievementsTab({
   const suggested = cfg.suggestedBlocks;
   const blocks = orderedBlocks(suggested);
   const [draft, setDraft] = useState<AchievementDraft | null>(null);
-  const total = blocks.reduce((n, b) => n + entriesFor(b).length, 0);
-
   // Blank rows left by the previous inline-editing behaviour are hidden, never counted.
   const entriesFor = (b: AchievementBlockKey) =>
     extras.achievements[b].filter((e) => e.description.trim() || e.url.trim());
+  const total = blocks.reduce((n, b) => n + entriesFor(b).length, 0);
 
   /** Returns an error message, or null when saved. */
   function saveDraft(): string | null {
