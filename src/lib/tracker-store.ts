@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { findColumn } from "@/lib/board-columns-store";
+import { findColumn, statusToKind } from "@/lib/board-columns-store";
 import type { Json } from "@/integrations/supabase/types";
 import type { Job } from "@/lib/jobs-data";
 
