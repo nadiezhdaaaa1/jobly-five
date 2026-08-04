@@ -339,7 +339,7 @@ function KanbanCard({
                 </MenuPop>
               ) : null}
             </div>
-            <IconBtn label="Saved" active onClick={() => { setStatus(job.id, "default"); archiveJob(job.id); }}>
+            <IconBtn label="Saved" active onClick={() => removeFromTracker(job.id)}>
               <Bookmark size={16} strokeWidth={1.6} fill="#0E735A" />
             </IconBtn>
             <button
@@ -912,7 +912,8 @@ function TrackerScreen() {
     if (rec.archived) {
       if (!showArchived) continue;
       const col = resolveColumnForCard(rec.columnId, raw);
-      if (col) buckets[col.id].push({ job: j, rec });
+      // Archived cards never appear in a Saved column.
+      if (col && col.kind !== "saved") buckets[col.id].push({ job: j, rec });
       continue;
     }
     const col = resolveColumnForCard(rec.columnId, raw);

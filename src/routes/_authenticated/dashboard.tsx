@@ -30,7 +30,7 @@ import { usePlan, isPro } from "@/lib/plan-store";
 import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
+import { setStatus, removeFromTracker, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
 import { useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
@@ -746,7 +746,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
               aria-pressed={saved}
               onClick={(e) => {
                 e.stopPropagation();
-                setStatus(job.id, saved ? "default" : "saved");
+                if (saved) removeFromTracker(job.id);
+                else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
               className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
@@ -790,7 +791,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             onConfirm={() => {
               const { kind, reason } = pendingHide;
               // Reporting or disliking a saved job unsaves it first.
-              if (saved) setStatus(job.id, "default");
+              if (saved) removeFromTracker(job.id);
               if (reason === "Don't recommend the company") blockCompany(job.company);
               setJobInteraction(job.id, kind, reason);
               setPendingHide(null);
