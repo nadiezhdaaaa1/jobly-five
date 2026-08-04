@@ -275,6 +275,20 @@ export function seedTracker(allJobs: Job[]) {
 }
 
 // Actions
+// A card carries both a status and (optionally) the board column it sits in.
+// If those disagree — e.g. a card was dragged to Applied, the apply dialog was
+// dismissed, and the status stayed "saved" — the board renders it in the stale
+// column while every status-based count (Digest "Saved") counts it correctly.
+// Drop the columnId whenever its kind no longer matches the record's status so
+// the board falls back to resolving the column from the status.
+function reconcileColumn(r: JobRecord) {
+  if (!r.columnId) return;
+  const col = findColumn(r.columnId);
+  if (!col) return;
+  const kind = statusToKind(r.archived ? (r.lastStatus ?? "default") : r.status);
+  if (!kind || kind !== col.kind) delete r.columnId;
+}
+
 export function setStatus(id: string, next: JobStatus) {
   const r = ensure(id);
   const prev = r.status;
@@ -318,6 +332,7 @@ export function setStatus(id: string, next: JobStatus) {
     else if (next === "applied") logHistory(r, "applied", "Applied");
     else logHistory(r, "status", `Moved to ${STATUS_LABELS[next]}`);
   }
+  reconcileColumn(r);
   sync(id);
   emit();
 }
