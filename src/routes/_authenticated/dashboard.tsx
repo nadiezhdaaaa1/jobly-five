@@ -43,11 +43,6 @@ import {
 import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
-import {
-  addSavedFilter,
-  useSavedFilters,
-  type SavedFilter,
-} from "@/lib/saved-filters-store";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -137,8 +132,6 @@ type FilterState = {
   minSalary: number;
   postedWithin: PostedRange;
 };
-
-type SavedFilterEntry = SavedFilter<FilterState>;
 
 // Field → Roles taxonomy (from docs/jobly-roles-and-stacks.md).
 const FIELD_ROLES: Record<string, string[]> = {
