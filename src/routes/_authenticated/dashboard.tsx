@@ -1388,11 +1388,14 @@ function JobsScreen() {
   const allJobs = useMemo(() => allJobsRaw.map(enrich), [allJobsRaw]);
   const blocked = useBlockedCompanies();
   const hiddenIds = useTrackerHiddenIds();
+  const interactionHidden = useHiddenJobIds();
   const visible = useMemo(() => {
     const list = applyFilters(allJobs, applied);
     const blockedSet = new Set(blocked.map((c) => c.toLowerCase()));
-    return list.filter((j) => !hiddenIds.has(j.id) && !blockedSet.has(j.company.toLowerCase()));
-  }, [allJobs, applied, blocked, hiddenIds]);
+    return list.filter(
+      (j) => !hiddenIds.has(j.id) && !interactionHidden.has(j.id) && !blockedSet.has(j.company.toLowerCase()),
+    );
+  }, [allJobs, applied, blocked, hiddenIds, interactionHidden]);
 
   // Pagination
   const PAGE_SIZE = 10;
