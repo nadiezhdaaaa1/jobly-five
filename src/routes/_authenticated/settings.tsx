@@ -1249,6 +1249,21 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [identityBusy, setIdentityBusy] = useState(false);
   const [identityError, setIdentityError] = useState<string | null>(null);
+  // null = still reading; undefined-free: `false` means no record exists.
+  const [pwChangedAt, setPwChangedAt] = useState<string | null>(null);
+  const [pwChangedLoaded, setPwChangedLoaded] = useState(false);
+  const pwChangedLabel = useDateLabel(pwChangedAt);
+
+  const loadPasswordChange = async () => {
+    try {
+      const { at } = await getLastPasswordChange();
+      setPwChangedAt(at);
+    } catch {
+      setPwChangedAt(null);
+    } finally {
+      setPwChangedLoaded(true);
+    }
+  };
 
   const loadIdentities = async () => {
     const { data, error } = await supabase.auth.getUserIdentities();
@@ -1267,6 +1282,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
 
   useEffect(() => {
     void loadIdentities();
+    void loadPasswordChange();
   }, []);
 
   const needsCurrent = hasPassword === true;
@@ -1301,6 +1317,9 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       setConfirm("");
       setSettingPw(false);
       await loadIdentities();
+      void logSecurityEvent({ data: { event: needsCurrent ? "password_changed" : "password_set" } })
+        .then(() => loadPasswordChange())
+        .catch(() => {});
       onFlash(needsCurrent ? "Password updated." : "Password set. You can now sign in with your email too.");
     } finally {
       setBusy(false);
