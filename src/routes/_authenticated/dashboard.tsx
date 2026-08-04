@@ -972,23 +972,19 @@ function FiltersSidebar({
   applied,
   onChange,
   onApply,
-  onSave,
+  onReset,
   open,
   onToggle,
   collapseSignal,
-  saved,
-  onLoadSaved,
 }: {
   pending: FilterState;
   applied: FilterState;
   onChange: (f: FilterState) => void;
   onApply: () => void;
-  onSave: () => void;
+  onReset: () => void;
   open: boolean;
   onToggle: () => void;
   collapseSignal: number;
-  saved: SavedFilterEntry[];
-  onLoadSaved: (id: string) => void;
 }) {
   // Roles universe comes from the user's profile (quiz). The filter can only
   // toggle which of those roles are active — never add/remove them here.
@@ -1035,20 +1031,9 @@ function FiltersSidebar({
       <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-[#E3E7E8] lg:bg-white lg:p-[12px] lg:shadow-[0_1px_4px_0_rgba(12,12,13,0.05)] lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:border-b-0 lg:bg-white lg:px-0 lg:pt-0">
-          <select
-            className="h-[40px] flex-1 min-w-0 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] font-normal leading-none"
-            value=""
-            onChange={(e) => {
-              const id = e.target.value;
-              if (id) onLoadSaved(id);
-              e.currentTarget.value = "";
-            }}
-          >
-            <option value="" disabled>{saved.length ? "Saved filters" : "No saved filters"}</option>
-            {saved.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
+          <h2 className="flex-1 min-w-0 text-[16px] font-semibold text-[color:var(--color-foreground)]">
+            Filters
+          </h2>
           {/* Desktop-only inline toggle inside sticky header, right-aligned */}
           <button
             type="button"
@@ -1254,7 +1239,7 @@ function FiltersSidebar({
       </div>
 
       <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:border-t-0 lg:bg-white lg:px-0 lg:pb-0">
-        <button type="button" onClick={onSave} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Save</button>
+        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
         <button
           type="button"
           onClick={onApply}
