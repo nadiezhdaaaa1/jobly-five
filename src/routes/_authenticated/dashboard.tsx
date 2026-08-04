@@ -31,7 +31,7 @@ import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
-import { useQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
@@ -970,6 +970,7 @@ function FiltersSidebar({
   // toggle which of those roles are active — never add/remove them here.
   // Read reactively: the profile hydrates from the server after mount.
   const quiz = useQuiz();
+  const quizHydrated = useQuizHydrated();
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
@@ -1035,7 +1036,13 @@ function FiltersSidebar({
           </button>
         </div>
         <FilterSection title="Roles" collapseSignal={collapseSignal}>
-          {profileRoles.length === 0 ? (
+          {!quizHydrated ? (
+            <div className="flex flex-wrap gap-1.5" aria-label="Loading your roles">
+              {[86, 64, 108, 72].map((w) => (
+                <div key={w} className="h-[28px] rounded-[4px] skeleton" style={{ width: w }} />
+              ))}
+            </div>
+          ) : profileRoles.length === 0 ? (
             <p className="text-[12px] text-[color:var(--color-text-muted)]">
               Add roles in your{" "}
               <Link to="/profile" className="font-semibold text-[color:var(--color-green)] hover:underline">profile</Link>
@@ -1089,6 +1096,12 @@ function FiltersSidebar({
         </FilterSection>
 
         <FilterSection title="Salary (annual)" collapseSignal={collapseSignal}>
+          {!quizHydrated ? (
+            <div className="flex items-center gap-3" aria-label="Loading salary filter">
+              <div className="h-[6px] flex-1 rounded-full skeleton" />
+              <div className="h-[13px] w-[64px] rounded-[4px] skeleton" />
+            </div>
+          ) : (
           <div className="flex items-center gap-3">
             {(() => {
               const steps = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000, 200000];
@@ -1120,6 +1133,7 @@ function FiltersSidebar({
               );
             })()}
           </div>
+          )}
         </FilterSection>
 
         <FilterSection title="Posted within" collapseSignal={collapseSignal}>
@@ -1131,6 +1145,20 @@ function FiltersSidebar({
         </FilterSection>
 
         <FilterSection title="Location" collapseSignal={collapseSignal}>
+          {!quizHydrated ? (
+            <div className="flex flex-col gap-3" aria-label="Loading location filter">
+              <div className="flex items-center justify-between">
+                <div className="h-[13px] w-[88px] rounded-[4px] skeleton" />
+                <div className="h-5 w-9 rounded-full skeleton" />
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {[96, 120].map((w) => (
+                  <div key={w} className="h-[28px] rounded-[4px] skeleton" style={{ width: w }} />
+                ))}
+              </div>
+            </div>
+          ) : (
+          <>
           <label className="mb-3 flex items-center justify-between text-[13px]">
             <span>Only Remote</span>
             <button type="button" aria-pressed={p.onlyRemote} onClick={() => set({ onlyRemote: !p.onlyRemote })} className="relative h-5 w-9 rounded-full transition-colors" style={{ background: p.onlyRemote ? "var(--color-green)" : "var(--color-border)" }}>
@@ -1153,9 +1181,18 @@ function FiltersSidebar({
               />
             </div>
           )}
+          </>
+          )}
         </FilterSection>
 
         <FilterSection title="Seniority" collapseSignal={collapseSignal}>
+          {!quizHydrated ? (
+            <div className="flex flex-wrap gap-1.5" aria-label="Loading seniority filter">
+              {[64, 72, 58, 80].map((w) => (
+                <div key={w} className="h-[28px] rounded-[4px] skeleton" style={{ width: w }} />
+              ))}
+            </div>
+          ) : (
           <div className="flex flex-wrap gap-1.5">
             {SENIORITIES.map((s) => (
               <SelectChip
@@ -1166,6 +1203,7 @@ function FiltersSidebar({
               />
             ))}
           </div>
+          )}
         </FilterSection>
 
         <FilterSection title="Sources of search" collapseSignal={collapseSignal}>

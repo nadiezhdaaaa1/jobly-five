@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { IconBriefcase2, IconTarget, IconUserSquare, IconSettings } from "@tabler/icons-react";
-import { usePlan, isPro } from "@/lib/plan-store";
+import { usePlan, isPro, useEntitlementsReady } from "@/lib/plan-store";
 import proCubeAsset from "@/assets/pro2.png.asset.json";
 
 export type AppTab = "digest" | "tracker" | "resume" | "profile" | "settings";
@@ -14,6 +14,7 @@ const TABS: Array<{ key: AppTab; label: string; icon: typeof IconBriefcase2; to:
 
 export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; hasNewDigest?: boolean }) {
   const plan = usePlan();
+  const planReady = useEntitlementsReady();
   const pro = isPro(plan);
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
@@ -26,13 +27,18 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
           >
             jobly
           </span>
-          {pro ? (
+          {!planReady ? (
+            <span
+              aria-label="Loading your plan"
+              className="inline-flex h-[26px] w-[52px] rounded-[4px] skeleton"
+            />
+          ) : pro ? (
             <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2.5 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">
               {plan === "paused" ? "Paused" : "Pro"}
             </span>
           ) : null}
         </Link>
-        {!pro ? (
+        {planReady && !pro ? (
           <Link
             to="/settings"
             className="group hidden md:inline-flex relative h-9 w-[120px] items-center overflow-hidden rounded-[4px] bg-[color:var(--color-accent)] pl-4 pr-14 text-[14px] font-medium text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"

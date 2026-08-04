@@ -51,6 +51,9 @@ const LEGACY_KEY = "jobly.quiz";
 let answers: QuizAnswers = {};
 const listeners = new Set<() => void>();
 let version = 0;
+// False until the server has answered — lets screens tell "no answers yet"
+// apart from "not loaded yet" so they can show placeholders instead of defaults.
+let hydrated = false;
 
 export function loadQuiz(): QuizAnswers {
   return answers;
@@ -80,6 +83,23 @@ export function subscribeQuiz(l: () => void) {
 
 function getQuizVersion() {
   return version;
+}
+
+function getQuizHydrated() {
+  return hydrated;
+}
+
+/** Marks the working copy as reflecting the server state. */
+export function markQuizHydrated() {
+  if (hydrated) return;
+  hydrated = true;
+  version++;
+  for (const l of listeners) l();
+}
+
+/** Reactive: false while the profile answers are still being fetched. */
+export function useQuizHydrated(): boolean {
+  return useSyncExternalStore(subscribeQuiz, getQuizHydrated, () => false);
 }
 
 /** Reactive read of the working answers; re-renders when the profile hydrates. */
@@ -117,6 +137,8 @@ export async function hydrateQuizFromProfile(): Promise<void> {
     if (stored && Object.keys(stored).length) saveQuiz(stored);
   } catch {
     // Preferences stay empty rather than blocking the app.
+  } finally {
+    markQuizHydrated();
   }
 }
 
