@@ -18,42 +18,34 @@ export type AccountState = {
   deletionScheduledFor: string | null;
 };
 
-const KEY = "jobly.account";
+const LEGACY_KEY = "jobly.account";
+const CACHE = "account";
+
+// Set once the signed-in user is known; the cache is per account.
+let accountUserId: string | null = null;
 
 function activeState(): AccountState {
   return { accountStatus: "active", deletionRequestedAt: null, deletionScheduledFor: null };
 }
 
-function read(): AccountState {
-  if (typeof window === "undefined") return activeState();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return activeState();
-    const p = JSON.parse(raw) as Partial<AccountState>;
-    if (p?.accountStatus === "pending_deletion" && p.deletionRequestedAt) {
-      return {
-        accountStatus: "pending_deletion",
-        deletionRequestedAt: p.deletionRequestedAt,
-        deletionScheduledFor:
-          p.deletionScheduledFor ?? deletionDateFrom(new Date(p.deletionRequestedAt)).toISOString(),
-      };
-    }
-  } catch {
-    /* ignore */
+function fromCache(p: Partial<AccountState> | null): AccountState {
+  if (p?.accountStatus === "pending_deletion" && p.deletionRequestedAt) {
+    return {
+      accountStatus: "pending_deletion",
+      deletionRequestedAt: p.deletionRequestedAt,
+      deletionScheduledFor:
+        p.deletionScheduledFor ?? deletionDateFrom(new Date(p.deletionRequestedAt)).toISOString(),
+    };
   }
   return activeState();
 }
 
-let state: AccountState = read();
+let state: AccountState = activeState();
 const listeners = new Set<() => void>();
 
 function commit(next: AccountState) {
   state = next;
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
-  } catch {
-    /* ignore */
-  }
+  writeUserCache(CACHE, accountUserId, state);
   listeners.forEach((l) => l());
 }
 
