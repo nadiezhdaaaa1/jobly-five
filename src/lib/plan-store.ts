@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { applySubscriptionAction, type SubscriptionAction } from "@/lib/subscription.functions";
+import { PAUSE_DAYS, applySubscriptionAction, type SubscriptionAction } from "@/lib/subscription.functions";
 
 export type Plan = "free" | "pro" | "paused";
 
