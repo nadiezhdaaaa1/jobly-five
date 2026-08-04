@@ -904,6 +904,27 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 if (!inTracker) onClose();
               }}
             />
+
+            {pendingHide ? (
+              <HideJobDialog
+                open
+                kind={pendingHide.kind}
+                reason={pendingHide.reason}
+                jobTitle={job.title}
+                wasSaved={saved}
+                onCancel={() => setPendingHide(null)}
+                onConfirm={() => {
+                  const { kind, reason } = pendingHide;
+                  if (saved) setStatus(job.id, "default");
+                  setJobInteraction(job.id, kind, reason);
+                  setPendingHide(null);
+                  toast(kind === "reported" ? "Job reported and hidden" : "Job hidden", {
+                    action: { label: "Undo", onClick: () => clearJobInteraction(job.id) },
+                  });
+                  onClose();
+                }}
+              />
+            ) : null}
           </div>
         ) : (
           <div className="flex shrink-0 items-center gap-2 border-t bg-[color:var(--color-surface-1)] px-5 py-3">
