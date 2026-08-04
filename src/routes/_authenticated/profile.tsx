@@ -2167,7 +2167,7 @@ function AchievementsTab({
   const suggested = cfg.suggestedBlocks;
   const blocks = orderedBlocks(suggested);
   const [draft, setDraft] = useState<AchievementDraft | null>(null);
-  const total = blocks.reduce((n, b) => n + extras.achievements[b].length, 0);
+  const total = blocks.reduce((n, b) => n + entriesFor(b).length, 0);
 
   // Blank rows left by the previous inline-editing behaviour are hidden, never counted.
   const entriesFor = (b: AchievementBlockKey) =>
@@ -2284,7 +2284,7 @@ function AchievementsTab({
         {total === 0 && !draft ? null : (
           <div className="mt-4 flex flex-col gap-5">
             {blocks.map((b) => {
-              const entries = extras.achievements[b];
+              const entries = entriesFor(b);
               if (!entries.length) return null;
               return (
                 <section key={b}>
