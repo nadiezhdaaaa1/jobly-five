@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
+import { toast as sonnerToast } from "sonner";
 import {
   IconArrowDown as ArrowDown,
   IconArrowUp as ArrowUp,
@@ -1723,6 +1724,162 @@ function CoverEditor({
 // TAB 4 — Portfolio & links
 // ==========================================================================
 
+type LinkDraft = { mode: "new" | string; type: string; label: string; url: string };
+
+/** Accepts "example.com" and returns a normalised absolute https URL, or null. */
+function normalizeUrl(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return null;
+  const withProto = /^https?:\/\//i.test(v) ? v : `https://${v}`;
+  try {
+    const u = new URL(withProto);
+    if (!u.hostname.includes(".") || u.hostname.endsWith(".")) return null;
+    return u.toString().replace(/\/$/, "");
+  } catch {
+    return null;
+  }
+}
+
+function prettyUrl(url: string) {
+  return url.replace(/^https?:\/\//i, "");
+}
+
+function LinkDraftRow({
+  draft,
+  types,
+  withLabel,
+  typeLabel,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  draft: LinkDraft;
+  types: string[];
+  withLabel: boolean;
+  typeLabel: string;
+  onChange: (patch: Partial<LinkDraft>) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const [error, setError] = useState<string | null>(null);
+
+  function submit() {
+    if (withLabel && draft.type === "Other" && !draft.label.trim()) {
+      setError("Add a label for this link.");
+      return;
+    }
+    if (!draft.url.trim()) {
+      setError("Add a link.");
+      return;
+    }
+    if (!normalizeUrl(draft.url)) {
+      setError("That doesn't look like a valid link.");
+      return;
+    }
+    setError(null);
+    onSave();
+  }
+
+  return (
+    <div className="rounded-[6px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[180px_1fr]">
+        <select
+          value={draft.type}
+          onChange={(e) => onChange({ type: e.target.value })}
+          className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
+          aria-label={typeLabel}
+        >
+          {types.map((t) => (
+            <option key={t}>{t}</option>
+          ))}
+        </select>
+        {withLabel && draft.type === "Other" ? (
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              placeholder="Label"
+              value={draft.label}
+              onChange={(e) => onChange({ label: e.target.value })}
+              className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
+            />
+            <input
+              autoFocus
+              placeholder="https://"
+              value={draft.url}
+              onChange={(e) => onChange({ url: e.target.value })}
+              onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+              className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
+            />
+          </div>
+        ) : (
+          <input
+            autoFocus
+            placeholder="https://"
+            value={draft.url}
+            onChange={(e) => onChange({ url: e.target.value })}
+            onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+            className="h-10 rounded-[4px] border px-3 text-[13px]"
+          />
+        )}
+      </div>
+      {error ? (
+        <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{error}</p>
+      ) : null}
+      <div className="mt-3 flex items-center gap-2">
+        <PrimaryBtn onClick={submit}>Save</PrimaryBtn>
+        <GhostBtn onClick={onCancel}>Cancel</GhostBtn>
+      </div>
+    </div>
+  );
+}
+
+function SavedLinkRow({
+  title,
+  url,
+  onEdit,
+  onDelete,
+}: {
+  title: string;
+  url: string;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-3 py-2">
+      <div className="min-w-0 flex-1">
+        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{title}</div>
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="block truncate text-[12px] text-[color:var(--color-text-secondary)] underline decoration-[color:var(--color-border-strong)] hover:text-[color:var(--color-foreground)]"
+        >
+          {prettyUrl(url)}
+        </a>
+      </div>
+      <IconTooltip label="Edit">
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label="Edit"
+          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Pencil size={16} strokeWidth={1.6} />
+        </button>
+      </IconTooltip>
+      <IconTooltip label="Delete">
+        <button
+          type="button"
+          onClick={onDelete}
+          aria-label="Delete"
+          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+        >
+          <Trash size={16} strokeWidth={1.6} />
+        </button>
+      </IconTooltip>
+    </div>
+  );
+}
+
 function PortfolioTab({
   extras,
   cfg,
@@ -1733,6 +1890,91 @@ function PortfolioTab({
   onToast: (m: string) => void;
 }) {
   const [portfolioUpload, setPortfolioUpload] = useState(false);
+  const [linkDraft, setLinkDraft] = useState<LinkDraft | null>(null);
+  const [socialDraft, setSocialDraft] = useState<LinkDraft | null>(null);
+
+  const linkTypes = useMemo(() => [...cfg.portfolioTypes, "Other"], [cfg.portfolioTypes]);
+  const atLinkLimit = extras.links.length >= LINK_LIMIT;
+
+  // Clean up blank rows left by the previous inline-editing behaviour.
+  useEffect(() => {
+    for (const l of extras.links) {
+      if (!l.url.trim() && linkDraft?.mode !== l.id) removeLink(l.id);
+    }
+    for (const s of extras.socials) {
+      if (!s.url.trim() && socialDraft?.mode !== s.id) removeSocial(s.id);
+    }
+  }, [extras.links, extras.socials, linkDraft?.mode, socialDraft?.mode]);
+
+  function startLink(type: string) {
+    if (atLinkLimit) {
+      onToast(`Limit of ${LINK_LIMIT} links reached`);
+      return;
+    }
+    setLinkDraft({ mode: "new", type, label: "", url: "" });
+  }
+
+  function saveLink() {
+    if (!linkDraft) return;
+    const url = normalizeUrl(linkDraft.url);
+    if (!url) return;
+    const label = linkDraft.type === "Other" ? linkDraft.label.trim() : undefined;
+    if (linkDraft.mode === "new") {
+      const ok = addLink({ type: linkDraft.type, label, url });
+      if (!ok) {
+        onToast(`Limit of ${LINK_LIMIT} links reached`);
+        return;
+      }
+      onToast("Link saved");
+    } else {
+      updateLink(linkDraft.mode, { type: linkDraft.type, label, url });
+      onToast("Link updated");
+    }
+    setLinkDraft(null);
+  }
+
+  function deleteLink(id: string) {
+    const row = extras.links.find((l) => l.id === id);
+    if (!row) return;
+    if (linkDraft?.mode === id) setLinkDraft(null);
+    removeLink(id);
+    sonnerToast("Link deleted", {
+      action: {
+        label: "Undo",
+        onClick: () => addLink({ type: row.type, label: row.label, url: row.url }),
+      },
+    });
+  }
+
+  function saveSocial() {
+    if (!socialDraft) return;
+    const url = normalizeUrl(socialDraft.url);
+    if (!url) return;
+    if (socialDraft.mode === "new") {
+      addSocial({ network: socialDraft.type, url });
+      onToast("Profile saved");
+    } else {
+      updateSocial(socialDraft.mode, { network: socialDraft.type, url });
+      onToast("Profile updated");
+    }
+    setSocialDraft(null);
+  }
+
+  function deleteSocial(id: string) {
+    const row = extras.socials.find((s) => s.id === id);
+    if (!row) return;
+    if (socialDraft?.mode === id) setSocialDraft(null);
+    removeSocial(id);
+    sonnerToast("Profile deleted", {
+      action: {
+        label: "Undo",
+        onClick: () => addSocial({ network: row.network, url: row.url }),
+      },
+    });
+  }
+
+  const savedLinks = extras.links.filter((l) => l.url.trim());
+  const savedSocials = extras.socials.filter((s) => s.url.trim());
 
   return (
     <>
@@ -1740,7 +1982,7 @@ function PortfolioTab({
       <CardBig>
         <header className="flex items-center gap-2">
           <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Portfolio links</h2>
-          <Tag>up to {LINK_LIMIT}</Tag>
+          <Tag>{savedLinks.length} of {LINK_LIMIT}</Tag>
         </header>
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           Live links to your work. Pick a type, or "Other" to name it. Suggested for your field:
@@ -1750,72 +1992,68 @@ function PortfolioTab({
             <button
               key={t}
               type="button"
-              onClick={() => {
-                const ok = addLink({ type: t, url: "" });
-                if (!ok) onToast("Link limit reached");
-              }}
-              className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)]"
+              disabled={atLinkLimit}
+              onClick={() => startLink(t)}
+              className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)] disabled:opacity-50"
             >
               <Plus size={12} strokeWidth={2.2} />
               {t}
             </button>
           ))}
         </div>
+
         <div className="mt-4 flex flex-col gap-2">
-          {extras.links.map((l) => (
-            <div key={l.id} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[160px_1fr_auto]">
-              <select
-                value={l.type}
-                onChange={(e) => updateLink(l.id, { type: e.target.value })}
-                className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
-                aria-label="Link type"
-              >
-                {[...cfg.portfolioTypes, "Other"].map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-              {l.type === "Other" ? (
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <input
-                    placeholder="Label"
-                    value={l.label ?? ""}
-                    onChange={(e) => updateLink(l.id, { label: e.target.value })}
-                    className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
-                  />
-                  <input
-                    placeholder="https://"
-                    value={l.url}
-                    onChange={(e) => updateLink(l.id, { url: e.target.value })}
-                    className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
-                  />
-                </div>
-              ) : (
-                <input
-                  placeholder="https://"
-                  value={l.url}
-                  onChange={(e) => updateLink(l.id, { url: e.target.value })}
-                  className="h-10 rounded-[4px] border px-3 text-[13px]"
-                />
-              )}
-              <IconTooltip label="Remove">
-                <button type="button" onClick={() => removeLink(l.id)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-                  <X size={16} strokeWidth={1.6} />
-                </button>
-              </IconTooltip>
-            </div>
-          ))}
+          {savedLinks.map((l) =>
+            linkDraft?.mode === l.id ? (
+              <LinkDraftRow
+                key={l.id}
+                draft={linkDraft}
+                types={linkTypes}
+                withLabel
+                typeLabel="Link type"
+                onChange={(patch) => setLinkDraft({ ...linkDraft, ...patch })}
+                onSave={saveLink}
+                onCancel={() => setLinkDraft(null)}
+              />
+            ) : (
+              <SavedLinkRow
+                key={l.id}
+                title={l.type === "Other" ? (l.label?.trim() || "Other") : l.type}
+                url={l.url}
+                onEdit={() =>
+                  setLinkDraft({ mode: l.id, type: l.type, label: l.label ?? "", url: l.url })
+                }
+                onDelete={() => deleteLink(l.id)}
+              />
+            ),
+          )}
+          {linkDraft?.mode === "new" ? (
+            <LinkDraftRow
+              draft={linkDraft}
+              types={linkTypes}
+              withLabel
+              typeLabel="Link type"
+              onChange={(patch) => setLinkDraft({ ...linkDraft, ...patch })}
+              onSave={saveLink}
+              onCancel={() => setLinkDraft(null)}
+            />
+          ) : null}
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            const ok = addLink({ type: cfg.portfolioTypes[0] ?? "Other", url: "" });
-            if (!ok) onToast("Link limit reached");
-          }}
-          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Plus size={16} stroke={2} />
-          Add link
-        </button>
+
+        {atLinkLimit ? (
+          <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]">
+            You've reached the limit of {LINK_LIMIT} links. Delete one to add another.
+          </p>
+        ) : linkDraft?.mode === "new" ? null : (
+          <button
+            type="button"
+            onClick={() => startLink(cfg.portfolioTypes[0] ?? "Other")}
+            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <Plus size={16} stroke={2} />
+            Add link
+          </button>
+        )}
       </CardBig>
 
       {/* Portfolio file */}
@@ -1859,7 +2097,7 @@ function PortfolioTab({
             <button
               key={s}
               type="button"
-              onClick={() => addSocial({ network: s, url: "" })}
+              onClick={() => setSocialDraft({ mode: "new", type: s, label: "", url: "" })}
               className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)]"
             >
               <Plus size={12} strokeWidth={2.2} />
@@ -1867,39 +2105,53 @@ function PortfolioTab({
             </button>
           ))}
         </div>
+
         <div className="mt-4 flex flex-col gap-2">
-          {extras.socials.map((s) => (
-            <div key={s.id} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[180px_1fr_auto]">
-              <select
-                value={s.network}
-                onChange={(e) => updateSocial(s.id, { network: e.target.value })}
-                className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
-                aria-label="Network"
-              >
-                {ALL_SOCIAL_NETWORKS.map((n) => <option key={n}>{n}</option>)}
-              </select>
-              <input
-                placeholder="https://"
-                value={s.url}
-                onChange={(e) => updateSocial(s.id, { url: e.target.value })}
-                className="h-10 rounded-[4px] border px-3 text-[13px]"
+          {savedSocials.map((s) =>
+            socialDraft?.mode === s.id ? (
+              <LinkDraftRow
+                key={s.id}
+                draft={socialDraft}
+                types={ALL_SOCIAL_NETWORKS}
+                withLabel={false}
+                typeLabel="Network"
+                onChange={(patch) => setSocialDraft({ ...socialDraft, ...patch })}
+                onSave={saveSocial}
+                onCancel={() => setSocialDraft(null)}
               />
-              <IconTooltip label="Remove">
-                <button type="button" onClick={() => removeSocial(s.id)} aria-label="Remove" className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
-                  <X size={16} strokeWidth={1.6} />
-                </button>
-              </IconTooltip>
-            </div>
-          ))}
+            ) : (
+              <SavedLinkRow
+                key={s.id}
+                title={s.network}
+                url={s.url}
+                onEdit={() => setSocialDraft({ mode: s.id, type: s.network, label: "", url: s.url })}
+                onDelete={() => deleteSocial(s.id)}
+              />
+            ),
+          )}
+          {socialDraft?.mode === "new" ? (
+            <LinkDraftRow
+              draft={socialDraft}
+              types={ALL_SOCIAL_NETWORKS}
+              withLabel={false}
+              typeLabel="Network"
+              onChange={(patch) => setSocialDraft({ ...socialDraft, ...patch })}
+              onSave={saveSocial}
+              onCancel={() => setSocialDraft(null)}
+            />
+          ) : null}
         </div>
-        <button
-          type="button"
-          onClick={() => addSocial({ network: "LinkedIn", url: "" })}
-          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          <Plus size={16} stroke={2} />
-          Add profile
-        </button>
+
+        {socialDraft?.mode === "new" ? null : (
+          <button
+            type="button"
+            onClick={() => setSocialDraft({ mode: "new", type: "LinkedIn", label: "", url: "" })}
+            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            <Plus size={16} stroke={2} />
+            Add profile
+          </button>
+        )}
       </CardBig>
 
       <UploadModal
