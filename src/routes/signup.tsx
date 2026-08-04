@@ -1,10 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { TurnstileWidget } from "@/components/site/TurnstileWidget";
+import { captchaConfigured } from "@/config/turnstile";
+import { guardAuthAttempt } from "@/lib/auth-guard.functions";
+import { isDisposableEmail } from "@/lib/disposable-domains";
+
+/** Neutral copy: identical whether or not the address already has an account. */
+const SIGNUP_NEUTRAL_NOTICE =
+  "If that email isn't already registered, we've sent a confirmation link. Check your inbox.";
+const RATE_LIMIT_COPY = "Too many attempts. Try again in a few minutes.";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -25,6 +34,10 @@ function SignupPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  // Invisible bot checks: a field humans never see, and a floor on fill time.
+  const [honeypot, setHoneypot] = useState("");
+  const mountedAt = useRef(Date.now());
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -47,25 +60,52 @@ function SignupPage() {
     e.preventDefault();
     if (!validEmail) return setError("Enter a valid email address.");
     if (password.length < 8) return setError("Password must be at least 8 characters.");
+    if (isDisposableEmail(email)) return setError("Please use a permanent email address.");
+    // Bots fill the hidden field or submit instantly. Same neutral outcome, no signup.
+    if (honeypot.trim() !== "" || Date.now() - mountedAt.current < 1500) {
+      setError(null);
+      setNotice(SIGNUP_NEUTRAL_NOTICE);
+      return;
+    }
     setError(null);
     setSubmitting(true);
+
+    const gate = await guardAuthAttempt({
+      data: { kind: "signup", email: email.trim(), captchaToken: captchaToken ?? undefined },
+    });
+    if (!gate.ok) {
+      setSubmitting(false);
+      setError(
+        gate.reason === "disposable"
+          ? "Please use a permanent email address."
+          : gate.reason === "captcha"
+            ? "Please complete the verification and try again."
+            : RATE_LIMIT_COPY,
+      );
+      return;
+    }
+
     const { data, error: err } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
         emailRedirectTo: window.location.origin,
         data: { full_name: name.trim() || undefined },
+        ...(captchaToken ? { captchaToken } : {}),
       },
     });
     setSubmitting(false);
     if (err) {
-      setError(err.message);
+      // Never disclose that an address is taken.
+      const enumerating = /already|registered|exists/i.test(err.message);
+      if (enumerating) setNotice(SIGNUP_NEUTRAL_NOTICE);
+      else setError(err.message);
       return;
     }
     if (data.session) {
       navigate({ to: "/dashboard" });
     } else {
-      setNotice("Check your email to confirm your account, then log in.");
+      setNotice(SIGNUP_NEUTRAL_NOTICE);
     }
   }
 
@@ -148,6 +188,21 @@ function SignupPage() {
             </label>
             {error && <span className="text-sm text-[color:var(--color-danger)]">{error}</span>}
             {notice && <span className="text-sm text-[color:var(--color-green)]">{notice}</span>}
+
+            {/* Hidden from people and assistive tech; only bots fill it in. */}
+            <input
+              type="text"
+              name="company_website"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
+            />
+
+            {captchaConfigured && <TurnstileWidget onToken={setCaptchaToken} className="mt-1" />}
+
             <button
               type="submit"
               disabled={submitting}

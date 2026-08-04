@@ -5,6 +5,15 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { TurnstileWidget } from "@/components/site/TurnstileWidget";
+import { captchaConfigured } from "@/config/turnstile";
+import {
+  guardAuthAttempt,
+  getSigninGate,
+  reportSigninFailure,
+} from "@/lib/auth-guard.functions";
+
+const RATE_LIMIT_COPY = "Too many attempts. Try again in a few minutes.";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -23,6 +32,11 @@ function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  /** Set by the server once this IP has failed sign-in three times. */
+  const [needCaptcha, setNeedCaptcha] = useState(false);
+  /** Forgot-password was clicked, so the widget is shown for that request too. */
+  const [resetRequested, setResetRequested] = useState(false);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -32,6 +46,14 @@ function LoginPage() {
       if (data.session) navigate({ to: "/dashboard" });
     });
   }, [navigate]);
+
+  useEffect(() => {
+    // Ask the server whether this IP already owes us a verification.
+    if (!captchaConfigured) return;
+    getSigninGate()
+      .then((gate) => setNeedCaptcha(gate.needCaptcha))
+      .catch(() => setNeedCaptcha(false));
+  }, []);
 
   async function handleGoogle() {
     setError(null);
@@ -61,12 +83,34 @@ function LoginPage() {
     }
     setError(null);
     setSubmitting(true);
+
+    const gate = await guardAuthAttempt({
+      data: { kind: "signin", captchaToken: captchaToken ?? undefined },
+    });
+    if (!gate.ok) {
+      setSubmitting(false);
+      setNeedCaptcha(true);
+      setError(
+        gate.reason === "captcha"
+          ? "Please complete the verification and try again."
+          : RATE_LIMIT_COPY,
+      );
+      return;
+    }
+
     const { error: err } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
+      ...(captchaToken ? { options: { captchaToken } } : {}),
     });
     setSubmitting(false);
     if (err) {
+      const failure = await reportSigninFailure({ data: { email: email.trim() } }).catch(() => null);
+      if (failure?.needCaptcha) setNeedCaptcha(true);
+      if (failure?.blocked) {
+        setError(RATE_LIMIT_COPY);
+        return;
+      }
       setError(err.message === "Invalid login credentials" ? "Incorrect email or password." : err.message);
       return;
     }
@@ -79,11 +123,26 @@ function LoginPage() {
       return;
     }
     setError(null);
+    setResetRequested(true);
+
+    const gate = await guardAuthAttempt({
+      data: { kind: "reset", email: email.trim(), captchaToken: captchaToken ?? undefined },
+    });
+    if (!gate.ok) {
+      setError(
+        gate.reason === "captcha"
+          ? "Please complete the verification and try again."
+          : RATE_LIMIT_COPY,
+      );
+      return;
+    }
+
     const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
       redirectTo: `${window.location.origin}/reset-password`,
+      ...(captchaToken ? { captchaToken } : {}),
     });
-    if (err) setError(err.message);
-    else setError("Check your inbox for a password reset link.");
+    // Same message either way — never reveal whether the address is registered.
+    setError(err && !/rate|limit/i.test(err.message) ? err.message : "Check your inbox for a password reset link.");
   }
 
   return (
@@ -148,6 +207,9 @@ function LoginPage() {
             </label>
             {error && (
               <span className="text-sm text-[color:var(--color-danger)]">{error}</span>
+            )}
+            {captchaConfigured && (needCaptcha || resetRequested) && (
+              <TurnstileWidget onToken={setCaptchaToken} className="mt-1" />
             )}
             <div className="flex justify-end">
               <button
