@@ -31,7 +31,7 @@ import { useEntitlements } from "@/lib/entitlements-provider";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus } from "@/lib/tracker-store";
-import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
+import { useQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
@@ -966,22 +966,17 @@ function FiltersSidebar({
   saved: SavedFilterEntry[];
   onLoadSaved: (id: string) => void;
 }) {
-  // profileRoles computed below; use it for accurate active count
-  const profileRolesForCount = useMemo(() => {
-    const q = loadQuiz();
-    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
-  }, []);
-  const activeCount = activeFilterCount(applied, profileRolesForCount);
+  // Roles universe comes from the user's profile (quiz). The filter can only
+  // toggle which of those roles are active — never add/remove them here.
+  // Read reactively: the profile hydrates from the server after mount.
+  const quiz = useQuiz();
+  const profileRoles = useMemo(() => {
+    return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
+  }, [quiz]);
+  const activeCount = activeFilterCount(applied, profileRoles);
   const dirty = !filterEqual(pending, applied);
   const p = pending;
   const set = (patch: Partial<FilterState>) => onChange({ ...p, ...patch });
-
-  // Roles universe comes from the user's profile (quiz). The filter can only
-  // toggle which of those roles are active — never add/remove them here.
-  const profileRoles = useMemo(() => {
-    const q = loadQuiz();
-    return q.roles?.length ? q.roles : q.role ? [q.role] : [];
-  }, []);
 
   return (
     <aside className="contents lg:block lg:relative lg:sticky lg:top-20">
