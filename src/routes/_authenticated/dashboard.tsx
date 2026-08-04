@@ -286,21 +286,6 @@ function filterEqual(a: FilterState, b: FilterState) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function activeFilterCount(f: FilterState, profileRoles: string[] = []): number {
-  const d = defaultFilters();
-  let n = 0;
-  if (f.field !== d.field) n++;
-  if (profileRoles.length > 0 && f.roles.length !== profileRoles.length) n++;
-  else if (profileRoles.length === 0 && f.roles.length) n++;
-  if (f.seniority.length) n++;
-  if (f.onlyRemote || f.locations.length) n++;
-  if (f.sources.length !== d.sources.length || f.sources.some((s) => !d.sources.includes(s))) n++;
-  if (f.minMatch !== d.minMatch) n++;
-  if (f.minSalary !== d.minSalary) n++;
-  if (f.postedWithin !== d.postedWithin) n++;
-  return n;
-}
-
 function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
   return jobs.filter((j) => {
     // Blocked companies filter (managed in Settings)
