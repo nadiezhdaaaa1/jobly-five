@@ -163,6 +163,12 @@ export function removeEducation(id: string) {
 let historyUserId: string | null = null;
 let historyTimer: ReturnType<typeof setTimeout> | null = null;
 
+async function pushHistory(userId: string) {
+  // The call MUST be awaited: an unawaited PostgREST builder is never sent.
+  const { error } = await supabase.from("profiles").update({ work_history: state.data }).eq("id", userId);
+  if (error) console.error("work history sync failed", error);
+}
+
 function scheduleHistorySync() {
   if (!historyUserId) return;
   if (historyTimer) clearTimeout(historyTimer);
@@ -170,8 +176,23 @@ function scheduleHistorySync() {
     historyTimer = null;
     const userId = historyUserId;
     if (!userId) return;
-    void supabase.from("profiles").update({ work_history: state.data }).eq("id", userId);
+    void pushHistory(userId);
   }, 400);
+}
+
+/** Sends a pending debounced save immediately (used when the page is hidden). */
+export function flushHistorySync() {
+  if (!historyTimer || !historyUserId) return;
+  clearTimeout(historyTimer);
+  historyTimer = null;
+  void pushHistory(historyUserId);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", flushHistorySync);
+  window.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushHistorySync();
+  });
 }
 
 /** Loads this account's history. The server is the only source of truth. */

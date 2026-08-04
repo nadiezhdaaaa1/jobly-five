@@ -513,6 +513,12 @@ export const ALL_SOCIAL_NETWORKS = [
 let extrasUserId: string | null = null;
 let extrasTimer: ReturnType<typeof setTimeout> | null = null;
 
+async function pushExtras(userId: string) {
+  // The call MUST be awaited: an unawaited PostgREST builder is never sent.
+  const { error } = await supabase.from("profiles").update({ profile_extras: state }).eq("id", userId);
+  if (error) console.error("profile extras sync failed", error);
+}
+
 function scheduleExtrasSync() {
   if (!extrasUserId) return;
   if (extrasTimer) clearTimeout(extrasTimer);
@@ -520,8 +526,23 @@ function scheduleExtrasSync() {
     extrasTimer = null;
     const userId = extrasUserId;
     if (!userId) return;
-    void supabase.from("profiles").update({ profile_extras: state }).eq("id", userId);
+    void pushExtras(userId);
   }, 400);
+}
+
+/** Sends a pending debounced save immediately (used when the page is hidden). */
+export function flushExtrasSync() {
+  if (!extrasTimer || !extrasUserId) return;
+  clearTimeout(extrasTimer);
+  extrasTimer = null;
+  void pushExtras(extrasUserId);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("pagehide", flushExtrasSync);
+  window.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushExtrasSync();
+  });
 }
 
 /** Loads this account's extras. The server is the only source of truth. */
