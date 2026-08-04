@@ -468,11 +468,14 @@ function applyRemote(next: BoardColumn[]) {
 }
 
 /**
- * Loads the account's column set. When the account has none yet, the local set
- * (or the defaults) is written once so existing cards keep resolving.
+ * Loads the account's column set. The server is the only source of truth; when
+ * the account has none yet, the defaults are written for that account.
  */
 export async function hydrateBoardColumnsFromDb(userId: string) {
   currentUserId = userId;
+  dropLegacyCache(...LEGACY_STORAGE_KEYS);
+  const cached = loadCached(userId);
+  if (cached) applyRemote(cached);
   const { data, error } = await supabase
     .from("board_columns")
     .select("column_id, kind, title, stages, position")
@@ -491,6 +494,8 @@ export async function hydrateBoardColumnsFromDb(userId: string) {
         })),
     );
   } else {
+    // Fresh account: start from the defaults, not from whatever this browser held.
+    applyRemote(defaults());
     await pushColumns();
   }
 }
@@ -498,6 +503,9 @@ export async function hydrateBoardColumnsFromDb(userId: string) {
 /** Another account signing in on this tab must not inherit these columns. */
 export function resetBoardColumnsForSignOut() {
   currentUserId = null;
+  columns = defaults();
+  version++;
+  listeners.forEach((l) => l());
   if (syncTimer) {
     clearTimeout(syncTimer);
     syncTimer = null;
