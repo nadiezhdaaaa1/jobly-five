@@ -84,18 +84,28 @@ export async function fetchEntitlements(): Promise<Entitlements> {
 /** Shape the existing Settings UI already consumes. Derived, never client-written. */
 export function toSubscription(
   e: Entitlements,
-  row?: { status: string; cancelAtPeriodEnd: boolean; currentPeriodEnd: string | null } | null,
+  row?: {
+    status: string;
+    cancelAtPeriodEnd: boolean;
+    currentPeriodEnd: string | null;
+    pauseEndsAt?: string | null;
+    activationSource?: string;
+  } | null,
 ): Subscription {
   if (row) {
     return {
       status: (row.cancelAtPeriodEnd ? "canceling" : row.status) as SubStatus,
       cancelAtPeriodEnd: row.cancelAtPeriodEnd,
       currentPeriodEnd: row.currentPeriodEnd ?? e.trial_ends_at ?? new Date(0).toISOString(),
+      pauseEndsAt: row.pauseEndsAt ?? e.pause_ends_at ?? null,
+      activationSource: row.activationSource ?? "none",
     };
   }
   return {
     status: e.status === "canceled" && e.current_period_end ? "canceled" : (e.status as SubStatus),
     cancelAtPeriodEnd: e.status === "active" && Boolean(e.current_period_end) ? false : false,
     currentPeriodEnd: e.current_period_end ?? e.trial_ends_at ?? new Date(0).toISOString(),
+    pauseEndsAt: e.pause_ends_at ?? null,
+    activationSource: "none",
   };
 }
