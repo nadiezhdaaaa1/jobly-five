@@ -40,6 +40,14 @@ function AuthedShell({ userId }: { userId: string }) {
   const account = useAccount();
   useEffect(() => {
     void (async () => {
+      // The route gate only reads the locally stored session (cheap, so tab
+      // switches stay instant). Verify it against the server once per mount;
+      // an invalid/expired session lands on /login exactly as before.
+      const { data: verified, error: verifyError } = await supabase.auth.getUser();
+      if (verifyError || !verified.user) {
+        window.location.href = "/login";
+        return;
+      }
       // Backstop the auth trigger before anything reads those rows: if a row
       // is missing the RPC creates it, otherwise this is a no-op.
       try {
@@ -88,12 +96,17 @@ function AuthedShell({ userId }: { userId: string }) {
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
+  // Run the gate once per app boot: re-running it on every tab switch is what
+  // made navigation wait on the network.
+  staleTime: Infinity,
+  shouldReload: false,
   beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
+    // getSession() reads the persisted session locally; no round trip.
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session?.user) {
       throw redirect({ to: "/login" });
     }
-    return { user: data.user };
+    return { user: data.session.user };
   },
   component: function AuthedRoute() {
     const { user } = Route.useRouteContext();
