@@ -1274,13 +1274,25 @@ function JobsScreen() {
   const plan = usePlan();
   const pro = isPro(plan);
   const { user } = useAuth();
-  const quiz = useMemo(() => loadQuiz(), []);
+  const quiz = useQuiz();
   const profileRoles = useMemo(() => {
     return quiz.roles?.length ? quiz.roles : quiz.role ? [quiz.role] : [];
   }, [quiz]);
   const seed = useMemo(() => ({ ...defaultsFromQuiz(quiz), roles: [...profileRoles] }), [quiz, profileRoles]);
   const [applied, setApplied] = useState<FilterState>(seed);
   const [pending, setPending] = useState<FilterState>(seed);
+  // The profile hydrates from the server after mount, so the initial seed can
+  // be empty. Re-seed once real answers arrive, unless the user already
+  // touched the filters.
+  const touched = useRef(false);
+  const seeded = useRef(Object.keys(quiz).length > 0);
+  useEffect(() => {
+    if (seeded.current || touched.current) return;
+    if (Object.keys(quiz).length === 0) return;
+    seeded.current = true;
+    setApplied(seed);
+    setPending(seed);
+  }, [quiz, seed]);
   const [filtersOpen, setFiltersOpen] = useState(
     () => typeof window === "undefined" || window.innerWidth >= 1024,
   );
