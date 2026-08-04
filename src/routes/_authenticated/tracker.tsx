@@ -45,6 +45,7 @@ import {
   setReminder as storeSetReminder,
   setStatus,
   setCardColumn,
+  removeFromTracker,
   useJobRecord,
   getTrackerEntries,
   useTrackerHydrated,
@@ -55,6 +56,14 @@ import { resolveColumnForCard, useColumns, statusForKind, type BoardColumn, type
 import { usePlan, isPro } from "@/lib/plan-store";
 import { useEntitlements } from "@/lib/entitlements-provider";
 import { blockCompany } from "@/lib/blocked-companies-store";
+import { toast as sonnerToast } from "sonner";
+import {
+  setJobInteraction,
+  clearJobInteraction,
+  useHiddenJobIds,
+  type InteractionKind,
+} from "@/lib/job-interactions-store";
+import { HideJobDialog } from "@/components/app/HideJobDialog";
 
 export const Route = createFileRoute("/_authenticated/tracker")({
   head: () => ({
@@ -217,6 +226,7 @@ function KanbanCard({
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [confirmArchiveOpen, setConfirmArchiveOpen] = useState(false);
   const [archiveReason, setArchiveReason] = useState("");
+  const [pendingHide, setPendingHide] = useState<{ kind: InteractionKind; reason: string } | null>(null);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const moveRef = useOutsideClose(moveOpen, () => setMoveOpen(false));
@@ -301,7 +311,7 @@ function KanbanCard({
               {flagOpen ? (
                 <MenuPop>
                   {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
-                    <MenuItem key={label} danger onClick={() => { setStatus(job.id, "reported"); archiveJob(job.id); setFlagOpen(false); }}>{label}</MenuItem>
+                    <MenuItem key={label} danger onClick={() => { setFlagOpen(false); setPendingHide({ kind: "reported", reason: label }); }}>{label}</MenuItem>
                   ))}
                 </MenuPop>
               ) : null}
@@ -319,10 +329,8 @@ function KanbanCard({
                     <MenuItem
                       key={label}
                       onClick={() => {
-                        if (label === "Don't recommend the company") blockCompany(job.company);
-                        setStatus(job.id, "dismissed");
-                        archiveJob(job.id);
                         setDislikeOpen(false);
+                        setPendingHide({ kind: "disliked", reason: label });
                       }}
                     >
                       {label}
@@ -392,6 +400,27 @@ function KanbanCard({
       </div>
     </article>
     <FollowUpDialog job={job} open={followUpOpen} onClose={() => setFollowUpOpen(false)} />
+    {pendingHide ? (
+      <HideJobDialog
+        open
+        kind={pendingHide.kind}
+        reason={pendingHide.reason}
+        jobTitle={job.title}
+        wasSaved={kind === "saved"}
+        onCancel={() => setPendingHide(null)}
+        onConfirm={() => {
+          const { kind: k, reason } = pendingHide;
+          if (reason === "Don't recommend the company") blockCompany(job.company);
+          // Leave the board entirely (and unsave) — no archived card behind.
+          removeFromTracker(job.id);
+          setJobInteraction(job.id, k, reason);
+          setPendingHide(null);
+          sonnerToast(k === "reported" ? "Job reported and hidden" : "Job hidden", {
+            action: { label: "Undo", onClick: () => clearJobInteraction(job.id) },
+          });
+        }}
+      />
+    ) : null}
     <Dialog
       open={confirmArchiveOpen}
       onOpenChange={(o) => {
@@ -751,6 +780,7 @@ function TrackerScreen() {
   const { loading: entLoading } = useEntitlements();
   useTrackerVersion();
   const { jobs: allJobs, loaded: jobsLoaded } = useJobs();
+  const interactionHidden = useHiddenJobIds();
   const trackerHydrated = useTrackerHydrated();
   const columns = useColumns();
   const [openJob, setOpenJob] = useState<Job | null>(null);
@@ -873,6 +903,7 @@ function TrackerScreen() {
   let total = 0;
   for (const j of allJobs) {
     const rec = getJobRecord(j.id);
+    if (interactionHidden.has(j.id)) continue;
     const raw = rec.archived ? rec.lastStatus : rec.status;
     if (!raw) continue;
     if (rec.archived) {

@@ -15,6 +15,7 @@ import { hydrateProfileExtrasFromDb, resetProfileExtrasForSignOut } from "@/lib/
 import { hydrateWorkHistoryFromDb, resetWorkHistoryForSignOut } from "@/lib/resume-store";
 import { hydrateSavedFiltersFromDb, resetSavedFiltersForSignOut } from "@/lib/saved-filters-store";
 import { hydrateBlockedCompaniesFromDb, resetBlockedCompaniesForSignOut } from "@/lib/blocked-companies-store";
+import { hydrateJobInteractionsFromDb, resetJobInteractionsForSignOut } from "@/lib/job-interactions-store";
 import { linkConsentToAccount } from "@/lib/consent.functions";
 import { ensureUserProvisioned } from "@/lib/provisioning.functions";
 import { migrateLegacyConsent } from "@/lib/consent-migration";
@@ -66,6 +67,7 @@ function AuthedShell({ userId }: { userId: string }) {
       void hydrateWorkHistoryFromDb(userId);
       void hydrateSavedFiltersFromDb(userId);
       void hydrateBlockedCompaniesFromDb(userId);
+      void hydrateJobInteractionsFromDb(userId);
       // Consent lives only in Postgres: link any pre-account rows, then retire
       // whatever the browser still holds.
       void linkConsentToAccount().catch(() => undefined);
@@ -81,6 +83,7 @@ function AuthedShell({ userId }: { userId: string }) {
       resetWorkHistoryForSignOut();
       resetSavedFiltersForSignOut();
       resetBlockedCompaniesForSignOut();
+      resetJobInteractionsForSignOut();
       resetQuizForSignOut();
       resetAccountForSignOut();
     };

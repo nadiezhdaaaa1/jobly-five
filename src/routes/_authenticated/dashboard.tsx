@@ -34,6 +34,13 @@ import { setStatus, useCounts, useJobRecord, useTrackerHiddenIds, type JobStatus
 import { useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { setDigestSession, useDigestSession, clearDigestSession, type DigestSessionState } from "@/lib/digest-session-store";
 import { useBlockedCompanies, blockCompany } from "@/lib/blocked-companies-store";
+import {
+  setJobInteraction,
+  clearJobInteraction,
+  useHiddenJobIds,
+  type InteractionKind,
+} from "@/lib/job-interactions-store";
+import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
 import {
@@ -582,6 +589,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
   const [dislikeOpen, setDislikeOpen] = useState(false);
   const [flagOpen, setFlagOpen] = useState(false);
   const [applyOpen, setApplyOpen] = useState(false);
+  const [pendingHide, setPendingHide] = useState<{ kind: InteractionKind; reason: string } | null>(null);
   const dislikeRef = useOutsideClose(dislikeOpen, () => setDislikeOpen(false));
   const flagRef = useOutsideClose(flagOpen, () => setFlagOpen(false));
   const flagBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -681,7 +689,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     type="button"
                     role="menuitem"
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-                    onClick={(e) => { e.stopPropagation(); setDigestSession(job.id, "reported"); setFlagOpen(false); }}
+                    onClick={(e) => { e.stopPropagation(); setFlagOpen(false); setPendingHide({ kind: "reported", reason: label }); }}
                   >
                     {label}
                   </button>
@@ -719,9 +727,8 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] hover:bg-[color:var(--color-surface-2)]"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (label === "Don't recommend the company") blockCompany(job.company);
-                      setDigestSession(job.id, "disliked");
                       setDislikeOpen(false);
+                      setPendingHide({ kind: "disliked", reason: label });
                     }}
                   >
                     {label}
@@ -770,18 +777,41 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
         onClose={() => setApplyOpen(false)}
         onApplied={() => setDigestSession(job.id, "applied")}
       />
+
+      {pendingHide ? (
+        <div onClick={(e) => e.stopPropagation()}>
+          <HideJobDialog
+            open
+            kind={pendingHide.kind}
+            reason={pendingHide.reason}
+            jobTitle={job.title}
+            wasSaved={saved}
+            onCancel={() => setPendingHide(null)}
+            onConfirm={() => {
+              const { kind, reason } = pendingHide;
+              // Reporting or disliking a saved job unsaves it first.
+              if (saved) setStatus(job.id, "default");
+              if (reason === "Don't recommend the company") blockCompany(job.company);
+              setJobInteraction(job.id, kind, reason);
+              setPendingHide(null);
+              toast(kind === "reported" ? "Job reported and hidden" : "Job hidden", {
+                action: { label: "Undo", onClick: () => clearJobInteraction(job.id) },
+              });
+            }}
+          />
+        </div>
+      ) : null}
     </article>
   );
 }
 
 function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   const session = useDigestSession(job.id);
-  if (session) return <CompactSessionRow job={job} kind={session} />;
+  if (session === "applied") return <CompactSessionRow job={job} kind={session} />;
   return <FullJobCard job={job} onOpen={onOpen} />;
 }
 
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
-  const session = useDigestSession(job.id);
   return (
     <div className="rounded-[12px] bg-[#F1F3F3] p-1">
       <div className="group rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
@@ -1358,11 +1388,14 @@ function JobsScreen() {
   const allJobs = useMemo(() => allJobsRaw.map(enrich), [allJobsRaw]);
   const blocked = useBlockedCompanies();
   const hiddenIds = useTrackerHiddenIds();
+  const interactionHidden = useHiddenJobIds();
   const visible = useMemo(() => {
     const list = applyFilters(allJobs, applied);
     const blockedSet = new Set(blocked.map((c) => c.toLowerCase()));
-    return list.filter((j) => !hiddenIds.has(j.id) && !blockedSet.has(j.company.toLowerCase()));
-  }, [allJobs, applied, blocked, hiddenIds]);
+    return list.filter(
+      (j) => !hiddenIds.has(j.id) && !interactionHidden.has(j.id) && !blockedSet.has(j.company.toLowerCase()),
+    );
+  }, [allJobs, applied, blocked, hiddenIds, interactionHidden]);
 
   // Pagination
   const PAGE_SIZE = 10;
