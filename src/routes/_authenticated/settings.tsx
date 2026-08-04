@@ -555,6 +555,18 @@ function PlanCardsBlock({
 
   function onProClick() {
     if (isPlanPro) return;
+    if (needsBillingTerms && !billingTermsTicked) return;
+    if (needsBillingTerms) {
+      void acceptPolicies({
+        data: {
+          documentKeys: ["billing_terms"],
+          consentText: `I accept the Jobly Subscription and Billing Terms (version ${billingTermsVersion ?? "current"}).`,
+          source: "checkout",
+        },
+      })
+        .then(() => setNeedsBillingTerms(false))
+        .catch(() => undefined);
+    }
     if (!hasHadPro) {
       setPlan("pro");
       onFlash(`Welcome to Pro — your ${TRIAL_DAYS}-day trial has started.`);
