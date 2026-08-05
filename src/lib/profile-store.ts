@@ -89,7 +89,7 @@ function seed(): ProfileExtras {
       },
       {
         id: uid(),
-        name: "Startup & high-growth",
+        name: "Startup and high-growth",
         body:
           "<p>Hello {company} team,</p><p>The {role} opening caught my eye — early stage is where I do my best work. I'm comfortable owning something end to end with an unfinished brief, shipping a first version fast, and being honest about what to cut.</p><p>I've done 0→1 more than once: first customers, first metrics, and the unglamorous plumbing in between. If {company} needs someone who moves without waiting for perfect process, that's the part I enjoy.</p><p>{Achievements}</p><p>Would love to hear what the first 90 days look like for you.</p><p>Best regards,<br>{My name}</p>",
       },
