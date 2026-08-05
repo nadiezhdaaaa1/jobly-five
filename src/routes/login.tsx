@@ -4,6 +4,13 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { TurnstileWidget } from "@/components/site/TurnstileWidget";
@@ -36,8 +43,7 @@ function LoginPage() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   /** Set by the server once this IP has failed sign-in three times. */
   const [needCaptcha, setNeedCaptcha] = useState(false);
-  /** Forgot-password was clicked, so the widget is shown for that request too. */
-  const [resetRequested, setResetRequested] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -116,34 +122,6 @@ function LoginPage() {
       return;
     }
     navigate({ to: "/dashboard" });
-  }
-
-  async function handleForgotPassword() {
-    if (!validEmail) {
-      setError("Enter your email above first, then click Forgot password.");
-      return;
-    }
-    setError(null);
-    setResetRequested(true);
-
-    const gate = await guardAuthAttempt({
-      data: { kind: "reset", email: email.trim(), captchaToken: captchaToken ?? undefined },
-    });
-    if (!gate.ok) {
-      setError(
-        gate.reason === "captcha"
-          ? "Please complete the verification and try again."
-          : RATE_LIMIT_COPY,
-      );
-      return;
-    }
-
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-      ...(captchaToken ? { captchaToken } : {}),
-    });
-    // Same message either way — never reveal whether the address is registered.
-    setError(err && !/rate|limit/i.test(err.message) ? err.message : "Check your inbox for a password reset link.");
   }
 
   return (
