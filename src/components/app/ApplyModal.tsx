@@ -7,6 +7,8 @@ import type { Job } from "@/lib/jobs-data";
 import { markApplied } from "@/lib/tracker-store";
 import { openResumeSignedUrl, useResumeDocuments } from "@/lib/resume-documents-store";
 import { useProfileExtras } from "@/lib/profile-store";
+import { buildAchievementsText, renderCoverLetter } from "@/lib/cover-letter";
+import { useResumeState } from "@/lib/resume-store";
 import { logFollowUp } from "@/lib/tracker-store";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -26,6 +28,7 @@ export function ApplyModal({
   const extras = useProfileExtras();
   const { docs: resumes } = useResumeDocuments();
   const letters = extras.coverLetters;
+  const resumeState = useResumeState();
 
   const primaryResumeId = resumes.find((r) => r.isPrimary)?.id ?? null;
   const defaultResumeId = primaryResumeId ?? resumes[0]?.id ?? "";
@@ -92,14 +95,17 @@ export function ApplyModal({
       }
     }
     if (selectedLetter) {
-      const text = selectedLetter.body.replace(/<[^>]+>/g, "\n").replace(/\n{2,}/g, "\n\n").trim();
-      const filled = text
-        .replace(/\{\{?company\}?\}/gi, job.company)
-        .replace(/\{company\}/gi, job.company)
-        .replace(/\{role\}/gi, job.title)
-        .replace(/\{\{?hr_name\}?\}/gi, "there")
-        .replace(/\{hiring manager\}/gi, "there");
-      dir.file(`${selectedLetter.name}.txt`, filled);
+      const filled = renderCoverLetter(selectedLetter.body, {
+        company: job.company,
+        role: job.title,
+        myName: resumeState.data.contact.name ?? "",
+        achievements: buildAchievementsText({
+          achievements: extras.achievements,
+          applyMode: extras.applyMode,
+          applyBlocks: extras.applyBlocks,
+        }),
+      });
+      dir.file(`${sanitize(selectedLetter.name) || "Cover letter"}.txt`, filled);
     }
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
