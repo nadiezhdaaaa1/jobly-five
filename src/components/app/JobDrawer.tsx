@@ -720,6 +720,22 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             </div>
           ) : null}
 
+          {/* Archived — show the reason the user gave */}
+          {record.archived ? (
+            <div className="mt-5 rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex items-center gap-2">
+                <Archive size={14} strokeWidth={1.6} className="text-[color:var(--color-text-secondary)]" />
+                <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Archived</span>
+              </div>
+              <p
+                className="mt-1 whitespace-pre-wrap text-[13px] text-[color:var(--color-text-secondary)]"
+                style={{ fontWeight: 300 }}
+              >
+                {archivedReason ?? "No reason given."}
+              </p>
+            </div>
+          ) : null}
+
           {/* Description */}
           <JobDescriptionBlock job={job} />
 
