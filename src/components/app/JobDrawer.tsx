@@ -982,7 +982,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               className="text-[12px] font-medium"
               style={{ color: "var(--color-foreground)", display: "block", marginBottom: 6 }}
             >
-              Reason (optional)
+              Why are you archiving it? (optional)
             </label>
             <textarea
               value={archiveReason}
@@ -992,6 +992,9 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
               style={{ resize: "vertical" }}
             />
+            <p className="mt-1.5 text-[12px] font-light" style={{ color: "var(--color-text-muted)" }}>
+              Saved to this job's history so you remember why later.
+            </p>
           </div>
           <div className="mt-5 flex items-center justify-end gap-2">
             <button

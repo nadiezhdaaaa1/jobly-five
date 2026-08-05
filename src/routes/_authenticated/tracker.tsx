@@ -442,6 +442,25 @@ function KanbanCard({
           <span style={{ color: DARK }}>{job.company}</span> will be moved to
           Archived. You can restore it later.
         </p>
+        <div className="mt-4">
+          <label
+            className="text-[12px] font-medium"
+            style={{ color: DARK, display: "block", marginBottom: 6 }}
+          >
+            Why are you archiving it? (optional)
+          </label>
+          <textarea
+            value={archiveReason}
+            onChange={(e) => setArchiveReason(e.target.value)}
+            placeholder="e.g. Position filled, lost interest, poor fit…"
+            rows={3}
+            className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+            style={{ borderColor: BORDER_LIGHT, resize: "vertical" }}
+          />
+          <p className="mt-1.5 text-[12px] font-light" style={{ color: MUTED_TEXT }}>
+            Saved to this job's history so you remember why later.
+          </p>
+        </div>
         <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"

@@ -163,7 +163,7 @@ function useToast() {
 function ProfileScreen() {
   const { user } = useAuth();
   const search = useSearch({ from: "/_authenticated/profile" });
-  const navigate = useNavigate({ from: "/_authenticated/profile" });
+  const navigate = useNavigate({ from: "/profile" });
   const tab: TabKey = search.tab ?? "preferences";
   const setTab = (t: TabKey) => navigate({ to: "/profile", search: { tab: t }, replace: true });
 
