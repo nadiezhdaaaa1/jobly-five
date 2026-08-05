@@ -99,6 +99,7 @@ import {
   type AchievementEntry,
   type CoverLetter,
 } from "@/lib/profile-store";
+import { COVER_LETTER_TOKENS, coverLetterPreview } from "@/lib/cover-letter";
 const TAB_KEYS = [
   "preferences",
   "documents",
@@ -1458,7 +1459,7 @@ function CoverLettersTab({
                   <LetterRow
                     key={l.id}
                     name={l.name}
-                    meta={stripHtml(l.body).slice(0, 96)}
+                    meta={coverLetterPreview(l.body)}
                     isActive={!pro && isActive}
                     locked={locked}
                     onEdit={locked ? undefined : () => setEditing(l)}
@@ -1589,13 +1590,6 @@ function CoverLettersTab({
   );
 }
 
-function stripHtml(s: string): string {
-  if (typeof document === "undefined") return s.replace(/<[^>]+>/g, " ");
-  const d = document.createElement("div");
-  d.innerHTML = s;
-  return d.textContent ?? "";
-}
-
 function LetterRow({
   name, meta, onEdit, onDuplicate, onDelete, isActive, locked,
 }: {
@@ -1661,6 +1655,22 @@ function CoverEditor({
     document.execCommand(cmd, false, arg);
   };
 
+  const insertToken = (token: string) => {
+    const el = ref.current;
+    if (!el) return;
+    el.focus();
+    const sel = window.getSelection();
+    // Drop the caret at the end when the editor hasn't been clicked into yet.
+    if (!sel || sel.rangeCount === 0 || !el.contains(sel.anchorNode)) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+    }
+    document.execCommand("insertText", false, token);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-[640px] rounded-[8px] p-5">
@@ -1677,8 +1687,21 @@ function CoverEditor({
           placeholder="e.g. General — product roles"
         />
         <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
-          Use {"{company}"}, {"{role}"}, {"{hiring manager}"}, {"{years}"} — they're filled in when you apply.
+          Quick mentions are filled in when you apply. Click one to insert it at the cursor.
         </p>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {COVER_LETTER_TOKENS.map((t) => (
+            <IconTooltip key={t.token} label={t.hint}>
+              <button
+                type="button"
+                onClick={() => insertToken(t.token)}
+                className="inline-flex h-7 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              >
+                {t.token}
+              </button>
+            </IconTooltip>
+          ))}
+        </div>
         <div className="mt-2 flex flex-wrap gap-1 border-b py-1">
           {[
             [Bold, "bold", "Bold"], [Italic, "italic", "Italic"], [Underline, "underline", "Underline"],

@@ -79,19 +79,19 @@ function seed(): ProfileExtras {
         id: uid(),
         name: "General — product roles",
         body:
-          "<p>Hi {hiring manager},</p><p>I'm excited to apply for the {role} role at {company}. With {years} years shipping product, I've led work that balances craft with speed.</p><p>Would love to share more.</p>",
+          "<p>Hello {company} team,</p><p>I'd like to apply for the {role} role. I like building products where research, craft and delivery stay close together — I'm usually the person turning a fuzzy problem into something shippable, then iterating once real users touch it.</p><p>What I'd bring to {company}: clear thinking about the problem, tight collaboration with engineering, and a habit of checking whether the change actually helped.</p><p>{Achievements}</p><p>Thanks for your time — I'd be glad to walk you through the details.</p><p>Best regards,<br>{My name}</p>",
       },
       {
         id: uid(),
-        name: "Leadership & exec",
+        name: "Leadership and exec",
         body:
-          "<p>Hi {hiring manager},</p><p>As a design leader with {years} years scaling teams, I'm drawn to what {company} is building. I'd love to talk about how I could help.</p>",
+          "<p>Hello {company} team,</p><p>I'm writing about the {role} position. Most of my recent work has been leadership: hiring and growing teams, setting a direction people can act on, and making the operating rhythm — planning, reviews, hand-offs — boring in the best way.</p><p>I'm drawn to {company} because the stage looks like the one I enjoy most: enough traction to matter, enough open questions to shape. I'd start with clarity of ownership and the quality bar, then the pipeline of work behind it.</p><p>{Achievements}</p><p>Happy to talk about where I could help most.</p><p>Best regards,<br>{My name}</p>",
       },
       {
         id: uid(),
-        name: "Startup & high-growth",
+        name: "Startup and high-growth",
         body:
-          "<p>Hi {hiring manager},</p><p>The {role} at {company} caught my eye — early stage is where I do my best work. Happy to share a portfolio and past 0→1 stories.</p>",
+          "<p>Hello {company} team,</p><p>The {role} opening caught my eye — early stage is where I do my best work. I'm comfortable owning something end to end with an unfinished brief, shipping a first version fast, and being honest about what to cut.</p><p>I've done 0→1 more than once: first customers, first metrics, and the unglamorous plumbing in between. If {company} needs someone who moves without waiting for perfect process, that's the part I enjoy.</p><p>{Achievements}</p><p>Would love to hear what the first 90 days look like for you.</p><p>Best regards,<br>{My name}</p>",
       },
     ],
     defaultCoverLetterId: null,
@@ -119,8 +119,24 @@ function merge(partial: Partial<ProfileExtras> | null | undefined): ProfileExtra
   return {
     ...base,
     ...partial,
+    coverLetters: (partial.coverLetters ?? base.coverLetters).map(upgradeLegacyLetter),
     achievements: { ...base.achievements, ...(partial.achievements ?? {}) },
   };
+}
+
+// Older accounts stored stub bodies for the three seeded templates. Only an
+// untouched stub is replaced — anything the user edited is left alone.
+const LEGACY_LETTER_BODIES: Record<string, number> = {
+  "<p>Hi {hiring manager},</p><p>I'm excited to apply for the {role} role at {company}. With {years} years shipping product, I've led work that balances craft with speed.</p><p>Would love to share more.</p>": 0,
+  "<p>Hi {hiring manager},</p><p>As a design leader with {years} years scaling teams, I'm drawn to what {company} is building. I'd love to talk about how I could help.</p>": 1,
+  "<p>Hi {hiring manager},</p><p>The {role} at {company} caught my eye — early stage is where I do my best work. Happy to share a portfolio and past 0→1 stories.</p>": 2,
+};
+
+function upgradeLegacyLetter(letter: CoverLetter): CoverLetter {
+  const idx = LEGACY_LETTER_BODIES[letter.body];
+  if (idx === undefined) return letter;
+  const fresh = seed().coverLetters[idx];
+  return fresh ? { ...letter, name: fresh.name, body: fresh.body } : letter;
 }
 
 // Starts from defaults: the cache is only read once we know the account.
