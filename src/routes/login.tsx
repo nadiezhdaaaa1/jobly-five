@@ -4,6 +4,13 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { TurnstileWidget } from "@/components/site/TurnstileWidget";
@@ -36,8 +43,7 @@ function LoginPage() {
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   /** Set by the server once this IP has failed sign-in three times. */
   const [needCaptcha, setNeedCaptcha] = useState(false);
-  /** Forgot-password was clicked, so the widget is shown for that request too. */
-  const [resetRequested, setResetRequested] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -118,34 +124,6 @@ function LoginPage() {
     navigate({ to: "/dashboard" });
   }
 
-  async function handleForgotPassword() {
-    if (!validEmail) {
-      setError("Enter your email above first, then click Forgot password.");
-      return;
-    }
-    setError(null);
-    setResetRequested(true);
-
-    const gate = await guardAuthAttempt({
-      data: { kind: "reset", email: email.trim(), captchaToken: captchaToken ?? undefined },
-    });
-    if (!gate.ok) {
-      setError(
-        gate.reason === "captcha"
-          ? "Please complete the verification and try again."
-          : RATE_LIMIT_COPY,
-      );
-      return;
-    }
-
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-      ...(captchaToken ? { captchaToken } : {}),
-    });
-    // Same message either way — never reveal whether the address is registered.
-    setError(err && !/rate|limit/i.test(err.message) ? err.message : "Check your inbox for a password reset link.");
-  }
-
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
@@ -209,13 +187,13 @@ function LoginPage() {
             {error && (
               <span className="text-sm text-[color:var(--color-danger)]">{error}</span>
             )}
-            {captchaConfigured && (needCaptcha || resetRequested) && (
+            {captchaConfigured && needCaptcha && (
               <TurnstileWidget onToken={setCaptchaToken} className="mt-1" />
             )}
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={handleForgotPassword}
+                onClick={() => setResetOpen(true)}
                 className="text-sm text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
               >
                 Forgot password?
@@ -248,6 +226,140 @@ function LoginPage() {
           </Link>
         </p>
       </main>
+
+      <ForgotPasswordDialog
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        initialEmail={email}
+      />
     </div>
+  );
+}
+
+function ForgotPasswordDialog({
+  open,
+  onOpenChange,
+  initialEmail,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  initialEmail: string;
+}) {
+  const [value, setValue] = useState(initialEmail);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setValue(initialEmail);
+      setError(null);
+      setSent(false);
+      setSending(false);
+    }
+  }, [open, initialEmail]);
+
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
+  async function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!valid) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setError(null);
+    setSending(true);
+
+    const gate = await guardAuthAttempt({
+      data: { kind: "reset", email: value.trim(), captchaToken: token ?? undefined },
+    });
+    if (!gate.ok) {
+      setSending(false);
+      setError(
+        gate.reason === "captcha"
+          ? "Please complete the verification and try again."
+          : RATE_LIMIT_COPY,
+      );
+      return;
+    }
+
+    const { error: err } = await supabase.auth.resetPasswordForEmail(value.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+      ...(token ? { captchaToken: token } : {}),
+    });
+    setSending(false);
+    if (err && !/rate|limit/i.test(err.message)) {
+      setError(err.message);
+      return;
+    }
+    // Same outcome whether or not the address has an account — the link is only
+    // ever delivered to a registered one, and we never say which it was.
+    setSent(true);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[440px]">
+        <DialogHeader>
+          <DialogTitle>Reset your password</DialogTitle>
+          <DialogDescription>
+            Enter the email address for your account and we will send you a recovery link.
+          </DialogDescription>
+        </DialogHeader>
+
+        {sent ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm text-[color:var(--color-text-secondary)]">
+              If an account exists for <span className="font-semibold">{value.trim()}</span>, a
+              recovery link is on its way. Check your inbox, and your spam folder just in case.
+            </p>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSend} className="flex flex-col gap-3" noValidate>
+            <label className="block">
+              <span className="text-sm font-light text-[color:var(--color-foreground)]">Email</span>
+              <input
+                type="email"
+                autoFocus
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setError(null);
+                }}
+                placeholder="Your email"
+                className={cn(
+                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]",
+                )}
+              />
+            </label>
+            {error && <span className="text-sm text-[color:var(--color-danger)]">{error}</span>}
+            {captchaConfigured && <TurnstileWidget onToken={setToken} className="mt-1" />}
+            <button
+              type="submit"
+              disabled={sending}
+              className="button-medium mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+            >
+              {sending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                "Send recovery link"
+              )}
+            </button>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
