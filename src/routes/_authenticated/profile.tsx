@@ -1590,13 +1590,6 @@ function CoverLettersTab({
   );
 }
 
-function stripHtml(s: string): string {
-  if (typeof document === "undefined") return s.replace(/<[^>]+>/g, " ");
-  const d = document.createElement("div");
-  d.innerHTML = s;
-  return d.textContent ?? "";
-}
-
 function LetterRow({
   name, meta, onEdit, onDuplicate, onDelete, isActive, locked,
 }: {
