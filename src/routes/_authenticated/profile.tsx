@@ -2170,6 +2170,7 @@ function AchievementsTab({
   const entriesFor = (b: AchievementBlockKey) =>
     extras.achievements[b].filter((e) => e.description.trim() || e.url.trim());
   const total = blocks.reduce((n, b) => n + entriesFor(b).length, 0);
+  const filledBlocks = blocks.filter((b) => entriesFor(b).length > 0);
 
   /** Returns an error message, or null when saved. */
   function saveDraft(): string | null {
@@ -2193,6 +2194,7 @@ function AchievementsTab({
 
   return (
     <>
+      {filledBlocks.length > 0 ? (
       <CardBig>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -2211,9 +2213,9 @@ function AchievementsTab({
         </div>
         {extras.applyMode === "blocks" ? (
           <div className="mt-3 flex flex-wrap gap-2">
-            {blocks.map((b) => {
-              const empty = entriesFor(b).length === 0;
-              const selected = !empty && extras.applyBlocks.includes(b);
+            {filledBlocks.map((b) => {
+              const empty = false;
+              const selected = extras.applyBlocks.includes(b);
               return (
                 <button
                   key={b}
@@ -2251,6 +2253,7 @@ function AchievementsTab({
           </div>
         ) : null}
       </CardBig>
+      ) : null}
 
       <CardBig>
         <div className="flex items-start justify-between gap-3">
