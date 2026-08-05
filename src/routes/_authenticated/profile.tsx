@@ -1458,7 +1458,7 @@ function CoverLettersTab({
                   <LetterRow
                     key={l.id}
                     name={l.name}
-                    meta={stripHtml(l.body).slice(0, 96)}
+                    meta={coverLetterPreview(l.body)}
                     isActive={!pro && isActive}
                     locked={locked}
                     onEdit={locked ? undefined : () => setEditing(l)}
