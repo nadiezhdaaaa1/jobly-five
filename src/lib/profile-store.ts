@@ -119,8 +119,24 @@ function merge(partial: Partial<ProfileExtras> | null | undefined): ProfileExtra
   return {
     ...base,
     ...partial,
+    coverLetters: (partial.coverLetters ?? base.coverLetters).map(upgradeLegacyLetter),
     achievements: { ...base.achievements, ...(partial.achievements ?? {}) },
   };
+}
+
+// Older accounts stored stub bodies for the three seeded templates. Only an
+// untouched stub is replaced — anything the user edited is left alone.
+const LEGACY_LETTER_BODIES: Record<string, number> = {
+  "<p>Hi {hiring manager},</p><p>I'm excited to apply for the {role} role at {company}. With {years} years shipping product, I've led work that balances craft with speed.</p><p>Would love to share more.</p>": 0,
+  "<p>Hi {hiring manager},</p><p>As a design leader with {years} years scaling teams, I'm drawn to what {company} is building. I'd love to talk about how I could help.</p>": 1,
+  "<p>Hi {hiring manager},</p><p>The {role} at {company} caught my eye — early stage is where I do my best work. Happy to share a portfolio and past 0→1 stories.</p>": 2,
+};
+
+function upgradeLegacyLetter(letter: CoverLetter): CoverLetter {
+  const idx = LEGACY_LETTER_BODIES[letter.body];
+  if (idx === undefined) return letter;
+  const fresh = seed().coverLetters[idx];
+  return fresh ? { ...letter, name: fresh.name, body: fresh.body } : letter;
 }
 
 // Starts from defaults: the cache is only read once we know the account.
