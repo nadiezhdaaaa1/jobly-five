@@ -11,6 +11,7 @@ import {
   IconFileText as FileText,
   IconChevronDown as ChevronDown,
   IconArrowUpRight as ExternalLink,
+  IconArchive as Archive,
 } from "@tabler/icons-react";
 import type { Job } from "@/lib/jobs-data";
 import {
@@ -247,6 +248,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const [followUpOpen, setFollowUpOpen] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [archiveReason, setArchiveReason] = useState("");
+  const archivedReason = useMemo(() => {
+    if (!record.archived) return null;
+    const entry = [...(record.history ?? [])]
+      .reverse()
+      .find((e) => e.description.startsWith("Archived"));
+    if (!entry) return null;
+    const dash = entry.description.indexOf("—");
+    return dash === -1 ? null : entry.description.slice(dash + 1).trim() || null;
+  }, [record.archived, record.history]);
   const [pending, setPending] = useState<
     | { col: BoardColumn; source: JobStatus }
     | null
