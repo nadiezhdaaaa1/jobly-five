@@ -285,7 +285,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); closeCancel(); }}
+              onClick={closeCancel}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Keep my pause
