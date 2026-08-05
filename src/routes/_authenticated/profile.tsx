@@ -99,6 +99,7 @@ import {
   type AchievementEntry,
   type CoverLetter,
 } from "@/lib/profile-store";
+import { COVER_LETTER_TOKENS, coverLetterPreview } from "@/lib/cover-letter";
 const TAB_KEYS = [
   "preferences",
   "documents",
