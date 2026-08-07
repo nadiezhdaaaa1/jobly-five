@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Authenticated can read job sources" ON public.job_sources;
