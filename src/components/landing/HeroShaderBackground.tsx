@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MeshGradient } from "@paper-design/shaders-react";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 // Jobly palette: the showcase's warm accent (#f97316) is swapped for
 // our brand accent #00F1A9. The cyans stay — they produce the corner bleed.
