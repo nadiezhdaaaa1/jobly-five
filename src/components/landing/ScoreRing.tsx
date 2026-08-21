@@ -42,10 +42,18 @@ export function ScoreRing({ value, label, size = 72, strokeWidth = 6, animate = 
       setOffset(target);
       raf = requestAnimationFrame(tick);
     }, delayMs);
+    // Safety net: if the main thread is busy enough that rAF never fires (the
+    // hero shader can starve it), land on the real number instead of holding 0%.
+    const snap = window.setTimeout(() => {
+      setOffset(target);
+      setShown(value);
+    }, delayMs + DURATION + 80);
     return () => {
       clearTimeout(timer);
+      clearTimeout(snap);
       cancelAnimationFrame(raf);
     };
+
   }, [active, value, target, circumference, delayMs]);
 
   return (
