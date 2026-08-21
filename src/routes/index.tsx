@@ -10,6 +10,8 @@ import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
+import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
+
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
   AshbyLogo,
@@ -218,26 +220,27 @@ function useLiveNumber(target: number, durationMs = 1200) {
 function Hero() {
   const count = useLiveNumber(537055);
   return (
-    <section className="border-b border-[color:var(--color-border)]">
-      <div className="mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
+    <section className="relative isolate overflow-hidden lg:mx-12">
+      <HeroShaderBackground />
+      <div className="relative z-10 mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
         <div className="lg:mt-[-88px]">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-1.5 text-xs text-[color:var(--color-text-secondary)]">
+          <div className="inline-flex items-center gap-2 text-xs text-white/80">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-accent)] opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-green)]" />
             </span>
             Live · US tech openings{"\u00a0\n"}
-            <span className="text-[color:var(--color-foreground)] tabular-nums">
+            <span className="text-white tabular-nums">
               {count.toLocaleString("en-US")}
             </span>
           </div>
           <h1
-            className="mt-6 text-[42px] leading-[1.05] md:text-[56px] lg:text-[64px]"
+            className="mt-6 text-[42px] leading-[1.05] text-white md:text-[56px] lg:text-[64px]"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
           >
             Relevant jobs, first — scored to you
           </h1>
-          <p className="mt-5 max-w-xl text-lg font-light text-[color:var(--color-text-secondary)]">
+          <p className="mt-5 max-w-xl text-lg font-light text-white/[0.72]">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -249,7 +252,7 @@ function Hero() {
             </Link>
             <a
               href="#how-it-works"
-              className="inline-flex h-12 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-6 hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-12 items-center rounded-button border border-white/30 px-6 text-white transition-colors hover:bg-white/10"
             >
               How it works
             </a>
@@ -263,10 +266,12 @@ function Hero() {
   );
 }
 
+
 function HeroCard() {
   return (
     <div className="relative">
-      <div className="h-[344px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
+      <div className="h-[344px] md:h-[444px] lg:h-[544px]" />
+
       {/* Floating match reveal card + stack */}
       <div className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]">
         <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
