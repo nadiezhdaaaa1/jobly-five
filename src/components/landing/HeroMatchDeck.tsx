@@ -6,9 +6,6 @@ import pixelharborAsset from "../../assets/logos-fake/Pixelharbor.jpg.asset.json
 import { ScoreRing } from "./ScoreRing";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
-const DWELL_MS = 3000;
-const LEAVE_MS = 340;
-
 type Match = {
   company: string;
   /** Alto is our own mark, drawn as a glyph; the rest use company logos. */
@@ -53,19 +50,40 @@ const MATCHES: Match[] = [
   },
 ];
 
+const DWELL_MS = 5000;
+const FLY_MS = 460;
+
+const SLOTS = [
+  { transform: "translateY(0px) scale(1)", zIndex: 30, shadow: "0 18px 40px rgba(9, 11, 12, 0.28)" },
+  { transform: "translateY(26px) scale(0.94)", zIndex: 20, shadow: "0 10px 24px rgba(9, 11, 12, 0.18)" },
+  { transform: "translateY(50px) scale(0.88)", zIndex: 10, shadow: "0 6px 16px rgba(9, 11, 12, 0.12)" },
+];
+
 const RING_DELAYS = [140, 200, 260];
 
-function MatchCard({ match, index, animate }: { match: Match; index: number; animate: boolean }) {
+function MatchCard({
+  match,
+  index,
+  isFront,
+  cycle,
+  reduced,
+}: {
+  match: Match;
+  index: number;
+  isFront: boolean;
+  cycle: number;
+  reduced: boolean;
+}) {
   return (
-    <div className="w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
-      <div className="hero-card-row mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
+    <div className="w-full rounded-md bg-[color:var(--color-surface-1)] p-4">
+      <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
         <span className="inline-flex items-center gap-1.5">
           <Sparkle size={12} className="text-[color:var(--color-green)]" />
           Top match
         </span>
         <span className="tabular-nums">{index + 1} / 5</span>
       </div>
-      <div className="hero-card-row flex items-start gap-3" style={{ animationDelay: "60ms" }}>
+      <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
           {match.logo ? (
             <img src={match.logo} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
@@ -82,12 +100,13 @@ function MatchCard({ match, index, animate }: { match: Match; index: number; ani
       </div>
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
         {match.scores.map((s, i) => (
+          // Re-keying on arrival at the front slot replays the draw + count-up.
           <ScoreRing
-            key={`${index}-${s.label}`}
+            key={`${isFront ? cycle : "idle"}-${s.label}`}
             value={s.value}
             label={s.label}
             size={64}
-            animate={animate}
+            animate={isFront && !reduced}
             delayMs={RING_DELAYS[i]}
           />
         ))}
@@ -98,47 +117,80 @@ function MatchCard({ match, index, animate }: { match: Match; index: number; ani
 
 export function HeroMatchDeck() {
   const reduced = usePrefersReducedMotion();
-  const [active, setActive] = useState(0);
-  const [leaving, setLeaving] = useState<number | null>(null);
+  const [front, setFront] = useState(0);
+  const [outgoing, setOutgoing] = useState<number | null>(null);
+  const [cycle, setCycle] = useState(0);
   const [paused, setPaused] = useState(false);
-  const activeRef = useRef(0);
+  const frontRef = useRef(0);
 
   useEffect(() => {
     if (reduced || paused) return;
     const id = setInterval(() => {
-      setLeaving(activeRef.current);
-      activeRef.current = (activeRef.current + 1) % MATCHES.length;
-      setActive(activeRef.current);
+      setOutgoing(frontRef.current);
+      frontRef.current = (frontRef.current + 1) % MATCHES.length;
+      setFront(frontRef.current);
+      setCycle((c) => c + 1);
     }, DWELL_MS);
     return () => clearInterval(id);
   }, [reduced, paused]);
 
   useEffect(() => {
-    if (leaving === null) return;
-    const id = setTimeout(() => setLeaving(null), LEAVE_MS);
+    if (outgoing === null) return;
+    const id = setTimeout(() => setOutgoing(null), FLY_MS);
     return () => clearTimeout(id);
-  }, [leaving]);
+  }, [outgoing]);
 
   return (
     <div
-      className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]"
+      className="absolute right-2 top-10 w-[280px] md:right-0 md:w-[320px] lg:right-[-40px] lg:top-14"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {leaving !== null && (
-        <div key={`leave-${leaving}`} className="hero-card-leave absolute inset-x-0 top-0 z-20" aria-hidden="true">
-          <MatchCard match={MATCHES[leaving]} index={leaving} animate={false} />
-        </div>
-      )}
-      <div key={`enter-${active}`} className="hero-card-enter relative z-10">
-        <MatchCard match={MATCHES[active]} index={active} animate={!reduced} />
+      {/* Spacer: the slot cards are absolute, so this gives the deck its height. */}
+      <div className="invisible" aria-hidden="true">
+        <MatchCard match={MATCHES[0]} index={0} isFront={false} cycle={0} reduced />
       </div>
 
-      {/* The rest of today's five, fanned out below */}
-      <div className="absolute left-1/2 top-[calc(100%-128px)] z-[-1] h-[140px] w-[250px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[290px]" />
-      <div className="absolute left-1/2 top-[calc(100%-76px)] z-[-2] h-[100px] w-[230px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[270px]" />
+      {MATCHES.map((m, i) => {
+        const slot = (i - front + MATCHES.length) % MATCHES.length;
+        const flying = i === outgoing;
+        return (
+          <div
+            key={m.company}
+            className="absolute inset-x-0 top-0 origin-top rounded-md"
+            aria-hidden={slot !== 0}
+            style={{
+              transform: SLOTS[slot].transform,
+              zIndex: SLOTS[slot].zIndex,
+              boxShadow: SLOTS[slot].shadow,
+              // Hidden while its stand-in flies away, so the glide from front
+              // to back of the stack is never seen.
+              visibility: flying ? "hidden" : "visible",
+              opacity: flying ? 0 : 1,
+              transition: reduced
+                ? undefined
+                : "transform 620ms cubic-bezier(0.32, 0.72, 0, 1), box-shadow 620ms ease, opacity 320ms ease-out 140ms",
+            }}
+          >
+            <MatchCard match={m} index={i} isFront={slot === 0} cycle={cycle} reduced={reduced} />
+          </div>
+        );
+      })}
+
+      {/* The card being dealt away. A throwaway stand-in, so the real card can
+          move to the back of the stack unseen. */}
+      {outgoing !== null && !reduced && (
+        <div
+          key={`fly-${cycle}`}
+          className="deck-card-fly pointer-events-none absolute inset-x-0 top-0 origin-top rounded-md"
+          style={{ zIndex: 40, boxShadow: SLOTS[0].shadow }}
+          aria-hidden="true"
+        >
+          <MatchCard match={MATCHES[outgoing]} index={outgoing} isFront={false} cycle={cycle} reduced />
+        </div>
+      )}
     </div>
   );
 }
