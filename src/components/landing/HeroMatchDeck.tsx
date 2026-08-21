@@ -142,7 +142,7 @@ export function HeroMatchDeck() {
 
   return (
     <div
-      className="absolute right-2 top-10 w-[280px] md:right-20 md:w-[320px] lg:right-16 lg:top-14 xl:right-0 2xl:right-[-90px]"
+      className="absolute left-1/2 top-10 w-[280px] -translate-x-1/2 md:w-[320px] lg:top-14"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
