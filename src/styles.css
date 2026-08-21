@@ -417,6 +417,9 @@ select::-ms-expand {
 .hero-card-leave { animation: hero-card-leave 340ms cubic-bezier(0.4, 0, 1, 1) both; }
 .hero-card-row   { animation: hero-card-row 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+/* The outgoing card is on its way out — its rows must not replay the entrance. */
+.hero-card-leave .hero-card-row { animation: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .hero-card-enter,
   .hero-card-leave,
