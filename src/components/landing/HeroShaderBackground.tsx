@@ -16,16 +16,12 @@ const STATIC_FALLBACK =
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
   const [mounted, setMounted] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     setMounted(true);
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
   }, []);
+
 
   return (
     <div
