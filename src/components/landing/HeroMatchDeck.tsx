@@ -142,8 +142,6 @@ export function HeroMatchDeck() {
 
   return (
     <div
-      // Cards sit in absolute slots offset up to 50px downward, so the visual
-      // block is ~50px taller than the spacer: nudge up by half of that.
       className="absolute left-1/2 top-1/2 w-[280px] -translate-x-1/2 -translate-y-[calc(50%+25px)] md:w-[320px]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
