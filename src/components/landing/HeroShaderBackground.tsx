@@ -38,17 +38,20 @@ export function HeroShaderBackground() {
             className="absolute inset-0 h-full w-full"
             colors={BASE_COLORS}
             speed={reducedMotion ? 0 : 0.3}
-            backgroundColor="#000000"
+            distortion={0.8}
+            swirl={0.1}
           />
           <MeshGradient
             className="absolute inset-0 h-full w-full opacity-60"
             colors={WIRE_COLORS}
             speed={reducedMotion ? 0 : 0.2}
-            wireframe="true"
-            backgroundColor="transparent"
+            distortion={1}
+            swirl={0.8}
+            grainOverlay={0.15}
           />
         </>
       )}
+
     </div>
   );
 }
