@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconSparkles as Sparkle, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
+import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
 import heroAsset from "../assets/hero-2.webp.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
@@ -9,8 +9,8 @@ import t3Asset from "../assets/t3-2.png.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
-import { ScoreRing } from "../components/landing/ScoreRing";
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
+import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
@@ -222,7 +222,14 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden lg:mx-12">
       <HeroShaderBackground />
-      <div className="relative z-10 mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
+      <img
+        src={heroAsset.url}
+        alt="A person checking Jobly matches on their phone"
+        fetchPriority="high"
+        decoding="async"
+        className="pointer-events-none absolute bottom-0 right-0 z-10 h-[220px] w-auto object-contain object-bottom sm:h-[320px] md:h-[420px] lg:h-[520px]"
+      />
+      <div className="relative z-20 mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
         <div className="lg:mt-[-88px]">
           <div className="inline-flex items-center gap-2 text-xs text-white/80">
             <span className="relative flex h-2 w-2">
@@ -271,46 +278,11 @@ function HeroCard() {
   return (
     <div className="relative">
       <div className="h-[344px] md:h-[444px] lg:h-[544px]" />
-
-      {/* Floating match reveal card + stack */}
-      <div className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]">
-        <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
-          <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
-            <span className="inline-flex items-center gap-1.5">
-              <Sparkle size={12} className="text-[color:var(--color-green)]" />
-              Top match
-            </span>
-            <span>1 / 5</span>
-          </div>
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]">
-              <span style={{ fontFamily: "var(--font-display)", fontSize: 18 }}>▲</span>
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Senior Data Analyst</p>
-              <p className="truncate text-xs text-[color:var(--color-text-muted)]">Alto · Remote · 1 hour ago</p>
-            </div>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
-            <ScoreRing value={95} label="Experience" size={64} />
-            <ScoreRing value={93} label="Skill" size={64} />
-            <ScoreRing value={96} label="Industry" size={64} />
-          </div>
-        </div>
-        {/* Stacked cards behind the top match */}
-        <div className="absolute left-1/2 top-[calc(100%-128px)] z-[-1] h-[140px] w-[250px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[290px]" />
-        <div className="absolute left-1/2 top-[calc(100%-76px)] z-[-2] h-[100px] w-[230px] -translate-x-1/2 rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] md:w-[270px]" />
-      </div>
-      <img
-        src={heroAsset.url}
-        alt="A person checking Jobly matches on their phone"
-        fetchPriority="high"
-        decoding="async"
-        className="absolute bottom-0 right-0 z-10 h-[320px] w-full rounded-xl object-cover object-right-top md:h-[420px] lg:h-[520px]"
-      />
+      <HeroMatchDeck />
     </div>
   );
 }
+
 
 /* -------------------------- From inbox to offer -------------------------- */
 
