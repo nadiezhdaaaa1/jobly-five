@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconSparkles as Sparkle, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
+import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
 import heroAsset from "../assets/hero-2.webp.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
@@ -9,7 +9,6 @@ import t3Asset from "../assets/t3-2.png.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
-import { ScoreRing } from "../components/landing/ScoreRing";
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 
