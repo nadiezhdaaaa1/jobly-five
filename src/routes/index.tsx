@@ -10,6 +10,8 @@ import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { ScoreRing } from "../components/landing/ScoreRing";
+import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
+
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
   AshbyLogo,
