@@ -268,7 +268,8 @@ function Hero() {
 function HeroCard() {
   return (
     <div className="relative">
-      <div className="h-[344px] overflow-hidden rounded-xl border border-[color:var(--color-border)] bg-[color:var(--color-mint)] md:h-[444px] lg:h-[544px]" />
+      <div className="h-[344px] md:h-[444px] lg:h-[544px]" />
+
       {/* Floating match reveal card + stack */}
       <div className="absolute left-5 top-5 z-10 w-[280px] md:w-[320px]">
         <div className="relative z-10 w-full rounded-md border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
