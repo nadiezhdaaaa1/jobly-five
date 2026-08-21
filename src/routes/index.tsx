@@ -265,7 +265,7 @@ function Hero() {
             </a>
           </div>
         </div>
-        <div>
+        <div className="relative z-[5]">
           <HeroCard />
         </div>
       </div>
