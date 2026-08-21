@@ -229,8 +229,8 @@ function Hero() {
         decoding="async"
         className="pointer-events-none absolute bottom-0 right-0 z-10 h-[220px] w-auto object-contain object-bottom sm:h-[320px] md:h-[420px] lg:h-[520px]"
       />
-      <div className="relative z-20 mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
-        <div className="lg:mt-[-88px]">
+      <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
+        <div className="relative z-20 lg:mt-[-88px]">
           <div className="inline-flex items-center gap-2 text-xs text-white/80">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-accent)] opacity-75" />
