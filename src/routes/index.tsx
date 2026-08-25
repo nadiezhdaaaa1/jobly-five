@@ -231,7 +231,7 @@ function Hero() {
       />
       <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
         <div className="relative z-20 lg:mt-[-88px]">
-          <div className="inline-flex items-center gap-2 text-xs text-white/80">
+          <div className="inline-flex items-center gap-2 text-sm text-white/80 md:text-base">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
