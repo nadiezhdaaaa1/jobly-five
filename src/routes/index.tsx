@@ -222,14 +222,15 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden lg:mx-12">
       <HeroShaderBackground />
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[298px] w-[300px] overflow-hidden sm:h-[358px] sm:w-[360px] md:h-[432px] md:w-[434px] lg:h-[520px] lg:w-[575px]">
+      <div className="hero-photo-fade pointer-events-none absolute bottom-20 right-0 z-10 h-[263px] w-[265px] overflow-hidden sm:h-[317px] sm:w-[319px] md:bottom-24 md:h-[385px] md:w-[387px] lg:bottom-0 lg:h-[520px] lg:w-[575px]">
         <img
           src={heroAsset.url}
           alt="A person checking Jobly matches on their phone"
           fetchPriority="high"
           decoding="async"
-          className="absolute right-0 top-0 h-[442px] w-auto max-w-none sm:h-[530px] md:h-[640px] lg:h-[520px]"
+          className="absolute right-0 top-0 h-[390px] w-auto max-w-none sm:h-[470px] md:h-[570px] lg:h-[520px]"
         />
+
       </div>
 
       <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
