@@ -233,8 +233,8 @@ function Hero() {
         <div className="relative z-20 lg:mt-[-88px]">
           <div className="inline-flex items-center gap-2 text-xs text-white/80">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-accent)] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-green)]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
             Live · US tech openings{"\u00a0\n"}
             <span className="text-white tabular-nums">
