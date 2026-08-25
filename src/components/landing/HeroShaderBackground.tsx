@@ -6,14 +6,14 @@ import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 // Every value is measured against white; the floor is the wireframe layer's
 // composited bloom at roughly 4.7:1. The bright accent (#00F1A9) is reserved
 // for the CTA, never used as a large wash behind type.
-const BASE_COLORS = ["#090B0C", "#0a6d80", "#08657c", "#164e63", "#0E735A"];
-const WIRE_COLORS = ["#090B0C", "#3f8a8f", "#0a6d80", "#0E735A"];
+const BASE_COLORS = ["#090B0C", "#0a6d80", "#08657c", "#164e63", "#0a6a63"];
+const WIRE_COLORS = ["#090B0C", "#3f8a8f", "#0a6d80", "#0a6a63"];
 
 // SSR + reduced-motion + WebGL-unavailable fallback. Approximates the
 // animated mesh so there is never a flash of empty black.
 const STATIC_FALLBACK =
   "radial-gradient(120% 110% at 0% 0%, #0a7185 0%, #0e6b74 22%, #12333a 48%, #090B0C 78%), " +
-  "radial-gradient(80% 70% at 70% 100%, rgba(14, 115, 90, 0.22) 0%, rgba(14, 115, 90, 0) 60%)";
+  "radial-gradient(80% 70% at 70% 100%, rgba(10, 106, 99, 0.22) 0%, rgba(10, 106, 99, 0) 60%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
