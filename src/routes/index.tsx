@@ -252,7 +252,7 @@ function Hero() {
           >
             Relevant jobs, first — scored to you
           </h1>
-          <p className="mt-5 max-w-xl text-lg font-light text-white/85">
+          <p className="mt-5 max-w-xl text-lg font-extralight text-white/85">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
