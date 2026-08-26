@@ -46,7 +46,7 @@ export function MatchSphere({ className }: { className?: string }) {
     );
 
     const styles = getComputedStyle(document.documentElement);
-    const dotColor = styles.getPropertyValue("--alt-light-mist").trim() || "#D0D6D8";
+    const dotColor = styles.getPropertyValue("--text-muted").trim() || "#67787C";
     const pickColor = styles.getPropertyValue("--accent").trim() || "#00F1A9";
 
     // Pre-allocated so the render loop never allocates.
