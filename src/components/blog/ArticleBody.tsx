@@ -3,7 +3,7 @@ import { slugifyHeading } from "../../lib/blog-data";
 
 export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
   return (
-    <div className="mx-auto max-w-[680px]">
+    <div className="mx-auto max-w-[680px] [&>*:first-child]:mt-0">
       {blocks.map((b, i) => {
         switch (b.type) {
           case "h2": {
