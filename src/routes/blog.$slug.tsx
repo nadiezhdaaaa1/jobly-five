@@ -6,6 +6,7 @@ import { BlogCard } from "../components/blog/BlogCard";
 import { ArticleBody } from "../components/blog/ArticleBody";
 import { TableOfContents, type TocItem } from "../components/blog/TableOfContents";
 import { ShareRow } from "../components/blog/ShareRow";
+import { GuideFaqSection } from "../components/guides/GuideFaqSection";
 import { getPostBySlug, getRelated, formatDate, slugifyHeading } from "../lib/blog-data";
 import type { BlogPost } from "../lib/blog-data";
 
@@ -26,6 +27,49 @@ export const Route = createFileRoute("/blog/$slug")({
     }
     const post = loaderData.post;
     const abs = post.coverImage.startsWith("http") ? post.coverImage : `${ORIGIN}${post.coverImage}`;
+    const scripts: { type: string; children: string }[] = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: post.title,
+          description: post.deck,
+          image: abs,
+          author: { "@type": "Person", name: post.author },
+          datePublished: post.date,
+          dateModified: post.date,
+          publisher: { "@type": "Organization", name: "Jobly", url: ORIGIN },
+          mainEntityOfPage: url,
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: ORIGIN },
+            { "@type": "ListItem", position: 2, name: "Blog", item: `${ORIGIN}/blog` },
+            { "@type": "ListItem", position: 3, name: post.title, item: url },
+          ],
+        }),
+      },
+    ];
+    if (post.faq.length > 0) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: post.faq.map((f) => ({
+            "@type": "Question",
+            name: f.question,
+            acceptedAnswer: { "@type": "Answer", text: f.answer },
+          })),
+        }),
+      });
+    }
     return {
       meta: [
         { title: `${post.title} — Jobly blog` },
@@ -38,38 +82,9 @@ export const Route = createFileRoute("/blog/$slug")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: post.title },
         { name: "twitter:description", content: post.deck },
-        { name: "twitter:image", content: abs },
       ],
       links: [{ rel: "canonical", href: url }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            headline: post.title,
-            description: post.deck,
-            image: abs,
-            author: { "@type": "Person", name: post.author },
-            datePublished: post.date,
-            dateModified: post.date,
-            publisher: { "@type": "Organization", name: "Jobly", url: ORIGIN },
-            mainEntityOfPage: url,
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: ORIGIN },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${ORIGIN}/blog` },
-              { "@type": "ListItem", position: 3, name: post.title, item: url },
-            ],
-          }),
-        },
-      ],
+      scripts,
     };
   },
   notFoundComponent: NotFound,
@@ -155,6 +170,10 @@ function ArticlePage() {
                 <ArticleBody blocks={post.body} />
               </div>
             </div>
+          </div>
+
+          <div className="mx-auto max-w-[820px] px-5 pb-12 md:px-8">
+            <GuideFaqSection items={post.faq} />
           </div>
         </article>
 
