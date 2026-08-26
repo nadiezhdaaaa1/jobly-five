@@ -2,10 +2,19 @@ import { useEffect, useRef } from "react";
 
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
-const DOT_COUNT = 460;
+const DOT_COUNT = 1500;
 const PICK_COUNT = 5;
-/** Sphere radius as a fraction of the canvas's short side. Tune to taste. */
-const RADIUS_RATIO = 0.44;
+/** Sphere radius as a fraction of the canvas's short side. */
+const RADIUS_RATIO = 0.32;
+/** Inclination, radius multiplier and drift speed for each orbital ring. */
+const RINGS = [
+  { incl: 0.42, scale: 1.16, speed: 0.10 },
+  { incl: -0.78, scale: 1.26, speed: 0.14 },
+  { incl: 1.15, scale: 1.35, speed: 0.08 },
+];
+const RING_DOTS = 150;
+
+type P = { x: number; y: number; z: number; pick: boolean; ring: boolean };
 
 export function MatchSphere({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,13 +26,15 @@ export function MatchSphere({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Fibonacci sphere: even coverage with no clustering at the poles.
+    // Fibonacci sphere: even coverage with no clustering at the poles. A small
+    // deterministic jitter keeps it from reading as a perfect geometric shell.
     const golden = Math.PI * (3 - Math.sqrt(5));
-    const points = Array.from({ length: DOT_COUNT }, (_, i) => {
+    const shell = Array.from({ length: DOT_COUNT }, (_, i) => {
       const y = 1 - (i / (DOT_COUNT - 1)) * 2;
       const r = Math.sqrt(Math.max(0, 1 - y * y));
       const theta = golden * i;
-      return { x: Math.cos(theta) * r, y, z: Math.sin(theta) * r };
+      const jitter = 0.97 + 0.06 * ((Math.sin(i * 12.9898) * 43758.5453) % 1);
+      return { x: Math.cos(theta) * r * jitter, y: y * jitter, z: Math.sin(theta) * r * jitter };
     });
 
     // The five picks, spread evenly through the sequence so they sit at
@@ -37,6 +48,11 @@ export function MatchSphere({ className }: { className?: string }) {
     const styles = getComputedStyle(document.documentElement);
     const dotColor = styles.getPropertyValue("--alt-light-mist").trim() || "#D0D6D8";
     const pickColor = styles.getPropertyValue("--accent").trim() || "#00F1A9";
+
+    // Pre-allocated so the render loop never allocates.
+    const buf: P[] = Array.from({ length: DOT_COUNT + RINGS.length * RING_DOTS }, () => ({
+      x: 0, y: 0, z: 0, pick: false, ring: false,
+    }));
 
     let raf = 0;
     let width = 0;
@@ -60,34 +76,79 @@ export function MatchSphere({ className }: { className?: string }) {
       raf = 0;
       if (disposed) return;
       const t = reduced ? 0 : (now - start) / 1000;
-      const spin = t * 0.16;
       const tilt = -0.24;
-      const cy = Math.cos(spin);
-      const sy = Math.sin(spin);
-      const cx = Math.cos(tilt);
-      const sx = Math.sin(tilt);
+      const ct = Math.cos(tilt);
+      const st = Math.sin(tilt);
       const radius = Math.min(width, height) * RADIUS_RATIO;
       const ox = width / 2;
       const oy = height / 2;
 
       ctx.clearRect(0, 0, width, height);
 
-      const projected = points.map((p, i) => {
-        // Rotate about Y, then tilt about X.
-        const x1 = p.x * cy + p.z * sy;
-        const z1 = -p.x * sy + p.z * cy;
-        const y2 = p.y * cx - z1 * sx;
-        const z2 = p.y * sx + z1 * cx;
-        return { x: ox + x1 * radius, y: oy + y2 * radius, z: z2, pick: picks.has(i) };
-      });
-      // Painter's algorithm, so front dots sit over back ones.
-      projected.sort((a, b) => a.z - b.z);
+      let n = 0;
+      const spin = t * 0.16;
+      const cs = Math.cos(spin);
+      const ss = Math.sin(spin);
+      for (let i = 0; i < DOT_COUNT; i++) {
+        const p = shell[i];
+        const x1 = p.x * cs + p.z * ss;
+        const z1 = -p.x * ss + p.z * cs;
+        const o = buf[n++];
+        o.x = ox + x1 * radius;
+        o.y = oy + (p.y * ct - z1 * st) * radius;
+        o.z = p.y * st + z1 * ct;
+        o.pick = picks.has(i);
+        o.ring = false;
+      }
+      for (const ring of RINGS) {
+        const rs = t * ring.speed;
+        const cr = Math.cos(rs);
+        const sr = Math.sin(rs);
+        const ci = Math.cos(ring.incl);
+        const si = Math.sin(ring.incl);
+        for (let k = 0; k < RING_DOTS; k++) {
+          const a = (k / RING_DOTS) * Math.PI * 2;
+          // Ring in its own plane, inclined about X, then spun about Y.
+          const px = Math.cos(a) * ring.scale;
+          const pz0 = Math.sin(a) * ring.scale;
+          const py = -pz0 * si;
+          const pz = pz0 * ci;
+          const x1 = px * cr + pz * sr;
+          const z1 = -px * sr + pz * cr;
+          const o = buf[n++];
+          o.x = ox + x1 * radius;
+          o.y = oy + (py * ct - z1 * st) * radius;
+          o.z = py * st + z1 * ct;
+          o.pick = false;
+          o.ring = true;
+        }
+      }
 
-      for (const p of projected) {
+      // Painter's algorithm, so front points sit over back ones.
+      const list = buf.slice(0, n).sort((a, b) => a.z - b.z);
+
+      for (const p of list) {
         const depth = (p.z + 1) / 2; // 0 back, 1 front
-        ctx.globalAlpha = p.pick ? 0.45 + 0.55 * depth : 0.2 + 0.8 * depth;
-        ctx.fillStyle = p.pick ? pickColor : dotColor;
-        const r = (p.pick ? 4.2 : 1.7) * (0.62 + 0.38 * depth);
+        if (p.pick) {
+          // Luminous node: soft halo behind a solid core.
+          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 11);
+          halo.addColorStop(0, pickColor);
+          halo.addColorStop(1, "transparent");
+          ctx.globalAlpha = 0.28 * (0.5 + 0.5 * depth);
+          ctx.fillStyle = halo;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 0.55 + 0.45 * depth;
+          ctx.fillStyle = pickColor;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3.6 * (0.7 + 0.3 * depth), 0, Math.PI * 2);
+          ctx.fill();
+          continue;
+        }
+        ctx.fillStyle = dotColor;
+        ctx.globalAlpha = p.ring ? 0.10 + 0.30 * depth : 0.16 + 0.64 * depth;
+        const r = (p.ring ? 0.9 : 1.15) * (0.62 + 0.38 * depth);
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fill();
