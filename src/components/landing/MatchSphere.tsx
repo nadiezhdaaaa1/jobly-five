@@ -9,8 +9,13 @@ const PICK_COUNT = 5;
  *  so low indices land low on screen. This band is the upper part of the sphere
  *  as rendered (verified on screen, not by sequence order). */
 const PICK_BAND = [0.66, 0.92];
-/** Sphere radius as a fraction of the canvas's short side. */
-const RADIUS_RATIO = 0.46;
+/** Sphere radius as a multiple of the band height — deliberately over 0.5 so
+ *  the sphere is taller than its band and gets cropped by the section edge. */
+const RADIUS_RATIO = 1.15;
+/** Cap against the canvas width, so narrow viewports don't overflow sideways. */
+const MAX_WIDTH_RATIO = 0.46;
+/** Gap between the band's top edge and the crown of the sphere. */
+const TOP_INSET = 10;
 /** Inclination, radius multiplier and drift speed for each orbital ring. */
 const RINGS = [
   { incl: 0.42, scale: 1.16, speed: 0.10 },
