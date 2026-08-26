@@ -46,7 +46,7 @@ export function MatchSphere({ className }: { className?: string }) {
     );
 
     const styles = getComputedStyle(document.documentElement);
-    const dotColor = styles.getPropertyValue("--alt-light-mist").trim() || "#D0D6D8";
+    const dotColor = styles.getPropertyValue("--text-muted").trim() || "#67787C";
     const pickColor = styles.getPropertyValue("--accent").trim() || "#00F1A9";
 
     // Pre-allocated so the render loop never allocates.
@@ -148,7 +148,7 @@ export function MatchSphere({ className }: { className?: string }) {
           continue;
         }
         ctx.fillStyle = dotColor;
-        ctx.globalAlpha = p.ring ? 0.10 + 0.30 * depth : 0.16 + 0.64 * depth;
+        ctx.globalAlpha = p.ring ? 0.08 + 0.22 * depth : 0.12 + 0.42 * depth;
         const r = (p.ring ? 0.9 : 1.15) * (0.62 + 0.38 * depth);
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
