@@ -126,6 +126,8 @@ export function ShaderBackground({ className }: { className?: string }) {
       antialias: false,
       alpha: true,
       premultipliedAlpha: true,
+      // Single still frame (reduced motion) would otherwise be cleared after compositing.
+      preserveDrawingBuffer: true,
       powerPreference: "low-power",
     });
     if (!gl) return;
