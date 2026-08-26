@@ -93,129 +93,133 @@ function ContactPage() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
-      <main className="mx-auto max-w-[1200px] px-5 py-12 md:px-8 md:py-16">
-        <header className="max-w-2xl">
-          <h1 className="text-4xl md:text-5xl">Contact us</h1>
-          <p className="mt-3 text-[color:var(--color-text-secondary)]">
-            We usually reply within a business day.
-          </p>
-        </header>
-
-        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
-            {status === "success" ? (
-              <div className="py-6">
-                <h2 className="text-2xl">Thanks, we got your message.</h2>
-                <p className="mt-2 text-[color:var(--color-text-secondary)]">
-                  We'll be in touch within one business day at <strong>{form.email}</strong>.
+      <main className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+        <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+          <div className="mx-auto max-w-[1200px] px-5 py-12 md:px-8 md:py-16">
+              <header className="max-w-2xl">
+                <h1 className="text-4xl md:text-5xl">Contact us</h1>
+                <p className="mt-3 text-[color:var(--color-text-secondary)]">
+                  We usually reply within a business day.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setForm({ name: "", email: "", subject: "", message: "" });
-                    setStatus("idle");
-                  }}
-                  className="mt-6 inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] px-4 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-                >
-                  Send another message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={onSubmit} noValidate>
-                {status === "error" && (
-                  <div className="mb-4 rounded-xl border border-[color:var(--color-danger)] bg-[color:var(--color-danger-subtle)] p-3 text-sm text-[color:var(--color-danger)]">
-                    Something went wrong sending your message.{" "}
-                    <button type="button" onClick={() => setStatus("idle")} className="underline">
-                      Try again
-                    </button>
-                    .
-                  </div>
-                )}
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <label htmlFor="name" className="text-sm">Name</label>
-                    <input
-                      id="name"
-                      type="text"
-                      required
-                      value={form.name}
-                      onChange={(e) => setField("name", e.target.value)}
-                      className={`${fieldClass} ${errors.name ? errClass : ""}`}
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? "name-err" : undefined}
-                    />
-                    {errors.name && <p id="name-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.name}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="text-sm">Email</label>
-                    <input
-                      id="email"
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={(e) => setField("email", e.target.value)}
-                      className={`${fieldClass} ${errors.email ? errClass : ""}`}
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? "email-err" : undefined}
-                    />
-                    {errors.email && <p id="email-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.email}</p>}
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="subject" className="text-sm">Subject</label>
-                  <input
-                    id="subject"
-                    type="text"
-                    required
-                    value={form.subject}
-                    onChange={(e) => setField("subject", e.target.value)}
-                    className={`${fieldClass} ${errors.subject ? errClass : ""}`}
-                    aria-invalid={!!errors.subject}
-                    aria-describedby={errors.subject ? "subject-err" : undefined}
-                  />
-                  {errors.subject && <p id="subject-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.subject}</p>}
-                </div>
-                <div className="mt-4">
-                  <label htmlFor="message" className="text-sm">Message</label>
-                  <textarea
-                    id="message"
-                    required
-                    rows={6}
-                    value={form.message}
-                    onChange={(e) => setField("message", e.target.value)}
-                    className={`mt-2 w-full rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${errors.message ? errClass : ""}`}
-                    aria-invalid={!!errors.message}
-                    aria-describedby={errors.message ? "message-err" : undefined}
-                  />
-                  {errors.message && <p id="message-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.message}</p>}
-                </div>
-                <div className="mt-6">
-                  <button
-                    type="submit"
-                    disabled={!valid || status === "submitting"}
-                    className="inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {status === "submitting" ? "Sending…" : "Send message"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </section>
+              </header>
 
-          <aside className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
-            <h2 className="text-lg">Before you write</h2>
-            <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-              A few things people often ask — you might find your answer faster here.
-            </p>
-            <Accordion type="single" collapsible className="mt-4">
-              {CONTACT_FAQ.map((f, i) => (
-                <AccordionItem key={i} value={`i-${i}`}>
-                  <AccordionTrigger className="text-left text-sm">{f.q}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-[color:var(--color-text-secondary)]">{f.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </aside>
+              <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
+                <section className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+                  {status === "success" ? (
+                    <div className="py-6">
+                      <h2 className="text-2xl">Thanks, we got your message.</h2>
+                      <p className="mt-2 text-[color:var(--color-text-secondary)]">
+                        We'll be in touch within one business day at <strong>{form.email}</strong>.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm({ name: "", email: "", subject: "", message: "" });
+                          setStatus("idle");
+                        }}
+                        className="mt-6 inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] px-4 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                      >
+                        Send another message
+                      </button>
+                    </div>
+                  ) : (
+                    <form onSubmit={onSubmit} noValidate>
+                      {status === "error" && (
+                        <div className="mb-4 rounded-xl border border-[color:var(--color-danger)] bg-[color:var(--color-danger-subtle)] p-3 text-sm text-[color:var(--color-danger)]">
+                          Something went wrong sending your message.{" "}
+                          <button type="button" onClick={() => setStatus("idle")} className="underline">
+                            Try again
+                          </button>
+                          .
+                        </div>
+                      )}
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <label htmlFor="name" className="text-sm">Name</label>
+                          <input
+                            id="name"
+                            type="text"
+                            required
+                            value={form.name}
+                            onChange={(e) => setField("name", e.target.value)}
+                            className={`${fieldClass} ${errors.name ? errClass : ""}`}
+                            aria-invalid={!!errors.name}
+                            aria-describedby={errors.name ? "name-err" : undefined}
+                          />
+                          {errors.name && <p id="name-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.name}</p>}
+                        </div>
+                        <div>
+                          <label htmlFor="email" className="text-sm">Email</label>
+                          <input
+                            id="email"
+                            type="email"
+                            required
+                            value={form.email}
+                            onChange={(e) => setField("email", e.target.value)}
+                            className={`${fieldClass} ${errors.email ? errClass : ""}`}
+                            aria-invalid={!!errors.email}
+                            aria-describedby={errors.email ? "email-err" : undefined}
+                          />
+                          {errors.email && <p id="email-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.email}</p>}
+                        </div>
+                      </div>
+                      <div className="mt-4">
+                        <label htmlFor="subject" className="text-sm">Subject</label>
+                        <input
+                          id="subject"
+                          type="text"
+                          required
+                          value={form.subject}
+                          onChange={(e) => setField("subject", e.target.value)}
+                          className={`${fieldClass} ${errors.subject ? errClass : ""}`}
+                          aria-invalid={!!errors.subject}
+                          aria-describedby={errors.subject ? "subject-err" : undefined}
+                        />
+                        {errors.subject && <p id="subject-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.subject}</p>}
+                      </div>
+                      <div className="mt-4">
+                        <label htmlFor="message" className="text-sm">Message</label>
+                        <textarea
+                          id="message"
+                          required
+                          rows={6}
+                          value={form.message}
+                          onChange={(e) => setField("message", e.target.value)}
+                          className={`mt-2 w-full rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${errors.message ? errClass : ""}`}
+                          aria-invalid={!!errors.message}
+                          aria-describedby={errors.message ? "message-err" : undefined}
+                        />
+                        {errors.message && <p id="message-err" className="mt-1 text-xs text-[color:var(--color-danger)]">{errors.message}</p>}
+                      </div>
+                      <div className="mt-6">
+                        <button
+                          type="submit"
+                          disabled={!valid || status === "submitting"}
+                          className="inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {status === "submitting" ? "Sending…" : "Send message"}
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </section>
+
+                <aside className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+                  <h2 className="text-lg">Before you write</h2>
+                  <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
+                    A few things people often ask — you might find your answer faster here.
+                  </p>
+                  <Accordion type="single" collapsible className="mt-4">
+                    {CONTACT_FAQ.map((f, i) => (
+                      <AccordionItem key={i} value={`i-${i}`}>
+                        <AccordionTrigger className="text-left text-sm">{f.q}</AccordionTrigger>
+                        <AccordionContent className="text-sm text-[color:var(--color-text-secondary)]">{f.a}</AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </aside>
+              </div>
+          </div>
         </div>
       </main>
       <Footer />
