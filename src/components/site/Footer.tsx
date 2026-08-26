@@ -64,10 +64,11 @@ const COLS: { title: string; items: FooterLink[] }[] = [
 export function Footer() {
   return (
     <footer className="bg-[color:var(--color-background)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-14 md:px-8">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+      <div className="mx-auto max-w-[1200px] px-5 pt-24 pb-14 md:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_minmax(0,3fr)]">
           <div>
-            <Wordmark />
+            <Wordmark className="!text-[color:var(--color-text-muted)]" />
             <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
               Email-first job discovery platform
             </p>
@@ -119,10 +120,11 @@ export function Footer() {
             ))}
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-6 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
+        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-12 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
           <span>© 2025 Jobly. All rights reserved.</span>
           <span>You can adjust or turn off daily match frequencies anytime via your settings link.</span>
         </div>
+      </div>
       </div>
     </footer>
   );
