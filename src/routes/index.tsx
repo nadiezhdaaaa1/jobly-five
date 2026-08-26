@@ -833,7 +833,7 @@ function FeatureCards() {
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
-          <p className="mt-2 pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
+          <p className="mt-2 pr-[60px] lg:pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
           <div
@@ -863,7 +863,7 @@ function FeatureCards() {
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
-          <p className="mt-2 pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
+          <p className="mt-2 pr-[60px] lg:pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
             Say goodbye to chaotic spreadsheets. We automatically detect when you apply and help coordinate follow-ups.
           </p>
           <div
