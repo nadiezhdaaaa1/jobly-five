@@ -94,27 +94,33 @@ function BlogListPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <section className="mx-auto max-w-[1200px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-          <h1 className="text-4xl md:text-5xl">The Jobly blog</h1>
-          <p className="mt-3 max-w-2xl text-[color:var(--color-text-secondary)]">
-            Data, tips, and honest takes on how tech hiring actually works — from the team building your daily digest.
-          </p>
+        <section className="bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <h1 className="text-4xl md:text-5xl">The Jobly blog</h1>
+              <p className="mt-3 max-w-2xl text-[color:var(--color-text-secondary)]">
+                Data, tips, and honest takes on how tech hiring actually works — from the team building your daily digest.
+              </p>
 
-          <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-            {["All", ...BLOG_CATEGORIES].map((c) => (
-              <Link
-                key={c}
-                to="/blog"
-                search={c === "All" ? {} : { category: c }}
-                className="focus-visible:outline-none"
-              >
-                <CategoryChip label={c} active={active === c} />
-              </Link>
-            ))}
+              <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
+                {["All", ...BLOG_CATEGORIES].map((c) => (
+                  <Link
+                    key={c}
+                    to="/blog"
+                    search={c === "All" ? {} : { category: c }}
+                    className="focus-visible:outline-none"
+                  >
+                    <CategoryChip label={c} active={active === c} />
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+        <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
           {shown.length === 0 ? (
             <p className="py-12 text-center text-[color:var(--color-text-muted)]">Nothing here yet in this category.</p>
           ) : (

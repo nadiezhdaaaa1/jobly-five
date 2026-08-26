@@ -28,6 +28,7 @@ import {
 } from "../components/landing/logos";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
+import { FaqSection } from "../components/site/FaqSection";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 const ORIGIN = "https://jobly-five.lovable.app";
