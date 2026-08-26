@@ -486,3 +486,13 @@ select::-ms-expand {
   opacity: 0.35;
 }
 
+/* Tablet and phone: the card is narrower, so pull the plates up and left to
+   keep more of the sheet inside the frame. */
+@media (max-width: 1023.98px) {
+  .iso-stage {
+    --iso-dx: -32px;
+    --iso-dy: -32px;
+  }
+}
+
+
