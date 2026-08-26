@@ -11,6 +11,7 @@ import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
+import { ShaderBackground } from "../components/landing/ShaderBackground";
 
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
@@ -127,6 +128,7 @@ function Landing() {
       <main>
         <Hero />
         <InboxToOffer />
+        <TimeToOffer />
         <OfficialApis />
         <JobSearchBroken />
         <HowItWorks />
