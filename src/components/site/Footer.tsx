@@ -25,14 +25,7 @@ type FooterLink = { label: string; to?: string; href?: string };
 
 const COLS: { title: string; items: FooterLink[] }[] = [
   {
-    title: "Product",
-    items: [
-      { label: "How it works", href: "/#how-it-works" },
-      { label: "Pricing", href: "/#pricing" },
-      { label: "Get started", to: "/quiz" },
-    ],
-  },
-  {
+
     title: "Company",
     items: [
       { label: "Blog", to: "/blog" },
@@ -103,7 +96,7 @@ export function Footer() {
               Company No. 817569
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8 xl:gap-12">
             {COLS.map((c) => (
               <div key={c.title}>
                 <div className="text-sm font-semibold">{c.title}</div>
