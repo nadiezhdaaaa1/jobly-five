@@ -1,6 +1,4 @@
-import type { GuideFaq } from "../../lib/guides-data";
-
-export function GuideFaqSection({ items }: { items: GuideFaq[] }) {
+export function GuideFaqSection({ items }: { items: { question: string; answer: string }[] }) {
   if (items.length === 0) return null;
   return (
     <section className="mx-auto max-w-[680px] px-5 pb-4 md:px-0">

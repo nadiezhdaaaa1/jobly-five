@@ -29,6 +29,8 @@ export type ContentBlock =
   | { type: "table"; headers: string[]; rows: string[][] }
   | { type: "callout"; title?: string; text: string };
 
+export type BlogFaq = { question: string; answer: string };
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -40,6 +42,7 @@ export type BlogPost = {
   date: string;
   readTime: string;
   body: ContentBlock[];
+  faq: BlogFaq[];
 };
 
 // Image number matches the article number from the source docs (01 = Ghost Jobs … 10 = Auto-Apply).
@@ -100,13 +103,14 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "Automate reminders. Nudges to follow up, to revisit a saved role, to update a status — these keep your search on track without you holding it all in your head." },
       { type: "p", text: "Keep the applying human. The one thing you should not automate is the application itself, because that's where your judgment, your voice, and your reputation live. Deciding which roles are worth pursuing and presenting yourself well is the part that actually converts — and the part a bot does worst. Auto-apply jobs tools get this exactly backwards: they automate the judgment and leave you managing the fallout." },
       { type: "p", text: "Get the split right and you have the best of both: the leverage of automation on the boring parts, and full human control over the part that lands the job." },
-      { type: "h2", text: "Common questions about auto-apply" },
-      { type: "p", text: "Does auto-apply actually get more interviews? Rarely, on a per-application basis. Volume of generic applications converts far worse than a smaller number of tailored ones. You may get more raw responses from firing off hundreds, but they skew toward roles you don't want, and your overall hit rate on good-fit roles usually drops." },
-      { type: "p", text: "Is using auto-apply tools against the rules? Often, yes. Many platforms' terms prohibit automated submissions, and tools that push bots through application forms operate in a gray area. The risk of a flagged or restricted account lands on you, not the tool." },
-      { type: "p", text: "Isn't the job market a numbers game, though? It's a fit game dressed up as a numbers game. Ten applications to strong matches beat a hundred to random roles, because fit — not volume — is what turns an application into an interview. Play the fit game and you win with less effort." },
-      { type: "p", text: "What's the alternative to auto-apply? A smart job search: automate the finding and filtering so you see the best-fit roles fast, then apply to them yourself, tailored and intentional. You keep the speed advantage without the reputational and policy risks of mass applying to jobs." },
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "Tools that auto-apply jobs promise a volume shortcut that doesn't hold up: mass applying to jobs tanks your response rate, targets roles you don't want, risks your reputation, and can run afoul of platform rules. The quality vs quantity job applications question has a clear answer — fit beats volume, and it isn't close. Choose a smart job search that automates discovery and filtering while leaving the applying to you. Find the best roles, then apply as your best self. That's how you get interviews you actually want." },
+    ],
+    faq: [
+      { question: "Does auto-apply actually get more interviews?", answer: "Rarely, on a per-application basis. Volume of generic applications converts far worse than a smaller number of tailored ones. You may get more raw responses from firing off hundreds, but they skew toward roles you don't want, and your overall hit rate on good-fit roles usually drops." },
+      { question: "Is using auto-apply tools against the rules?", answer: "Often, yes. Many platforms' terms prohibit automated submissions, and tools that push bots through application forms operate in a gray area. The risk of a flagged or restricted account lands on you, not the tool." },
+      { question: "Isn't the job market a numbers game, though?", answer: "It's a fit game dressed up as a numbers game. Ten applications to strong matches beat a hundred to random roles, because fit — not volume — is what turns an application into an interview. Play the fit game and you win with less effort." },
+      { question: "What's the alternative to auto-apply?", answer: "A smart job search: automate the finding and filtering so you see the best-fit roles fast, then apply to them yourself, tailored and intentional. You keep the speed advantage without the reputational and policy risks of mass applying to jobs." },
     ],
   },
   {
@@ -174,6 +178,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "A job application follow-up is one of the cheapest edges in a job search, and it works precisely because most people skip it. Follow up about a week after applying, within 24 hours after an interview, and once more if you hear nothing — then know when to stop. Above all, build a system to track job applications so your follow-ups are scheduled actions, not good intentions. Start with a spreadsheet, graduate to a real job application tracker when you outgrow it, and never lose an opportunity to silence again." },
     ],
+    faq: [
+      { question: "How long should I wait before following up on a job application?", answer: "About a week after applying. Sooner reads as pushy; much later and the decision has usually already been made. After an interview, send your follow-up within 24 hours." },
+      { question: "What should a follow-up message actually say?", answer: "Keep it to about three sentences: reaffirm your interest in the specific role, add one concrete reason you're a strong fit, and invite next steps. Don't apologize for reaching out, and don't re-paste your resume." },
+      { question: "How many times should I follow up before giving up?", answer: "Follow up about a week after applying, again within 24 hours of an interview, and once more if you hear nothing. After that, stop — continued silence is an answer, and your effort is better spent on live opportunities." },
+      { question: "Is a spreadsheet enough to track follow-ups?", answer: "A spreadsheet is an honest starting point and works fine for your first handful of applications. It breaks down at scale, because it depends on you remembering to open it. Once you're tracking dozens of applications, you want reminders tied to the applications themselves." },
+    ],
   },
   {
     slug: "new-grad-job-search",
@@ -235,6 +245,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "The new grad job search feels impossible because of volume, mislabeled \"entry-level\" roles, and ghost jobs you can't yet detect — not because you're doing anything wrong. Take back control: filter for genuinely junior, real openings; prioritize fit over sheer volume; track everything from day one; and pace yourself with a sustainable weekly plan. Let smart discovery cut the thousands down to the few that fit, and your first job after college stops feeling like a lottery and starts feeling like a process you can actually run." },
     ],
+    faq: [
+      { question: "Why does the new grad job search feel impossible?", answer: "Volume, mislabeled \"entry-level\" roles, and ghost jobs you don't yet have the experience to spot. It's a property of the market you're searching, not a sign you're doing something wrong." },
+      { question: "How can I tell if an \"entry-level\" job is genuinely entry-level?", answer: "Read the listing critically rather than trusting the tag. Requirements asking for several years of experience, ownership of a whole function, or a senior-sounding scope mean the label is wrong no matter what the title says." },
+      { question: "Should I apply to as many jobs as possible as a new grad?", answer: "No. Spraying applications is the natural instinct in a hard market and it backfires. Quality of targeting beats quantity of applications, and a smaller number of well-fit applications converts better than a large number of random ones." },
+      { question: "How do I handle the no-experience catch-22?", answer: "You can't fully escape it, but you can weaken it — by looking where genuinely junior roles actually live rather than in the most crowded, most ghost-heavy places, and by presenting the experience you do have against what the role actually needs." },
+    ],
   },
   {
     slug: "passive-job-search",
@@ -287,6 +303,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "Avoid these five and a passive search stays what it's supposed to be: quiet, selective, and almost invisible in your week." },
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "A passive job search lets you stay open to better opportunities without the cost of an active hunt — but only if you run it with the right posture: a high bar, a pull-based weekly job digest, discretion while employed, and the discipline to engage only for the exceptional. Set it up once, skim it weekly, and let the rare great role find you. That's how the best moves often happen — to people who weren't desperately looking, just quietly ready." },
+    ],
+    faq: [
+      { question: "What is a passive job search?", answer: "Staying open to better opportunities without running an active hunt. You set a high bar once, let relevant roles come to you, and engage only when something genuinely clears that bar — rather than checking boards daily and applying widely." },
+      { question: "Can I run a passive job search while employed without my employer finding out?", answer: "Yes, if you keep it pull-based and discreet. The exposure risk comes from public signals; a private setup that quietly sends you a short weekly digest doesn't broadcast anything." },
+      { question: "How much time does a passive job search actually take?", answer: "Very little once it's running. The design principle is to set it up once and then do almost nothing — reviewing a short weekly digest rather than searching." },
+      { question: "When should I actually engage with a role?", answer: "Only when it clears all of your high-bar criteria, not most of them. If it isn't a clear upgrade on your current situation across the dimensions you care about, staying passive is the right answer." },
     ],
   },
   {
@@ -349,6 +371,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "When you're switching fields, the roles you want exist — they're just hiding under titles you haven't learned yet. Stop searching your old title, inventory your transferable skills, map them to role families, and reverse-engineer career change job titles from job descriptions that fit what you can do. Search the whole cluster of adjacent job titles, judge roles by responsibilities over labels, and lean on skills-based matching to surface the options you'd otherwise never find." },
     ],
+    faq: [
+      { question: "Why is it so hard to find jobs when switching careers?", answer: "Because job boards assume you already know the title you want. Searching your old title returns more of your old career, and you can't search for titles you've never heard of — which is exactly the position a career changer is in." },
+      { question: "How do I find job titles I don't know to search for?", answer: "Flip the search. Start from what you can do rather than what you've been called, inventory your transferable skills, map them to role families, and reverse-engineer titles from job descriptions that match those skills." },
+      { question: "Do I have to start over at entry level when changing careers?", answer: "Usually not. Adjacent roles often value the skills you already have — more often the problem is that you're searching the wrong titles, not that your experience doesn't count." },
+      { question: "How should I explain a career switch in an application?", answer: "Present your transferable skills against what the role actually needs, so a hiring manager sees the same fit you see. Finding the roles is only half the work; the other half is making the connection explicit rather than leaving it to be inferred." },
+    ],
   },
   {
     slug: "how-to-read-a-job-match-score",
@@ -399,6 +427,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "Without scores, both are just two listings you'd read cold and agonize over. With scores, the decision is fast: Role A gets your best tailored application today — it's a near-perfect fit. Role B gets a judgment call — if you're keen to grow into backend work and open to occasional commuting, it's worth a shot; if not, skip it and spend the time on another 90%+ match. The number didn't decide for you. It got you to a clear, quick decision in seconds instead of minutes of second-guessing — multiplied across every role you consider, that's hours of your search reclaimed and pointed at relevant jobs." },
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "A job match score turns an unmanageable feed into a ranked shortlist, using job matching by skills to estimate how well each role fits you specifically. Read it as triage, weigh the why behind the number, stay open to worthwhile stretches, and remember its limits. Above all, let it push you toward relevant jobs over sheer volume — because in a job search, fit beats quantity every single time." },
+    ],
+    faq: [
+      { question: "What is a job match score?", answer: "A percentage that estimates how well a specific role fits your profile. A role at 90% closely aligns with what you do and want; one at 40% is a stretch or a mismatch. It turns a feed you'd otherwise read cold into a ranking." },
+      { question: "How does job matching by skills work?", answer: "Most skill-based matching weighs a handful of factors — role and skill overlap, seniority level, location and work model, and salary range — against your profile, rather than matching keywords in the posting." },
+      { question: "Should I only apply to high-scoring roles?", answer: "Treat the score as triage, not a verdict. Read the reasoning behind the number and stay open to a worthwhile stretch — but let the ranking decide where your limited attention goes first." },
+      { question: "What can't a match score tell you?", answer: "Culture fit, whether your future manager is any good, or whether the team is a mess behind the scenes. It works off the posting and your profile, so a vague listing produces a shakier score." },
     ],
   },
   {
@@ -465,6 +499,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "Job search burnout comes from a process that makes you spend most of your time on the least valuable work — finding and filtering — while giving you almost no feedback in return. Cut the hour to five minutes by automating discovery, keeping your materials ready, applying only to strong fits, and running a light weekly review. Protect your energy, and you'll not only feel better — you'll search longer and apply smarter, which is what actually lands the job." },
     ],
+    faq: [
+      { question: "What causes job search burnout?", answer: "A process badly designed for the person doing it. Most of the time goes into finding and filtering — the least valuable work — while the search gives almost no feedback in return." },
+      { question: "How can I cut daily job hunting to five minutes?", answer: "Automate discovery so a short, ranked shortlist arrives without you having to build it, keep your materials ready, and apply only to roles worth applying to. What's left is a tight daily loop and a light weekly one." },
+      { question: "What are the warning signs of job search burnout?", answer: "It creeps up gradually: dreading opening job boards, applying on autopilot to roles you don't want, avoiding the search entirely for days at a time, and losing any sense that effort is producing progress." },
+      { question: "How do I stay motivated when the search drags on?", answer: "Momentum comes from restoring the sense of progress the search strips away. Small, repeatable habits help more than willpower — the goal is a system that produces visible movement rather than one that depends on you pushing harder." },
+    ],
   },
   {
     slug: "why-job-alerts-are-broken",
@@ -511,13 +551,14 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "They push you toward volume. When every alert is a flood of loosely-relevant roles, the natural response is to lower your standards and apply to more of them, which drags you into low-conversion mass applying. Good alerts should make you more selective, not less." },
       { type: "p", text: "They cost you the timing edge. Because batched keyword job alerts arrive late, they systematically put you behind the candidates who see roles sooner. In a market where early applicants win, a slow alert is actively working against you every single day." },
       { type: "p", text: "Add it up and a bad alert isn't neutral — it's a small tax on your search, paid daily in missed roles, lowered standards, and lost time." },
-      { type: "h2", text: "Common questions about job alerts" },
-      { type: "p", text: "Should I turn off my job alerts entirely? Not necessarily — but audit them. If yours are consistently late, noisy, and blind to fit, they're costing more than they're worth. Replace them with something that ranks by fit rather than dumping keyword matches." },
-      { type: "p", text: "How many job alerts should I set up? Fewer, sharper ones beat many broad ones. A pile of overlapping keyword alerts just multiplies the noise. One well-targeted, fit-ranked source is worth more than five keyword searches." },
-      { type: "p", text: "Why do I get irrelevant roles even with tight filters? Because filters operate on keywords in the posting, not fit for you. No amount of filtering fixes a system that fundamentally matches words instead of understanding your profile. That's the ceiling of keyword job alerts, and it's why job alert alternatives built around fit exist." },
-      { type: "p", text: "Are email alerts better than app notifications? The channel matters less than the quality. A short, ranked, fit-based email beats a stream of push notifications for junk roles. What you want is signal, delivered somewhere you'll actually read it — not more interruptions." },
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "Standard job alerts are noisy, late, and blind to whether a role is even real — because they were built around keyword matching, not fit. The fix isn't more keywords; it's a smarter filter that ranks by fit, moves fast, drops the junk, and keeps things short. Hold your job alerts to that standard, and switch to better job alerts the moment yours stop earning their place in your inbox." },
+    ],
+    faq: [
+      { question: "Should I turn off my job alerts entirely?", answer: "Not necessarily — but audit them. If yours are consistently late, noisy, and blind to fit, they're costing more than they're worth. Replace them with something that ranks by fit rather than dumping keyword matches." },
+      { question: "How many job alerts should I set up?", answer: "Fewer, sharper ones beat many broad ones. A pile of overlapping keyword alerts just multiplies the noise. One well-targeted, fit-ranked source is worth more than five keyword searches." },
+      { question: "Why do I get irrelevant roles even with tight filters?", answer: "Because filters operate on keywords in the posting, not fit for you. No amount of filtering fixes a system that fundamentally matches words instead of understanding your profile. That's the ceiling of keyword job alerts, and it's why job alert alternatives built around fit exist." },
+      { question: "Are email alerts better than app notifications?", answer: "The channel matters less than the quality. A short, ranked, fit-based email beats a stream of push notifications for junk roles. What you want is signal, delivered somewhere you'll actually read it — not more interruptions." },
     ],
   },
   {
@@ -573,6 +614,12 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "In a search, being early is a superpower that costs nothing but a better system. The early applicant advantage is well documented, good roles genuinely do disappear within days, and the best time to apply for jobs is almost always sooner than you think. Tighten your target, get fresh matches pushed to you daily, keep your materials ready — and be first to apply while the shortlist is still open." },
     ],
+    faq: [
+      { question: "Does applying early to a job really matter?", answer: "Yes, and the finding is consistent. People who apply within the first day or two of a posting going live have a meaningfully higher chance of landing an interview than those who apply later." },
+      { question: "How quickly do good jobs actually disappear?", answer: "Often within days. Strong roles attract a large share of their applications very early, and once a hiring manager has a viable shortlist the practical window closes well before the posting comes down." },
+      { question: "How can I be first to apply without checking job boards all day?", answer: "Make speed a system rather than a habit. If genuinely new, well-matched roles arrive in one place each morning, being early stops requiring willpower — whereas keyword alerts plus periodic scrolling structurally guarantees you're late." },
+      { question: "What makes people apply late without realizing it?", answer: "Relying on keyword alerts that batch and delay, checking a few boards every couple of days, and re-reading the same recycled listings. Each feels like activity, but none of them surface new roles fast enough to matter." },
+    ],
   },
   {
     slug: "ghost-jobs-how-to-spot",
@@ -626,13 +673,14 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "p", text: "Never let one role block your pipeline. The real damage of ghost jobs isn't the wasted application — it's when a promising-looking ghost makes you slow down everywhere else because you're \"waiting to hear back.\" Keep applying to other real roles as if the ghost doesn't exist. It probably doesn't." },
       { type: "p", text: "Report and move on. If a listing is an obvious scam — payment requests, off-platform pressure, reused text across companies — flag it on the platform where you found it and warn your community if it's circulating. Then close the tab. You've done your part; don't relitigate it." },
       { type: "p", text: "Separate the process from your worth. Silence from a ghost job says nothing about you. It's a listing that was never going to produce a hire for anyone. Internalizing that is the difference between a search that keeps its momentum and one that spirals into self-doubt." },
-      { type: "h2", text: "Ghost jobs: quick answers" },
-      { type: "p", text: "How common are ghost jobs? Recent estimates put roughly one in five active listings in the ghost category, and a large share of hiring managers have admitted to posting roles they weren't actively filling. Common enough that vetting is now a core job-search skill, not an edge case." },
-      { type: "p", text: "Are ghost jobs illegal? In most places, no. Companies are generally allowed to advertise roles they aren't urgently filling, and enforcement of any rules against misleading postings has been minimal so far. A few jurisdictions have started exploring disclosure requirements, but for now, fake job listings remain widespread and largely legal — which is exactly why the burden of spotting them falls on you." },
-      { type: "p", text: "Can you tell a ghost job before applying? Not with certainty, but you can shift the odds heavily in your favor. The two-minute check above — company careers page, posting age and history, hiring signals, description quality — filters out most of the obvious ghosts before you invest real effort." },
-      { type: "p", text: "Is a stale posting always a ghost? Not always. Some roles are genuinely hard to fill and stay open a long time. But a stale date combined with no salary, a vague description, and no other signs of active hiring is a strong warning. Treat the signals as cumulative, not individual." },
       { type: "h2", text: "The takeaway" },
       { type: "p", text: "Ghost jobs aren't going away while they stay cheap to post and awareness stays low. But you're not powerless. Learn the red flags of a fake job listing, run a two-minute check before you invest real effort, and lean on discovery that favors listings tied to live hiring. Your resume is your most valuable asset in a search — spend it on roles that can actually say yes." },
+    ],
+    faq: [
+      { question: "How common are ghost jobs?", answer: "Recent estimates put roughly one in five active listings in the ghost category, and a large share of hiring managers have admitted to posting roles they weren't actively filling. Common enough that vetting is now a core job-search skill, not an edge case." },
+      { question: "Are ghost jobs illegal?", answer: "In most places, no. Companies are generally allowed to advertise roles they aren't urgently filling, and enforcement of any rules against misleading postings has been minimal so far. A few jurisdictions have started exploring disclosure requirements, but for now, fake job listings remain widespread and largely legal — which is exactly why the burden of spotting them falls on you." },
+      { question: "Can you tell a ghost job before applying?", answer: "Not with certainty, but you can shift the odds heavily in your favor. The two-minute check above — company careers page, posting age and history, hiring signals, description quality — filters out most of the obvious ghosts before you invest real effort." },
+      { question: "Is a stale posting always a ghost?", answer: "Not always. Some roles are genuinely hard to fill and stay open a long time. But a stale date combined with no salary, a vague description, and no other signs of active hiring is a strong warning. Treat the signals as cumulative, not individual." },
     ],
   },
 ];
