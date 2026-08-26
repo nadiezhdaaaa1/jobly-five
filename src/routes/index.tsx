@@ -633,13 +633,18 @@ function ChipGroup({ row, hidden }: { row: ChipDef[]; hidden?: boolean }) {
   );
 }
 
+// Row groups differ in width, so durations are chosen to land on a deliberate
+// speed progression — ~21, 23, 25 px/s top to bottom — rather than equal times.
+const ROW_DURATIONS = ["64s", "62s", "55s"];
+
 function ChipMarquee() {
   return (
-    <div className="relative mt-14">
+    <div className="relative mt-[57px] pb-12">
       {chipRows.map((row, i) => (
         <div key={i} className={`overflow-hidden ${i > 0 ? "mt-4" : ""}`}>
           <div
             className={`flex w-max chip-marquee${i === 1 ? " chip-marquee-reverse" : ""}`}
+            style={{ animationDuration: ROW_DURATIONS[i] }}
           >
             <ChipGroup row={row} />
             <ChipGroup row={row} hidden />
