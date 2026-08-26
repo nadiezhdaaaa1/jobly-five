@@ -357,6 +357,7 @@ function InboxToOffer() {
 
         </div>
       </div>
+      </div>
     </section>
   );
 }
