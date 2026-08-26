@@ -12,7 +12,7 @@ type Props = {
   delayMs?: number;
 };
 
-export function ScoreRing({ value, label, size = 72, strokeWidth = 6, animate = false, delayMs = 0 }: Props) {
+export function ScoreRing({ value, label, size = 72, strokeWidth = 4, animate = false, delayMs = 0 }: Props) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const target = circumference - (value / 100) * circumference;
