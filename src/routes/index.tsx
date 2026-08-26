@@ -318,6 +318,7 @@ const testimonials = [
 function InboxToOffer() {
   return (
     <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="offer">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <h2
           className="text-3xl leading-10 md:text-4xl"
