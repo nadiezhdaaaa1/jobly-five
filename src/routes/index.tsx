@@ -338,7 +338,11 @@ function InboxToOffer() {
                 decoding="async"
                 className="h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-[1.036] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
-              <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/85 via-black/50 via-50% to-transparent p-6 backdrop-blur-[12px] md:p-10">
+              <div
+                className="testimonial-scrim-blur pointer-events-none absolute inset-x-0 bottom-0 h-[280px] backdrop-blur-[12px]"
+                aria-hidden="true"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/85 via-black/50 via-50% to-transparent p-6 md:p-10">
                 <h5 className="text-[22px] leading-[1.4]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
                   "{t.quote}"
                 </h5>
