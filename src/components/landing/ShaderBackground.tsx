@@ -206,6 +206,16 @@ export function ShaderBackground({ className }: { className?: string }) {
       raf = requestAnimationFrame(frame);
     };
 
+    // A single out-of-band draw is not always picked up by the compositor, so the
+    // still frame is issued inside rAF (twice, for the first paint after layout).
+    const drawStill = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        draw(performance.now());
+        raf = requestAnimationFrame(() => draw(performance.now()));
+      });
+    };
+
     const sync = () => {
       const should = timeAnimated && visible && onScreen;
       if (should && !running) {
@@ -216,16 +226,15 @@ export function ShaderBackground({ className }: { className?: string }) {
         cancelAnimationFrame(raf);
       }
       // Still frame for reduced motion / paused states.
-      if (!timeAnimated) draw(performance.now());
+      if (!timeAnimated) drawStill();
     };
 
     resize();
     sync();
-    if (!timeAnimated) draw(performance.now());
 
     const ro = new ResizeObserver(() => {
       resize();
-      if (!running) draw(performance.now());
+      if (!running) drawStill();
     });
     ro.observe(canvas);
 
