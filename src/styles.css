@@ -457,8 +457,8 @@ select::-ms-expand {
    purpose: no perspective(). A transformed element keeps its untransformed
    layout box, so each plate is centred inside an explicitly sized stage and
    scaled back down to roughly the flat mockup's height.
-   Below md the projection is dropped: the footprint (~0.707 x (W+H)) is wider
-   than a phone card, so the mockup stays flat there. */
+   Below lg the projection is dropped: the footprint (~0.707 x (W+H)) is wider
+   than the card at md and narrower, so the mockup stays flat there. */
 .iso-stage > .iso-plate,
 .iso-stage > .iso-ghost {
   position: static;
@@ -468,7 +468,7 @@ select::-ms-expand {
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .iso-stage {
     position: relative;
     height: var(--iso-stage-h, 260px);
