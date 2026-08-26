@@ -451,3 +451,46 @@ select::-ms-expand {
 .testimonial-scrim-blur {
   mask-image: linear-gradient(to top, #000 40%, transparent 100%);
 }
+
+/* Feature-card mockups, projected isometrically. rotateZ then rotateX(54.7deg)
+   puts the plane's edges at 30°, which is true isometric. Orthographic on
+   purpose: no perspective(). A transformed element keeps its untransformed
+   layout box, so each plate is centred inside an explicitly sized stage and
+   scaled back down to roughly the flat mockup's height.
+   Below lg the projection is dropped: the footprint (~0.707 x (W+H)) is wider
+   than the card at md and narrower, so the mockup stays flat there. */
+.iso-stage > .iso-plate,
+.iso-stage > .iso-ghost {
+  position: static;
+  transform: none;
+}
+.iso-ghost {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .iso-stage {
+    position: relative;
+    height: var(--iso-stage-h, 260px);
+  }
+  .iso-stage > .iso-plate,
+  .iso-stage > .iso-ghost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--iso-plate-w, 448px);
+    backface-visibility: hidden;
+    transform-style: flat;
+  }
+  .iso-stage > .iso-plate {
+    transform: translate(-50%, -50%) rotateX(54.7deg) rotateZ(-45deg) scale(var(--iso-scale, 0.8));
+    box-shadow: 0 24px 48px rgba(9, 11, 12, 0.1);
+  }
+  /* Ghost sheet, nudged up-left along the isometric axes. */
+  .iso-stage > .iso-ghost {
+    display: block;
+    transform: translate(-50%, -50%) translate(-18px, -26px) rotateX(54.7deg)
+      rotateZ(-45deg) scale(var(--iso-scale, 0.8));
+    opacity: 0.35;
+  }
+}
