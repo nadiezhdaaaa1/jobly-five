@@ -935,7 +935,7 @@ function QualityOverQuantity() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
-        <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-8 md:pt-24">
+        <div className="mx-auto max-w-[1200px] px-5 pt-16 pb-16 md:px-8 md:pt-24 md:pb-24">
           <div className="mx-auto flex max-w-[760px] flex-col items-center text-center">
             <h2
               className="text-3xl font-light leading-10 md:text-4xl"
