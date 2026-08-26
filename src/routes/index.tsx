@@ -1069,9 +1069,9 @@ function Pricing() {
   return (
     <section
       id="pricing"
-      className="border-b border-[color:var(--color-border)]"
-      style={{ background: "#FFFFFF" }}
+      className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
     >
+      <div className="bg-[color:var(--color-surface-1)] border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
       <div
         className="mx-auto flex w-full flex-col items-center"
         style={{ maxWidth: 1200, padding: "80px 24px", gap: 40 }}
@@ -1408,9 +1408,10 @@ function Pricing() {
           </div>
         </div>
       </div>
+      </div>
       <style>{`
         @media (max-width: 767px) {
-          #pricing > div { padding: 48px 24px !important; }
+          #pricing > div > div { padding: 48px 24px !important; }
           #pricing .pricing-paid-glow { width: 140px !important; height: 140px !important; }
         }
       `}</style>
@@ -1518,9 +1519,13 @@ const faqs = [
 function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="border-b border-[color:var(--color-border)]">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
       <div className="mx-auto max-w-[820px] px-5 py-16 md:px-8 md:py-24">
-        <h2 className="text-center text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
+        <h2
+          className="text-center text-3xl font-light leading-10 md:text-4xl"
+          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+        >
           Frequently Asked Questions
         </h2>
         <div className="mt-10 space-y-3">
@@ -1529,7 +1534,7 @@ function FAQ() {
             return (
               <div
                 key={f.q}
-                className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
+                className="overflow-hidden rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
               >
                 <button
                   type="button"
@@ -1555,6 +1560,7 @@ function FAQ() {
           })}
         </div>
       </div>
+      </div>
     </section>
   );
 }
@@ -1563,12 +1569,24 @@ function FAQ() {
 
 function FinalCTA() {
   return (
-    <section className="border-b border-[color:var(--color-green)] bg-[color:var(--color-green)]">
-      <div className="mx-auto max-w-[820px] px-5 py-20 text-center md:px-8">
-        <h2 className="text-3xl text-white md:text-5xl" style={{ fontFamily: "var(--font-display)" }}>
-          Ready to stop scrolling?
-        </h2>
-        <div className="mt-8 flex justify-center">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="relative overflow-hidden border-[color:var(--color-border)] bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
+        {/* Right-side shader, fading into the panel colour toward the centre. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-[calc(50%+14px)] h-[358px] -translate-y-1/2"
+        >
+          <ShaderBackground className="absolute inset-0 h-full w-full" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--color-deep-teal)] to-transparent to-50%" />
+        </div>
+
+        <div className="relative mx-auto flex max-w-[1200px] flex-col items-center gap-8 px-5 py-16 text-center md:px-8 md:py-24">
+          <h2
+            className="text-3xl font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[40px]"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            Ready to stop scrolling?
+          </h2>
           <Link
             to="/quiz"
             className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
@@ -1578,7 +1596,6 @@ function FinalCTA() {
         </div>
       </div>
     </section>
-
   );
 }
 
