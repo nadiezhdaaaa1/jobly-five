@@ -13,11 +13,26 @@ interface SitemapEntry {
   priority?: string;
 }
 
+function latestLastmod(dates: string[]): string | undefined {
+  return dates.length > 0 ? dates.slice().sort().at(-1) : undefined;
+}
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Section hubs are listed only once at least one of their children is published.
+        const publishedGuides = GUIDES.filter((g) => g.published);
+        const publishedGuideArticles = GUIDE_ARTICLES.filter((a) => a.published);
+        const publishedVs = VS_PAGES.filter((p) => p.published);
+        const guidesLastmod = latestLastmod([
+          ...publishedGuides.map((g) => g.lastUpdated),
+          ...publishedGuideArticles.map((a) => a.lastUpdated),
+        ]);
+        const vsLastmod = latestLastmod(publishedVs.map((p) => p.lastUpdated));
+
         const entries: SitemapEntry[] = [
+
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/blog", changefreq: "weekly", priority: "0.8" },
           { path: "/contact", changefreq: "monthly", priority: "0.6" },
