@@ -331,13 +331,16 @@ export function ShaderBackground({ className }: { className?: string }) {
   const reduced = usePrefersReducedMotion()
 
   useEffect(() => {
+    if (!canvasRef.current) return
+    // Declared post-guard so the non-null type survives into the hoisted
+    // render()/requestRender() function declarations below.
     const canvas = canvasRef.current
-    if (!canvas) return
     const pendingRelease = pendingContextReleases.get(canvas)
     if (pendingRelease !== undefined) window.clearTimeout(pendingRelease)
     pendingContextReleases.delete(canvas)
-    const gl = canvas.getContext("webgl", { antialias: false })
-    if (!gl) return
+    const context = canvas.getContext("webgl", { antialias: false })
+    if (!context) return
+    const gl = context
 
     // Honour prefers-reduced-motion: at 0 the shader renders one still frame.
     const timeScale = reduced ? 0 : UNIFORMS.timeScale
