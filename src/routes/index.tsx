@@ -23,6 +23,7 @@ import {
 } from "../components/landing/logos";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 const ORIGIN = "https://jobly-five.lovable.app";
 const OG_IMAGE =
@@ -130,6 +131,7 @@ function Landing() {
         <InboxToOffer />
         <TimeToOffer />
         <OfficialApis />
+        <KeyNumbers />
         <JobSearchBroken />
         <HowItWorks />
         <FeatureCards />
@@ -148,22 +150,6 @@ function Landing() {
 
 
 /* ------------------------------- Hero ------------------------------- */
-
-function useCounter(target: number, durationMs = 1200) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    const start = performance.now();
-    let frame = 0;
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / durationMs);
-      setN(Math.round(target * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [target, durationMs]);
-  return n;
-}
 
 function useLiveNumber(target: number, durationMs = 1200) {
   const [n, setN] = useState(0);
@@ -402,47 +388,118 @@ function TimeToOffer() {
 
 /* ---------------------------- Official APIs ---------------------------- */
 
+const PARTNER_LOGOS = [JoobleLogo, GreenhouseLogo, LeverLogo, AshbyLogo, UsaJobsLogo];
+
 function OfficialApis() {
   return (
-    <section className="border-b border-[color:var(--color-border)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-        <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-          Official APIs and ATS — not scraping. Ghost jobs filtered.
-        </h2>
-        <p className="mt-3 text-[color:var(--color-text-secondary)]">
-          Verified integrations with leading hiring platforms.
-        </p>
-        <div className="mt-[72px] flex flex-wrap items-center gap-10 md:gap-[76px]">
-          {[JoobleLogo, GreenhouseLogo, LeverLogo, AshbyLogo, UsaJobsLogo].map((Logo, i) => (
-            <Logo key={i} />
-          ))}
-        </div>
-        <div className="mt-[72px] flex flex-wrap gap-10 md:gap-20">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
+          <h2
+            className="text-center text-3xl font-light leading-10 md:text-4xl"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            Official APIs and ATS — not scraping. Ghost jobs filtered.
+          </h2>
+          <p className="mt-[18px] text-center leading-6 text-[color:var(--color-text-secondary)] md:text-[18px]">
+            Verified integrations with leading hiring platforms.
+          </p>
 
-          <Counter label="Jobs analysed today" value={14230} />
-          <Counter label="New in 24h" value={892} />
-          <Counter label="Ghost jobs filtered" value={2100} />
+          <div className="relative mt-[72px] overflow-hidden">
+            <div className="logo-marquee flex w-max items-center">
+              {[0, 1].map((copy) => (
+                <div
+                  key={copy}
+                  className="flex shrink-0 items-center gap-[76px] pr-[76px]"
+                  aria-hidden={copy === 1}
+                >
+                  {PARTNER_LOGOS.map((Logo, i) => (
+                    <Logo key={i} />
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 w-[120px] bg-gradient-to-r from-[color:var(--color-background)] to-transparent"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 w-[120px] bg-gradient-to-l from-[color:var(--color-background)] to-transparent"
+            />
+          </div>
         </div>
+      </div>
+    </section>
+  );
+}
 
+function KeyNumbers() {
+  return (
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
+          <div className="flex flex-col items-center gap-12 md:flex-row md:justify-between md:gap-4">
+            <Counter label="Jobs analysed today" value={14230} />
+            <Counter label="New in 24h" value={892} />
+            <Counter label="Ghost jobs filtered" value={2100} />
+          </div>
+        </div>
       </div>
     </section>
   );
 }
 
 function Counter({ label, value }: { label: string; value: number }) {
-  const n = useCounter(value);
+  const reduced = usePrefersReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (reduced) {
+      setN(value);
+      return;
+    }
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        io.disconnect();
+        const DURATION = 1600;
+        let start = 0;
+        const tick = (t: number) => {
+          if (!start) start = t;
+          const p = Math.min(1, (t - start) / DURATION);
+          setN(Math.round(value * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+      },
+      { threshold: 0.4 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value, reduced]);
+
   return (
-    <div className="flex flex-col gap-2">
-      <h2 className="text-3xl md:text-4xl tabular-nums" style={{ fontFamily: "var(--font-display)" }}>
+    <div ref={ref} className="flex flex-col items-center justify-center gap-3 md:w-[320px]">
+      <p
+        className="text-[40px] font-extralight leading-[1.4] tabular-nums text-[color:var(--color-foreground)] md:text-[52px]"
+        style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+      >
         {n.toLocaleString("en-US")}
-      </h2>
-      <div className="text-base text-[color:var(--color-text-secondary)]">{label}</div>
+      </p>
+      <p className="text-[18px] font-light leading-[1.2] text-[color:var(--color-text-secondary)] md:text-[20px]">
+        {label}
+      </p>
     </div>
   );
 }
-
-
-
 
 /* -------------------------- Job search broken -------------------------- */
 

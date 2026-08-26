@@ -422,6 +422,19 @@ select::-ms-expand {
 }
 
 
+/* Partner logo marquee. The track holds two identical groups, so translating
+   exactly -50% lands the second group where the first began — a seamless loop. */
+@keyframes logo-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.logo-marquee { animation: logo-marquee 40s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee { animation: none; }
+}
+
 /* Testimonial scrim: the 12px backdrop blur needs to fade out with the
    gradient above it, or the blur's own edge shows as a hard seam across
    the photo. Solid across the bottom 40%, ramping out over the rest. */
