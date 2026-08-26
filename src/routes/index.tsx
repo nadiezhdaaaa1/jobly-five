@@ -930,55 +930,28 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
 
 function QualityOverQuantity() {
   return (
-    <section className="border-b border-[color:var(--color-border)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-            Five right matches beat a hundred blind applications
-          </h2>
-          <p className="mt-3 text-[color:var(--color-text-secondary)]">
-            Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility.
-          </p>
-        </div>
-        <div className="mt-12 flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-center">
-          <div className="flex flex-col items-center">
-            <div className="grid grid-cols-5 gap-2">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex h-10 w-10 items-center justify-center rounded-[4px]"
-                  style={{ backgroundColor: "var(--color-green)" }}
-                >
-                  <Check size={20} className="text-[color:var(--color-accent-hover)]" />
-                </div>
-              ))}
-            </div>
-            <p className="mt-3 text-sm font-semibold text-[color:var(--color-green)]">
-              5 matched (focused, high likelihood)
-            </p>
-          </div>
-          <div className="text-sm font-medium uppercase tracking-widest text-[color:var(--color-text-muted)]">
-            VS
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[2px]">
-              {Array.from({ length: 100 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-2 w-2 rounded-[1px]"
-                  style={{ backgroundColor: "var(--color-alt-light-mist)" }}
-                />
-              ))}
-            </div>
-            <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">
-              100 random (low reply rate, exhausting)
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
+        <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-8 md:pt-24">
+          <div className="mx-auto flex max-w-[760px] flex-col items-center text-center">
+            <h2
+              className="text-3xl font-light leading-10 md:text-4xl"
+              style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+            >
+              <span className="text-[color:var(--color-green)]">5 right matches</span>{" "}
+              <span className="text-[color:var(--color-text-secondary)]">beat a 100 blind applications</span>
+            </h2>
+            <p className="mt-3 max-w-[640px] leading-6 text-[color:var(--color-text-secondary)]">
+              Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility.
             </p>
           </div>
         </div>
+        <MatchSphere className="block h-[220px] w-full" />
       </div>
     </section>
   );
 }
+
 
 /* ------------------------------ Pricing ------------------------------ */
 
