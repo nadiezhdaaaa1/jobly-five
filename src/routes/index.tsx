@@ -343,7 +343,7 @@ function InboxToOffer() {
                 aria-hidden="true"
               />
               <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/85 via-black/50 via-50% to-transparent p-6 md:p-10">
-                <h5 className="text-[22px] leading-[1.4]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
+                <h5 className="text-[22px] font-light leading-[1.4]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
                   "{t.quote}"
                 </h5>
                 <p className="mt-3 text-base leading-6 opacity-80">
