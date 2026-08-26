@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react";
 
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
-const DOT_COUNT = 1500;
+const DOT_COUNT = 2600;
 const PICK_COUNT = 5;
 /** Sphere radius as a fraction of the canvas's short side. */
-const RADIUS_RATIO = 0.32;
+const RADIUS_RATIO = 0.46;
 /** Inclination, radius multiplier and drift speed for each orbital ring. */
 const RINGS = [
   { incl: 0.42, scale: 1.16, speed: 0.10 },
@@ -125,9 +125,10 @@ export function MatchSphere({ className }: { className?: string }) {
       }
 
       // Painter's algorithm, so front points sit over back ones.
-      const list = buf.slice(0, n).sort((a, b) => a.z - b.z);
+      // n always fills buf, so sort in place rather than allocating a copy each frame.
+      buf.sort((a, b) => a.z - b.z);
 
-      for (const p of list) {
+      for (const p of buf) {
         const depth = (p.z + 1) / 2; // 0 back, 1 front
         if (p.pick) {
           // Luminous node: soft halo behind a solid core.
