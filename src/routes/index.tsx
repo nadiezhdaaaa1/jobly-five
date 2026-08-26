@@ -654,11 +654,11 @@ function ChipMarquee() {
       ))}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 w-[120px] bg-gradient-to-r from-[color:var(--color-background)] to-transparent"
+        className="pointer-events-none absolute inset-y-0 left-0 w-[120px] bg-gradient-to-r from-[color:var(--color-surface-1)] to-transparent"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 w-[120px] bg-gradient-to-l from-[color:var(--color-background)] to-transparent"
+        className="pointer-events-none absolute inset-y-0 right-0 w-[120px] bg-gradient-to-l from-[color:var(--color-surface-1)] to-transparent"
       />
     </div>
   );
