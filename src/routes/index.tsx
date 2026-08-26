@@ -329,14 +329,15 @@ function InboxToOffer() {
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="group relative h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+              className="group relative z-0 h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px]"
             >
               <img
                 src={t.photo}
                 alt={t.name}
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-[1.036] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                className="h-full w-full scale-[1.036] object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+
               />
               <div
                 className="testimonial-scrim-blur pointer-events-none absolute inset-x-0 bottom-0 h-[280px] backdrop-blur-[12px]"
