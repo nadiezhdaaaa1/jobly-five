@@ -821,7 +821,7 @@ function FeatureCards() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
@@ -830,7 +830,7 @@ function FeatureCards() {
           </p>
           <div
             className="iso-stage mt-6"
-            style={{ ["--iso-stage-h" as string]: "268px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 0.78 }}
+            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
             <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
@@ -851,7 +851,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-8">
+        <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
@@ -860,7 +860,7 @@ function FeatureCards() {
           </p>
           <div
             className="iso-stage mt-6"
-            style={{ ["--iso-stage-h" as string]: "268px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 0.78 }}
+            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
             <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
