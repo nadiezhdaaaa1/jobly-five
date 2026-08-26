@@ -9,6 +9,10 @@ import t3Asset from "../assets/t3-2.png.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
+import brokenHoursAsset from "../assets/broken-hours.png.asset.json";
+import brokenGhostAsset from "../assets/broken-ghost.png.asset.json";
+import brokenListingsAsset from "../assets/broken-listings.png.asset.json";
+
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 import { ShaderBackground } from "../components/landing/ShaderBackground";
