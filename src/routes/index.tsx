@@ -528,7 +528,7 @@ function JobSearchBroken() {
   ];
   return (
     <section
-      className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
+      className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
       id="problem"
     >
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
