@@ -970,24 +970,43 @@ function Pricing() {
   const periods: Array<"monthly" | "annual"> = ["annual", "monthly"];
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const [indicatorReady, setIndicatorReady] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+    let transitionFrame = 0;
     const measure = () => {
       const idx = periods.indexOf(period);
       const btn = btnRefs.current[idx];
       const container = tabsRef.current;
-      console.log("[pricing-toggle-measure]", {
-        btn: btn ? "present" : null,
-        offsetLeft: btn?.offsetLeft ?? null,
-        offsetWidth: btn?.offsetWidth ?? null,
-        container: container ? "present" : null,
-      });
-      if (!btn || !container) return;
+      if (!btn || !container || cancelled) return;
       setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+      if (!indicatorReady && !transitionFrame) {
+        transitionFrame = window.requestAnimationFrame(() => {
+          transitionFrame = window.requestAnimationFrame(() => {
+            if (!cancelled) setIndicatorReady(true);
+          });
+        });
+      }
     };
+
+    const container = tabsRef.current;
+    const observer = container && typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(measure)
+      : null;
+    if (container) observer?.observe(container);
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    if (document.fonts) {
+      void document.fonts.ready.then(measure);
+    }
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+      if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
+    };
   }, [period]);
 
   const paid =
@@ -1133,7 +1152,9 @@ function Pricing() {
               border: "1px solid #FFFFFF",
               borderRadius: 6,
               boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-              transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+              transition: indicatorReady
+                ? "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)"
+                : "none",
             }}
           />
           {periods.map((p, idx) => {
