@@ -469,8 +469,8 @@ select::-ms-expand {
   position: absolute;
   /* Anchored on the rotated bounding box's centre: 20% in from the card's left
      edge plus half the projected width, and a fixed drop down the card. */
-  left: calc(20% + var(--iso-x, 246px));
-  top: var(--iso-y, 207px);
+  left: calc(20% + var(--iso-x, 246px) + var(--iso-dx, 0px));
+  top: calc(var(--iso-y, 207px) + var(--iso-dy, 0px));
   width: var(--iso-plate-w, 448px);
   backface-visibility: hidden;
   transform-style: flat;
@@ -485,4 +485,14 @@ select::-ms-expand {
     rotateZ(-45deg) scale(var(--iso-scale, 0.8));
   opacity: 0.35;
 }
+
+/* Tablet and phone: the card is narrower, so pull the plates up and left to
+   keep more of the sheet inside the frame. */
+@media (max-width: 1023.98px) {
+  .iso-stage {
+    --iso-dx: -32px;
+    --iso-dy: -32px;
+  }
+}
+
 
