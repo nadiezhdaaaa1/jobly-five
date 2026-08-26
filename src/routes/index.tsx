@@ -733,7 +733,7 @@ function HowCard({
         </div>
         <p className="mt-3 max-w-[300px] text-sm leading-5 text-[color:var(--color-text-secondary)]">{body}</p>
       </div>
-      <div className="relative h-[227px] shrink-0 self-end">
+      <div className="relative aspect-[365/227] w-full shrink-0 self-end">
         {children}
       </div>
     </div>
