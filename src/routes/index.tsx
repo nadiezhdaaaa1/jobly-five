@@ -669,26 +669,31 @@ function ChipMarquee() {
 
 function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-b border-[color:var(--color-border)]">
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-            How Jobly works
-          </h2>
-          <p className="mt-3 text-[color:var(--color-text-secondary)]">
-            We flipped the script. Instead of searching, you receive matching digests directly in your inbox.
-          </p>
-        </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          <HowCard step={1} title="Start with anything" body="2-minute quiz about role, stack, level, location and salary">
-            <QuizPreview />
-          </HowCard>
-          <HowCard step={2} title="AI matching" body="We score every job against your profile — no black box">
-            <MatchPreview />
-          </HowCard>
-          <HowCard step={3} title="Daily digest" body="5 best-fit jobs in your inbox each morning">
-            <InboxPreview />
-          </HowCard>
+    <section id="how-it-works" className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="max-w-2xl">
+            <h2
+              className="text-3xl font-light leading-10 md:text-4xl"
+              style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+            >
+              How Jobly works
+            </h2>
+            <p className="mt-3 leading-6 text-[color:var(--color-text-secondary)]">
+              We flipped the script. Instead of searching, you receive matching digests directly in your inbox.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            <HowCard step={1} title="Start with anything" body="2-minute quiz about role, stack, level, location and salary">
+              <QuizPreview />
+            </HowCard>
+            <HowCard step={2} title="AI matching" body="We score every job against your profile — no black box">
+              <MatchPreview />
+            </HowCard>
+            <HowCard step={3} title="Daily digest" body="5 best-fit jobs in your inbox each morning">
+              <InboxPreview />
+            </HowCard>
+          </div>
         </div>
       </div>
     </section>
@@ -708,24 +713,27 @@ function HowCard({
 }) {
   return (
     <div
-      className="@container grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px]"
-      style={{ border: "1px solid var(--color-border)", backgroundColor: "var(--color-surface-2)" }}
+      className="group relative z-0 grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px] md:h-[400px]"
+      style={{ border: "1px solid var(--color-border-strong)", backgroundColor: "var(--color-border)" }}
     >
       <div className="pt-6 pr-6 pl-6 pb-0 md:pt-8 md:pr-8 md:pl-8">
-        <div className="how-card-title-row">
+        <div className="flex flex-col gap-3">
           <span
-            className="inline-flex items-center rounded-[4px] px-3 py-1 text-[13px] font-medium text-white"
+            className="inline-flex w-fit items-center rounded-[4px] px-3 py-1 text-[13px] font-medium text-white"
             style={{ backgroundColor: "var(--color-green)" }}
           >
             Step {step}
           </span>
-          <h3 className="text-xl md:text-2xl" style={{ fontFamily: "var(--font-display)" }}>
+          <h3
+            className="text-xl font-light leading-8 md:text-2xl"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.24px" }}
+          >
             {title}
           </h3>
         </div>
-        <p className="mt-3 text-sm text-[color:var(--color-text-secondary)]">{body}</p>
+        <p className="mt-3 max-w-[300px] text-sm leading-5 text-[color:var(--color-text-secondary)]">{body}</p>
       </div>
-      <div className="relative self-end">
+      <div className="relative h-[227px] shrink-0 self-end">
         {children}
       </div>
     </div>
@@ -749,23 +757,21 @@ function QuizChip({ label }: { label: string }) {
   );
 }
 
+const HOW_IMG_CLASS =
+  "block h-full w-full object-cover scale-[1.036] transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:transition-none motion-reduce:scale-100 motion-reduce:group-hover:scale-100";
+
 function QuizPreview() {
-  return (
-    <img src={how1Asset.url} alt="Quiz preview" loading="lazy" decoding="async" className="block w-full h-auto" />
-  );
+  return <img src={how1Asset.url} alt="Quiz preview" loading="lazy" decoding="async" className={HOW_IMG_CLASS} />;
 }
 
 function MatchPreview() {
-  return (
-    <img src={how2Asset.url} alt="Match preview" loading="lazy" decoding="async" className="block w-full h-auto" />
-  );
+  return <img src={how2Asset.url} alt="Match preview" loading="lazy" decoding="async" className={HOW_IMG_CLASS} />;
 }
 
 function InboxPreview() {
-  return (
-    <img src={how3Asset.url} alt="Inbox preview" loading="lazy" decoding="async" className="block w-full h-auto" />
-  );
+  return <img src={how3Asset.url} alt="Inbox preview" loading="lazy" decoding="async" className={HOW_IMG_CLASS} />;
 }
+
 
 function InboxRow({
   sender,
