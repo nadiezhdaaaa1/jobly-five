@@ -20,9 +20,10 @@ export function LeverLogo({ className }: LogoProps) {
 }
 
 export function AshbyLogo({ className }: LogoProps) {
-  return <img src={ashbyUrl} alt="Ashby" className={className} style={{ height: 37 }} />;
+  return <img src={ashbyUrl} alt="Ashby" className={className} style={{ height: 37 * 0.95 }} />;
 }
 
 export function UsaJobsLogo({ className }: LogoProps) {
-  return <img src={usajobsUrl} alt="USAJOBS" className={className} style={{ height: 32 }} />;
+  return <img src={usajobsUrl} alt="USAJOBS" className={className} style={{ height: 32 * 0.95 }} />;
+
 }
