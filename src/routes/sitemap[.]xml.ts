@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { BLOG_POSTS } from "@/lib/blog-data";
+import { GUIDES, GUIDE_ARTICLES } from "@/lib/guides-data";
+import { VS_PAGES } from "@/lib/vs-data";
 
 const BASE_URL = "https://jobly-five.lovable.app";
 
@@ -32,6 +34,25 @@ export const Route = createFileRoute("/sitemap.xml")({
             lastmod: p.date,
             changefreq: "monthly" as const,
             priority: "0.7",
+          })),
+          // Guides + comparison pages appear automatically once `published` flips to true.
+          ...GUIDES.filter((g) => g.published).map((g) => ({
+            path: `/guides/${g.slug}`,
+            lastmod: g.lastUpdated,
+            changefreq: "monthly" as const,
+            priority: "0.7",
+          })),
+          ...GUIDE_ARTICLES.filter((a) => a.published).map((a) => ({
+            path: `/guides/${a.guide}/${a.slug}`,
+            lastmod: a.lastUpdated,
+            changefreq: "monthly" as const,
+            priority: "0.6",
+          })),
+          ...VS_PAGES.filter((p) => p.published).map((p) => ({
+            path: `/vs/${p.slug}`,
+            lastmod: p.lastUpdated,
+            changefreq: "monthly" as const,
+            priority: "0.6",
           })),
         ];
 

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
+import { VS_PAGES } from "@/lib/vs-data";
 import fbIcon from "@/assets/social/fb.svg";
 import inIcon from "@/assets/social/in.svg";
 import xIcon from "@/assets/social/twitter-x.svg";
@@ -52,13 +53,26 @@ const COLS: { title: string; items: FooterLink[] }[] = [
      { label: "DMCA Policy", to: "/legal/dmca" },
     ],
   },
+  {
+    title: "Guides",
+    items: [
+      { label: "Ghost jobs", to: "/guides/ghost-jobs" },
+      { label: "AI job matching", to: "/guides/ai-job-matching" },
+      { label: "Job alerts", to: "/guides/job-alerts" },
+      { label: "All guides", to: "/guides" },
+    ],
+  },
+  {
+    title: "Compare",
+    items: VS_PAGES.map((p) => ({ label: p.footerLabel, to: `/vs/${p.slug}` })),
+  },
 ];
 
 export function Footer() {
   return (
     <footer className="bg-[color:var(--color-background)]">
       <div className="mx-auto max-w-[1200px] px-5 py-14 md:px-8">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid gap-10 lg:grid-cols-[1.4fr_minmax(0,3fr)]">
           <div>
             <Wordmark />
             <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
@@ -89,26 +103,28 @@ export function Footer() {
               Company No. 817569
             </p>
           </div>
-          {COLS.map((c) => (
-            <div key={c.title}>
-              <div className="text-sm font-semibold">{c.title}</div>
-              <ul className="mt-3 space-y-2 text-sm text-[color:var(--color-text-secondary)]">
-                {c.items.map((i) => (
-                  <li key={i.label}>
-                    {i.to ? (
-                      <Link to={i.to} className="hover:text-[color:var(--color-foreground)]">
-                        {i.label}
-                      </Link>
-                    ) : (
-                      <a href={i.href} className="hover:text-[color:var(--color-foreground)]">
-                        {i.label}
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 xl:grid-cols-5">
+            {COLS.map((c) => (
+              <div key={c.title}>
+                <div className="text-sm font-semibold">{c.title}</div>
+                <ul className="mt-3 space-y-2 text-sm text-[color:var(--color-text-secondary)]">
+                  {c.items.map((i) => (
+                    <li key={i.label}>
+                      {i.to ? (
+                        <Link to={i.to} className="hover:text-[color:var(--color-foreground)]">
+                          {i.label}
+                        </Link>
+                      ) : (
+                        <a href={i.href} className="hover:text-[color:var(--color-foreground)]">
+                          {i.label}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-6 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
           <span>© 2025 Jobly. All rights reserved.</span>

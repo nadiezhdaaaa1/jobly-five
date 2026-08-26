@@ -18,8 +18,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VsIndexRouteImport } from './routes/vs.index'
 import { Route as GuidesIndexRouteImport } from './routes/guides.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as VsCompetitorRouteImport } from './routes/vs.$competitor'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRefundRouteImport } from './routes/legal.refund'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -89,6 +91,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VsIndexRoute = VsIndexRouteImport.update({
+  id: '/vs/',
+  path: '/vs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuidesIndexRoute = GuidesIndexRouteImport.update({
   id: '/guides/',
   path: '/guides/',
@@ -97,6 +104,11 @@ const GuidesIndexRoute = GuidesIndexRouteImport.update({
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VsCompetitorRoute = VsCompetitorRouteImport.update({
+  id: '/vs/$competitor',
+  path: '/vs/$competitor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
@@ -251,8 +263,10 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -287,8 +301,10 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/vs/$competitor': typeof VsCompetitorRoute
   '/blog': typeof BlogIndexRoute
   '/guides': typeof GuidesIndexRoute
+  '/vs': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -325,8 +341,10 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -363,8 +381,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/vs/$competitor'
     | '/blog/'
     | '/guides/'
+    | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
@@ -399,8 +419,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/vs/$competitor'
     | '/blog'
     | '/guides'
+    | '/vs'
     | '/guides/$guide/$slug'
     | '/guides/$guide'
     | '/api/public/hooks/confirm-email'
@@ -436,8 +458,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/vs/$competitor'
     | '/blog/'
     | '/guides/'
+    | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
@@ -469,8 +493,10 @@ export interface RootRouteChildren {
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  VsCompetitorRoute: typeof VsCompetitorRoute
   BlogIndexRoute: typeof BlogIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
+  VsIndexRoute: typeof VsIndexRoute
   GuidesGuideSlugRoute: typeof GuidesGuideSlugRoute
   GuidesGuideIndexRoute: typeof GuidesGuideIndexRoute
   ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
@@ -547,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vs/': {
+      id: '/vs/'
+      path: '/vs'
+      fullPath: '/vs/'
+      preLoaderRoute: typeof VsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guides/': {
       id: '/guides/'
       path: '/guides'
@@ -559,6 +592,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vs/$competitor': {
+      id: '/vs/$competitor'
+      path: '/vs/$competitor'
+      fullPath: '/vs/$competitor'
+      preLoaderRoute: typeof VsCompetitorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/terms': {
@@ -771,8 +811,10 @@ const rootRouteChildren: RootRouteChildren = {
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
+  VsCompetitorRoute: VsCompetitorRoute,
   BlogIndexRoute: BlogIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
+  VsIndexRoute: VsIndexRoute,
   GuidesGuideSlugRoute: GuidesGuideSlugRoute,
   GuidesGuideIndexRoute: GuidesGuideIndexRoute,
   ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
