@@ -313,12 +313,18 @@ function InboxToOffer() {
     <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="offer">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <h2
-          className="text-3xl leading-10 md:text-4xl"
-          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
-        >
-          From inbox to offer
-        </h2>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <h2
+            className="text-3xl leading-10 md:text-4xl"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            From inbox to offer
+          </h2>
+          <p className="max-w-[560px] text-[16px] font-extralight leading-6 text-[color:var(--color-text-secondary)] md:text-right">
+            No boards, no spraying — five matches a day. Here is where they landed.
+          </p>
+        </div>
+
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
             <article
