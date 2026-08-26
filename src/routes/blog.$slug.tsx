@@ -133,62 +133,71 @@ function ArticlePage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <article>
-          <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-            <div className="text-sm">
-              <Link to="/blog" className="text-[color:var(--color-green)] hover:underline">
-                ← Back to blog
-              </Link>
-            </div>
-            <span className="mt-4 inline-flex items-center rounded-button bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
-              {post.category}
-            </span>
-            <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{post.title}</h1>
-            <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{post.deck}</p>
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-[color:var(--color-text-muted)]">
-              <span>{post.author}</span>
-              <span aria-hidden>·</span>
-              <time dateTime={post.date}>{formatDate(post.date)}</time>
-              <span aria-hidden>·</span>
-              <span>{post.readTime}</span>
-            </div>
-            <div className="mt-6">
-              <ShareRow url={url} title={post.title} />
-            </div>
-          </header>
+        <article className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <div className="text-sm">
+                <Link to="/blog" className="text-[color:var(--color-green)] hover:underline">
+                  ← Back to blog
+                </Link>
+              </div>
+              <span className="mt-4 inline-flex items-center rounded-button bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
+                {post.category}
+              </span>
+              <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{post.title}</h1>
+              <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{post.deck}</p>
+              <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-[color:var(--color-text-muted)]">
+                <span>{post.author}</span>
+                <span aria-hidden>·</span>
+                <time dateTime={post.date}>{formatDate(post.date)}</time>
+                <span aria-hidden>·</span>
+                <span>{post.readTime}</span>
+              </div>
+              <div className="mt-6">
+                <ShareRow url={url} title={post.title} />
+              </div>
+            </header>
 
-          <div className="mx-auto max-w-[820px] px-5 md:px-8">
-            <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
-              <img src={post.coverImage} alt={post.coverAlt} className="h-auto w-full" />
-            </div>
-          </div>
-
-          <div className="mx-auto max-w-[1200px] px-5 py-10 md:px-8 md:py-14">
-            <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-              <TableOfContents items={toc} />
-              <div className="min-w-0">
-                <ArticleBody blocks={post.body} />
+            <div className="mx-auto max-w-[820px] px-5 md:px-8">
+              <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+                <img src={post.coverImage} alt={post.coverAlt} className="h-auto w-full" />
               </div>
             </div>
-          </div>
 
-          <div className="mx-auto max-w-[820px] px-5 pb-12 md:px-8">
-            <GuideFaqSection items={post.faq} />
+            <div className="mx-auto max-w-[1200px] px-5 py-10 md:px-8 md:py-14">
+              <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
+                <TableOfContents items={toc} />
+                <div className="min-w-0">
+                  <div className="mx-auto lg:max-w-[680px]">
+                    <ArticleBody blocks={post.body} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mx-auto max-w-[820px] px-5 pb-12 md:px-8">
+              <GuideFaqSection items={post.faq} />
+            </div>
           </div>
         </article>
 
-        <CtaBlock title="Get your matches" subtitle="Five ranked openings scored to you, in your inbox every day." cta="Get my matches" />
-
         {related.length > 0 && (
-          <section className="mx-auto max-w-[1200px] px-5 pb-20 md:px-8">
-            <h2 className="text-2xl">Related reads</h2>
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
-                <BlogCard key={p.slug} post={p} />
-              ))}
+          <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+            <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+              <div className="mx-auto max-w-[1200px] px-5 pb-20 md:px-8">
+                <h2 className="text-2xl">Related reads</h2>
+                <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {related.map((p) => (
+                    <BlogCard key={p.slug} post={p} />
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
         )}
+
+        <CtaBlock title="Get your matches" subtitle="Five ranked openings scored to you, in your inbox every day." cta="Get my matches" />
+
       </main>
       <Footer />
     </div>
