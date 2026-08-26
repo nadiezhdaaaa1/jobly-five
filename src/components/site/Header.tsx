@@ -121,7 +121,7 @@ export function Header() {
                   key={n.label}
                   to={n.to}
                   onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                  className="rounded-[4px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   {n.label}
                 </Link>
@@ -130,7 +130,7 @@ export function Header() {
                   key={n.label}
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-lg px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                  className="rounded-[4px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   {n.label}
                 </a>
@@ -138,7 +138,7 @@ export function Header() {
             )}
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-[4px] px-3 py-3 text-sm">
                   Dashboard
                 </Link>
                 <button
@@ -154,7 +154,7 @@ export function Header() {
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm">
+                <Link to="/login" onClick={() => setOpen(false)} className="rounded-[4px] px-3 py-3 text-sm">
                   Log in
                 </Link>
                 <Link
