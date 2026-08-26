@@ -828,19 +828,24 @@ function FeatureCards() {
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
-          <div className="mt-6 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
-            <div className="flex items-center justify-between">
-
-              <span className="text-sm">Senior Frontend Engineer</span>
-              <span className="rounded-md bg-[color:var(--color-mint)] px-2 py-0.5 text-xs text-[color:var(--color-green)]">
-                94%
-              </span>
-            </div>
-            <div className="mt-4 space-y-3">
-              <ScoreBar label="React and TypeScript" value={96} />
-              <ScoreBar label="Remote / US" value={100} />
-              <ScoreBar label="Salary band" value={88} />
-              <ScoreBar label="Company size" value={82} />
+          <div
+            className="iso-stage mt-6"
+            style={{ ["--iso-stage-h" as string]: "268px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 0.78 }}
+          >
+            <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
+            <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[color:var(--color-text-secondary)]">Senior Frontend Engineer</span>
+                <span className="rounded-[4px] border border-[color:var(--color-green)] px-2 py-0.5 text-xs font-medium text-[color:var(--color-green)]">
+                  94%
+                </span>
+              </div>
+              <div className="mt-4 space-y-3">
+                <ScoreBar label="React and TypeScript" value={96} />
+                <ScoreBar label="Remote / US" value={100} />
+                <ScoreBar label="Salary band" value={88} />
+                <ScoreBar label="Company size" value={82} />
+              </div>
             </div>
           </div>
         </div>
@@ -851,44 +856,49 @@ function FeatureCards() {
           <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
             Say goodbye to chaotic spreadsheets. We automatically detect when you apply and help coordinate follow-ups.
           </p>
-          <div className="mt-6 grid grid-cols-3 gap-3">
-            {[
-              { label: "Applied", count: 8, tone: "surface" },
-              { label: "Interview", count: 3, tone: "mint" },
-              { label: "Offer", count: 1, tone: "accent" },
-            ].map((c) => (
-              <div
-                key={c.label}
-                className={`rounded-lg p-3 ${c.tone === "accent" ? "" : "border border-[color:var(--color-border)]"}`}
-                style={{
-
-                  backgroundColor:
-                    c.tone === "mint"
-                      ? "var(--color-mint)"
-                      : c.tone === "accent"
-                      ? "var(--color-accent)"
-                      : "var(--color-surface-1)",
-                  color: c.tone === "accent" ? "var(--color-on-accent)" : undefined,
-                }}
-              >
-                <div className="text-xs opacity-80">{c.label}</div>
-                <div className="mt-1 text-2xl" style={{ fontFamily: "var(--font-display)" }}>
-                  {c.count}
-                </div>
-                <div className="mt-3 space-y-1.5">
-                  <div className="h-2 rounded bg-black/10" />
-                  <div className="h-2 w-4/5 rounded bg-black/10" />
-                  <div className="h-2 w-3/4 rounded bg-black/10" />
-                  <div className="h-2 w-5/6 rounded bg-black/10" />
-                  <div className="h-2 w-2/3 rounded bg-black/10" />
-                  <div className="h-2 w-4/5 rounded bg-black/10" />
-                  <div className="h-2 w-3/5 rounded bg-black/10" />
-                  <div className="h-2 w-3/4 rounded bg-black/10" />
-                </div>
+          <div
+            className="iso-stage mt-6"
+            style={{ ["--iso-stage-h" as string]: "268px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 0.78 }}
+          >
+            <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
+            <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Applied", count: 8, accent: false },
+                  { label: "Interview", count: 3, accent: false },
+                  { label: "Offer", count: 1, accent: true },
+                ].map((c) => (
+                  <div
+                    key={c.label}
+                    className={`rounded-[8px] border p-3 ${
+                      c.accent
+                        ? "border-[color:var(--color-green)]"
+                        : "border-[color:var(--color-border-strong)]"
+                    }`}
+                  >
+                    <div className="text-xs text-[color:var(--color-text-secondary)]">{c.label}</div>
+                    <div
+                      className={`mt-1 text-2xl ${c.accent ? "text-[color:var(--color-green)]" : ""}`}
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {c.count}
+                    </div>
+                    <div className="mt-3 space-y-1.5">
+                      <div className="h-2 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-4/5 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-3/4 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-5/6 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-2/3 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-4/5 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-3/5 rounded-[4px] bg-[color:var(--color-border)]" />
+                      <div className="h-2 w-3/4 rounded-[4px] bg-[color:var(--color-border)]" />
+                    </div>
+                  </div>
+                ))}
               </div>
-
-            ))}
+            </div>
           </div>
+
         </div>
       </div>
     </section>
