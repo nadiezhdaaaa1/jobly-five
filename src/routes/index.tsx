@@ -969,25 +969,16 @@ function Pricing() {
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["annual", "monthly"];
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
-  const [indicatorReady, setIndicatorReady] = useState(false);
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 8, width: 148 });
 
   useEffect(() => {
     let cancelled = false;
-    let transitionFrame = 0;
     const measure = () => {
       const idx = periods.indexOf(period);
       const btn = btnRefs.current[idx];
       const container = tabsRef.current;
       if (!btn || !container || cancelled) return;
       setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
-      if (!indicatorReady && !transitionFrame) {
-        transitionFrame = window.requestAnimationFrame(() => {
-          transitionFrame = window.requestAnimationFrame(() => {
-            if (!cancelled) setIndicatorReady(true);
-          });
-        });
-      }
     };
 
     const container = tabsRef.current;
@@ -1005,7 +996,6 @@ function Pricing() {
       cancelled = true;
       observer?.disconnect();
       window.removeEventListener("resize", measure);
-      if (transitionFrame) window.cancelAnimationFrame(transitionFrame);
     };
   }, [period]);
 
@@ -1152,9 +1142,7 @@ function Pricing() {
               border: "1px solid #FFFFFF",
               borderRadius: 6,
               boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-              transition: indicatorReady
-                ? "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)"
-                : "none",
+              transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           />
           {periods.map((p, idx) => {
