@@ -373,7 +373,7 @@ function TimeToOffer() {
         {/* Right-side shader, fading into the panel colour toward the centre. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute right-0 top-[calc(50%+14px)] h-[358px] w-[680px] -translate-y-1/2"
+          className="pointer-events-none absolute inset-x-0 top-[calc(50%+14px)] h-[358px] -translate-y-1/2"
         >
           <ShaderBackground className="absolute inset-0 h-full w-full" />
           <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--color-deep-teal)] to-transparent to-50%" />
