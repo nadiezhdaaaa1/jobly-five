@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GuidesIndexRouteImport } from './routes/guides.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRefundRouteImport } from './routes/legal.refund'
@@ -84,6 +85,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesIndexRoute = GuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
+  '/guides/': typeof GuidesIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
+  '/guides': typeof GuidesIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
+  '/guides/': typeof GuidesIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
+    | '/guides/'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog'
+    | '/guides'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/legal/refund'
     | '/legal/terms'
     | '/blog/'
+    | '/guides/'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -434,6 +446,7 @@ export interface RootRouteChildren {
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  GuidesIndexRoute: typeof GuidesIndexRoute
   ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
   ApiPublicHooksPostmarkWebhookRoute: typeof ApiPublicHooksPostmarkWebhookRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -506,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/': {
+      id: '/guides/'
+      path: '/guides'
+      fullPath: '/guides/'
+      preLoaderRoute: typeof GuidesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -712,6 +732,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
   BlogIndexRoute: BlogIndexRoute,
+  GuidesIndexRoute: GuidesIndexRoute,
   ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
   ApiPublicHooksPostmarkWebhookRoute: ApiPublicHooksPostmarkWebhookRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
