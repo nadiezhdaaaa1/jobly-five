@@ -399,7 +399,7 @@ function OfficialApis() {
             className="text-center text-3xl font-light leading-10 md:text-4xl"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
           >
-            Official APIs and ATS — not scraping. Ghost jobs filtered.
+            Official APIs and ATS — not scraping. Ghost jobs filtered
           </h2>
           <p className="mt-[18px] text-center leading-6 text-[color:var(--color-text-secondary)] md:text-[18px]">
             Verified integrations with leading hiring platforms.
