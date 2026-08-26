@@ -402,7 +402,7 @@ function OfficialApis() {
             Official APIs and ATS — not scraping. Ghost jobs filtered
           </h2>
           <p className="mt-[18px] text-center leading-6 text-[color:var(--color-text-secondary)] md:text-[18px]">
-            Verified integrations with leading hiring platforms.
+            Verified integrations with leading hiring platforms
           </p>
 
           <div className="relative mt-[72px] overflow-hidden">
