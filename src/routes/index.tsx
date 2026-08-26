@@ -368,7 +368,7 @@ function InboxToOffer() {
 
 function TimeToOffer() {
   return (
-    <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="relative overflow-hidden border-[color:var(--color-border)] bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
         {/* Right-side shader, fading into the panel colour toward the centre. */}
         <div
