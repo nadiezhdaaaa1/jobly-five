@@ -329,7 +329,7 @@ function InboxToOffer() {
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="group relative h-[520px] overflow-hidden rounded-lg bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+              className="group relative h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
               <img
                 src={t.photo}
