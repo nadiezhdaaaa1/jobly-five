@@ -976,6 +976,12 @@ function Pricing() {
       const idx = periods.indexOf(period);
       const btn = btnRefs.current[idx];
       const container = tabsRef.current;
+      console.log("[pricing-toggle-measure]", {
+        btn: btn ? "present" : null,
+        offsetLeft: btn?.offsetLeft ?? null,
+        offsetWidth: btn?.offsetWidth ?? null,
+        container: container ? "present" : null,
+      });
       if (!btn || !container) return;
       setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
     };
