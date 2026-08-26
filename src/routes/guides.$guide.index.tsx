@@ -90,17 +90,21 @@ function GuideNotFound() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
-      <main className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
-        <h1 className="text-3xl">Guide not found</h1>
-        <p className="mt-2 text-[color:var(--color-text-secondary)]">
-          The guide you're looking for may have moved or been removed.
-        </p>
-        <Link
-          to="/guides"
-          className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
-        >
-          Back to guides
-        </Link>
+      <main className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+        <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+          <div className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
+            <h1 className="text-3xl">Guide not found</h1>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              The guide you're looking for may have moved or been removed.
+            </p>
+            <Link
+              to="/guides"
+              className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
+            >
+              Back to guides
+            </Link>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
@@ -115,53 +119,56 @@ function GuideHub() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <article>
-          <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-            <nav aria-label="Breadcrumb" className="text-sm">
-              <Link to="/guides" className="text-[color:var(--color-green)] hover:underline">
-                ← All guides
-              </Link>
-            </nav>
-            <h1 className="mt-4 text-3xl leading-tight md:text-4xl">{guide.title}</h1>
-            <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{guide.deck}</p>
-            <div className="mt-5 text-sm text-[color:var(--color-text-muted)]">
-              Last updated <time dateTime={guide.lastUpdated}>{formatDate(guide.lastUpdated)}</time>
-            </div>
-            <div className="mt-6">
-              <ShareRow url={url} title={guide.title} />
-            </div>
-          </header>
-
-          {guide.body.length > 0 && (
-            <div className="mx-auto max-w-[820px] px-5 pb-10 md:px-8">
-              <ArticleBody blocks={guide.body} />
-            </div>
-          )}
-
-          <section className="mx-auto max-w-[820px] px-5 pb-10 md:px-8">
-            <h2 className="text-2xl">In this guide</h2>
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {articles.map((a) => (
-                <Link
-                  key={a.slug}
-                  to="/guides/$guide/$slug"
-                  params={{ guide: guide.slug, slug: a.slug }}
-                  className="flex flex-col gap-2 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-                >
-                  <h3 className="text-base leading-snug">{a.title}</h3>
-                  <p className="text-sm text-[color:var(--color-text-secondary)]">{a.deck}</p>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-[color:var(--color-text-muted)]">
-                    <span>{a.readTime}</span>
-                    <span aria-hidden>·</span>
-                    <span>Last updated {formatDate(a.lastUpdated)}</span>
-                  </div>
+        <article className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <nav aria-label="Breadcrumb" className="text-sm">
+                <Link to="/guides" className="text-[color:var(--color-green)] hover:underline">
+                  ← All guides
                 </Link>
-              ))}
-            </div>
-          </section>
+              </nav>
+              <h1 className="mt-4 text-3xl leading-tight md:text-4xl">{guide.title}</h1>
+              <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{guide.deck}</p>
+              <div className="mt-5 text-sm text-[color:var(--color-text-muted)]">
+                Last updated{" "}
+                <time dateTime={guide.lastUpdated}>{formatDate(guide.lastUpdated)}</time>
+              </div>
+              <div className="mt-6">
+                <ShareRow url={url} title={guide.title} />
+              </div>
+            </header>
 
-          <div className="mx-auto max-w-[820px] px-5 pb-14 md:px-8">
-            <GuideFaqSection items={guide.faq} />
+            {guide.body.length > 0 && (
+              <div className="mx-auto max-w-[820px] px-5 pb-10 md:px-8">
+                <ArticleBody blocks={guide.body} />
+              </div>
+            )}
+
+            <section className="mx-auto max-w-[820px] px-5 pb-10 md:px-8">
+              <h2 className="text-2xl">In this guide</h2>
+              <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                {articles.map((a) => (
+                  <Link
+                    key={a.slug}
+                    to="/guides/$guide/$slug"
+                    params={{ guide: guide.slug, slug: a.slug }}
+                    className="flex flex-col gap-2 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                  >
+                    <h3 className="text-base leading-snug">{a.title}</h3>
+                    <p className="text-sm text-[color:var(--color-text-secondary)]">{a.deck}</p>
+                    <div className="mt-1 flex items-center gap-2 text-xs text-[color:var(--color-text-muted)]">
+                      <span>{a.readTime}</span>
+                      <span aria-hidden>·</span>
+                      <span>Last updated {formatDate(a.lastUpdated)}</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+
+            <div className="mx-auto max-w-[820px] px-5 pb-14 md:px-8">
+              <GuideFaqSection items={guide.faq} />
+            </div>
           </div>
         </article>
 

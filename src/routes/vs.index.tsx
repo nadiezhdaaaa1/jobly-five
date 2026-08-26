@@ -53,29 +53,37 @@ function VsIndex() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <section className="mx-auto max-w-[1200px] px-5 pt-12 pb-8 md:px-8 md:pt-16">
-          <h1 className="text-3xl leading-tight md:text-4xl">Compare Jobly</h1>
-          <p className="mt-3 max-w-[680px] text-lg text-[color:var(--color-text-secondary)]">
-            Honest, feature-by-feature comparisons with the tools people use to look for work.
-          </p>
+        <section className="bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pt-12 pb-8 md:px-8 md:pt-16">
+              <h1 className="text-3xl leading-tight md:text-4xl">Compare Jobly</h1>
+              <p className="mt-3 max-w-[680px] text-lg text-[color:var(--color-text-secondary)]">
+                Honest, feature-by-feature comparisons with the tools people use to look for work.
+              </p>
+            </div>
+          </div>
         </section>
 
-        <section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {VS_PAGES.map((p) => (
-              <Link
-                key={p.slug}
-                to="/vs/$competitor"
-                params={{ competitor: p.slug }}
-                className="flex flex-col gap-3 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-              >
-                <h2 className="text-lg leading-snug">{p.title}</h2>
-                <p className="text-sm text-[color:var(--color-text-secondary)]">{p.deck}</p>
-                <div className="mt-auto text-xs text-[color:var(--color-text-muted)]">
-                  Last updated {formatDate(p.lastUpdated)}
-                </div>
-              </Link>
-            ))}
+        <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {VS_PAGES.map((p) => (
+                  <Link
+                    key={p.slug}
+                    to="/vs/$competitor"
+                    params={{ competitor: p.slug }}
+                    className="flex flex-col gap-3 rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                  >
+                    <h2 className="text-lg leading-snug">{p.title}</h2>
+                    <p className="text-sm text-[color:var(--color-text-secondary)]">{p.deck}</p>
+                    <div className="mt-auto text-xs text-[color:var(--color-text-muted)]">
+                      Last updated {formatDate(p.lastUpdated)}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

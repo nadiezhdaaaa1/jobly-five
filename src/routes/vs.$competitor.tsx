@@ -91,17 +91,21 @@ function VsNotFound() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
-      <main className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
-        <h1 className="text-3xl">Comparison not found</h1>
-        <p className="mt-2 text-[color:var(--color-text-secondary)]">
-          The page you're looking for may have moved or been removed.
-        </p>
-        <Link
-          to="/vs"
-          className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
-        >
-          Back to comparisons
-        </Link>
+      <main className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+        <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+          <div className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
+            <h1 className="text-3xl">Comparison not found</h1>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              The page you're looking for may have moved or been removed.
+            </p>
+            <Link
+              to="/vs"
+              className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
+            >
+              Back to comparisons
+            </Link>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
@@ -116,55 +120,57 @@ function VsPageRoute() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <article>
-          <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
-              <Link to="/vs" className="text-[color:var(--color-green)] hover:underline">
-                Compare
-              </Link>
-            </nav>
-            <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{page.title}</h1>
-            <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{page.deck}</p>
-            <div className="mt-5 text-sm text-[color:var(--color-text-muted)]">
-              Last updated <time dateTime={page.lastUpdated}>{formatDate(page.lastUpdated)}</time>
-            </div>
-            <div className="mt-6">
-              <ShareRow url={url} title={page.title} />
-            </div>
-          </header>
-
-          <div className="mx-auto max-w-[820px] px-5 py-6 md:px-8 md:py-10">
-            <ComparisonTable rows={page.comparison} competitorName={page.competitorName} />
-
-            <div className={page.comparison.length > 0 ? "mt-12" : undefined}>
-              <ArticleBody blocks={page.body} />
-            </div>
-
-            <div className="mx-auto mt-10 max-w-[680px] rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
-              <p className="text-sm text-[color:var(--color-text-secondary)]">
-                See how Jobly stacks up against other tools in{" "}
+        <article className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
                 <Link to="/vs" className="text-[color:var(--color-green)] hover:underline">
-                  all comparisons
+                  Compare
                 </Link>
-                .
-              </p>
-              <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
-                {others.map((o) => (
-                  <li key={o.slug}>
-                    <Link
-                      to="/vs/$competitor"
-                      params={{ competitor: o.slug }}
-                      className="text-[color:var(--color-green)] hover:underline"
-                    >
-                      {o.title}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              </nav>
+              <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{page.title}</h1>
+              <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{page.deck}</p>
+              <div className="mt-5 text-sm text-[color:var(--color-text-muted)]">
+                Last updated <time dateTime={page.lastUpdated}>{formatDate(page.lastUpdated)}</time>
+              </div>
+              <div className="mt-6">
+                <ShareRow url={url} title={page.title} />
+              </div>
+            </header>
 
-            <div className="mt-12">
-              <GuideFaqSection items={page.faq} />
+            <div className="mx-auto max-w-[820px] px-5 py-6 md:px-8 md:py-10">
+              <ComparisonTable rows={page.comparison} competitorName={page.competitorName} />
+
+              <div className={page.comparison.length > 0 ? "mt-12" : undefined}>
+                <ArticleBody blocks={page.body} />
+              </div>
+
+              <div className="mx-auto mt-10 max-w-[680px] rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+                <p className="text-sm text-[color:var(--color-text-secondary)]">
+                  See how Jobly stacks up against other tools in{" "}
+                  <Link to="/vs" className="text-[color:var(--color-green)] hover:underline">
+                    all comparisons
+                  </Link>
+                  .
+                </p>
+                <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
+                  {others.map((o) => (
+                    <li key={o.slug}>
+                      <Link
+                        to="/vs/$competitor"
+                        params={{ competitor: o.slug }}
+                        className="text-[color:var(--color-green)] hover:underline"
+                      >
+                        {o.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-12">
+                <GuideFaqSection items={page.faq} />
+              </div>
             </div>
           </div>
         </article>
