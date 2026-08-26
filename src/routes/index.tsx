@@ -904,13 +904,10 @@ function FeatureCards() {
   );
 }
 
-function ScoreBar({ label, value }: { label: string; value: number }) {
+function ScoreBar({ labelWidth, value }: { labelWidth: string; value: number }) {
   return (
-    <div>
-      <div className="flex items-center justify-between text-xs">
-        <span className="text-[color:var(--color-text-secondary)]">{label}</span>
-        <span className="text-[color:var(--color-green)]">{value}%</span>
-      </div>
+    <div aria-hidden>
+      <div className="h-1.5 rounded-[4px] bg-[color:var(--color-border)]" style={{ width: labelWidth }} />
       <div className="mt-1 h-2 overflow-hidden rounded-[4px] border border-[color:var(--color-border-strong)]">
         <div
           className="h-full bg-[color:var(--color-green)]"
@@ -920,6 +917,7 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
     </div>
   );
 }
+
 
 /* -------------------------- Quality over quantity -------------------------- */
 
