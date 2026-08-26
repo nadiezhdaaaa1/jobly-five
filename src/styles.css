@@ -206,9 +206,12 @@
     font-weight: 200;
   }
 
+  /* Headline ships both 300 (Light) and 400 (Regular), so 400 is stated
+   * explicitly here: it is the weight every heading already renders at, and
+   * Light is opt-in per element (add `font-light`) rather than site-wide. */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: -0.01em;
   }
 }
