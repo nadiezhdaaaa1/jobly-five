@@ -44,7 +44,7 @@ function placeholder(
   return {
     slug,
     competitorName,
-    footerLabel: `Jobly & ${competitorName}`,
+    footerLabel: `Jobly vs ${competitorName}`,
     title: `Jobly vs ${competitorName}`,
     deck: `Placeholder deck — the full Jobly vs ${competitorName} comparison is being written.`,
     published: false,
