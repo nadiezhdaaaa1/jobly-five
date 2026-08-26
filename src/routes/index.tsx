@@ -646,7 +646,7 @@ const ROW_DURATIONS = ["64s", "62s", "55s"];
 
 function ChipMarquee() {
   return (
-    <div className="relative mt-[57px] pb-12">
+    <div className="relative mt-[57px] pb-12 md:pb-20">
       {chipRows.map((row, i) => (
         <div key={i} className={`overflow-hidden ${i > 0 ? "mt-4" : ""}`}>
           <div
