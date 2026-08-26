@@ -132,7 +132,7 @@ export function MatchSphere({ className }: { className?: string }) {
         const depth = (p.z + 1) / 2; // 0 back, 1 front
         if (p.pick) {
           // Luminous node: soft halo behind a solid core.
-          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 11);
+          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
           halo.addColorStop(0, pickColor);
           halo.addColorStop(1, "transparent");
           ctx.globalAlpha = 0.28 * (0.5 + 0.5 * depth);
