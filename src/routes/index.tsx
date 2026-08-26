@@ -540,29 +540,30 @@ function JobSearchBroken() {
           </p>
 
           <div className="mt-10 flex flex-col rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
-            {items.map((it, i) => (
-              <>
-                {i > 0 ? (
-                  <div
-                    key={`div-${it.title}`}
-                    aria-hidden
-                    className="hidden w-px self-stretch bg-[color:var(--color-border)] md:block"
-                  />
-                ) : null}
-                <div key={it.title} className="flex flex-1 flex-col gap-3 p-10">
-                  <div className="flex flex-col gap-3">
-                    <img src={it.img} alt="" className="size-14 object-contain" />
-                    <h3
-                      className="text-xl font-light leading-7"
-                      style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}
-                    >
-                      {it.title}
-                    </h3>
-                  </div>
-                  <p className="text-sm leading-5 text-[color:var(--color-text-secondary)]">{it.body}</p>
+            {items.flatMap((it, i) => [
+              ...(i > 0
+                ? [
+                    <div
+                      key={`div-${it.title}`}
+                      aria-hidden
+                      className="hidden w-px self-stretch bg-[color:var(--color-border)] md:block"
+                    />,
+                  ]
+                : []),
+              <div key={it.title} className="flex flex-1 flex-col gap-3 p-10">
+                <div className="flex flex-col gap-3">
+                  <img src={it.img} alt="" className="size-14 object-contain" />
+                  <h3
+                    className="text-xl font-light leading-7"
+                    style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}
+                  >
+                    {it.title}
+                  </h3>
                 </div>
-              </>
-            ))}
+                <p className="text-sm leading-5 text-[color:var(--color-text-secondary)]">{it.body}</p>
+              </div>,
+            ])}
+
           </div>
         </div>
 
