@@ -381,7 +381,7 @@ function TimeToOffer() {
 
         <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-12 md:flex-row md:items-center md:gap-4 md:px-8 md:py-20">
           <p
-            className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[40px]"
+            className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
           >
             12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
