@@ -13,11 +13,26 @@ interface SitemapEntry {
   priority?: string;
 }
 
+function latestLastmod(dates: string[]): string | undefined {
+  return dates.length > 0 ? dates.slice().sort().at(-1) : undefined;
+}
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
+        // Section hubs are listed only once at least one of their children is published.
+        const publishedGuides = GUIDES.filter((g) => g.published);
+        const publishedGuideArticles = GUIDE_ARTICLES.filter((a) => a.published);
+        const publishedVs = VS_PAGES.filter((p) => p.published);
+        const guidesLastmod = latestLastmod([
+          ...publishedGuides.map((g) => g.lastUpdated),
+          ...publishedGuideArticles.map((a) => a.lastUpdated),
+        ]);
+        const vsLastmod = latestLastmod(publishedVs.map((p) => p.lastUpdated));
+
         const entries: SitemapEntry[] = [
+
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/blog", changefreq: "weekly", priority: "0.8" },
           { path: "/contact", changefreq: "monthly", priority: "0.6" },
@@ -36,24 +51,31 @@ export const Route = createFileRoute("/sitemap.xml")({
             priority: "0.7",
           })),
           // Guides + comparison pages appear automatically once `published` flips to true.
-          ...GUIDES.filter((g) => g.published).map((g) => ({
+          ...(guidesLastmod
+            ? [{ path: "/guides", lastmod: guidesLastmod, changefreq: "weekly" as const, priority: "0.8" }]
+            : []),
+          ...publishedGuides.map((g) => ({
             path: `/guides/${g.slug}`,
             lastmod: g.lastUpdated,
             changefreq: "monthly" as const,
             priority: "0.7",
           })),
-          ...GUIDE_ARTICLES.filter((a) => a.published).map((a) => ({
+          ...publishedGuideArticles.map((a) => ({
             path: `/guides/${a.guide}/${a.slug}`,
             lastmod: a.lastUpdated,
             changefreq: "monthly" as const,
             priority: "0.6",
           })),
-          ...VS_PAGES.filter((p) => p.published).map((p) => ({
+          ...(vsLastmod
+            ? [{ path: "/vs", lastmod: vsLastmod, changefreq: "weekly" as const, priority: "0.8" }]
+            : []),
+          ...publishedVs.map((p) => ({
             path: `/vs/${p.slug}`,
             lastmod: p.lastUpdated,
             changefreq: "monthly" as const,
             priority: "0.6",
           })),
+
         ];
 
         const urls = entries.map((e) =>
