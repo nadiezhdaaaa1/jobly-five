@@ -35,6 +35,8 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedResumeRouteImport } from './routes/_authenticated/resume'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as GuidesGuideIndexRouteImport } from './routes/guides.$guide.index'
+import { Route as GuidesGuideSlugRouteImport } from './routes/guides.$guide.$slug'
 import { Route as ApiPublicHooksUnsubscribeRouteImport } from './routes/api/public/hooks/unsubscribe'
 import { Route as ApiPublicHooksSweepResumeOrphansRouteImport } from './routes/api/public/hooks/sweep-resume-orphans'
 import { Route as ApiPublicHooksQuizDraftSaveRouteImport } from './routes/api/public/hooks/quiz-draft-save'
@@ -172,6 +174,16 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const GuidesGuideIndexRoute = GuidesGuideIndexRouteImport.update({
+  id: '/guides/$guide/',
+  path: '/guides/$guide/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesGuideSlugRoute = GuidesGuideSlugRouteImport.update({
+  id: '/guides/$guide/$slug',
+  path: '/guides/$guide/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksUnsubscribeRoute =
   ApiPublicHooksUnsubscribeRouteImport.update({
     id: '/api/public/hooks/unsubscribe',
@@ -241,6 +253,8 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
+  '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -275,6 +289,8 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
   '/guides': typeof GuidesIndexRoute
+  '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
+  '/guides/$guide': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -311,6 +327,8 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
+  '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -347,6 +365,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/guides/'
+    | '/guides/$guide/$slug'
+    | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -381,6 +401,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog'
     | '/guides'
+    | '/guides/$guide/$slug'
+    | '/guides/$guide'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -416,6 +438,8 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/guides/'
+    | '/guides/$guide/$slug'
+    | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -447,6 +471,8 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
+  GuidesGuideSlugRoute: typeof GuidesGuideSlugRoute
+  GuidesGuideIndexRoute: typeof GuidesGuideIndexRoute
   ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
   ApiPublicHooksPostmarkWebhookRoute: typeof ApiPublicHooksPostmarkWebhookRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -640,6 +666,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/guides/$guide/': {
+      id: '/guides/$guide/'
+      path: '/guides/$guide'
+      fullPath: '/guides/$guide/'
+      preLoaderRoute: typeof GuidesGuideIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/$guide/$slug': {
+      id: '/guides/$guide/$slug'
+      path: '/guides/$guide/$slug'
+      fullPath: '/guides/$guide/$slug'
+      preLoaderRoute: typeof GuidesGuideSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/unsubscribe': {
       id: '/api/public/hooks/unsubscribe'
       path: '/api/public/hooks/unsubscribe'
@@ -733,6 +773,8 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   BlogIndexRoute: BlogIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
+  GuidesGuideSlugRoute: GuidesGuideSlugRoute,
+  GuidesGuideIndexRoute: GuidesGuideIndexRoute,
   ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
   ApiPublicHooksPostmarkWebhookRoute: ApiPublicHooksPostmarkWebhookRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
