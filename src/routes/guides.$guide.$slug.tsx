@@ -52,7 +52,12 @@ export const Route = createFileRoute("/guides/$guide/$slug")({
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: ORIGIN },
             { "@type": "ListItem", position: 2, name: "Guides", item: `${ORIGIN}/guides` },
-            { "@type": "ListItem", position: 3, name: guide.title, item: `${ORIGIN}/guides/${guide.slug}` },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: guide.title,
+              item: `${ORIGIN}/guides/${guide.slug}`,
+            },
             { "@type": "ListItem", position: 4, name: article.title, item: url },
           ],
         }),
@@ -98,17 +103,21 @@ function ArticleNotFound() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
-      <main className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
-        <h1 className="text-3xl">Article not found</h1>
-        <p className="mt-2 text-[color:var(--color-text-secondary)]">
-          The page you're looking for may have moved or been removed.
-        </p>
-        <Link
-          to="/guides"
-          className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
-        >
-          Back to guides
-        </Link>
+      <main className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+        <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+          <div className="mx-auto max-w-[680px] px-5 py-24 text-center md:px-8">
+            <h1 className="text-3xl">Article not found</h1>
+            <p className="mt-2 text-[color:var(--color-text-secondary)]">
+              The page you're looking for may have moved or been removed.
+            </p>
+            <Link
+              to="/guides"
+              className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
+            >
+              Back to guides
+            </Link>
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
@@ -117,7 +126,10 @@ function ArticleNotFound() {
 
 function buildToc(article: GuideArticle): TocItem[] {
   return article.body
-    .filter((b): b is Extract<GuideArticle["body"][number], { type: "h2" | "h3" }> => b.type === "h2" || b.type === "h3")
+    .filter(
+      (b): b is Extract<GuideArticle["body"][number], { type: "h2" | "h3" }> =>
+        b.type === "h2" || b.type === "h3",
+    )
     .map((b) => ({ id: slugifyHeading(b.text), text: b.text, level: b.type === "h2" ? 2 : 3 }));
 }
 
@@ -130,74 +142,79 @@ function GuideArticlePage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <article>
-          <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-            <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
-              <Link to="/guides" className="text-[color:var(--color-green)] hover:underline">
-                Guides
-              </Link>
-              <span aria-hidden className="text-[color:var(--color-text-muted)]">
-                /
-              </span>
-              <Link
-                to="/guides/$guide"
-                params={{ guide: guide.slug }}
-                className="text-[color:var(--color-green)] hover:underline"
-              >
-                {guide.title}
-              </Link>
-            </nav>
-            <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{article.title}</h1>
-            <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">{article.deck}</p>
-            <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-[color:var(--color-text-muted)]">
-              <span>{article.readTime}</span>
-              <span aria-hidden>·</span>
-              <span>
-                Last updated <time dateTime={article.lastUpdated}>{formatDate(article.lastUpdated)}</time>
-              </span>
-            </div>
-            <div className="mt-6">
-              <ShareRow url={url} title={article.title} />
-            </div>
-          </header>
+        <article className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <header className="mx-auto max-w-[820px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm">
+                <Link to="/guides" className="text-[color:var(--color-green)] hover:underline">
+                  Guides
+                </Link>
+                <span aria-hidden className="text-[color:var(--color-text-muted)]">
+                  /
+                </span>
+                <Link
+                  to="/guides/$guide"
+                  params={{ guide: guide.slug }}
+                  className="text-[color:var(--color-green)] hover:underline"
+                >
+                  {guide.title}
+                </Link>
+              </nav>
+              <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{article.title}</h1>
+              <p className="mt-3 text-lg text-[color:var(--color-text-secondary)]">
+                {article.deck}
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-[color:var(--color-text-muted)]">
+                <span>{article.readTime}</span>
+                <span aria-hidden>·</span>
+                <span>
+                  Last updated{" "}
+                  <time dateTime={article.lastUpdated}>{formatDate(article.lastUpdated)}</time>
+                </span>
+              </div>
+              <div className="mt-6">
+                <ShareRow url={url} title={article.title} />
+              </div>
+            </header>
 
-          <div className="mx-auto max-w-[1200px] px-5 py-6 md:px-8 md:py-10">
-            <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
-              <TableOfContents items={toc} />
-              <div className="min-w-0">
-                <ArticleBody blocks={article.body} />
+            <div className="mx-auto max-w-[1200px] px-5 py-6 md:px-8 md:py-10">
+              <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
+                <TableOfContents items={toc} />
+                <div className="min-w-0">
+                  <ArticleBody blocks={article.body} />
 
-                <div className="mx-auto mt-10 max-w-[680px] rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
-                  <p className="text-sm text-[color:var(--color-text-secondary)]">
-                    This article is part of the{" "}
-                    <Link
-                      to="/guides/$guide"
-                      params={{ guide: guide.slug }}
-                      className="text-[color:var(--color-green)] hover:underline"
-                    >
-                      {guide.title}
-                    </Link>
-                    .
-                  </p>
-                  {siblings.length > 0 && (
-                    <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
-                      {siblings.map((s) => (
-                        <li key={s.slug}>
-                          <Link
-                            to="/guides/$guide/$slug"
-                            params={{ guide: guide.slug, slug: s.slug }}
-                            className="text-[color:var(--color-green)] hover:underline"
-                          >
-                            {s.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                  <div className="mx-auto mt-10 max-w-[680px] rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+                    <p className="text-sm text-[color:var(--color-text-secondary)]">
+                      This article is part of the{" "}
+                      <Link
+                        to="/guides/$guide"
+                        params={{ guide: guide.slug }}
+                        className="text-[color:var(--color-green)] hover:underline"
+                      >
+                        {guide.title}
+                      </Link>
+                      .
+                    </p>
+                    {siblings.length > 0 && (
+                      <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm">
+                        {siblings.map((s) => (
+                          <li key={s.slug}>
+                            <Link
+                              to="/guides/$guide/$slug"
+                              params={{ guide: guide.slug, slug: s.slug }}
+                              className="text-[color:var(--color-green)] hover:underline"
+                            >
+                              {s.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
 
-                <div className="mt-12">
-                  <GuideFaqSection items={article.faq} />
+                  <div className="mt-12">
+                    <GuideFaqSection items={article.faq} />
+                  </div>
                 </div>
               </div>
             </div>
