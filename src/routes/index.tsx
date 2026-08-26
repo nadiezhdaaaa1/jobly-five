@@ -1123,9 +1123,9 @@ function Pricing() {
               bottom: 8,
               left: indicator.left,
               width: indicator.width,
-              background: "#FFFFFF",
-              border: "1px solid #E3E7E8",
-              borderRadius: 8,
+              background: "rgba(255, 255, 255, 0.8)",
+              border: "1px solid #FFFFFF",
+              borderRadius: 6,
               boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
               transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
