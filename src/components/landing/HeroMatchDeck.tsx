@@ -98,7 +98,7 @@ function MatchCard({
           </p>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-4">
+      <div className="mt-5 grid grid-cols-3 gap-2 border-t border-[color:var(--color-border)] pt-5">
         {match.scores.map((s, i) => (
           // Re-keying on arrival at the front slot replays the draw + count-up.
           <ScoreRing
