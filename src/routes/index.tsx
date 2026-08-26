@@ -835,15 +835,18 @@ function FeatureCards() {
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
             <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
               <div className="flex items-center justify-between">
-                <span className="h-2 w-[45%] rounded-[4px] bg-[color:var(--color-border)]" aria-hidden />
-                <span className="h-4 w-10 rounded-[4px] bg-[color:var(--color-green)]" aria-hidden />
+                <span className="text-sm text-[color:var(--color-text-secondary)]">Senior Frontend Engineer</span>
+                <span className="rounded-[4px] border border-[color:var(--color-green)] px-2 py-0.5 text-xs font-medium text-[color:var(--color-green)]">
+                  94%
+                </span>
               </div>
               <div className="mt-4 space-y-3">
-                <ScoreBar labelWidth="62%" value={96} />
-                <ScoreBar labelWidth="40%" value={100} />
-                <ScoreBar labelWidth="52%" value={88} />
-                <ScoreBar labelWidth="34%" value={82} />
+                <ScoreBar label="React and TypeScript" value={96} />
+                <ScoreBar label="Remote / US" value={100} />
+                <ScoreBar label="Salary band" value={88} />
+                <ScoreBar label="Company size" value={82} />
               </div>
+
 
             </div>
           </div>
