@@ -319,30 +319,36 @@ function InboxToOffer() {
   return (
     <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="offer">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div className="flex flex-col gap-4 md:flex-row md:items-baseline md:justify-between">
-          <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-            From inbox to offer
-          </h2>
-          <h4 className="text-xl md:text-2xl" style={{ fontFamily: "var(--font-display)" }}>
-            <span className="text-[color:var(--color-foreground)]">12 days</span>{" "}
-            <span className="text-[color:var(--color-text-secondary)]">average time to offer</span>
-          </h4>
-        </div>
+        <h2
+          className="text-3xl leading-10 md:text-4xl"
+          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+        >
+          From inbox to offer
+        </h2>
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="relative h-[520px] overflow-hidden rounded-xl bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+              className="group relative h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
             >
-              <img src={t.photo} alt={t.name} loading="lazy" decoding="async" className="h-full w-full object-cover" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/50 to-transparent p-8">
-                <h5 className="text-xl">"{t.quote}"</h5>
-                <p className="body-medium mt-3 opacity-80">
+              <img
+                src={t.photo}
+                alt={t.name}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-[1.036] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              />
+              <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/85 via-black/50 via-50% to-transparent p-6 backdrop-blur-[12px] md:p-10">
+                <h5 className="text-[22px] leading-[1.4]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
+                  "{t.quote}"
+                </h5>
+                <p className="mt-3 text-base leading-6 opacity-80">
                   {t.name} · {t.role}
                 </p>
               </div>
             </article>
           ))}
+
         </div>
       </div>
     </section>
