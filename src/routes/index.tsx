@@ -713,8 +713,8 @@ function HowCard({
 }) {
   return (
     <div
-      className="group relative z-0 grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px] md:h-[400px]"
-      style={{ border: "1px solid var(--color-border-strong)", backgroundColor: "var(--color-border)" }}
+      className="group relative z-0 grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px] lg:h-[400px]"
+      style={{ border: "1px solid var(--color-border-strong)", backgroundColor: "var(--color-surface-2)" }}
     >
       <div className="pt-6 pr-6 pl-6 pb-0 md:pt-8 md:pr-8 md:pl-8">
         <div className="flex flex-col gap-3">
