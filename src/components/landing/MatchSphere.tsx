@@ -107,7 +107,9 @@ export function MatchSphere({ className }: { className?: string }) {
     };
 
     resize();
-    request();
+    // Paint one frame synchronously so a still sphere is always present, even
+    // under reduced motion or if an observer cancels the first rAF.
+    draw(performance.now());
 
     const ro = new ResizeObserver(onResize);
     ro.observe(canvas);
