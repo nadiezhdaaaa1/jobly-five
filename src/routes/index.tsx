@@ -376,7 +376,7 @@ function TimeToOffer() {
           <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--color-deep-teal)] to-transparent to-50%" />
         </div>
 
-        <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-12 md:flex-row md:items-center md:gap-4 md:px-8 md:py-20">
+        <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-16 md:flex-row md:items-center md:gap-4 md:px-8 md:py-24">
           <p
             className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
@@ -405,7 +405,7 @@ function OfficialApis() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
           <h2
             className="text-center text-3xl font-light leading-10 md:text-4xl"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
