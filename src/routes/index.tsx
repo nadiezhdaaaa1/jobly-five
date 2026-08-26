@@ -833,7 +833,7 @@ function FeatureCards() {
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
-          <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
+          <p className="mt-2 pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
           <div
@@ -863,7 +863,7 @@ function FeatureCards() {
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
-          <p className="mt-2 max-w-md text-sm text-[color:var(--color-text-secondary)]">
+          <p className="mt-2 pr-[120px] text-sm text-[color:var(--color-text-secondary)]">
             Say goodbye to chaotic spreadsheets. We automatically detect when you apply and help coordinate follow-ups.
           </p>
           <div
@@ -948,9 +948,9 @@ function QualityOverQuantity() {
               style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
             >
               <span className="text-[color:var(--color-green)]">5 right matches</span>{" "}
-              <span className="text-[color:var(--color-text-secondary)]">beat a 100 blind applications</span>
+              <span>beat a 100 blind applications</span>
             </h2>
-            <p className="mt-3 max-w-[640px] leading-6 text-[color:var(--color-text-secondary)]">
+            <p className="mt-5 max-w-[640px] leading-6 text-[color:var(--color-text-secondary)]">
               Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility.
             </p>
           </div>
