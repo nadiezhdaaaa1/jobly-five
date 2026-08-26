@@ -629,7 +629,7 @@ function ChipGroup({ row, hidden }: { row: ChipDef[]; hidden?: boolean }) {
       {row.map((chip, j) => (
         <span
           key={`${chip.title}-${j}`}
-          className="inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border-[0.5px] border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-2 text-sm leading-5 text-[color:var(--color-foreground)]"
+          className="inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2 text-sm leading-5 text-[color:var(--color-foreground)]"
         >
           <chip.icon size={14} className="text-[color:var(--color-text-secondary)]" />
           <span>{chip.title}</span>
