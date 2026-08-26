@@ -949,7 +949,7 @@ function QualityOverQuantity() {
             </p>
           </div>
         </div>
-        <MatchSphere className="block h-[300px] w-full md:h-[380px] lg:h-[440px]" />
+        <MatchSphere className="block h-[360px] w-full md:h-[460px] lg:h-[600px]" />
       </div>
     </section>
   );

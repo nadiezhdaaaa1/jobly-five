@@ -4,6 +4,10 @@ import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 const DOT_COUNT = 2600;
 const PICK_COUNT = 5;
+/** Where the picks sit, as a fraction of the Fibonacci sequence. Index maps to
+ *  latitude with 0 at the north pole, so this band is roughly y = +0.79 down
+ *  to +0.37 — the upper part of the sphere. */
+const PICK_BAND = [0.08, 0.34];
 /** Sphere radius as a fraction of the canvas's short side. */
 const RADIUS_RATIO = 0.46;
 /** Inclination, radius multiplier and drift speed for each orbital ring. */
@@ -40,9 +44,10 @@ export function MatchSphere({ className }: { className?: string }) {
     // The five picks, spread evenly through the sequence so they sit at
     // different latitudes and never bunch together.
     const picks = new Set(
-      Array.from({ length: PICK_COUNT }, (_, k) =>
-        Math.round(((k + 0.5) / PICK_COUNT) * (DOT_COUNT - 1)),
-      ),
+      Array.from({ length: PICK_COUNT }, (_, k) => {
+        const f = PICK_BAND[0] + ((k + 0.5) / PICK_COUNT) * (PICK_BAND[1] - PICK_BAND[0]);
+        return Math.round(f * (DOT_COUNT - 1));
+      }),
     );
 
     const styles = getComputedStyle(document.documentElement);
