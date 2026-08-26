@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IconChevronDown as ChevronDown } from "@tabler/icons-react";
 
-const faqs = [
+export const faqs = [
   {
     q: "What is Jobly?",
     a: "Jobly is an email-first job discovery service for tech candidates. You fill out a short profile once and receive five ranked, AI-scored matches in your inbox — daily on Pro, weekly on Free.",
