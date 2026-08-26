@@ -318,6 +318,7 @@ const testimonials = [
 function InboxToOffer() {
   return (
     <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="offer">
+      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
       <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
         <h2
           className="text-3xl leading-10 md:text-4xl"
@@ -343,11 +344,11 @@ function InboxToOffer() {
                 className="testimonial-scrim-blur pointer-events-none absolute inset-x-0 bottom-0 h-[280px] backdrop-blur-[12px]"
                 aria-hidden="true"
               />
-              <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/85 via-black/50 via-50% to-transparent p-6 md:p-10">
-                <h5 className="text-[22px] font-light leading-[1.4]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
+              <div className="absolute inset-x-0 bottom-0 flex h-[280px] flex-col justify-end bg-gradient-to-t from-black/90 via-black/60 via-50% to-transparent p-6 md:p-10">
+                <h5 className="text-[18px] font-light leading-[1.6]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
                   "{t.quote}"
                 </h5>
-                <p className="mt-3 text-base leading-6 opacity-80">
+                <p className="mt-5 text-base leading-6 opacity-80">
                   {t.name} · {t.role}
                 </p>
               </div>
@@ -355,6 +356,7 @@ function InboxToOffer() {
           ))}
 
         </div>
+      </div>
       </div>
     </section>
   );
