@@ -3,7 +3,7 @@ import { slugifyHeading } from "../../lib/blog-data";
 
 export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
   return (
-    <div className="mx-auto max-w-[680px]">
+    <div className="mx-auto max-w-[680px] [&>*:first-child]:mt-0">
       {blocks.map((b, i) => {
         switch (b.type) {
           case "h2": {
@@ -32,7 +32,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "ul":
             return (
-              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 text-[color:var(--color-foreground)]">
+              <ul key={i} className="mt-4 list-disc space-y-4 pl-6 text-[color:var(--color-foreground)]">
                 {b.items.map((it, j) => (
                   <li key={j} className="leading-7">
                     {it}
