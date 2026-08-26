@@ -821,7 +821,8 @@ function InboxRow({
 function FeatureCards() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
-      <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
+      <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
+        <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
         <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
@@ -902,6 +903,7 @@ function FeatureCards() {
             </div>
           </div>
 
+        </div>
         </div>
       </div>
     </section>
