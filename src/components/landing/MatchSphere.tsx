@@ -5,9 +5,10 @@ import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 const DOT_COUNT = 2600;
 const PICK_COUNT = 5;
 /** Where the picks sit, as a fraction of the Fibonacci sequence. Index maps to
- *  latitude with 0 at the north pole, so this band is roughly y = +0.79 down
- *  to +0.37 — the upper part of the sphere. */
-const PICK_BAND = [0.08, 0.34];
+ *  latitude, and the projection adds the latitude term downward in canvas space,
+ *  so low indices land low on screen. This band is the upper part of the sphere
+ *  as rendered (verified on screen, not by sequence order). */
+const PICK_BAND = [0.66, 0.92];
 /** Sphere radius as a fraction of the canvas's short side. */
 const RADIUS_RATIO = 0.46;
 /** Inclination, radius multiplier and drift speed for each orbital ring. */
