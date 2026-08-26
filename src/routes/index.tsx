@@ -11,6 +11,7 @@ import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
+import { ShaderBackground } from "../components/landing/ShaderBackground";
 
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
 import {
@@ -127,6 +128,7 @@ function Landing() {
       <main>
         <Hero />
         <InboxToOffer />
+        <TimeToOffer />
         <OfficialApis />
         <JobSearchBroken />
         <HowItWorks />
@@ -361,6 +363,42 @@ function InboxToOffer() {
     </section>
   );
 }
+
+/* ------------------------- Time to offer CTA band ------------------------- */
+
+function TimeToOffer() {
+  return (
+    <section className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+      <div className="relative overflow-hidden border-[color:var(--color-border)] bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
+        {/* Right-side shader, fading into the panel colour toward the centre. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-[calc(50%+14px)] h-[358px] w-[680px] -translate-y-1/2"
+        >
+          <ShaderBackground className="absolute inset-0 h-full w-full" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--color-deep-teal)] to-transparent to-50%" />
+        </div>
+
+        <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-12 md:flex-row md:items-center md:gap-4 md:px-8 md:py-20">
+          <p
+            className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[40px]"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
+          </p>
+          <Link
+            to="/quiz"
+            className="inline-flex h-12 shrink-0 items-center self-start rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] md:self-auto"
+          >
+            Start your search
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 
 /* ---------------------------- Official APIs ---------------------------- */
 
