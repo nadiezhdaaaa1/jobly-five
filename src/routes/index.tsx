@@ -329,7 +329,7 @@ function InboxToOffer() {
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="group relative z-0 h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)] transition-[transform,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px]"
+              className="group relative z-0 h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px]"
             >
               <img
                 src={t.photo}
