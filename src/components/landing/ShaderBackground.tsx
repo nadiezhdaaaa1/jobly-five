@@ -257,5 +257,7 @@ export function ShaderBackground({ className }: { className?: string }) {
     };
   }, [reduced]);
 
-  return <canvas ref={canvasRef} className={className} aria-hidden="true" />;
+  // Keyed on `reduced`: cleanup releases the GL context via WEBGL_lose_context, and a
+  // canvas whose context was lost cannot hand out a fresh one — so remount the element.
+  return <canvas key={reduced ? "still" : "animated"} ref={canvasRef} className={className} aria-hidden="true" />;
 }
