@@ -90,9 +90,11 @@ export function MatchSphere({ className }: { className?: string }) {
       const tilt = -0.24;
       const ct = Math.cos(tilt);
       const st = Math.sin(tilt);
-      const radius = Math.min(width, height) * RADIUS_RATIO;
+      const radius = Math.min(height * RADIUS_RATIO, width * MAX_WIDTH_RATIO);
       const ox = width / 2;
-      const oy = height / 2;
+      // The sphere is taller than the band: its centre sits below the canvas so
+      // only the upper cap shows, cropped by the section's bottom edge.
+      const oy = radius + TOP_INSET;
 
       ctx.clearRect(0, 0, width, height);
 
