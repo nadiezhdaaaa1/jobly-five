@@ -32,7 +32,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "ul":
             return (
-              <ul key={i} className="mt-4 list-disc space-y-2 pl-6 text-[color:var(--color-foreground)]">
+              <ul key={i} className="mt-4 list-disc space-y-4 pl-6 text-[color:var(--color-foreground)]">
                 {b.items.map((it, j) => (
                   <li key={j} className="leading-7">
                     {it}
