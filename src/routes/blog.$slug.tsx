@@ -168,10 +168,9 @@ function ArticlePage() {
               <div className="grid gap-10 lg:grid-cols-[240px_minmax(0,1fr)]">
                 <TableOfContents items={toc} />
                 <div className="min-w-0">
-                  <div className="mx-auto lg:max-w-[680px]">
-                    <ArticleBody blocks={post.body} />
-                  </div>
+                  <ArticleBody blocks={post.body} />
                 </div>
+
               </div>
             </div>
 
