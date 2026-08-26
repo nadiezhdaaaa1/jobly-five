@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VsIndexRouteImport } from './routes/vs.index'
 import { Route as GuidesIndexRouteImport } from './routes/guides.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
@@ -87,6 +88,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VsIndexRoute = VsIndexRouteImport.update({
+  id: '/vs/',
+  path: '/vs/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuidesIndexRoute = GuidesIndexRouteImport.update({
@@ -253,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -289,6 +296,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/blog': typeof BlogIndexRoute
   '/guides': typeof GuidesIndexRoute
+  '/vs': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -327,6 +335,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/blog/': typeof BlogIndexRoute
   '/guides/': typeof GuidesIndexRoute
+  '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
@@ -365,6 +374,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/guides/'
+    | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
@@ -401,6 +411,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog'
     | '/guides'
+    | '/vs'
     | '/guides/$guide/$slug'
     | '/guides/$guide'
     | '/api/public/hooks/confirm-email'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/blog/'
     | '/guides/'
+    | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
     | '/api/public/hooks/confirm-email'
@@ -471,6 +483,7 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   BlogIndexRoute: typeof BlogIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
+  VsIndexRoute: typeof VsIndexRoute
   GuidesGuideSlugRoute: typeof GuidesGuideSlugRoute
   GuidesGuideIndexRoute: typeof GuidesGuideIndexRoute
   ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
@@ -545,6 +558,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vs/': {
+      id: '/vs/'
+      path: '/vs'
+      fullPath: '/vs/'
+      preLoaderRoute: typeof VsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guides/': {
@@ -773,6 +793,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   BlogIndexRoute: BlogIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
+  VsIndexRoute: VsIndexRoute,
   GuidesGuideSlugRoute: GuidesGuideSlugRoute,
   GuidesGuideIndexRoute: GuidesGuideIndexRoute,
   ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
