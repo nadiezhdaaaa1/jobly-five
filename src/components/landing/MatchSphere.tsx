@@ -138,7 +138,7 @@ export function MatchSphere({ className }: { className?: string }) {
           ctx.globalAlpha = 0.28 * (0.5 + 0.5 * depth);
           ctx.fillStyle = halo;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
           ctx.fill();
           ctx.globalAlpha = 0.55 + 0.45 * depth;
           ctx.fillStyle = pickColor;
