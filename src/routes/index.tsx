@@ -407,11 +407,12 @@ function OfficialApis() {
 
           <div className="relative mt-[72px] overflow-hidden">
             <div className="logo-marquee flex w-max items-center">
-              {[0, 1].map((copy) => (
+              {[0, 1, 2].map((copy) => (
                 <div
                   key={copy}
                   className="flex shrink-0 items-center gap-[76px] pr-[76px]"
-                  aria-hidden={copy === 1}
+                  aria-hidden={copy !== 0}
+
                 >
                   {PARTNER_LOGOS.map((Logo, i) => (
                     <Logo key={i} />
