@@ -75,7 +75,7 @@ function MatchCard({
   reduced: boolean;
 }) {
   return (
-    <div className="w-full rounded-md bg-[color:var(--color-surface-1)] p-4">
+    <div className="w-full rounded-md bg-[color:var(--color-surface-1)] p-7">
       <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
         <span className="inline-flex items-center gap-1.5">
           <Sparkle size={12} className="text-[color:var(--color-green)]" />
