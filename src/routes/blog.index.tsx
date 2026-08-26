@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { CtaBlock } from "../components/site/CtaBlock";
+import { FaqSection } from "../components/site/FaqSection";
 import { BlogCard } from "../components/blog/BlogCard";
 import { CategoryChip } from "../components/blog/CategoryChip";
 import { BLOG_CATEGORIES, BLOG_POSTS } from "../lib/blog-data";
@@ -94,83 +95,103 @@ function BlogListPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <Header />
       <main>
-        <section className="mx-auto max-w-[1200px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
-          <h1 className="text-4xl md:text-5xl">The Jobly blog</h1>
-          <p className="mt-3 max-w-2xl text-[color:var(--color-text-secondary)]">
-            Data, tips, and honest takes on how tech hiring actually works — from the team building your daily digest.
-          </p>
+        <section className="bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pt-12 pb-6 md:px-8 md:pt-16">
+              <h1 className="text-4xl md:text-5xl">The Jobly blog</h1>
+              <p className="mt-3 max-w-2xl text-[color:var(--color-text-secondary)]">
+                Data, tips, and honest takes on how tech hiring actually works — from the team
+                building your daily digest.
+              </p>
 
-          <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-            {["All", ...BLOG_CATEGORIES].map((c) => (
-              <Link
-                key={c}
-                to="/blog"
-                search={c === "All" ? {} : { category: c }}
-                className="focus-visible:outline-none"
+              <div
+                className="mt-8 flex flex-wrap gap-2"
+                role="group"
+                aria-label="Filter by category"
               >
-                <CategoryChip label={c} active={active === c} />
-              </Link>
-            ))}
+                {["All", ...BLOG_CATEGORIES].map((c) => (
+                  <Link
+                    key={c}
+                    to="/blog"
+                    search={c === "All" ? {} : { category: c }}
+                    className="focus-visible:outline-none"
+                  >
+                    <CategoryChip label={c} active={active === c} />
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
-          {shown.length === 0 ? (
-            <p className="py-12 text-center text-[color:var(--color-text-muted)]">Nothing here yet in this category.</p>
-          ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {shown.map((p) => (
-                <BlogCard key={p.slug} post={p} />
-              ))}
-            </div>
-          )}
+        <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
+          <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
+            <div className="mx-auto max-w-[1200px] px-5 pb-16 md:px-8">
+              {shown.length === 0 ? (
+                <p className="py-12 text-center text-[color:var(--color-text-muted)]">
+                  Nothing here yet in this category.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {shown.map((p) => (
+                    <BlogCard key={p.slug} post={p} />
+                  ))}
+                </div>
+              )}
 
-          {totalPages > 1 && (
-            <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Blog pagination">
-              {current > 1 && (
-                <Link
-                  to="/blog"
-                  search={{
-                    ...(category ? { category } : {}),
-                    ...(current - 1 > 1 ? { page: current - 1 } : {}),
-                  }}
-                  rel="prev"
-                  className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+              {totalPages > 1 && (
+                <nav
+                  className="mt-10 flex items-center justify-center gap-2"
+                  aria-label="Blog pagination"
                 >
-                  Previous
-                </Link>
+                  {current > 1 && (
+                    <Link
+                      to="/blog"
+                      search={{
+                        ...(category ? { category } : {}),
+                        ...(current - 1 > 1 ? { page: current - 1 } : {}),
+                      }}
+                      rel="prev"
+                      className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                    >
+                      Previous
+                    </Link>
+                  )}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                    <Link
+                      key={n}
+                      to="/blog"
+                      search={{
+                        ...(category ? { category } : {}),
+                        ...(n > 1 ? { page: n } : {}),
+                      }}
+                      aria-current={n === current ? "page" : undefined}
+                      className={`inline-flex h-11 min-w-11 items-center justify-center rounded-button border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${
+                        n === current
+                          ? "border-[color:var(--color-foreground)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
+                          : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
+                      }`}
+                    >
+                      {n}
+                    </Link>
+                  ))}
+                  {current < totalPages && (
+                    <Link
+                      to="/blog"
+                      search={{ ...(category ? { category } : {}), page: current + 1 }}
+                      rel="next"
+                      className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                    >
+                      Next
+                    </Link>
+                  )}
+                </nav>
               )}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <Link
-                  key={n}
-                  to="/blog"
-                  search={{
-                    ...(category ? { category } : {}),
-                    ...(n > 1 ? { page: n } : {}),
-                  }}
-                  aria-current={n === current ? "page" : undefined}
-                  className={`inline-flex h-11 min-w-11 items-center justify-center rounded-button border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${
-                    n === current
-                      ? "border-[color:var(--color-foreground)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
-                      : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
-                  }`}
-                >
-                  {n}
-                </Link>
-              ))}
-              {current < totalPages && (
-                <Link
-                  to="/blog"
-                  search={{ ...(category ? { category } : {}), page: current + 1 }}
-                  rel="next"
-                  className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-                >
-                  Next
-                </Link>
-              )}
-            </nav>
-          )}
+            </div>
+          </div>
         </section>
+
+        <FaqSection />
 
         <CtaBlock />
       </main>
