@@ -543,7 +543,7 @@ function JobSearchBroken() {
             Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
           </p>
 
-          <div className="mt-10 flex flex-col rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
+          <div className="mt-10 flex flex-col rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
             {items.flatMap((it, i) => [
               ...(i > 0
                 ? [
