@@ -440,6 +440,21 @@ select::-ms-expand {
   .logo-marquee { animation: none; }
 }
 
+/* Chip rows in "the job search is broken". Same three-group technique as the
+   logo marquee; the middle row runs in reverse so the rows counter-scroll. */
+@keyframes chip-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% / 3)); }
+}
+
+.chip-marquee { animation: chip-marquee 60s linear infinite; }
+.chip-marquee-reverse { animation-direction: reverse; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-marquee { animation: none; }
+}
+
+
 /* Testimonial scrim: the 12px backdrop blur needs to fade out with the
    gradient above it, or the blur's own edge shows as a hard seam across
    the photo. Solid across the bottom 40%, ramping out over the rest. */

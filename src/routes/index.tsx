@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconGhost as Ghost, IconFilter as ListFilter, IconClipboardList as ClipboardList, IconBug as Bug, IconServer as Server, IconTerminal as Terminal, IconNetwork as Network, IconUserSearch as UserSearch, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
+import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconClipboardList as ClipboardList, IconNetwork as Network, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
 import heroAsset from "../assets/hero-2.webp.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
@@ -9,6 +9,10 @@ import t3Asset from "../assets/t3-2.png.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
+import brokenHoursAsset from "../assets/broken-hours.png.asset.json";
+import brokenGhostAsset from "../assets/broken-ghost.png.asset.json";
+import brokenListingsAsset from "../assets/broken-listings.png.asset.json";
+
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 import { ShaderBackground } from "../components/landing/ShaderBackground";
@@ -507,59 +511,67 @@ function Counter({ label, value }: { label: string; value: number }) {
 function JobSearchBroken() {
   const items = [
     {
-      icon: ListFilter,
+      img: brokenHoursAsset.url,
       title: "Hours on LinkedIn with no results",
       body: "Endless scrolling past promoted junk, ads, and reposts only to find the same matches repeatedly.",
     },
     {
-      icon: Ghost,
+      img: brokenGhostAsset.url,
       title: "Ghost jobs waste your time",
       body: "Up to 30% of postings are left open indefinitely for 'pipeline building' without actual intention to hire.",
     },
     {
-      icon: ClipboardList,
+      img: brokenListingsAsset.url,
       title: "Hundreds of irrelevant listings",
       body: "Keywords matching titles but completely ignoring stack requirements, salary expectations, or remote levels.",
     },
   ];
   return (
-    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]" id="problem">
-      <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-        <div
-          className="relative overflow-hidden rounded-[12px] p-8 md:p-14 md:min-h-[580px]"
-          style={{
-            backgroundColor: "var(--color-background)",
-            border: "1px solid var(--color-border)",
-          }}
-        >
-          <div className="relative grid h-full gap-10 md:grid-cols-[45%_55%]">
+    <section
+      className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
+      id="problem"
+    >
+      <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
+        <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-8 md:pt-24">
+          <h2
+            className="text-3xl font-light leading-10 md:text-4xl"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            The job search is broken
+          </h2>
+          <p className="mt-3 max-w-[560px] text-base leading-6 text-[color:var(--color-text-secondary)]">
+            Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
+          </p>
 
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-display)" }}>
-                The job search is broken
-              </h2>
-              <p className="mt-3 text-[color:var(--color-text-secondary)]">
-                Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
-              </p>
-              <div className="mt-10 space-y-8">
-                {items.map((it) => (
-                  <div key={it.title}>
-                    <div className="flex items-center gap-3">
-                      <it.icon size={20} className="text-[color:var(--color-text-secondary)]" />
-                      <h3 className="text-lg md:text-xl" style={{ fontFamily: "var(--font-display)" }}>
-                        {it.title}
-                      </h3>
-                    </div>
-                    <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">{it.body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div aria-hidden className="hidden md:block" />
+          <div className="mt-10 flex flex-col rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
+            {items.flatMap((it, i) => [
+              ...(i > 0
+                ? [
+                    <div
+                      key={`div-${it.title}`}
+                      aria-hidden
+                      className="hidden w-px self-stretch bg-[color:var(--color-border)] md:block"
+                    />,
+                  ]
+                : []),
+              <div key={it.title} className="flex flex-1 flex-col gap-3 p-10">
+                <div className="flex flex-col gap-3">
+                  <img src={it.img} alt="" className="size-14 object-contain" />
+                  <h3
+                    className="text-xl font-light leading-7"
+                    style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}
+                  >
+                    {it.title}
+                  </h3>
+                </div>
+                <p className="text-sm leading-5 text-[color:var(--color-text-secondary)]">{it.body}</p>
+              </div>,
+            ])}
+
           </div>
-          <ChipWall />
-
         </div>
+
+        <ChipMarquee />
       </div>
     </section>
   );
@@ -575,15 +587,13 @@ const chipRows: ChipDef[][] = [
     { title: "Head of Design", icon: PenTool },
     { title: "VP Engineering", icon: Crown, tag: "outdated" },
     { title: "SEO Specialist", icon: TrendingUp },
-  ],
-  [
     { title: "Staff Engineer", icon: Code2 },
     { title: "Copywriter", icon: FileText, tag: "irrelevant" },
+  ],
+  [
     { title: "Security Engineer", icon: ShieldCheck },
     { title: "BI Analyst", icon: Database, tag: "ghost" },
     { title: "Brand Designer", icon: Palette },
-  ],
-  [
     { title: "Frontend Engineer", icon: Code2 },
     { title: "Growth Marketing", icon: TrendingUp },
     { title: "Data Scientist", icon: BarChart3, tag: "no match" },
@@ -598,126 +608,57 @@ const chipRows: ChipDef[][] = [
     { title: "Product Manager", icon: ClipboardList, tag: "irrelevant" },
     { title: "Site Reliability Engineer", icon: ShieldCheck },
   ],
-  [
-    { title: "QA Engineer", icon: Bug, tag: "no match" },
-    { title: "Senior Backend Engineer", icon: Server },
-    { title: "DevOps Engineer", icon: Terminal },
-    { title: "Solutions Architect", icon: Network, tag: "outdated" },
-    { title: "UX Researcher", icon: UserSearch, tag: "ghost" },
-    { title: "Android Developer", icon: Smartphone },
-  ],
-  [
-    { title: "UI Designer", icon: Palette },
-    { title: "Data Engineer", icon: Database, tag: "ghost" },
-    { title: "Backend Engineer", icon: Server },
-    { title: "iOS Developer", icon: Smartphone, tag: "outdated" },
-    { title: "Marketing Lead", icon: TrendingUp },
-  ],
-  [
-    { title: "Full Stack Engineer", icon: Code2, tag: "irrelevant" },
-    { title: "Machine Learning Engineer", icon: BarChart3 },
-    { title: "Support Engineer", icon: ShieldCheck, tag: "no match" },
-    { title: "Product Designer", icon: PenTool },
-    { title: "Platform Engineer", icon: Server, tag: "ghost" },
-  ],
-  [
-    { title: "Content Designer", icon: FileText },
-    { title: "Data Analyst", icon: BarChart3, tag: "outdated" },
-    { title: "SRE", icon: ShieldCheck },
-    { title: "Backend Developer", icon: Terminal, tag: "no match" },
-    { title: "Growth PM", icon: TrendingUp },
-  ],
-  [
-    { title: "Cloud Engineer", icon: Server },
-    { title: "Motion Designer", icon: Palette, tag: "irrelevant" },
-    { title: "Recruiter", icon: UserSearch },
-    { title: "Sales Engineer", icon: TrendingUp, tag: "outdated" },
-    { title: "iOS Developer", icon: Smartphone },
-  ],
-  [
-    { title: "Firmware Engineer", icon: Terminal, tag: "no match" },
-    { title: "Community Manager", icon: RefreshCw },
-    { title: "Data PM", icon: ClipboardList, tag: "ghost" },
-    { title: "Web Designer", icon: PenTool },
-    { title: "IT Support", icon: ShieldCheck },
-  ],
-  [
-    { title: "Systems Engineer", icon: Network },
-    { title: "Illustrator", icon: PenTool, tag: "outdated" },
-    { title: "Producer", icon: ClipboardList },
-    { title: "Researcher", icon: UserSearch, tag: "irrelevant" },
-    { title: "PR Lead", icon: TrendingUp },
-  ],
 ];
 
-function ChipWall() {
-  const tagColor = (t: ChipTag) =>
-    t === "no match" ? "#E17100" : "#D00D01";
+function tagColor(t: ChipTag) {
+  return t === "no match" || t === "outdated"
+    ? "var(--color-warning)"
+    : "var(--color-danger)";
+}
+
+function ChipGroup({ row, hidden }: { row: ChipDef[]; hidden?: boolean }) {
   return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute z-0 hidden md:block"
-      style={{
-        top: "-34%",
-        right: "-28%",
-        bottom: "-34%",
-        width: "78%",
-        maskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 62%, rgba(0,0,0,0.35) 88%, rgba(0,0,0,0) 100%)",
-        WebkitMaskImage:
-          "linear-gradient(to top right, rgba(0,0,0,1) 62%, rgba(0,0,0,0.35) 88%, rgba(0,0,0,0) 100%)",
-      }}
-    >
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10"
-        style={{
-          width: "280px",
-          background:
-            "linear-gradient(to right, var(--color-background) 0%, var(--color-background) 35%, transparent 100%)",
-        }}
-      />
-      <div
-        className="absolute top-1/2 flex flex-col gap-3"
-
-
-        style={{
-          right: "-10%",
-          transform: "translateX(120px) translateY(-50%) rotate(-32deg)",
-          transformOrigin: "center center",
-          width: "max-content",
-        }}
-      >
-
-        {chipRows.map((row, i) => (
-          <div
-            key={i}
-            className="flex gap-3"
-            style={{ marginLeft: `${(i % 2) * 40}px` }}
-          >
-            {row.map((chip, j) => (
-              <span
-                key={`${i}-${j}-${chip.title}`}
-                className="inline-flex items-center gap-2 whitespace-nowrap rounded-[10px] px-3 py-2 text-[13px]"
-                style={{
-                  backgroundColor: "var(--color-surface-1)",
-                  border: "0.5px solid var(--color-border)",
-                  color: "var(--color-foreground)",
-                }}
-              >
-                <chip.icon size={14} className="text-[color:var(--color-text-secondary)]" />
-                <span>{chip.title}</span>
-                {chip.tag ? (
-                  <span style={{ color: tagColor(chip.tag) }}>{chip.tag}</span>
-                ) : null}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-
+    <div aria-hidden={hidden} className="flex shrink-0 items-center gap-4 pr-4">
+      {row.map((chip, j) => (
+        <span
+          key={`${chip.title}-${j}`}
+          className="inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border-[0.5px] border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 py-2 text-sm leading-5 text-[color:var(--color-foreground)]"
+        >
+          <chip.icon size={14} className="text-[color:var(--color-text-secondary)]" />
+          <span>{chip.title}</span>
+          {chip.tag ? <span style={{ color: tagColor(chip.tag) }}>{chip.tag}</span> : null}
+        </span>
+      ))}
     </div>
   );
 }
+
+function ChipMarquee() {
+  return (
+    <div className="relative mt-14">
+      {chipRows.map((row, i) => (
+        <div key={i} className={`overflow-hidden ${i > 0 ? "mt-4" : ""}`}>
+          <div
+            className={`flex w-max chip-marquee${i === 1 ? " chip-marquee-reverse" : ""}`}
+          >
+            <ChipGroup row={row} />
+            <ChipGroup row={row} hidden />
+            <ChipGroup row={row} hidden />
+          </div>
+        </div>
+      ))}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 w-[120px] bg-gradient-to-r from-[color:var(--color-background)] to-transparent"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 right-0 w-[120px] bg-gradient-to-l from-[color:var(--color-background)] to-transparent"
+      />
+    </div>
+  );
+}
+
 
 /* ---------------------------- How it works ---------------------------- */
 
