@@ -969,19 +969,34 @@ function Pricing() {
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["annual", "monthly"];
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 8, width: 148 });
 
   useEffect(() => {
+    let cancelled = false;
     const measure = () => {
       const idx = periods.indexOf(period);
       const btn = btnRefs.current[idx];
       const container = tabsRef.current;
-      if (!btn || !container) return;
+      if (!btn || !container || cancelled) return;
       setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
     };
+
+    const container = tabsRef.current;
+    const observer = container && typeof ResizeObserver !== "undefined"
+      ? new ResizeObserver(measure)
+      : null;
+    if (container) observer?.observe(container);
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    if (document.fonts) {
+      void document.fonts.ready.then(measure);
+    }
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
   }, [period]);
 
   const paid =
