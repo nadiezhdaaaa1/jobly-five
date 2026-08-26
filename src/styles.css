@@ -424,10 +424,15 @@ select::-ms-expand {
 
 /* Partner logo marquee. The track holds two identical groups, so translating
    exactly -50% lands the second group where the first began — a seamless loop. */
+/* Partner logo marquee. Three identical groups: translating exactly one group
+   width lands the next where the last began. Three rather than two because the
+   runway behind the leading edge must exceed the 1136px container, and one
+   group is only ~1051px. */
 @keyframes logo-marquee {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(calc(-100% / 3)); }
 }
+
 
 .logo-marquee { animation: logo-marquee 40s linear infinite; }
 
