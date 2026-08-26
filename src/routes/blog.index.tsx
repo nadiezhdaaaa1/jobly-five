@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { CtaBlock } from "../components/site/CtaBlock";
+import { FaqSection } from "../components/site/FaqSection";
 import { BlogCard } from "../components/blog/BlogCard";
 import { CategoryChip } from "../components/blog/CategoryChip";
 import { BLOG_CATEGORIES, BLOG_POSTS } from "../lib/blog-data";
@@ -176,7 +177,11 @@ function BlogListPage() {
               )}
             </nav>
           )}
+            </div>
+          </div>
         </section>
+
+        <FaqSection />
 
         <CtaBlock />
       </main>
