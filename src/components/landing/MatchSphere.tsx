@@ -46,7 +46,7 @@ export function MatchSphere({ className }: { className?: string }) {
     );
 
     const styles = getComputedStyle(document.documentElement);
-    const dotColor = styles.getPropertyValue("--text-muted").trim() || "#67787C";
+    const dotColor = styles.getPropertyValue("--text-secondary").trim() || "#4B585B";
     const pickColor = styles.getPropertyValue("--accent").trim() || "#00F1A9";
 
     // Pre-allocated so the render loop never allocates.
@@ -132,18 +132,18 @@ export function MatchSphere({ className }: { className?: string }) {
         const depth = (p.z + 1) / 2; // 0 back, 1 front
         if (p.pick) {
           // Luminous node: soft halo behind a solid core.
-          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 11);
+          const halo = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
           halo.addColorStop(0, pickColor);
           halo.addColorStop(1, "transparent");
           ctx.globalAlpha = 0.28 * (0.5 + 0.5 * depth);
           ctx.fillStyle = halo;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
           ctx.fill();
           ctx.globalAlpha = 0.55 + 0.45 * depth;
           ctx.fillStyle = pickColor;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, 3.6 * (0.7 + 0.3 * depth), 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, 5.4 * (0.7 + 0.3 * depth), 0, Math.PI * 2);
           ctx.fill();
           continue;
         }
