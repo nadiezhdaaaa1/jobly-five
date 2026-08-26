@@ -415,3 +415,10 @@ select::-ms-expand {
   .deck-card-fly { animation: none; opacity: 0; }
 }
 
+
+/* Testimonial scrim: the 12px backdrop blur needs to fade out with the
+   gradient above it, or the blur's own edge shows as a hard seam across
+   the photo. Solid across the bottom 40%, ramping out over the rest. */
+.testimonial-scrim-blur {
+  mask-image: linear-gradient(to top, #000 40%, transparent 100%);
+}
