@@ -15,6 +15,7 @@ import brokenListingsAsset from "../assets/broken-listings.png.asset.json";
 
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
+import { MatchSphere } from "../components/landing/MatchSphere";
 import { ShaderBackground } from "../components/landing/ShaderBackground";
 
 import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
