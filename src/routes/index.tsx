@@ -548,7 +548,7 @@ function JobSearchBroken() {
             The job search is broken
           </h2>
           <p className="mt-3 max-w-[560px] text-base leading-6 text-[color:var(--color-text-secondary)]">
-            Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job.
+            Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job
           </p>
 
           <div className="mt-10 flex flex-col rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
