@@ -322,7 +322,7 @@ function InboxToOffer() {
             From inbox to offer
           </h2>
           <p className="max-w-[560px] text-[16px] font-extralight leading-6 text-[color:var(--color-text-secondary)] md:text-right">
-            No boards, no spraying — five matches a day. Here is where they landed.
+            No boards, no spraying — five matches a day. Here is where they landed
           </p>
         </div>
 
