@@ -1118,7 +1118,7 @@ function Pricing() {
             }}
             className="max-md:!text-[14px]"
           >
-            Choose the tier that fits your pacing. Cancel or pause anytime.
+            Choose the tier that fits your pacing. Cancel or pause anytime
           </p>
         </div>
 
