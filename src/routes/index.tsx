@@ -688,7 +688,7 @@ function HowItWorks() {
               How Jobly works
             </h2>
             <p className="mt-3 leading-6 text-[color:var(--color-text-secondary)]">
-              We flipped the script. Instead of searching, you receive matching digests directly in your inbox.
+              We flipped the script. Instead of searching, you receive matching digests directly in your inbox
             </p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
