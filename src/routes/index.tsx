@@ -952,7 +952,7 @@ function QualityOverQuantity() {
               <span>beat a 100 blind applications</span>
             </h2>
             <p className="mt-5 max-w-[640px] leading-6 text-[color:var(--color-text-secondary)]">
-              Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility.
+              Spraying and praying does not work. Focus on positions where you have an unfair advantage based on deep compatibility
             </p>
           </div>
         </div>
