@@ -326,9 +326,24 @@ const UNIFORMS = {
 
 const pendingContextReleases = new WeakMap<HTMLCanvasElement, number>()
 
-export function ShaderBackground({ className }: { className?: string }) {
+export function ShaderBackground({
+  className,
+  colors,
+  colorCount,
+  seed,
+}: {
+  className?: string
+  /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
+  colors?: [number, number, number][]
+  colorCount?: number
+  seed?: number
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
+
+  // Derived primitive so a re-render with the same palette (a fresh array
+  // literal) does not tear down and rebuild the WebGL context.
+  const colorsKey = colors ? colors.map((c) => c.join(",")).join("|") : ""
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -344,6 +359,17 @@ export function ShaderBackground({ className }: { className?: string }) {
 
     // Honour prefers-reduced-motion: at 0 the shader renders one still frame.
     const timeScale = reduced ? 0 : UNIFORMS.timeScale
+
+    // Optional palette overrides; each falls back to the module defaults so
+    // existing usages render exactly as before. The array is padded to the
+    // shader's fixed 8 slots.
+    const paletteSource = colors ?? UNIFORMS.colors
+    const palette: [number, number, number][] = Array.from(
+      { length: 8 },
+      (_, i) => paletteSource[Math.min(i, paletteSource.length - 1)]!,
+    )
+    const activeColorCount = colorCount ?? UNIFORMS.colorCount
+    const activeSeed = seed ?? UNIFORMS.seed
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!
@@ -382,7 +408,7 @@ export function ShaderBackground({ className }: { className?: string }) {
       space: gl.getUniformLocation(program, "u_space"),
       cursor: gl.getUniformLocation(program, "u_cursor"),
     }
-    gl.uniform3fv(uni.colors, new Float32Array(UNIFORMS.colors.flat()))
+    gl.uniform3fv(uni.colors, new Float32Array(palette.flat()))
     gl.uniform4f(
       uni.shape,
       UNIFORMS.scale,
@@ -406,7 +432,7 @@ export function ShaderBackground({ className }: { className?: string }) {
     )
     gl.uniform4f(
       uni.transform,
-      UNIFORMS.seed,
+      activeSeed,
       UNIFORMS.rotate,
       UNIFORMS.drift,
       UNIFORMS.oklab,
@@ -551,7 +577,7 @@ export function ShaderBackground({ className }: { className?: string }) {
         width,
         height,
         ((now - start) / 1000) * timeScale,
-        UNIFORMS.colorCount,
+        activeColorCount,
       )
       gl.uniform4f(
         uni.space,
@@ -604,7 +630,7 @@ export function ShaderBackground({ className }: { className?: string }) {
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced])
+  }, [reduced, colorsKey, colorCount, seed])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
