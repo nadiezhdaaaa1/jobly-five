@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { ShaderBackground } from "./ShaderBackground";
 
-// Jobly hero palette, sampled from the Figma ellipse group (the light, pastel
-// layer that actually shows). Slot order is deliberate: each index decides where
-// that colour pools on screen (see shade() in ShaderBackground). Slot 0 doubles
-// as the base wash. Pink is repeated in slots 3 and 4 — the two upper positions
-// — so it spreads across the whole top, mirroring Figma's two pink ellipses.
+// Jobly hero base: greens only. Pink and mint are fixed CSS overlays below, so
+// they can be sized and confined to regions the shader cannot express without
+// extra per-slot uniforms (the shader is one vec4 under WebGL1's guaranteed 16).
 const HERO_COLORS: [number, number, number][] = [
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
   [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.95294117647058818, 0.79215686274509800, 0.88235294117647056], // #F3CAE1
-  [0.17254901960784313, 0.85882352941176470, 0.51764705882352940], // #2CDB84
+  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
 ];
 
 
@@ -40,14 +36,34 @@ export function HeroShaderBackground() {
         <ShaderBackground
           className="absolute inset-0 h-full w-full"
           colors={HERO_COLORS}
-          colorCount={6}
+          colorCount={4}
           seed={1453}
           timeScale={0.12}
-          scale={2.0}
-          intensity={1.52}
+          scale={1.4}
+          intensity={0.68}
         />
 
       )}
+
+      {/* Pink bloom: bottom-left band on small screens, upper right half at lg+. */}
+      <div
+        className="absolute left-[-15%] w-[85%] top-[48%] h-[32%] lg:left-1/2 lg:right-0 lg:w-auto lg:top-[-15%] lg:h-[60%]"
+        style={{
+          background:
+            "radial-gradient(closest-side, rgba(243, 202, 225, 0.18) 0%, rgba(243, 202, 225, 0) 100%)",
+          filter: "blur(100px)",
+        }}
+      />
+
+      {/* Mint bloom: lower-right band on small screens, lower right half at lg+. */}
+      <div
+        className="absolute right-[-15%] w-[90%] top-[62%] h-[46%] lg:left-[48%] lg:right-0 lg:w-auto lg:top-[45%] lg:h-[70%]"
+        style={{
+          background:
+            "radial-gradient(closest-side, rgba(44, 219, 132, 0.18) 0%, rgba(44, 219, 132, 0) 100%)",
+          filter: "blur(100px)",
+        }}
+      />
     </div>
   );
 }
