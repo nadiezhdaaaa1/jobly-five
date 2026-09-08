@@ -501,3 +501,62 @@ select::-ms-expand {
 }
 
 
+
+/* Main accent button (new design-system concept). Plain CSS class rather than
+   @utility because it carries a full visual treatment, not just type. */
+.main_accent_button {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background-color: var(--main-accent);
+  color: var(--on-main-accent);
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    inset 0px 1px 0px 0px rgba(255, 255, 255, 0.5),
+    inset 0px -1px 0px 0px rgba(0, 0, 0, 0.1);
+  transition: background-color 140ms ease-out;
+}
+.main_accent_button:hover {
+  background-color: var(--main-accent-hover);
+}
+.main_accent_button--sm {
+  height: 40px;
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+/* Secondary CTA for dark backgrounds. No inset shadow. */
+.ghost_button {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background-color: transparent;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+  transition: background-color 140ms ease-out;
+}
+.ghost_button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .main_accent_button,
+  .ghost_button {
+    transition: none;
+  }
+}
