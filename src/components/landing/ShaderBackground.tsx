@@ -377,6 +377,7 @@ export function ShaderBackground({
     )
     const activeColorCount = colorCount ?? UNIFORMS.colorCount
     const activeSeed = seed ?? UNIFORMS.seed
+    const activeGrain = grain ?? UNIFORMS.grain
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!
