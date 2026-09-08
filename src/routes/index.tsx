@@ -242,6 +242,7 @@ function Hero() {
           <div className="inline-flex items-center gap-2 text-[16px] font-light leading-6 text-white/80">
             <span className="relative flex h-2 w-2 items-center justify-center">
               <span className="absolute h-[15.5px] w-[15.5px] rounded-full bg-white opacity-[0.04]" />
+              <span className="absolute h-2 w-2 animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
             Live · US tech openings{"\u00a0\n"}
