@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 import { ShaderBackground } from "./ShaderBackground";
 
-// Jobly hero palette, sampled from the Figma ellipse group (the light, pastel
-// layer that actually shows). Slot order is deliberate: each index decides where
-// that colour pools on screen (see shade() in ShaderBackground). Slot 0 doubles
-// as the base wash. Pink is repeated in slots 3 and 4 — the two upper positions
-// — so it spreads across the whole top, mirroring Figma's two pink ellipses.
+// Jobly hero palette, taken from the literal ellipse fills in the Figma file.
+// Slot order is deliberate: each index decides where that colour pools on screen
+// (see shade() in ShaderBackground). Deep green #0E735A fills slots 0, 1 and 3,
+// with slot 0 doubling as the base wash. Pink sits alone in slot 4 (top-left)
+// and the light green alone in slot 5 (bottom-right, behind the photograph).
 const HERO_COLORS: [number, number, number][] = [
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
   [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.95294117647058818, 0.79215686274509800, 0.88235294117647056], // #F3CAE1
-  [0.19607843137254902, 0.85490196078431369, 0.52156862745098043], // #32DA85
+  [0.98431372549019602, 0.73725490196078436, 0.87058823529411766], // #FBBCDE
+  [0.17254901960784313, 1.00000000000000000, 0.55686274509803924], // #2CFF8E
 ];
 
 
 // SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
 // family so there is no dark flash before the canvas mounts.
 const STATIC_FALLBACK =
-  "radial-gradient(140% 120% at 30% 0%, #F3CAE1 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #32DA85 85%)";
+  "radial-gradient(140% 120% at 30% 0%, #FBBCDE 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #2CFF8E 85%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
