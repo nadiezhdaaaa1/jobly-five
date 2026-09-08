@@ -567,7 +567,8 @@ select::-ms-expand {
     height 300ms ease,
     background-color 300ms ease,
     color 300ms ease,
-    box-shadow 300ms ease;
+    box-shadow 300ms ease,
+    filter 300ms ease;
 }
 .site-header-bar {
   transition: height 300ms ease;

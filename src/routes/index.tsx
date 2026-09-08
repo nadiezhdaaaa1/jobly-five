@@ -214,7 +214,7 @@ function useLiveNumber(target: number, durationMs = 1200) {
 function Hero() {
   const count = useLiveNumber(537055);
   return (
-    <section className="relative isolate overflow-hidden lg:mx-12">
+    <section className="relative isolate overflow-hidden lg:h-[800px]">
       <HeroShaderBackground />
       <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[334px] w-[357px] overflow-hidden sm:h-[400px] sm:w-[428px] md:h-[490px] md:w-[524px] lg:h-[580px] lg:w-[620px]">
         <img
@@ -228,43 +228,45 @@ function Hero() {
 
 
 
-      <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 py-14 md:px-8 md:py-20 lg:grid-cols-2 lg:items-center">
-        <div className="relative z-20 lg:mt-[-88px]">
-          <div className="inline-flex items-center gap-2 text-sm text-white/80 md:text-base">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
+      {/* Figma frame lines, drawn on top of the full-bleed gradient */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
+        <div className="absolute left-12 top-20 h-[671px] w-px bg-white/40" />
+        <div className="absolute right-12 top-20 h-[671px] w-px bg-white/40" />
+        <div className="absolute left-0 right-0 top-20 h-px bg-white/40" />
+        <div className="absolute left-0 right-0 top-[751px] h-px bg-white/40" />
+      </div>
+
+      <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 pb-14 pt-24 md:px-8 md:pb-20 md:pt-28 lg:grid-cols-[544px_1fr] lg:items-start lg:gap-12 lg:pb-0 lg:pt-20">
+        <div className="relative z-20 lg:w-[544px] lg:pt-[108px]">
+          <div className="inline-flex items-center gap-2 text-[16px] font-light leading-6 text-white/80">
+            <span className="relative flex h-2 w-2 items-center justify-center">
+              <span className="absolute h-[15.5px] w-[15.5px] rounded-full bg-white opacity-[0.04]" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
             Live · US tech openings{"\u00a0\n"}
-            <span className="text-white tabular-nums">
+            <span className="text-[16px] font-normal leading-6 text-white tabular-nums">
               {count.toLocaleString("en-US")}
             </span>
           </div>
           <h1
-            className="mt-6 text-[42px] leading-[1.05] text-white md:text-[56px] lg:text-[64px]"
-            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}
+            className="mt-6 text-[42px] font-normal leading-[1.1] text-white md:text-[56px] lg:w-[544px] lg:text-[64px]"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-1px" }}
           >
             Relevant jobs, first — scored to you
           </h1>
-          <p className="mt-5 max-w-xl text-lg font-extralight text-white/85">
+          <p className="mt-5 max-w-[576px] text-[18px] font-light leading-7 text-white/85 lg:w-[544px]">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              to="/quiz"
-              className="inline-flex h-12 items-center rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
-            >
+            <Link to="/quiz" className="main_accent_button">
               Get my matches
             </Link>
-            <a
-              href="#how-it-works"
-              className="inline-flex h-12 items-center rounded-button border border-white/30 px-6 text-white transition-colors hover:bg-white/10"
-            >
+            <a href="#how-it-works" className="ghost_button">
               How it works
             </a>
           </div>
         </div>
-        <div className="relative z-[5]">
+        <div className="relative z-[5] lg:w-[544px] lg:pt-2">
           <HeroCard />
         </div>
       </div>
