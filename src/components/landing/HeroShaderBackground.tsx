@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-import { ShaderBackground } from "./ShaderBackground";
+import { GrainGradient } from "@paper-design/shaders-react";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 // Jobly hero base: greens only. Pink and mint are fixed CSS overlays below, so
-// they can be sized and confined to regions the shader cannot express without
-// extra per-slot uniforms (the shader is one vec4 under WebGL1's guaranteed 16).
-const HERO_COLORS: [number, number, number][] = [
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
-];
+// they can be sized and confined to regions the full-field shader cannot express.
+const HERO_COLORS = ["#0E735A", "#22936C", "#0E735A"];
+const HERO_COLOR_BACK = "#0E735A";
 
 // Stands in for the shader canvas only (SSR, reduced motion, no WebGL): the same
 // greens the four slots settle into — #22936C lifting at middle-left and again
