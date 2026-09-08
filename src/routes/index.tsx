@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconClipboardList as ClipboardList, IconNetwork as Network, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
-import heroAsset from "../assets/hero-3.webp.asset.json";
+import heroAsset from "../assets/hero-4.webp.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
 import t2Asset from "../assets/t2-3.png.asset.json";
 import t3Asset from "../assets/t3-2.png.asset.json";
@@ -216,13 +216,13 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden lg:h-[800px]">
       <HeroShaderBackground />
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[334px] w-[357px] overflow-hidden sm:h-[400px] sm:w-[428px] md:h-[490px] md:w-[524px] lg:h-[580px] lg:w-[620px]">
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[349px] w-[373px] overflow-hidden sm:h-[418px] sm:w-[447px] md:h-[512px] md:w-[548px] lg:h-[606px] lg:w-[648px]">
         <img
           src={heroAsset.url}
           alt="A person checking Jobly matches on their phone"
           fetchPriority="high"
           decoding="async"
-          className="absolute right-0 top-0 h-[357px] w-auto max-w-none sm:h-[428px] md:h-[524px] lg:h-[620px]"
+          className="absolute right-0 top-0 h-[373px] w-auto max-w-none sm:h-[447px] md:h-[548px] lg:h-[648px]"
         />
       </div>
 
@@ -230,12 +230,13 @@ function Hero() {
 
       {/* Figma frame lines, drawn on top of the full-bleed gradient */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
-        <div className="absolute left-12 top-20 h-[671px] w-px bg-white/40" />
-        <div className="absolute right-12 top-20 h-[671px] w-px bg-white/40" />
-        <div className="absolute left-0 right-0 top-20 h-px bg-white/40" />
-        <div className="absolute left-0 right-0 top-[751px] h-px bg-white/40" />
+        <div className="absolute left-12 top-20 h-[671px] w-px bg-white/30" />
+        <div className="absolute right-12 top-20 h-[671px] w-px bg-white/30" />
+        <div className="absolute left-0 right-0 top-20 h-px bg-white/30" />
+        <div className="absolute left-0 right-0 top-[751px] h-px bg-white/30" />
       </div>
 
+      <div className="relative lg:mx-12">
       <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 pb-14 pt-24 md:px-8 md:pb-20 md:pt-28 lg:grid-cols-[544px_1fr] lg:items-start lg:gap-12 lg:pb-0 lg:pt-20">
         <div className="relative z-20 lg:w-[544px] lg:pt-[108px]">
           <div className="inline-flex items-center gap-2 text-[16px] font-light leading-6 text-white/80">
@@ -257,11 +258,11 @@ function Hero() {
           <p className="mt-5 max-w-[576px] text-[18px] font-light leading-7 text-white/85 lg:w-[544px]">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link to="/quiz" className="main_accent_button">
               Get my matches
             </Link>
-            <a href="#how-it-works" className="ghost_button">
+            <a href="#how-it-works" className="secondary_button">
               How it works
             </a>
           </div>
@@ -269,6 +270,7 @@ function Hero() {
         <div className="relative z-[5] lg:w-[544px] lg:pt-2">
           <HeroCard />
         </div>
+      </div>
       </div>
     </section>
   );

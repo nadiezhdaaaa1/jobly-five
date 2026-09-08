@@ -76,11 +76,11 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
       className={`site-header z-[1100] ${overlay ? "fixed left-0 right-0 top-0" : "sticky top-0"}`}
       style={
         isOverlay
-          ? { backgroundColor: "transparent", color: "#FFFFFF", filter: "none" }
+          ? { backgroundColor: "transparent", color: "#FFFFFF", borderBottom: "1px solid transparent" }
           : {
               backgroundColor: "var(--color-surface-1)",
               color: "var(--color-foreground)",
-              filter: "drop-shadow(0px 1px 5px rgba(12, 12, 13, 0.1))",
+              borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
             }
       }
     >
