@@ -46,25 +46,27 @@ export function HeroShaderBackground() {
 
       )}
 
-      {/* Pink bloom: bottom-left band on small screens, upper right half at lg+. */}
-      <div
-        className="absolute left-[-15%] w-[85%] top-[48%] h-[32%] lg:left-1/2 lg:right-0 lg:w-auto lg:top-[-15%] lg:h-[60%]"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(243, 202, 225, 0.18) 0%, rgba(243, 202, 225, 0) 100%)",
-          filter: "blur(100px)",
-        }}
-      />
+      {/* Accent blooms: clipped to the bottom half (mobile) / right half (lg+),
+          drifting so the colour reads as moving without a second WebGL context. */}
+      <div className="hero-accents absolute inset-x-0 top-1/2 bottom-0 overflow-hidden lg:inset-y-0 lg:left-1/2 lg:right-0 lg:top-0">
+        <div
+          className="hero-bloom-a absolute left-[-10%] w-[90%] top-[5%] h-[80%] lg:left-[-8%] lg:w-[105%] lg:top-[8%] lg:h-[62%]"
+          style={{
+            background:
+              "radial-gradient(closest-side, rgba(243, 202, 225, 0.35) 0%, rgba(243, 202, 225, 0) 100%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="hero-bloom-b absolute right-[-10%] w-[95%] top-[45%] h-[85%] lg:right-auto lg:left-[5%] lg:w-[110%] lg:top-[52%] lg:h-[70%]"
+          style={{
+            background:
+              "radial-gradient(closest-side, rgba(44, 219, 132, 0.35) 0%, rgba(44, 219, 132, 0) 100%)",
+            filter: "blur(80px)",
+          }}
+        />
+      </div>
 
-      {/* Mint bloom: lower-right band on small screens, lower right half at lg+. */}
-      <div
-        className="absolute right-[-15%] w-[90%] top-[62%] h-[46%] lg:left-[48%] lg:right-0 lg:w-auto lg:top-[45%] lg:h-[70%]"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(44, 219, 132, 0.18) 0%, rgba(44, 219, 132, 0) 100%)",
-          filter: "blur(100px)",
-        }}
-      />
     </div>
   );
 }
