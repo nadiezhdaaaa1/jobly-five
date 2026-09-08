@@ -360,6 +360,17 @@ export function ShaderBackground({
     // Honour prefers-reduced-motion: at 0 the shader renders one still frame.
     const timeScale = reduced ? 0 : UNIFORMS.timeScale
 
+    // Optional palette overrides; each falls back to the module defaults so
+    // existing usages render exactly as before. The array is padded to the
+    // shader's fixed 8 slots.
+    const paletteSource = colors ?? UNIFORMS.colors
+    const palette: [number, number, number][] = Array.from(
+      { length: 8 },
+      (_, i) => paletteSource[Math.min(i, paletteSource.length - 1)]!,
+    )
+    const activeColorCount = colorCount ?? UNIFORMS.colorCount
+    const activeSeed = seed ?? UNIFORMS.seed
+
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!
       gl.shaderSource(s, src)
