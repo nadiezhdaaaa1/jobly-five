@@ -332,6 +332,7 @@ export function ShaderBackground({
   colorCount,
   seed,
   timeScale,
+  grain,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
@@ -340,6 +341,8 @@ export function ShaderBackground({
   seed?: number
   /** Animation speed; still resolves to 0 under prefers-reduced-motion. */
   timeScale?: number
+  /** Film-grain amount. Defaults to the module preset. */
+  grain?: number
 }) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
