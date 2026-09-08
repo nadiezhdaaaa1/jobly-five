@@ -560,3 +560,21 @@ select::-ms-expand {
     transition: none;
   }
 }
+
+/* Header overlay / solid states */
+.site-header {
+  transition:
+    height 300ms ease,
+    background-color 300ms ease,
+    color 300ms ease,
+    box-shadow 300ms ease;
+}
+.site-header-bar {
+  transition: height 300ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .site-header-bar {
+    transition: none;
+  }
+}

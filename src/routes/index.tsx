@@ -131,7 +131,7 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-      <Header />
+      <Header overlay />
       <main>
         <Hero />
         <InboxToOffer />
