@@ -513,16 +513,23 @@ select::-ms-expand {
   align-items: center;
   white-space: nowrap;
   background-color: var(--main-accent);
+  /* Figma's stroke is Outside, so it sits over the page rather than over the
+     fill. Clipping the background to the padding box lets the translucent
+     border composite against whatever is behind the button, not against green. */
+  background-clip: padding-box;
   color: var(--on-main-accent);
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: 16px;
   line-height: 24px;
   padding: 12px 20px;
-  border-radius: 14px;
+  /* Figma: fill radius 14, stroke 1px outside it, so the stroke's outer edge is
+     15. CSS radius describes the border box and the padding box gets
+     radius minus border-width, so 15 here puts the green back on 14. */
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.2),
     inset 0px 1px 1px 0px rgba(255, 255, 255, 0.5),
     inset 0px -1px 1px 0px rgba(0, 0, 0, 0.2);
   transition: background-color 140ms ease-out;
@@ -531,7 +538,6 @@ select::-ms-expand {
   background-color: var(--main-accent-hover);
 }
 .main_accent_button--sm {
-  height: 40px;
   padding: 8px 16px;
   font-size: 14px;
   line-height: 24px;
@@ -543,16 +549,17 @@ select::-ms-expand {
   align-items: center;
   white-space: nowrap;
   background-color: var(--secondary-button);
+  background-clip: padding-box;
   color: #FFFFFF;
   font-family: var(--font-sans);
   font-weight: 300;
   font-size: 16px;
   line-height: 24px;
   padding: 12px 20px;
-  border-radius: 14px;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.2),
     inset 0px 1px 1px 0px rgba(255, 255, 255, 0.2),
     inset 0px -1px 1px 0px rgba(0, 0, 0, 0.2);
   transition: background-color 140ms ease-out;
