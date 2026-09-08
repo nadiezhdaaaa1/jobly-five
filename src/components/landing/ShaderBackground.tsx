@@ -332,6 +332,7 @@ export function ShaderBackground({
   colorCount,
   seed,
   timeScale,
+  grain,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
@@ -340,6 +341,8 @@ export function ShaderBackground({
   seed?: number
   /** Animation speed; still resolves to 0 under prefers-reduced-motion. */
   timeScale?: number
+  /** Film-grain amount. Defaults to the module preset. */
+  grain?: number
 }) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -374,6 +377,7 @@ export function ShaderBackground({
     )
     const activeColorCount = colorCount ?? UNIFORMS.colorCount
     const activeSeed = seed ?? UNIFORMS.seed
+    const activeGrain = grain ?? UNIFORMS.grain
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!
@@ -432,7 +436,7 @@ export function ShaderBackground({
       UNIFORMS.hue,
       UNIFORMS.vignette,
       UNIFORMS.blur,
-      UNIFORMS.grain,
+      activeGrain,
     )
     gl.uniform4f(
       uni.transform,
@@ -634,7 +638,7 @@ export function ShaderBackground({
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced, colorsKey, colorCount, seed, timeScale])
+  }, [reduced, colorsKey, colorCount, seed, timeScale, grain])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
