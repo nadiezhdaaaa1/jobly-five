@@ -228,12 +228,16 @@ function Hero() {
 
 
 
-      {/* Figma frame lines, drawn on top of the full-bleed gradient */}
+      {/* Figma frame lines, drawn on top of the full-bleed gradient.
+          All six are #FFFFFF at 30%. The bottom pair closes the frame's
+          lower corners across the 48px band under the y=751 rule. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
         <div className="absolute left-12 top-20 h-[671px] w-px bg-white/30" />
         <div className="absolute right-12 top-20 h-[671px] w-px bg-white/30" />
         <div className="absolute left-0 right-0 top-20 h-px bg-white/30" />
         <div className="absolute left-0 right-0 top-[751px] h-px bg-white/30" />
+        <div className="absolute bottom-0 left-12 h-12 w-px bg-white/30" />
+        <div className="absolute bottom-0 right-12 h-12 w-px bg-white/30" />
       </div>
 
       <div className="relative lg:mx-12">
