@@ -72,7 +72,7 @@ export function ScoreRing({ value, label, size = 72, strokeWidth = 4, animate = 
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="var(--color-green)"
+            stroke="var(--color-match-teal)"
             strokeWidth={strokeWidth}
             strokeLinecap="round"
             fill="none"
@@ -82,7 +82,7 @@ export function ScoreRing({ value, label, size = 72, strokeWidth = 4, animate = 
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-display)", fontSize: size >= 72 ? 18 : 14 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: size >= 72 ? 18 : 14, lineHeight: "21px", color: "var(--color-foreground)" }}>
             {shown}%
           </span>
         </div>
