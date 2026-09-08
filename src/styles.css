@@ -33,6 +33,7 @@
   --color-accent-pressed: var(--accent-pressed);
   --color-on-accent: var(--on-accent);
   --color-green: var(--green);
+  --color-match-teal: var(--match-teal);
   --color-mint: var(--mint);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
@@ -102,6 +103,7 @@
   --secondary-button: #1C6756;
 
   --green: #0E735A;
+  --match-teal: #22817E;
   --mint: #D8FBEF;
   --success: #0E735A;
   --success-bg: #0E735A;

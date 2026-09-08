@@ -75,10 +75,10 @@ function MatchCard({
   reduced: boolean;
 }) {
   return (
-    <div className="w-full rounded-md bg-[color:var(--color-surface-1)] p-6">
+    <div className="w-full rounded-[20px] bg-[color:var(--color-surface-1)] p-6">
       <div className="mb-3 flex items-center justify-between text-xs text-[color:var(--color-text-muted)]">
         <span className="inline-flex items-center gap-1.5">
-          <Sparkle size={12} className="text-[color:var(--color-green)]" />
+          <Sparkle size={12} className="text-[color:var(--color-match-teal)]" />
           Top match
         </span>
         <span className="tabular-nums">{index + 1} / 5</span>
@@ -159,7 +159,7 @@ export function HeroMatchDeck() {
         return (
           <div
             key={m.company}
-            className="absolute inset-x-0 top-0 origin-top rounded-md"
+            className="absolute inset-x-0 top-0 origin-top rounded-[20px]"
             aria-hidden={slot !== 0}
             style={{
               transform: SLOTS[slot].transform,
@@ -184,7 +184,7 @@ export function HeroMatchDeck() {
       {outgoing !== null && !reduced && (
         <div
           key={`fly-${cycle}`}
-          className="deck-card-fly pointer-events-none absolute inset-x-0 top-0 origin-top rounded-md"
+          className="deck-card-fly pointer-events-none absolute inset-x-0 top-0 origin-top rounded-[20px]"
           style={{ zIndex: 40, boxShadow: SLOTS[0].shadow }}
           aria-hidden="true"
         >
