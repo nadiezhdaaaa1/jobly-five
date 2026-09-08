@@ -2,17 +2,27 @@ import { useEffect, useState } from "react";
 import { GrainGradient } from "@paper-design/shaders-react";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
-// Jobly hero base: greens only. Pink and mint are fixed CSS overlays below, so
-// they can be sized and confined to regions the full-field shader cannot express.
-const HERO_COLORS = ["#0E735A", "#22936C", "#0E735A"];
+// Full Figma palette, ordered dark -> light. GrainGradient maps the array onto a
+// scalar field (for shape="wave" that field is directional along the pattern Y
+// axis, grain-perturbed), so array order corresponds to a spatial axis that
+// `rotation` aims.
+const HERO_COLORS = [
+  "#0E735A",
+  "#22936C",
+  "#7DA49C",
+  "#CCCECF",
+  "#2CDB84",
+  "#56E29A",
+  "#F3CAE1",
+];
 const HERO_COLOR_BACK = "#0E735A";
 
+
 // Stands in for the shader canvas only (SSR, reduced motion, no WebGL): the same
-// greens the four slots settle into — #22936C lifting at middle-left and again
-// upper-centre-right, over a #0E735A base. The pink and mint overlays render at
-// both mount states, so the fallback deliberately carries neither.
+// dark-green upper-left to light lower-right run the steered shader produces, so
+// the pre-mount frame and the shader read the same way.
 const STATIC_FALLBACK =
-  "radial-gradient(90% 80% at 62% 18%, rgba(34, 147, 108, 0.55) 0%, rgba(34, 147, 108, 0) 70%), radial-gradient(130% 130% at 28% 45%, #22936C 0%, #0E735A 62%, #0E735A 100%)";
+  "radial-gradient(120% 110% at 88% 96%, #F3CAE1 0%, #56E29A 14%, #2CDB84 28%, #CCCECF 44%, #7DA49C 58%, #22936C 74%, #0E735A 90%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
@@ -29,7 +39,9 @@ export function HeroShaderBackground() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: STATIC_FALLBACK }}
     >
-      {/* speed 0 under reduced motion: one still frame. */}
+      {/* speed 0 under reduced motion: one still frame. rotation + offsetY aim the
+          light end of the ramp at the lower right, keeping the dark greens over the
+          nav and the white hero copy at upper left. */}
       {mounted && (
         <GrainGradient
           className="absolute inset-0 h-full w-full"
@@ -41,29 +53,11 @@ export function HeroShaderBackground() {
           softness={0.8}
           intensity={0.25}
           noise={0.3}
+          rotation={315}
+          offsetY={0.5}
         />
       )}
 
-      {/* Accent blooms: clipped to the bottom half (mobile) / right half (lg+),
-          drifting so the colour reads as moving without a second WebGL context. */}
-      <div className="hero-accents absolute inset-x-0 top-1/2 bottom-0 overflow-hidden lg:inset-y-0 lg:left-1/2 lg:right-0 lg:top-0">
-        <div
-          className="hero-bloom-a absolute left-[-10%] w-[90%] top-[5%] h-[80%] lg:left-[-8%] lg:w-[105%] lg:top-[8%] lg:h-[62%]"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(243, 202, 225, 0.35) 0%, rgba(243, 202, 225, 0) 100%)",
-            filter: "blur(80px)",
-          }}
-        />
-        <div
-          className="hero-bloom-b absolute right-[-10%] w-[95%] top-[45%] h-[85%] lg:right-auto lg:left-[5%] lg:w-[110%] lg:top-[52%] lg:h-[70%]"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(44, 219, 132, 0.35) 0%, rgba(44, 219, 132, 0) 100%)",
-            filter: "blur(80px)",
-          }}
-        />
-      </div>
 
     </div>
   );
