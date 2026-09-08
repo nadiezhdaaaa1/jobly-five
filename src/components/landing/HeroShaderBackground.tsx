@@ -43,6 +43,8 @@ export function HeroShaderBackground() {
           colorCount={6}
           seed={1453}
           timeScale={0.12}
+          scale={2.0}
+          intensity={1.52}
         />
 
       )}

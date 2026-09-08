@@ -332,6 +332,8 @@ export function ShaderBackground({
   colorCount,
   seed,
   timeScale,
+  scale,
+  intensity,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
@@ -340,6 +342,10 @@ export function ShaderBackground({
   seed?: number
   /** Animation speed; still resolves to 0 under prefers-reduced-motion. */
   timeScale?: number
+  /** Field zoom; higher values shrink each colour blob. */
+  scale?: number
+  /** Colour-centre radius factor; raise with scale to hold positions. */
+  intensity?: number
 }) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -415,8 +421,8 @@ export function ShaderBackground({
     gl.uniform3fv(uni.colors, new Float32Array(palette.flat()))
     gl.uniform4f(
       uni.shape,
-      UNIFORMS.scale,
-      UNIFORMS.intensity,
+      scale ?? UNIFORMS.scale,
+      intensity ?? UNIFORMS.intensity,
       UNIFORMS.paramA,
       UNIFORMS.warp,
     )
@@ -634,7 +640,7 @@ export function ShaderBackground({
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced, colorsKey, colorCount, seed, timeScale])
+  }, [reduced, colorsKey, colorCount, seed, timeScale, scale, intensity])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
