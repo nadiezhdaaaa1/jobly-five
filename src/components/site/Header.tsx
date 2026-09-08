@@ -125,7 +125,12 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               <Link to="/login" className={linkClass}>
                 Log in
               </Link>
-              <Link to="/quiz" className="main_accent_button main_accent_button--sm">
+              <Link
+                to="/quiz"
+                className={`main_accent_button main_accent_button--sm${
+                  isOverlay ? "" : " main_accent_button--on-light"
+                }`}
+              >
                 Get started
               </Link>
             </>
