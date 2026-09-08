@@ -29,6 +29,7 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-accent-hover: var(--accent-hover);
+  --color-main-accent: var(--main-accent);
   --color-accent-pressed: var(--accent-pressed);
   --color-on-accent: var(--on-accent);
   --color-green: var(--green);
@@ -94,6 +95,10 @@
   --accent-hover: #36FFC3;
   --accent-pressed: #0E735A;
   --on-accent: #090B0C;
+  /* New concept accent (coexists with --accent until the site is migrated). */
+  --main-accent: #2CFF8E;
+  --main-accent-hover: #22E87F;
+  --on-main-accent: #090B0C;
   --green: #0E735A;
   --mint: #D8FBEF;
   --success: #0E735A;
