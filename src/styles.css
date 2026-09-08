@@ -99,6 +99,8 @@
   --main-accent: #2CFF8E;
   --main-accent-hover: #22E87F;
   --on-main-accent: #090B0C;
+  --secondary-button: #1C6756;
+
   --green: #0E735A;
   --mint: #D8FBEF;
   --success: #0E735A;
@@ -519,8 +521,8 @@ select::-ms-expand {
   border: 1px solid rgba(0, 0, 0, 0.16);
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
-    inset 0px 1px 0px 0px rgba(255, 255, 255, 0.5),
-    inset 0px -1px 0px 0px rgba(0, 0, 0, 0.1);
+    inset 0px 1px 1px 0px rgba(255, 255, 255, 0.5),
+    inset 0px -1px 1px 0px rgba(0, 0, 0, 0.2);
   transition: background-color 140ms ease-out;
 }
 .main_accent_button:hover {
@@ -533,12 +535,12 @@ select::-ms-expand {
   line-height: 24px;
 }
 
-/* Secondary CTA for dark backgrounds. No inset shadow. */
-.ghost_button {
+/* Secondary CTA for dark backgrounds: filled dark green. */
+.secondary_button {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  background-color: transparent;
+  background-color: var(--secondary-button);
   color: #FFFFFF;
   font-family: var(--font-sans);
   font-weight: 300;
@@ -546,20 +548,24 @@ select::-ms-expand {
   line-height: 24px;
   padding: 12px 20px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    inset 0px 1px 1px 0px rgba(255, 255, 255, 0.2),
+    inset 0px -1px 1px 0px rgba(0, 0, 0, 0.2);
   transition: background-color 140ms ease-out;
 }
-.ghost_button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+.secondary_button:hover {
+  background-color: #22795F;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .main_accent_button,
-  .ghost_button {
+  .secondary_button {
     transition: none;
   }
 }
+
 
 /* Header overlay / solid states */
 .site-header {
