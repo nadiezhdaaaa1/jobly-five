@@ -9,8 +9,8 @@ const HERO_COLORS: [number, number, number][] = [
   [0.04313725490196078, 0.36470588235294120, 0.39607843137254900], // #0B5D65
   [0.03921568627450980, 0.44313725490196076, 0.52156862745098040], // #0A7185
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058826], // #0E735A
-  [0.07058823529411765, 0.20000000000000000, 0.22745098039215686], // #12333A
-  [0.03529411764705882, 0.04313725490196078, 0.04705882352941176], // #090B0C
+  [0.05490196078431373, 0.41960784313725490, 0.45490196078431370], // #0E6B74
+  [0.06274509803921569, 0.30980392156862746, 0.34117647058823530], // #104F57
 ];
 
 // SSR + reduced-motion + WebGL-unavailable fallback. Mirrors the Figma radial
@@ -83,6 +83,17 @@ export function HeroShaderBackground() {
           }}
         />
       ))}
+
+      {/* Directional falloff: the concept's darkness is a top-left-anchored
+          radial ramp, not scattered dark blobs. The opaque canvas hides
+          STATIC_FALLBACK once mounted, so it is reproduced here. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 110% at 0% 0%, rgba(9,11,12,0) 0%, rgba(9,11,12,0) 30%, rgba(9,11,12,0.35) 55%, rgba(9,11,12,0.72) 78%, rgba(9,11,12,0.85) 100%)",
+        }}
+      />
 
       {/* Contrast scrim: guarantees the headline stays legible wherever the
           mesh (and its blooms) wander. Left 55%, deep to transparent. */}
