@@ -51,7 +51,7 @@ export function Header() {
     <header className="sticky top-0 z-[1100] border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-5 md:px-8">
         <div className="flex items-center gap-10">
-          <Link to="/" className="flex items-center">
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
             <Wordmark />
           </Link>
           <nav className="hidden items-center gap-6 lg:flex">
