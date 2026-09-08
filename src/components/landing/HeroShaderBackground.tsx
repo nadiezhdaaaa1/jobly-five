@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-import { ShaderBackground } from "./ShaderBackground";
+import { GrainGradient } from "@paper-design/shaders-react";
+import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 // Jobly hero base: greens only. Pink and mint are fixed CSS overlays below, so
-// they can be sized and confined to regions the shader cannot express without
-// extra per-slot uniforms (the shader is one vec4 under WebGL1's guaranteed 16).
-const HERO_COLORS: [number, number, number][] = [
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
-];
+// they can be sized and confined to regions the full-field shader cannot express.
+const HERO_COLORS = ["#0E735A", "#22936C", "#0E735A"];
+const HERO_COLOR_BACK = "#0E735A";
 
 // Stands in for the shader canvas only (SSR, reduced motion, no WebGL): the same
 // greens the four slots settle into — #22936C lifting at middle-left and again
@@ -21,6 +17,7 @@ const STATIC_FALLBACK =
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
   const [mounted, setMounted] = useState(false);
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     setMounted(true);
@@ -32,18 +29,19 @@ export function HeroShaderBackground() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: STATIC_FALLBACK }}
     >
-      {/* Reduced motion is honoured inside ShaderBackground: one still frame. */}
+      {/* speed 0 under reduced motion: one still frame. */}
       {mounted && (
-        <ShaderBackground
+        <GrainGradient
           className="absolute inset-0 h-full w-full"
           colors={HERO_COLORS}
-          colorCount={4}
-          seed={1453}
-          timeScale={0.12}
+          colorBack={HERO_COLOR_BACK}
+          shape="wave"
+          speed={reducedMotion ? 0 : 0.3}
           scale={1.4}
-          intensity={0.68}
+          softness={0.8}
+          intensity={0.25}
+          noise={0.3}
         />
-
       )}
 
       {/* Accent blooms: clipped to the bottom half (mobile) / right half (lg+),
