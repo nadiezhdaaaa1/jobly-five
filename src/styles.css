@@ -512,6 +512,7 @@ select::-ms-expand {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  position: relative;
   background-color: var(--main-accent);
   color: var(--on-main-accent);
   font-family: var(--font-sans);
@@ -520,7 +521,6 @@ select::-ms-expand {
   line-height: 24px;
   padding: 12px 20px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.16);
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
     inset 0px 1px 1px 0px rgba(255, 255, 255, 0.5),
@@ -542,6 +542,7 @@ select::-ms-expand {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+  position: relative;
   background-color: var(--secondary-button);
   color: #FFFFFF;
   font-family: var(--font-sans);
@@ -550,7 +551,6 @@ select::-ms-expand {
   line-height: 24px;
   padding: 12px 20px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.16);
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
     inset 0px 1px 1px 0px rgba(255, 255, 255, 0.2),
@@ -559,6 +559,31 @@ select::-ms-expand {
 }
 .secondary_button:hover {
   background-color: #22795F;
+}
+
+
+/* Figma strokes both CTAs with a 1px outline that ramps from black 20% at the
+ * top edge to black 28% at the bottom. A `border` cannot hold a gradient, and
+ * it would also grow the box: Figma's 168x48 button measures 168x48 *with* the
+ * stroke, because the stroke sits inside the shape. So the ring is painted by a
+ * masked pseudo-element — gradient-capable, and it costs no layout. */
+.main_accent_button::before,
+.secondary_button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.28) 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

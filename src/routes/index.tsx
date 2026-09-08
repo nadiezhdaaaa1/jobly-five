@@ -243,14 +243,14 @@ function Hero() {
       <div className="relative lg:mx-12">
       <div className="relative mx-auto grid max-w-[1200px] gap-12 px-5 pb-14 pt-24 md:px-8 md:pb-20 md:pt-28 lg:grid-cols-[544px_1fr] lg:items-start lg:gap-12 lg:pb-0 lg:pt-20">
         <div className="relative z-20 lg:w-[544px] lg:pt-[108px]">
-          <div className="inline-flex items-center gap-2 text-[16px] font-light leading-6 text-white/80">
+          <div className="inline-flex items-center gap-2 text-[16px] font-extralight leading-6 text-white/80">
             <span className="relative flex h-2 w-2 items-center justify-center">
               <span className="absolute h-[15.5px] w-[15.5px] rounded-full bg-white opacity-[0.04]" />
               <span className="absolute h-2 w-2 animate-ping rounded-full bg-white opacity-75 motion-reduce:animate-none" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
             </span>
-            Live · US tech openings{"\u00a0\n"}
-            <span className="text-[16px] font-normal leading-6 text-white tabular-nums">
+            Live · US tech openings
+            <span className="text-[16px] font-light leading-6 text-white tabular-nums">
               {count.toLocaleString("en-US")}
             </span>
           </div>
@@ -260,7 +260,7 @@ function Hero() {
           >
             Relevant jobs, first — scored to you
           </h1>
-          <p className="mt-5 max-w-[576px] text-[18px] font-light leading-7 text-white/85 lg:w-[544px]">
+          <p className="mt-5 max-w-[576px] text-[18px] font-extralight leading-7 text-white/85 lg:w-[544px]">
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
