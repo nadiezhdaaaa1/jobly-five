@@ -408,7 +408,7 @@ export function ShaderBackground({
       space: gl.getUniformLocation(program, "u_space"),
       cursor: gl.getUniformLocation(program, "u_cursor"),
     }
-    gl.uniform3fv(uni.colors, new Float32Array(UNIFORMS.colors.flat()))
+    gl.uniform3fv(uni.colors, new Float32Array(palette.flat()))
     gl.uniform4f(
       uni.shape,
       UNIFORMS.scale,
@@ -432,7 +432,7 @@ export function ShaderBackground({
     )
     gl.uniform4f(
       uni.transform,
-      UNIFORMS.seed,
+      activeSeed,
       UNIFORMS.rotate,
       UNIFORMS.drift,
       UNIFORMS.oklab,
@@ -577,7 +577,7 @@ export function ShaderBackground({
         width,
         height,
         ((now - start) / 1000) * timeScale,
-        UNIFORMS.colorCount,
+        activeColorCount,
       )
       gl.uniform4f(
         uni.space,
@@ -630,7 +630,7 @@ export function ShaderBackground({
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced])
+  }, [reduced, colorsKey, colorCount, seed])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
