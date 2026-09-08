@@ -543,6 +543,24 @@ select::-ms-expand {
   line-height: 24px;
 }
 
+/* Accent CTA on a light surface — the solid header. Figma draws this variant's
+ * stroke Inside rather than Outside, so the 110x40 frame is also the rendered
+ * size: the stroke is an inset ring, which costs no layout, instead of a
+ * border. Its inner shadows are offset 2px rather than 1px and the lower one is
+ * 10% rather than 20%. */
+.main_accent_button--on-light {
+  border: 0;
+  border-radius: 14px;
+  background-clip: border-box;
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.2),
+    inset 0px 2px 1px 0px rgba(255, 255, 255, 0.5),
+    inset 0px -2px 1px 0px rgba(0, 0, 0, 0.1);
+}
+
+
+
 /* Secondary CTA for dark backgrounds: filled dark green. */
 .secondary_button {
   display: inline-flex;
