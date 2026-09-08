@@ -72,6 +72,17 @@ export function HeroShaderBackground() {
         />
       )}
 
+      {/* Directional falloff: the concept's darkness is a top-left-anchored
+          radial ramp, not scattered dark blobs. The opaque canvas hides
+          STATIC_FALLBACK once mounted, so it is reproduced here. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(120% 110% at 0% 0%, rgba(9,11,12,0) 0%, rgba(9,11,12,0) 30%, rgba(9,11,12,0.35) 55%, rgba(9,11,12,0.72) 78%, rgba(9,11,12,0.85) 100%)",
+        }}
+      />
+
       {BLOOMS.map((bloom, i) => (
         <div
           key={i}
@@ -83,17 +94,6 @@ export function HeroShaderBackground() {
           }}
         />
       ))}
-
-      {/* Directional falloff: the concept's darkness is a top-left-anchored
-          radial ramp, not scattered dark blobs. The opaque canvas hides
-          STATIC_FALLBACK once mounted, so it is reproduced here. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 110% at 0% 0%, rgba(9,11,12,0) 0%, rgba(9,11,12,0) 30%, rgba(9,11,12,0.35) 55%, rgba(9,11,12,0.72) 78%, rgba(9,11,12,0.85) 100%)",
-        }}
-      />
 
       {/* Contrast scrim: guarantees the headline stays legible wherever the
           mesh (and its blooms) wander. Left 55%, deep to transparent. */}
