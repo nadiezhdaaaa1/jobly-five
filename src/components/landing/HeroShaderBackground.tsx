@@ -29,18 +29,19 @@ export function HeroShaderBackground() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: STATIC_FALLBACK }}
     >
-      {/* Reduced motion is honoured inside ShaderBackground: one still frame. */}
+      {/* speed 0 under reduced motion: one still frame. */}
       {mounted && (
-        <ShaderBackground
+        <GrainGradient
           className="absolute inset-0 h-full w-full"
           colors={HERO_COLORS}
-          colorCount={4}
-          seed={1453}
-          timeScale={0.12}
+          colorBack={HERO_COLOR_BACK}
+          shape="wave"
+          speed={reducedMotion ? 0 : 0.3}
           scale={1.4}
-          intensity={0.68}
+          softness={0.8}
+          intensity={0.25}
+          noise={0.3}
         />
-
       )}
 
       {/* Accent blooms: clipped to the bottom half (mobile) / right half (lg+),
