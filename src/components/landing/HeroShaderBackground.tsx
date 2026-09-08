@@ -1,52 +1,22 @@
 import { useEffect, useState } from "react";
 import { ShaderBackground } from "./ShaderBackground";
 
-// Jobly hero palette, sampled from the Figma concept. Index 0 is the shader's
-// base wash. Every stop is dark enough to carry white hero copy; the brights
-// (#2CFF8E, #FBBCDE) are deliberately kept out of the drifting mesh and only
-// appear as the fixed, low-opacity blooms below.
+// Jobly hero palette, sampled from the Figma ellipse group (the light, pastel
+// layer that actually shows). Index 0 is the shader's base wash — #7DA49C sits
+// mid-range, so it anchors the field.
 const HERO_COLORS: [number, number, number][] = [
-  [0.04313725490196078, 0.36470588235294120, 0.39607843137254900], // #0B5D65
-  [0.03921568627450980, 0.44313725490196076, 0.52156862745098040], // #0A7185
-  [0.05490196078431373, 0.45098039215686275, 0.35294117647058826], // #0E735A
-  [0.05490196078431373, 0.41960784313725490, 0.45490196078431370], // #0E6B74
-  [0.06274509803921569, 0.30980392156862746, 0.34117647058823530], // #104F57
+  [0.49019607843137253, 0.64313725490196080, 0.61176470588235290], // #7DA49C
+  [0.97254901960784310, 0.79607843137254900, 0.89411764705882350], // #F8CBE4
+  [0.80000000000000000, 0.80784313725490200, 0.81176470588235290], // #CCCECF
+  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
+  [0.17254901960784313, 0.85882352941176470, 0.51764705882352940], // #2CDB84
+  [0.33725490196078430, 0.88627450980392160, 0.60392156862745100], // #56E29A
 ];
 
-// SSR + reduced-motion + WebGL-unavailable fallback. Mirrors the Figma radial
-// exactly so there is no colour shift when the canvas mounts.
+// SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
+// family so there is no dark flash before the canvas mounts.
 const STATIC_FALLBACK =
-  "radial-gradient(120% 110% at 0% 0%, #0A7185 0%, #0E6B74 22%, #104F57 35%, #12333A 48%, #0E1F23 63%, #090B0C 78%)";
-
-// Fixed colour washes from the concept: two pink, one mint, one green. Static
-// on purpose — feeding them into the mesh would let them drift behind copy.
-// Opacities are contrast-checked against white text; do not raise them.
-const BLOOMS = [
-  {
-    opacity: 0.18,
-    background:
-      "radial-gradient(closest-side, #FBBCDE 0%, rgba(251, 188, 222, 0) 100%)",
-    className: "left-[35%] top-0 h-[820px] w-[1100px]",
-  },
-  {
-    opacity: 0.12,
-    background:
-      "radial-gradient(closest-side, #FBBCDE 0%, rgba(251, 188, 222, 0) 100%)",
-    className: "left-[85%] top-[5%] h-[520px] w-[640px]",
-  },
-  {
-    opacity: 0.15,
-    background:
-      "radial-gradient(closest-side, #2CFF8E 0%, rgba(44, 255, 142, 0) 100%)",
-    className: "left-[72%] top-[95%] h-[620px] w-[760px]",
-  },
-  {
-    opacity: 0.2,
-    background:
-      "radial-gradient(closest-side, #0E735A 0%, rgba(14, 115, 90, 0) 100%)",
-    className: "left-[78%] top-[45%] h-[900px] w-[1000px]",
-  },
-];
+  "radial-gradient(140% 120% at 30% 0%, #F8CBE4 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #2CDB84 85%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
@@ -67,43 +37,10 @@ export function HeroShaderBackground() {
         <ShaderBackground
           className="absolute inset-0 h-full w-full"
           colors={HERO_COLORS}
-          colorCount={5}
+          colorCount={6}
           seed={1453}
         />
       )}
-
-      {/* Directional falloff: the concept's darkness is a top-left-anchored
-          radial ramp, not scattered dark blobs. The opaque canvas hides
-          STATIC_FALLBACK once mounted, so it is reproduced here. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 110% at 0% 0%, rgba(9,11,12,0) 0%, rgba(9,11,12,0) 30%, rgba(9,11,12,0.35) 55%, rgba(9,11,12,0.72) 78%, rgba(9,11,12,0.85) 100%)",
-        }}
-      />
-
-      {BLOOMS.map((bloom, i) => (
-        <div
-          key={i}
-          className={`absolute -translate-x-1/2 -translate-y-1/2 ${bloom.className}`}
-          style={{
-            background: bloom.background,
-            opacity: bloom.opacity,
-            filter: "blur(90px)",
-          }}
-        />
-      ))}
-
-      {/* Contrast scrim: guarantees the headline stays legible wherever the
-          mesh (and its blooms) wander. Left 55%, deep to transparent. */}
-      <div
-        className="absolute inset-y-0 left-0 w-[55%]"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(9, 11, 12, 0.45) 0%, rgba(9, 11, 12, 0) 100%)",
-        }}
-      />
     </div>
   );
 }
