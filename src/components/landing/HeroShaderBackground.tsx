@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
-import { GrainGradient } from "@paper-design/shaders-react";
-import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
+import { ShaderBackground } from "./ShaderBackground";
 
-// Full Figma palette, ordered dark -> light. GrainGradient maps the array onto a
-// scalar field (for shape="wave" that field is directional along the pattern Y
-// axis, grain-perturbed), so array order corresponds to a spatial axis that
-// `rotation` aims.
-const HERO_COLORS = [
-  "#0E735A",
-  "#22936C",
-  "#7DA49C",
-  "#CCCECF",
-  "#2CDB84",
-  "#56E29A",
-  "#F3CAE1",
+// Jobly hero palette, sampled from the Figma ellipse group (the light, pastel
+// layer that actually shows). Slot order is deliberate: each index decides where
+// that colour pools on screen (see shade() in ShaderBackground). Slot 0 doubles
+// as the base wash. Pink is repeated in slots 3 and 4 — the two upper positions
+// — so it spreads across the whole top, mirroring Figma's two pink ellipses.
+const HERO_COLORS: [number, number, number][] = [
+  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
+  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
+  [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
+  [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
+  [0.97254901960784310, 0.79607843137254900, 0.89411764705882350], // #F8CBE4
+  [0.17254901960784313, 0.85882352941176470, 0.51764705882352940], // #2CDB84
 ];
-const HERO_COLOR_BACK = "#0E735A";
 
 
-// Stands in for the shader canvas only (SSR, reduced motion, no WebGL): the same
-// dark-green upper-left to light lower-right run the steered shader produces, so
-// the pre-mount frame and the shader read the same way.
+// SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
+// family so there is no dark flash before the canvas mounts.
 const STATIC_FALLBACK =
-  "radial-gradient(120% 110% at 88% 96%, #F3CAE1 0%, #56E29A 14%, #2CDB84 28%, #CCCECF 44%, #7DA49C 58%, #22936C 74%, #0E735A 90%)";
+  "radial-gradient(140% 120% at 30% 0%, #F8CBE4 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #2CDB84 85%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
   const [mounted, setMounted] = useState(false);
-  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     setMounted(true);
@@ -39,26 +35,17 @@ export function HeroShaderBackground() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
       style={{ background: STATIC_FALLBACK }}
     >
-      {/* speed 0 under reduced motion: one still frame. rotation + offsetY aim the
-          light end of the ramp at the lower right, keeping the dark greens over the
-          nav and the white hero copy at upper left. */}
+      {/* Reduced motion is honoured inside ShaderBackground: one still frame. */}
       {mounted && (
-        <GrainGradient
+        <ShaderBackground
           className="absolute inset-0 h-full w-full"
           colors={HERO_COLORS}
-          colorBack={HERO_COLOR_BACK}
-          shape="wave"
-          speed={reducedMotion ? 0 : 0.3}
-          scale={1.4}
-          softness={0.8}
-          intensity={0.25}
-          noise={0.3}
-          rotation={315}
-          offsetY={0.5}
+          colorCount={6}
+          seed={1453}
+          timeScale={0.12}
         />
+
       )}
-
-
     </div>
   );
 }

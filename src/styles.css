@@ -449,34 +449,6 @@ select::-ms-expand {
   .chip-marquee { animation: none; }
 }
 
-/* Hero accent blooms are clipped to a region; the mask feathers the inner
-   edge so the clip never shows as a straight line. */
-.hero-accents {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
-          mask-image: linear-gradient(to bottom, transparent 0%, #000 22%);
-}
-@media (min-width: 1024px) {
-  .hero-accents {
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 18%);
-            mask-image: linear-gradient(to right, transparent 0%, #000 18%);
-  }
-}
-
-@keyframes hero-bloom-a {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  50%      { transform: translate3d(-7%, 6%, 0) scale(1.10); }
-}
-@keyframes hero-bloom-b {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1.06); }
-  50%      { transform: translate3d(6%, -5%, 0) scale(1); }
-}
-.hero-bloom-a { animation: hero-bloom-a 34s ease-in-out infinite; }
-.hero-bloom-b { animation: hero-bloom-b 28s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .hero-bloom-a, .hero-bloom-b { animation: none; }
-}
-
-
 
 /* Testimonial scrim: the 12px backdrop blur needs to fade out with the
    gradient above it, or the blur's own edge shows as a hard seam across
