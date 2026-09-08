@@ -11,11 +11,12 @@ const HERO_COLORS: [number, number, number][] = [
   [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
 ];
 
-
-// SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
-// family so there is no dark flash before the canvas mounts.
+// Stands in for the shader canvas only (SSR, reduced motion, no WebGL): the same
+// greens the four slots settle into — #22936C lifting at middle-left and again
+// upper-centre-right, over a #0E735A base. The pink and mint overlays render at
+// both mount states, so the fallback deliberately carries neither.
 const STATIC_FALLBACK =
-  "radial-gradient(140% 120% at 30% 0%, #F3CAE1 0%, #0E735A 30%, #0E735A 62%, #22936C 78%, #2CDB84 96%)";
+  "radial-gradient(90% 80% at 62% 18%, rgba(34, 147, 108, 0.55) 0%, rgba(34, 147, 108, 0) 70%), radial-gradient(130% 130% at 28% 45%, #22936C 0%, #0E735A 62%, #0E735A 100%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
