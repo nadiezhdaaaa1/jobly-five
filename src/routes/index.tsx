@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconClipboardList as ClipboardList, IconNetwork as Network, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
-import heroAsset from "../assets/hero-2.webp.asset.json";
+import heroAsset from "../assets/hero-3.webp.asset.json";
 import t1Asset from "../assets/t1-2.png.asset.json";
 import t2Asset from "../assets/t2-3.png.asset.json";
 import t3Asset from "../assets/t3-2.png.asset.json";
@@ -216,13 +216,13 @@ function Hero() {
   return (
     <section className="relative isolate overflow-hidden lg:mx-12">
       <HeroShaderBackground />
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[300px] w-[332px] overflow-hidden sm:h-[360px] sm:w-[398px] md:h-[440px] md:w-[555px] lg:h-[520px] lg:w-[575px]">
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10 h-[334px] w-[357px] overflow-hidden sm:h-[400px] sm:w-[428px] md:h-[490px] md:w-[524px] lg:h-[580px] lg:w-[620px]">
         <img
           src={heroAsset.url}
           alt="A person checking Jobly matches on their phone"
           fetchPriority="high"
           decoding="async"
-          className="absolute right-0 top-0 h-[300px] w-auto max-w-none sm:h-[360px] md:h-[560px] lg:h-[520px]"
+          className="absolute right-0 top-0 h-[357px] w-auto max-w-none sm:h-[428px] md:h-[524px] lg:h-[620px]"
         />
       </div>
 
