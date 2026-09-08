@@ -331,13 +331,17 @@ export function ShaderBackground({
   colors,
   colorCount,
   seed,
+  timeScale,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
   colors?: [number, number, number][]
   colorCount?: number
   seed?: number
+  /** Animation speed; still resolves to 0 under prefers-reduced-motion. */
+  timeScale?: number
 }) {
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
 
@@ -358,7 +362,7 @@ export function ShaderBackground({
     const gl = context
 
     // Honour prefers-reduced-motion: at 0 the shader renders one still frame.
-    const timeScale = reduced ? 0 : UNIFORMS.timeScale
+    const activeTimeScale = reduced ? 0 : (timeScale ?? UNIFORMS.timeScale)
 
     // Optional palette overrides; each falls back to the module defaults so
     // existing usages render exactly as before. The array is padded to the
@@ -461,7 +465,7 @@ export function ShaderBackground({
     let inView = true
     let disposed = false
     const start = performance.now()
-    const timeAnimated = Math.abs(timeScale) > 0.0001
+    const timeAnimated = Math.abs(activeTimeScale) > 0.0001
 
     const resizeCanvas = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -576,7 +580,7 @@ export function ShaderBackground({
         uni.scene,
         width,
         height,
-        ((now - start) / 1000) * timeScale,
+        ((now - start) / 1000) * activeTimeScale,
         activeColorCount,
       )
       gl.uniform4f(
@@ -630,7 +634,7 @@ export function ShaderBackground({
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced, colorsKey, colorCount, seed])
+  }, [reduced, colorsKey, colorCount, seed, timeScale])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
