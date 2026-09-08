@@ -335,11 +335,11 @@ function InboxToOffer() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3 lg:-mx-1">
           {testimonials.map((t) => (
             <article
               key={t.name}
-              className="group relative z-0 h-[520px] overflow-hidden rounded-[8px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px]"
+              className="group relative z-0 h-[520px] overflow-hidden rounded-[20px] bg-[color:var(--color-foreground)] text-[color:var(--color-background)] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px]"
             >
               <img
                 src={t.photo}
@@ -357,7 +357,7 @@ function InboxToOffer() {
                 <h5 className="text-[18px] font-light leading-[1.6]" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}>
                   "{t.quote}"
                 </h5>
-                <p className="mt-5 text-base leading-6 opacity-80">
+                <p className="mt-5 text-base font-light leading-6 opacity-80">
                   {t.name} · {t.role}
                 </p>
               </div>
