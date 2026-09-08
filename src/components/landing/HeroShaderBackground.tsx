@@ -11,15 +11,15 @@ const HERO_COLORS: [number, number, number][] = [
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
   [0.13333333333333333, 0.57647058823529410, 0.42352941176470588], // #22936C
   [0.05490196078431373, 0.45098039215686275, 0.35294117647058820], // #0E735A
-  [0.97254901960784310, 0.79607843137254900, 0.89411764705882350], // #F8CBE4
-  [0.17254901960784313, 0.85882352941176470, 0.51764705882352940], // #2CDB84
+  [0.95294117647058818, 0.79215686274509800, 0.88235294117647056], // #F3CAE1
+  [0.19607843137254902, 0.85490196078431369, 0.52156862745098043], // #32DA85
 ];
 
 
 // SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
 // family so there is no dark flash before the canvas mounts.
 const STATIC_FALLBACK =
-  "radial-gradient(140% 120% at 30% 0%, #F8CBE4 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #2CDB84 85%)";
+  "radial-gradient(140% 120% at 30% 0%, #F3CAE1 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #32DA85 85%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
