@@ -331,13 +331,17 @@ export function ShaderBackground({
   colors,
   colorCount,
   seed,
+  timeScale,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
   colors?: [number, number, number][]
   colorCount?: number
   seed?: number
+  /** Animation speed; still resolves to 0 under prefers-reduced-motion. */
+  timeScale?: number
 }) {
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
 
