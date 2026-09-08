@@ -638,7 +638,7 @@ export function ShaderBackground({
       }, 0)
       pendingContextReleases.set(canvas, releaseTimer)
     }
-  }, [reduced, colorsKey, colorCount, seed, timeScale])
+  }, [reduced, colorsKey, colorCount, seed, timeScale, grain])
 
   return (
     <canvas ref={canvasRef} className={className} style={{ display: "block", width: "100%", height: "100%" }} />
