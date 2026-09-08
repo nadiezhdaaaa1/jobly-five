@@ -436,7 +436,7 @@ export function ShaderBackground({
       UNIFORMS.hue,
       UNIFORMS.vignette,
       UNIFORMS.blur,
-      UNIFORMS.grain,
+      activeGrain,
     )
     gl.uniform4f(
       uni.transform,
