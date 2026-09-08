@@ -326,9 +326,24 @@ const UNIFORMS = {
 
 const pendingContextReleases = new WeakMap<HTMLCanvasElement, number>()
 
-export function ShaderBackground({ className }: { className?: string }) {
+export function ShaderBackground({
+  className,
+  colors,
+  colorCount,
+  seed,
+}: {
+  className?: string
+  /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
+  colors?: [number, number, number][]
+  colorCount?: number
+  seed?: number
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
+
+  // Derived primitive so a re-render with the same palette (a fresh array
+  // literal) does not tear down and rebuild the WebGL context.
+  const colorsKey = colors ? colors.map((c) => c.join(",")).join("|") : ""
 
   useEffect(() => {
     if (!canvasRef.current) return
