@@ -86,7 +86,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
     >
       <div
         className={`site-header-bar mx-auto flex max-w-[1200px] items-center justify-between px-5 md:px-8 ${
-          isOverlay ? "h-20" : "h-16"
+          isOverlay ? "h-20" : "h-[72px]"
         }`}
       >
         <div className="flex items-center gap-10">
