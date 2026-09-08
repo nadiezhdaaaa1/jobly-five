@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { IconLogout as LogOut, IconMenu2 as Menu, IconX as X } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -115,7 +115,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               </button>
               <Link
                 to="/dashboard"
-                className="main_accent_button main_accent_button--sm"
+                className="inline-flex h-10 items-center rounded-button border border-current px-4 text-[14px] font-light leading-5 text-current transition-opacity hover:opacity-70"
               >
                 Dashboard
               </Link>
@@ -141,7 +141,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         </button>
       </div>
       {open && (
-        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] lg:hidden">
+        <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] lg:hidden">
           <div className="mx-auto flex max-w-[1200px] flex-col gap-1 px-5 py-4">
             {NAV.map((n) =>
               n.to ? (
@@ -188,7 +188,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                 <Link
                   to="/quiz"
                   onClick={() => setOpen(false)}
-                  className="mt-2 inline-flex h-11 items-center justify-center rounded-button bg-[color:var(--color-accent)] px-4 text-sm text-[color:var(--color-on-accent)]"
+                  className="main_accent_button mt-2 justify-center"
                 >
                   Get started
                 </Link>
