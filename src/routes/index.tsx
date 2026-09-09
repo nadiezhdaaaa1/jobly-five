@@ -270,7 +270,7 @@ function Hero() {
             </a>
           </div>
         </div>
-        <div className="relative z-[5] lg:w-[544px] lg:pt-2">
+        <div className="relative z-[5] lg:pt-2">
           <HeroCard />
         </div>
       </div>
@@ -386,16 +386,18 @@ function TimeToOffer() {
         <div className="absolute bottom-0 right-12 top-0 w-px bg-white/30" />
       </div>
 
-      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-16 md:flex-row md:items-center md:gap-4 md:px-8 md:py-24">
-        <p
-          className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
-          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
-        >
-          12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
-        </p>
-        <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
-          Start your search
-        </Link>
+      <div className="relative z-10 lg:mx-12">
+        <div className="mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-16 md:flex-row md:items-center md:gap-4 md:px-8 md:py-24">
+          <p
+            className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
+          </p>
+          <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
+            Start your search
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -1507,16 +1509,18 @@ function FinalCTA() {
         <div className="absolute bottom-0 right-12 top-0 w-px bg-white/30" />
       </div>
 
-      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col items-center gap-8 px-5 py-16 text-center md:px-8 md:py-24">
-        <h2
-          className="text-3xl font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[40px]"
-          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
-        >
-          Ready to stop scrolling?
-        </h2>
-        <Link to="/quiz" className="main_accent_button">
-          Get my matches
-        </Link>
+      <div className="relative z-10 lg:mx-12">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-8 px-5 py-16 text-center md:px-8 md:py-24">
+          <h2
+            className="text-3xl font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[40px]"
+            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+          >
+            Ready to stop scrolling?
+          </h2>
+          <Link to="/quiz" className="main_accent_button">
+            Get my matches
+          </Link>
+        </div>
       </div>
     </section>
   );
