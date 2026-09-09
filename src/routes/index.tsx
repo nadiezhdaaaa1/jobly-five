@@ -9,9 +9,9 @@ import t3Asset from "../assets/t3-hero-2.webp.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
-import brokenHoursAsset from "../assets/broken-hours.png.asset.json";
-import brokenGhostAsset from "../assets/broken-ghost.png.asset.json";
-import brokenListingsAsset from "../assets/broken-listings.png.asset.json";
+import brokenHoursAsset from "../assets/problem-clock.webp.asset.json";
+import brokenGhostAsset from "../assets/problem-ghost.webp.asset.json";
+import brokenListingsAsset from "../assets/problem-list.webp.asset.json";
 
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
@@ -557,7 +557,7 @@ function JobSearchBroken() {
             Candidate experience is at an all-time low. Here is why your current routine feels like a second full-time job
           </p>
 
-          <div className="mt-10 flex flex-col rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
+          <div className="mt-10 flex flex-col rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] md:flex-row">
             {items.flatMap((it, i) => [
               ...(i > 0
                 ? [
@@ -569,7 +569,7 @@ function JobSearchBroken() {
                   ]
                 : []),
               <div key={it.title} className="flex flex-1 flex-col gap-3 p-10">
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-4">
                   <img src={it.img} alt="" className="size-14 object-contain" />
                   <h3
                     className="text-xl font-light leading-7"
@@ -636,7 +636,7 @@ function ChipGroup({ row, hidden }: { row: ChipDef[]; hidden?: boolean }) {
       {row.map((chip, j) => (
         <span
           key={`${chip.title}-${j}`}
-          className="inline-flex items-center gap-2 whitespace-nowrap rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2 text-sm leading-5 text-[color:var(--color-foreground)]"
+          className="inline-flex items-center gap-2 whitespace-nowrap rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2 text-sm leading-5 text-[color:var(--color-foreground)]"
         >
           <chip.icon size={14} className="text-[color:var(--color-text-secondary)]" />
           <span>{chip.title}</span>
