@@ -32,8 +32,7 @@ import { FaqSection, faqs } from "../components/site/FaqSection";
 import { usePrefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 const ORIGIN = "https://jobly-five.lovable.app";
-const OG_IMAGE =
-  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/35f965be-a71c-408c-88e4-7c07755b768b/id-preview-a2e56716--b6a571a3-355e-4f02-baa7-954b5019600e.lovable.app-1784218758072.png";
+const OG_IMAGE = `${ORIGIN}/__l5e/assets-v1/772e3b84-bf4a-415f-bfe9-c1019d01ac53/jobly-og.png`;
 
 export const Route = createFileRoute("/")({
   head: () => ({
