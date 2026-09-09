@@ -697,7 +697,7 @@ function HowItWorks() {
               We flipped the script. Instead of searching, you receive matching digests directly in your inbox
             </p>
           </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             <HowCard step={1} title="Start with anything" body="2-minute quiz about role, stack, level, location and salary">
               <QuizPreview />
             </HowCard>
@@ -727,14 +727,14 @@ function HowCard({
 }) {
   return (
     <div
-      className="group relative z-0 grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[8px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[7.722px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[8px] lg:h-[400px]"
+      className="group relative z-0 grid h-full grid-rows-[1fr_auto] overflow-hidden rounded-[20px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] lg:h-[400px]"
       style={{ border: "1px solid var(--color-border-strong)", backgroundColor: "var(--color-surface-2)" }}
     >
       <div className="pt-6 pr-6 pl-6 pb-0 md:pt-8 md:pr-8 md:pl-8">
         <div className="flex flex-col gap-3">
           <span
-            className="inline-flex w-fit items-center rounded-[4px] px-3 py-1 text-[13px] font-medium text-white"
-            style={{ backgroundColor: "var(--color-green)" }}
+            className="inline-flex w-fit items-center rounded-[16px] px-3 py-1 text-[13px] font-medium leading-5 text-white"
+            style={{ backgroundColor: "var(--color-step-accent)" }}
           >
             Step {step}
           </span>
