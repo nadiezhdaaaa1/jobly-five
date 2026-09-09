@@ -1206,7 +1206,7 @@ function Pricing() {
                       fontWeight: 300,
                       fontSize: 12,
                       lineHeight: 1.3,
-                      color: "var(--green, #0E735A)",
+                      color: "var(--color-match-teal)",
                       position: "relative",
                       zIndex: 1,
                       whiteSpace: "nowrap",
