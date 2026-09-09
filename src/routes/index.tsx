@@ -375,7 +375,7 @@ function InboxToOffer() {
 function TimeToOffer() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
-      <div className="relative overflow-hidden border-[color:var(--color-border)] bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
+      <div className="relative overflow-hidden border-white/30 bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
         {/* Right-side shader, fading into the panel colour toward the centre. */}
         <div
           aria-hidden="true"
@@ -392,10 +392,7 @@ function TimeToOffer() {
           >
             12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
           </p>
-          <Link
-            to="/quiz"
-            className="inline-flex h-12 shrink-0 items-center self-start rounded-button bg-[color:var(--color-accent)] px-6 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] md:self-auto"
-          >
+          <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
             Start your search
           </Link>
         </div>
