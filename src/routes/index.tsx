@@ -296,6 +296,7 @@ function HeroCard() {
 const testimonials = [
   {
     photo: t1Asset.url,
+    objectPosition: "object-center",
     quote:
       "I was tired of spraying resumes. Jobly sent me exactly what I wanted. Signed my offer last week.",
     name: "David K.",
@@ -303,6 +304,7 @@ const testimonials = [
   },
   {
     photo: t2Asset.url,
+    objectPosition: "object-center",
     quote:
       "The match score is shockingly accurate. No recruiter spam, just high quality direct listings.",
     name: "Sarah L.",
@@ -310,6 +312,7 @@ const testimonials = [
   },
   {
     photo: t3Asset.url,
+    objectPosition: "object-bottom",
     quote:
       "Ghost job filtering alone makes this worth it. Saved me dozens of wasted application hours.",
     name: "Arjun P.",
