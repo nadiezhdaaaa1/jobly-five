@@ -296,6 +296,7 @@ function HeroCard() {
 const testimonials = [
   {
     photo: t1Asset.url,
+    objectPosition: "object-center",
     quote:
       "I was tired of spraying resumes. Jobly sent me exactly what I wanted. Signed my offer last week.",
     name: "David K.",
@@ -303,6 +304,7 @@ const testimonials = [
   },
   {
     photo: t2Asset.url,
+    objectPosition: "object-center",
     quote:
       "The match score is shockingly accurate. No recruiter spam, just high quality direct listings.",
     name: "Sarah L.",
@@ -310,6 +312,7 @@ const testimonials = [
   },
   {
     photo: t3Asset.url,
+    objectPosition: "object-bottom",
     quote:
       "Ghost job filtering alone makes this worth it. Saved me dozens of wasted application hours.",
     name: "Arjun P.",
@@ -345,8 +348,7 @@ function InboxToOffer() {
                 alt={t.name}
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full scale-[1.036] object-cover transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-
+                className={`h-full w-full scale-[1.036] object-cover ${t.objectPosition} transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100`}
               />
               <div
                 className="testimonial-scrim-blur pointer-events-none absolute inset-x-0 bottom-0 h-[280px] backdrop-blur-[12px]"
