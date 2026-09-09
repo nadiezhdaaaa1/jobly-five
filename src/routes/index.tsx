@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconClipboardList as ClipboardList, IconNetwork as Network, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
 import heroAsset from "../assets/hero-4.webp.asset.json";
-import t1Asset from "../assets/t1-hero.webp.asset.json";
-import t2Asset from "../assets/t2-hero.webp.asset.json";
-import t3Asset from "../assets/t3-hero.webp.asset.json";
+import t1Asset from "../assets/t1-hero-2.webp.asset.json";
+import t2Asset from "../assets/t2-hero-2.webp.asset.json";
+import t3Asset from "../assets/t3-hero-2.webp.asset.json";
 import how1Asset from "../assets/how_1.png.asset.json";
 import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
