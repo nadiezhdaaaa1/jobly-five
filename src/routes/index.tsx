@@ -376,28 +376,27 @@ function InboxToOffer() {
 
 function TimeToOffer() {
   return (
-    <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
-      <div className="relative overflow-hidden border-white/30 bg-[color:var(--color-deep-teal)] lg:mx-12 lg:border-l lg:border-r">
-        {/* Right-side shader, fading into the panel colour toward the centre. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-[calc(50%+14px)] h-[358px] -translate-y-1/2"
-        >
-          <ShaderBackground className="absolute inset-0 h-full w-full" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[color:var(--color-deep-teal)] to-transparent to-50%" />
-        </div>
+    <section className="relative isolate overflow-hidden">
+      <HeroShaderBackground />
 
-        <div className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-16 md:flex-row md:items-center md:gap-4 md:px-8 md:py-24">
-          <p
-            className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
-            style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
-          >
-            12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
-          </p>
-          <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
-            Start your search
-          </Link>
-        </div>
+      {/* Figma frame lines, drawn on top of the full-bleed gradient. Same
+          treatment as the hero: the band runs edge to edge and the two gutter
+          rules are painted over it at 48px in from each side. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
+        <div className="absolute bottom-0 left-12 top-0 w-px bg-white/30" />
+        <div className="absolute bottom-0 right-12 top-0 w-px bg-white/30" />
+      </div>
+
+      <div className="relative z-10 mx-auto flex max-w-[1200px] flex-col gap-6 px-5 py-16 md:flex-row md:items-center md:gap-4 md:px-8 md:py-24">
+        <p
+          className="flex-1 text-[28px] font-light leading-[1.2] text-[color:var(--color-surface-1)] md:text-[36px]"
+          style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
+        >
+          12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
+        </p>
+        <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
+          Start your search
+        </Link>
       </div>
     </section>
   );
