@@ -38,7 +38,7 @@ export function FaqSection() {
             return (
               <div
                 key={f.q}
-                className="overflow-hidden rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
+                className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]"
               >
                 <button
                   type="button"
