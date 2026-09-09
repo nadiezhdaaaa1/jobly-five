@@ -102,6 +102,9 @@
   --main-accent-hover: #22E87F;
   --on-main-accent: #090B0C;
   --secondary-button: #1C6756;
+  /* Secondary CTA on a light surface (Free plan card). */
+  --secondary-button-light: #F2F3F3;
+  --secondary-button-light-hover: #E9EBEB;
   /* Step badges in "How Jobly works". */
   --step-accent: #8251E1;
 
@@ -587,6 +590,37 @@ select::-ms-expand {
 }
 .secondary_button:hover {
   background-color: #22795F;
+}
+
+/* Secondary CTA on a light surface. Figma draws this variant's stroke Inside,
+ * the same construction as .main_accent_button--on-light, so it is an inset
+ * ring rather than a border and the frame size is the rendered size. Note the
+ * stroke is 10% black here, not the 20% the accent buttons use. */
+.secondary_button--on-light {
+  background-color: var(--secondary-button-light);
+  background-clip: border-box;
+  color: var(--color-foreground);
+  border: 0;
+  border-radius: 14px;
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0px 2px 1px 0px rgba(255, 255, 255, 0.5),
+    inset 0px -2px 1px 0px rgba(0, 0, 0, 0.1);
+}
+.secondary_button--on-light:hover {
+  background-color: var(--secondary-button-light-hover);
+}
+
+/* Full-width CTA inside a card: 48px tall like the base button, but 14px type
+   and 16px side padding, filling its container. */
+.main_accent_button--block,
+.secondary_button--block {
+  width: 100%;
+  justify-content: center;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 24px;
 }
 
 

@@ -1228,14 +1228,14 @@ function Pricing() {
           {/* Free shell */}
           <div
             className="flex-1 max-lg:order-2"
-            style={{ background: "#F1F3F3", borderRadius: 20, padding: 16 }}
+            style={{ background: "#F1F3F3", borderRadius: 28, padding: 16 }}
           >
             <div
               className="flex h-full flex-col"
               style={{
                 background: "#F9FBFB",
                 border: "1px solid #FFFFFF",
-                borderRadius: 12,
+                borderRadius: 16,
                 padding: 21,
                 gap: 16,
                 boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
@@ -1274,21 +1274,7 @@ function Pricing() {
                 </div>
               </div>
               <FeatureList plan="free" />
-              <Link
-                to="/quiz"
-                className="inline-flex w-full items-center justify-center"
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E3E7E8",
-                  borderRadius: 4,
-                  padding: "13px 17px",
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 400,
-                  fontSize: 14,
-                  lineHeight: "20px",
-                  color: "#090B0C",
-                }}
-              >
+              <Link to="/quiz" className="secondary_button secondary_button--on-light secondary_button--block">
                 Get started free
               </Link>
             </div>
@@ -1297,14 +1283,14 @@ function Pricing() {
           {/* Paid shell */}
           <div
             className="flex-1 max-lg:order-1"
-            style={{ background: "#F1F3F3", borderRadius: 20, padding: 16 }}
+            style={{ background: "#F1F3F3", borderRadius: 28, padding: 16 }}
           >
             <div
               className="relative flex h-full flex-col"
               style={{
                 background: "rgba(255,255,255,0.8)",
                 border: "1px solid #FFFFFF",
-                borderRadius: 12,
+                borderRadius: 16,
                 padding: 21,
                 gap: 16,
                 boxShadow: "0 1px 4px rgba(12,12,13,0.05)",
@@ -1348,7 +1334,7 @@ function Pricing() {
                       position: "absolute",
                       top: 0,
                       right: 0,
-                      background: "#0E735A",
+                      background: "var(--color-step-accent)",
                       borderRadius: 24,
                       padding: "4px 8px",
                       fontFamily: "var(--font-sans)",
@@ -1409,20 +1395,7 @@ function Pricing() {
               </div>
               <Link
                 to="/quiz"
-                className="inline-flex w-full items-center justify-center"
-                style={{
-                  background: "#00F1A9",
-                  border: "1px solid #00F1A9",
-                  borderRadius: 4,
-                  padding: "13px 17px",
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 400,
-                  fontSize: 14,
-                  lineHeight: "20px",
-                  color: "#090B0C",
-                  position: "relative",
-                  zIndex: 2,
-                }}
+                className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
               >
                 Start {TRIAL_DAYS}-day free trial
               </Link>
