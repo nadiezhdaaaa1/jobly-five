@@ -1134,7 +1134,7 @@ function Pricing() {
           role="tablist"
           aria-label="Billing period"
           className="inline-flex items-center relative"
-          style={{ gap: 8, background: "#F1F3F3", borderRadius: 12, padding: 8 }}
+          style={{ gap: 8, background: "#F1F3F3", borderRadius: 20, padding: 8 }}
         >
           {/* Sliding indicator */}
           <span
@@ -1147,7 +1147,7 @@ function Pricing() {
               width: indicator.width,
               background: "rgba(255, 255, 255, 0.8)",
               border: "1px solid #FFFFFF",
-              borderRadius: 6,
+              borderRadius: 12,
               boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
               transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
             }}
@@ -1168,7 +1168,7 @@ function Pricing() {
                 className="inline-flex items-center group relative"
                 style={{
                   gap: 8,
-                  borderRadius: 8,
+                  borderRadius: 12,
                   padding: p === "annual" ? "9px 9px 9px 13px" : "9px 13px",
                   background: "transparent",
                   border: "1px solid transparent",
