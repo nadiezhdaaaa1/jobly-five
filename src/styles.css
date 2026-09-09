@@ -34,6 +34,7 @@
   --color-on-accent: var(--on-accent);
   --color-green: var(--green);
   --color-match-teal: var(--match-teal);
+  --color-step-accent: var(--step-accent);
   --color-mint: var(--mint);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
@@ -101,6 +102,8 @@
   --main-accent-hover: #22E87F;
   --on-main-accent: #090B0C;
   --secondary-button: #1C6756;
+  /* Step badges in "How Jobly works". */
+  --step-accent: #8251E1;
 
   --green: #0E735A;
   --match-teal: #22817E;
