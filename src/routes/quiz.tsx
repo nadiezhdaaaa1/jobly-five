@@ -823,7 +823,7 @@ export function StepShell({
             <span
               className={cn(
                 "flex h-8 w-8 shrink-0 items-center justify-center rounded-[12px]",
-                invalid ? "bg-[#D0D6D8]" : "bg-[color:var(--color-primary)]"
+                invalid ? "bg-[#D0D6D8]" : "bg-[color:var(--color-main-accent)]"
               )}
               style={{ aspectRatio: "1 / 1" }}
             >
@@ -1016,7 +1016,7 @@ export function FieldStep({
                 className={cn(
                   "inline-flex h-11 items-center rounded-[12px] border px-5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)] text-[#090B0C]"
+                    ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
                     : "border-[color:var(--color-border)] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]"
                 )}
               >
@@ -1177,7 +1177,7 @@ export function RoleStep({
                       className={cn(
                         "inline-flex items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
                         selected
-                          ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                          ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
                           : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                       )}
                       style={{ padding: "6px 10px 6px 8px", gap: 8 }}
@@ -1432,7 +1432,7 @@ function SkillsGroup({
                 className={cn(
                   "flex w-full items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                    ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                 )}
                 style={{ padding: "6px 10px 6px 8px", gap: 8 }}
@@ -1614,7 +1614,7 @@ export function CategorizedSkillStep({
         className={cn(
           "inline-flex items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
           selected
-            ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+            ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
             : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
         )}
         style={{ padding: "6px 10px 6px 8px", gap: 8 }}
@@ -1958,7 +1958,7 @@ export function ExperienceStep({
               className={cn(
                 "relative flex h-[56px] items-center overflow-hidden rounded-[16px] border pl-4 pr-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
                   : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
               )}
               aria-pressed={selected}
@@ -2037,7 +2037,7 @@ export function ExperienceStep({
                     className={cn(
                       "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
                       selected
-                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
                         : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
                     )}
                     aria-pressed={selected}
@@ -2066,7 +2066,7 @@ export function ExperienceStep({
                     className={cn(
                       "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
                       selected
-                        ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
+                        ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
                         : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
                     )}
                     aria-pressed={selected}
@@ -2367,7 +2367,7 @@ export function LocationStep({
                 className={cn(
                   "flex h-[56px] items-center justify-center rounded-[16px] border px-4 text-[16px] font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
-                    ? "border-[#00F1A9] bg-[#00F1A9]"
+                    ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
                     : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
                 )}
               >
@@ -2738,7 +2738,7 @@ export function AxesStep({
               className={cn(
                 "inline-flex items-center rounded-[12px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
-                  ? "border-[#00F1A9] bg-[#00F1A9]"
+                  ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)]"
                   : "border-[color:var(--color-border)] bg-white hover:border-[color:var(--color-border-strong)]"
               )}
               style={{ padding: "6px 10px 6px 8px", gap: 8 }}
