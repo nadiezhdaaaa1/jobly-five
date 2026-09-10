@@ -4,6 +4,7 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import { Wordmark } from "@/components/site/Wordmark";
 import {
   Dialog,
   DialogContent,
@@ -128,8 +129,8 @@ function LoginPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-          <Link to="/" className="text-[30px] font-bold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-logo)" }}>
-            jobly
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
+            <Wordmark className="!text-current" />
           </Link>
         </div>
       </header>
@@ -145,7 +146,7 @@ function LoginPage() {
             type="button"
             onClick={handleGoogle}
             disabled={submitting || googleLoading}
-            className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+            className="secondary_button secondary_button--on-light w-full justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleMark />}
             {googleLoading ? "Redirecting…" : "Continue with Google"}
@@ -166,7 +167,7 @@ function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                 )}
               />
@@ -179,7 +180,7 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                 )}
               />
@@ -194,7 +195,7 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => setResetOpen(true)}
-                className="text-sm text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
+                className="text-sm text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
               >
                 Forgot password?
               </button>
@@ -202,7 +203,7 @@ function LoginPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="button-medium inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              className="main_accent_button main_accent_button--on-light w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             >
               {submitting ? (
                 <>
@@ -220,7 +221,7 @@ function LoginPage() {
           New to Jobly?{" "}
           <Link
             to="/signup"
-            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
+            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
           >
             Create an account
           </Link>
@@ -300,7 +301,7 @@ function ForgotPasswordDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[440px]">
+      <DialogContent className="sm:max-w-[440px] sm:rounded-[20px]">
         <DialogHeader>
           <DialogTitle>Reset your password</DialogTitle>
           <DialogDescription>
@@ -317,7 +318,7 @@ function ForgotPasswordDialog({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full justify-center"
             >
               Done
             </button>
@@ -336,7 +337,7 @@ function ForgotPasswordDialog({
                 }}
                 placeholder="Your email"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]",
                 )}
               />
@@ -346,7 +347,7 @@ function ForgotPasswordDialog({
             <button
               type="submit"
               disabled={sending}
-              className="button-medium mt-1 inline-flex h-12 items-center justify-center gap-2 rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+              className="main_accent_button main_accent_button--on-light mt-1 w-full justify-center gap-2"
             >
               {sending ? (
                 <>
