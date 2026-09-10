@@ -45,7 +45,20 @@ export function ShareRow({ url, title }: { url: string; title: string }) {
           aria-label={l.label}
           className="secondary_button secondary_button--on-light secondary_button--icon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
         >
-          <img src={l.icon} alt="" width={20} height={20} />
+          <span
+            aria-hidden="true"
+            className="block size-5 bg-current"
+            style={{
+              maskImage: `url(${l.icon})`,
+              WebkitMaskImage: `url(${l.icon})`,
+              maskSize: "contain",
+              WebkitMaskSize: "contain",
+              maskRepeat: "no-repeat",
+              WebkitMaskRepeat: "no-repeat",
+              maskPosition: "center",
+              WebkitMaskPosition: "center",
+            }}
+          />
         </a>
       ))}
     </div>
