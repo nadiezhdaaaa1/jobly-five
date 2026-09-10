@@ -94,13 +94,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         <div className="hidden items-center gap-6 lg:flex">
           {loading ? null : user ? (
             <>
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className={`secondary_button secondary_button--sm${
-                  isOverlay ? "" : " secondary_button--on-light"
-                }`}
-              >
+              <button type="button" onClick={handleSignOut} className={linkClass}>
                 Sign out
               </button>
               <Link
