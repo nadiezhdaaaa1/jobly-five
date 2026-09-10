@@ -171,7 +171,7 @@ function MatchesPage() {
               type="button"
               onClick={handleGoogle}
               disabled={submitting}
-              className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              className="secondary_button secondary_button--on-light w-full justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
             >
               <GoogleMark />
               Continue with Google
