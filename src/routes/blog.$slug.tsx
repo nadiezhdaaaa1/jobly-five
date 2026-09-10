@@ -180,7 +180,7 @@ function ArticlePage() {
         {related.length > 0 && (
           <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
             <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-              <div className="mx-auto max-w-[1200px] px-5 pb-20 md:px-8">
+              <div className="mx-auto max-w-[1200px] px-5 pt-12 pb-20 md:px-8 md:pt-20">
                 <h2 className="text-2xl">Related reads</h2>
                 <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {related.map((p) => (
