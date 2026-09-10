@@ -4,6 +4,7 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import { Wordmark } from "@/components/site/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { TurnstileWidget } from "@/components/site/TurnstileWidget";
@@ -129,12 +130,8 @@ function SignupPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-          <Link
-            to="/"
-            className="text-[30px] font-bold text-[color:var(--color-green)]"
-            style={{ fontFamily: "var(--font-logo)" }}
-          >
-            jobly
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
+            <Wordmark className="!text-current" />
           </Link>
         </div>
       </header>
@@ -150,7 +147,7 @@ function SignupPage() {
             type="button"
             onClick={handleGoogle}
             disabled={submitting || googleLoading}
-            className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+            className="secondary_button secondary_button--on-light w-full justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <GoogleMark />}
             {googleLoading ? "Redirecting…" : "Continue with Google"}
@@ -171,7 +168,7 @@ function SignupPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Alex Rivera"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   "border-[color:var(--color-border)]"
                 )}
               />
@@ -184,7 +181,7 @@ function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                 )}
               />
@@ -197,7 +194,7 @@ function SignupPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 8 characters"
                 className={cn(
-                  "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                 )}
               />
@@ -242,7 +239,7 @@ function SignupPage() {
             <button
               type="submit"
               disabled={submitting || !acceptedPolicies}
-              className="button-medium inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              className="main_accent_button main_accent_button--on-light w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             >
               {submitting ? (
                 <>
@@ -260,7 +257,7 @@ function SignupPage() {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded"
+            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
           >
             Log in
           </Link>
