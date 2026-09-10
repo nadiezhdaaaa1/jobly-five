@@ -1,5 +1,9 @@
-import { IconCopy as Copy, IconCheck as Check, IconBrandLinkedin as Linkedin, IconBrandTwitter as Twitter, IconBrandFacebook as Facebook } from "@tabler/icons-react";
+import { IconCopy as Copy, IconCheck as Check } from "@tabler/icons-react";
 import { useState } from "react";
+
+import fbIcon from "@/assets/social/fb.svg";
+import inIcon from "@/assets/social/in.svg";
+import xIcon from "@/assets/social/twitter-x.svg";
 
 export function ShareRow({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
@@ -16,9 +20,9 @@ export function ShareRow({ url, title }: { url: string; title: string }) {
 
   const enc = encodeURIComponent;
   const links = [
-    { label: "Share on X", href: `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`, icon: Twitter },
-    { label: "Share on LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`, icon: Linkedin },
-    { label: "Share on Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`, icon: Facebook },
+    { label: "Share on X", href: `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`, icon: xIcon },
+    { label: "Share on LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`, icon: inIcon },
+    { label: "Share on Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`, icon: fbIcon },
   ];
 
   return (
@@ -32,21 +36,18 @@ export function ShareRow({ url, title }: { url: string; title: string }) {
         {copied ? <Check size={16} /> : <Copy size={16} />}
         <span>{copied ? "Copied" : "Copy link"}</span>
       </button>
-      {links.map((l) => {
-        const Icon = l.icon;
-        return (
-          <a
-            key={l.label}
-            href={l.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={l.label}
-            className="secondary_button secondary_button--on-light secondary_button--icon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
-          >
-            <Icon size={16} />
-          </a>
-        );
-      })}
+      {links.map((l) => (
+        <a
+          key={l.label}
+          href={l.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={l.label}
+          className="secondary_button secondary_button--on-light secondary_button--icon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+        >
+          <img src={l.icon} alt="" width={20} height={20} />
+        </a>
+      ))}
     </div>
   );
 }
