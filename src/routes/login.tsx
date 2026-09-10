@@ -195,7 +195,7 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => setResetOpen(true)}
-                className="text-sm text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
+                className="text-sm text-[color:var(--color-green)] font-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
               >
                 Forgot password?
               </button>
@@ -221,7 +221,7 @@ function LoginPage() {
           New to Jobly?{" "}
           <Link
             to="/signup"
-            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
+            className="text-[color:var(--color-green)] font-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
           >
             Create an account
           </Link>

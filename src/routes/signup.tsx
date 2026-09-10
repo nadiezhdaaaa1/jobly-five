@@ -257,7 +257,7 @@ function SignupPage() {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="text-[color:var(--color-green)] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
+            className="text-[color:var(--color-green)] font-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px]"
           >
             Log in
           </Link>
