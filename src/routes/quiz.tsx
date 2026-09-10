@@ -1636,7 +1636,10 @@ export function CategorizedSkillStep({
         </span>
         <span>{s}</span>
         {isSuggested && (
-          <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" aria-label="essential" />
+          <>
+            <span aria-hidden="true" className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
+            <span className="sr-only">(essential)</span>
+          </>
         )}
         {opts.custom && (
           <span
