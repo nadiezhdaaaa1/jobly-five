@@ -156,15 +156,17 @@ function Landing() {
 
 /* ------------------------------- Hero ------------------------------- */
 
-function useLiveNumber(target: number, durationMs = 1200) {
-  const [n, setN] = useState(0);
-  const currentRef = useRef(0);
+function useLiveNumber(target: number) {
+  // Seeded to the real figure, so the server render and the first client paint
+  // both show it. The previous 0 -> target roll meant every reload displayed
+  // "0" until hydration finished, which read as a broken number.
+  const [n, setN] = useState(target);
+  const currentRef = useRef(target);
   const animRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   useEffect(() => {
     const deltas = [3, 3, -4, -1, 4];
-    const start = performance.now();
 
     const animate = (from: number, to: number, animDuration: number) => {
       const animStart = performance.now();
@@ -181,31 +183,25 @@ function useLiveNumber(target: number, durationMs = 1200) {
       animRef.current = requestAnimationFrame(step);
     };
 
-    const initialTick = (t: number) => {
-      const p = Math.min(1, (t - start) / durationMs);
-      const value = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      setN(value);
-      currentRef.current = value;
-      if (p < 1) {
-        animRef.current = requestAnimationFrame(initialTick);
-      } else {
-        intervalRef.current = setInterval(() => {
-          const prev = currentRef.current;
-          let delta = deltas[Math.floor(Math.random() * deltas.length)];
-          // Keep the live number within a band around the target.
-          if (prev > target + 30) delta = -Math.abs(delta || 1);
-          if (prev < target - 30) delta = Math.abs(delta || 1);
-          animate(prev, prev + delta, 800);
-        }, 2500);
-      }
-    };
+    currentRef.current = target;
+    setN(target);
 
-    animRef.current = requestAnimationFrame(initialTick);
+    // The drift is what gives the figure life; it can start straight away now
+    // that there is no intro roll to wait for.
+    intervalRef.current = setInterval(() => {
+      const prev = currentRef.current;
+      let delta = deltas[Math.floor(Math.random() * deltas.length)];
+      // Keep the live number within a band around the target.
+      if (prev > target + 30) delta = -Math.abs(delta || 1);
+      if (prev < target - 30) delta = Math.abs(delta || 1);
+      animate(prev, prev + delta, 800);
+    }, 2500);
+
     return () => {
       cancelAnimationFrame(animRef.current);
       clearInterval(intervalRef.current);
     };
-  }, [target, durationMs]);
+  }, [target]);
 
   return n;
 }
