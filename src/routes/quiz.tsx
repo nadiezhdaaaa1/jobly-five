@@ -1567,6 +1567,14 @@ export function CategorizedSkillStep({
     for (const c of customs) merged.add(c);
     onChange(Array.from(merged));
   };
+  // Only the soft-skills step passes `suggested`, so the control that calls
+  // this is rendered conditionally below. Merges into the current selection
+  // rather than replacing it, same as selectAll.
+  const selectEssential = () => {
+    const merged = new Set(value);
+    for (const s of suggested ?? []) merged.add(s);
+    onChange(Array.from(merged));
+  };
   const clearAll = () => {
     onChange([]);
     onCustomsChange([]);
@@ -1627,8 +1635,8 @@ export function CategorizedSkillStep({
           {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
         </span>
         <span>{s}</span>
-        {isSuggested && !selected && (
-          <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" aria-label="suggested" />
+        {isSuggested && (
+          <span className="ml-0.5 h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" aria-label="essential" />
         )}
         {opts.custom && (
           <span
@@ -1667,6 +1675,19 @@ export function CategorizedSkillStep({
           </span>
         </span>
         <div className="flex items-center gap-3 text-xs">
+          {suggested && suggested.length > 0 && (
+            <>
+              <button
+                type="button"
+                onClick={selectEssential}
+                className="inline-flex items-center gap-1.5 text-[color:var(--color-text-secondary)] underline-offset-2 hover:text-[color:var(--color-foreground)] hover:underline"
+              >
+                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[color:var(--color-green)]" />
+                Select essential
+              </button>
+              <span className="text-[color:var(--color-text-muted)]">·</span>
+            </>
+          )}
           <button
             type="button"
             onClick={selectAll}
