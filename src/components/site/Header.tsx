@@ -99,7 +99,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               </button>
               <Link
                 to="/dashboard"
-                className="inline-flex h-10 items-center rounded-button border border-current px-4 text-[14px] font-light leading-5 text-current transition-opacity hover:opacity-70"
+                className="inline-flex h-10 items-center rounded-[14px] border border-current px-4 text-[14px] font-light leading-5 text-current transition-opacity hover:opacity-70"
               >
                 Dashboard
               </Link>
@@ -123,7 +123,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-current text-current lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] border border-current text-current lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
@@ -164,7 +164,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                     setOpen(false);
                     void handleSignOut();
                   }}
-                  className="mt-2 inline-flex h-11 items-center justify-center rounded-[12px] border border-[color:var(--color-border)] px-4 text-sm"
+                  className="mt-2 inline-flex h-11 items-center justify-center rounded-[14px] border border-[color:var(--color-border)] px-4 text-sm"
                 >
                   Sign out
                 </button>
