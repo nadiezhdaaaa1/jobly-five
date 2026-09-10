@@ -1946,6 +1946,53 @@ export function ExperienceStep({
     onChange({ track: t, level: "Senior", years: LEVEL_DEFAULT_YEARS.Senior });
   };
 
+  // Track switcher, matching the pricing switcher on the landing page: a white
+  // pill that slides between options rather than a filled active tab. The pill
+  // is measured off the buttons because the three labels have different widths.
+  const TRACK_TABS = useMemo(
+    () => [
+      { key: "IC" as const, label: "Individual contributor" },
+      { key: "Mgmt" as const, label: "Management" },
+      ...(hasExec ? [{ key: "Exec" as const, label: "Executive" }] : []),
+    ],
+    [hasExec]
+  );
+  const trackTabsRef = useRef<HTMLDivElement>(null);
+  const trackBtnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [trackIndicator, setTrackIndicator] = useState<{ left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const measure = () => {
+      if (cancelled) return;
+      const container = trackTabsRef.current;
+      const idx = TRACK_TABS.findIndex((t) => t.key === track);
+      const btn = idx >= 0 ? trackBtnRefs.current[idx] : null;
+      // No track chosen yet (or the fork is hidden): no pill to draw.
+      if (!container || !btn) {
+        setTrackIndicator(null);
+        return;
+      }
+      setTrackIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+
+    const container = trackTabsRef.current;
+    const observer =
+      container && typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (container) observer?.observe(container);
+    measure();
+    window.addEventListener("resize", measure);
+    if (document.fonts) {
+      void document.fonts.ready.then(measure);
+    }
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [track, TRACK_TABS, showTrackFork]);
+
   const canContinue = !!level && !!primary;
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
@@ -2008,42 +2055,75 @@ export function ExperienceStep({
       {showTrackFork && (
         <div className="mt-4">
           <div className="text-sm font-light text-[#090B0C]">Track</div>
-          <div className="mt-2 inline-flex rounded-[16px] border border-[#E3E7E8] bg-white p-1">
-            {(["IC", "Mgmt"] as const).map((t) => {
-              const label = t === "IC" ? "Individual contributor" : "Management";
-              const active = track === t;
+          <div
+            ref={trackTabsRef}
+            role="group"
+            aria-label="Track"
+            className="relative mt-2 inline-flex items-center"
+            style={{ gap: 8, background: "#F1F3F3", borderRadius: 20, padding: 8 }}
+          >
+            {trackIndicator && (
+              <span
+                aria-hidden
+                className="absolute pointer-events-none"
+                style={{
+                  top: 8,
+                  bottom: 8,
+                  left: trackIndicator.left,
+                  width: trackIndicator.width,
+                  background: "rgba(255, 255, 255, 0.8)",
+                  border: "1px solid #FFFFFF",
+                  borderRadius: 12,
+                  boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
+                  transition:
+                    "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+              />
+            )}
+            {TRACK_TABS.map((t, idx) => {
+              const active = track === t.key;
               return (
                 <button
-                  key={t}
+                  key={t.key}
+                  ref={(el) => {
+                    trackBtnRefs.current[idx] = el;
+                  }}
                   type="button"
-                  onClick={() => setTrack(t)}
-                  className={cn(
-                    "rounded-[12px] px-3 py-1.5 text-sm font-light transition-colors",
-                    active
-                    ? "bg-[color:var(--color-green)] text-white"
-                      : "text-[#67787C] hover:text-[#090B0C]",
-                  )}
                   aria-pressed={active}
+                  onClick={() => setTrack(t.key)}
+                  className="relative inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                  style={{
+                    borderRadius: 12,
+                    padding: "9px 13px",
+                    background: "transparent",
+                    border: "1px solid transparent",
+                    cursor: "pointer",
+                    transition: "background 200ms ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.5)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
                 >
-                  {label}
+                  <span
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 400,
+                      fontSize: 14,
+                      lineHeight: "20px",
+                      color: active ? "#090B0C" : "#4B585B",
+                      transition: "color 200ms ease",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
+                  >
+                    {t.label}
+                  </span>
                 </button>
               );
             })}
-            {hasExec && (
-              <button
-                type="button"
-                onClick={() => setTrack("Exec")}
-                className={cn(
-                  "rounded-[12px] px-3 py-1.5 text-sm font-light transition-colors",
-                  track === "Exec"
-                    ? "bg-[color:var(--color-green)] text-white"
-                    : "text-[#67787C] hover:text-[#090B0C]",
-                )}
-                aria-pressed={track === "Exec"}
-              >
-                Executive
-              </button>
-            )}
           </div>
 
           {track && track !== "Exec" && (
