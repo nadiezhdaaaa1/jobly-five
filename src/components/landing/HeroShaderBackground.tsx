@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ShaderBackground } from "./ShaderBackground";
 
 // Jobly hero palette, taken from the literal ellipse fills in the Figma file.
