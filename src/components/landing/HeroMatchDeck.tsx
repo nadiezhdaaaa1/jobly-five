@@ -106,7 +106,11 @@ function MatchCard({
             value={s.value}
             label={s.label}
             size={64}
-            animate={isFront && !reduced}
+            // cycle > 0 means a card has actually been dealt. The first card is
+            // server-rendered and already on screen, so it shows its real
+            // scores straight away rather than a reload flashing three empty
+            // rings at 0%; every card dealt after that still draws in.
+            animate={isFront && !reduced && cycle > 0}
             delayMs={RING_DELAYS[i]}
           />
         ))}
