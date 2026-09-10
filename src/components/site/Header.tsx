@@ -99,8 +99,8 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
               </button>
               <Link
                 to="/dashboard"
-                className={`main_accent_button main_accent_button--sm${
-                  isOverlay ? "" : " main_accent_button--on-light"
+                className={`secondary_button secondary_button--sm${
+                  isOverlay ? "" : " secondary_button--on-light"
                 }`}
               >
                 Digest
