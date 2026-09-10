@@ -613,6 +613,10 @@ export function ShaderBackground({
         UNIFORMS.cursorRadius,
       )
       gl.drawArrays(gl.TRIANGLES, 0, 3)
+      if (!firstFrameSignalled) {
+        firstFrameSignalled = true
+        onFirstFrameRef.current?.()
+      }
       const pointerSettling =
         Math.abs(targetX - mouseX) > 0.001 ||
         Math.abs(targetY - mouseY) > 0.001 ||
