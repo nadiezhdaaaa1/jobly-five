@@ -571,7 +571,7 @@ function JobSearchBroken() {
                 : []),
               <div key={it.title} className="flex flex-1 flex-col gap-3 p-10">
                 <div className="flex flex-col gap-4">
-                  <img src={it.img} alt="" className="size-14 object-contain" />
+                  <img src={it.img} alt="" className="size-12 object-contain" />
                   <h3
                     className="text-xl font-light leading-7"
                     style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.2px" }}
