@@ -11,7 +11,7 @@ import how2Asset from "../assets/how_2.png.asset.json";
 import how3Asset from "../assets/how_3.png.asset.json";
 import brokenHoursAsset from "../assets/problem-clock.webp.asset.json";
 import brokenGhostAsset from "../assets/problem-ghost.webp.asset.json";
-import brokenListingsAsset from "../assets/problem-list.webp.asset.json";
+import brokenListingsAsset from "../assets/problem-cross.webp.asset.json";
 
 import { HeroShaderBackground } from "../components/landing/HeroShaderBackground";
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
