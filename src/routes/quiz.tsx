@@ -1946,6 +1946,53 @@ export function ExperienceStep({
     onChange({ track: t, level: "Senior", years: LEVEL_DEFAULT_YEARS.Senior });
   };
 
+  // Track switcher, matching the pricing switcher on the landing page: a white
+  // pill that slides between options rather than a filled active tab. The pill
+  // is measured off the buttons because the three labels have different widths.
+  const TRACK_TABS = useMemo(
+    () => [
+      { key: "IC" as const, label: "Individual contributor" },
+      { key: "Mgmt" as const, label: "Management" },
+      ...(hasExec ? [{ key: "Exec" as const, label: "Executive" }] : []),
+    ],
+    [hasExec]
+  );
+  const trackTabsRef = useRef<HTMLDivElement>(null);
+  const trackBtnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [trackIndicator, setTrackIndicator] = useState<{ left: number; width: number } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const measure = () => {
+      if (cancelled) return;
+      const container = trackTabsRef.current;
+      const idx = TRACK_TABS.findIndex((t) => t.key === track);
+      const btn = idx >= 0 ? trackBtnRefs.current[idx] : null;
+      // No track chosen yet (or the fork is hidden): no pill to draw.
+      if (!container || !btn) {
+        setTrackIndicator(null);
+        return;
+      }
+      setTrackIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+
+    const container = trackTabsRef.current;
+    const observer =
+      container && typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    if (container) observer?.observe(container);
+    measure();
+    window.addEventListener("resize", measure);
+    if (document.fonts) {
+      void document.fonts.ready.then(measure);
+    }
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [track, TRACK_TABS, showTrackFork]);
+
   const canContinue = !!level && !!primary;
 
   const ticks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
