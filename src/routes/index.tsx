@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { IconMenu2 as Menu, IconX as X, IconCheck as Check, IconMinus as Minus, IconChevronDown as ChevronDown, IconClipboardList as ClipboardList, IconNetwork as Network, IconDeviceMobile as Smartphone, IconRefresh as RefreshCw, IconVectorBezier2 as PenTool, IconDatabase as Database, IconPalette as Palette, IconFileText as FileText, IconTrendingUp as TrendingUp, IconChartBar as BarChart3, IconCode as Code2, IconCrown as Crown, IconShieldCheck as ShieldCheck, IconDeviceTablet as TabletSmartphone, type Icon as LucideIcon } from "@tabler/icons-react";
 
@@ -25,6 +25,7 @@ import {
   LeverLogo,
   UsaJobsLogo,
 } from "../components/landing/logos";
+import { CtaLink } from "../components/site/CtaLink";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { FaqSection, faqs } from "../components/site/FaqSection";
@@ -262,9 +263,7 @@ function Hero() {
             Stop scrolling LinkedIn, Indeed, and every other job board. Five matches, ranked for you, in your inbox daily
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link to="/quiz" className="main_accent_button">
-              Get my matches
-            </Link>
+            <CtaLink className="main_accent_button">Get my matches</CtaLink>
             <a href="#how-it-works" className="secondary_button">
               How it works
             </a>
@@ -394,9 +393,9 @@ function TimeToOffer() {
           >
             12 days <span className="text-[color:var(--color-border)]">average time to offer</span>
           </p>
-          <Link to="/quiz" className="main_accent_button shrink-0 self-start md:self-auto">
+          <CtaLink className="main_accent_button shrink-0 self-start md:self-auto">
             Start your search
-          </Link>
+          </CtaLink>
         </div>
       </div>
     </section>
@@ -1275,9 +1274,9 @@ function Pricing() {
                 </div>
               </div>
               <FeatureList plan="free" />
-              <Link to="/quiz" className="secondary_button secondary_button--on-light secondary_button--block">
+              <CtaLink className="secondary_button secondary_button--on-light secondary_button--block">
                 Get started free
-              </Link>
+              </CtaLink>
             </div>
           </div>
 
@@ -1394,12 +1393,9 @@ function Pricing() {
               <div style={{ position: "relative", zIndex: 2 }}>
                 <FeatureList plan="paid" />
               </div>
-              <Link
-                to="/quiz"
-                className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
-              >
+              <CtaLink className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]">
                 Start {TRIAL_DAYS}-day free trial
-              </Link>
+              </CtaLink>
             </div>
           </div>
         </div>
@@ -1517,9 +1513,7 @@ function FinalCTA() {
           >
             Ready to stop scrolling?
           </h2>
-          <Link to="/quiz" className="main_accent_button">
-            Get my matches
-          </Link>
+          <CtaLink className="main_accent_button">Get my matches</CtaLink>
         </div>
       </div>
     </section>
