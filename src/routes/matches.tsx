@@ -47,7 +47,7 @@ function MatchesSearching() {
   return (
     <>
       <li
-        className="flex items-center gap-3 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 text-[13px] text-[color:var(--color-text-secondary)]"
+        className="flex items-center gap-3 rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4 text-[13px] text-[color:var(--color-text-secondary)]"
         aria-live="polite"
       >
         <Loader2 className="size-4 shrink-0 animate-spin text-[color:var(--color-green)]" />
@@ -58,12 +58,12 @@ function MatchesSearching() {
       {[0, 1, 2].map((i) => (
         <li
           key={`sk-${i}`}
-          className="rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4"
+          className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4"
           style={{ opacity: 1 - i * 0.25 }}
           aria-hidden
         >
           <div className="flex items-center gap-3">
-            <div className="skeleton size-12 shrink-0 rounded-[6px]" />
+            <div className="skeleton size-12 shrink-0 rounded-[12px]" />
             <div className="flex-1 space-y-2">
               <div className="skeleton h-4 w-1/2 rounded-[4px]" />
               <div className="skeleton h-3 w-1/3 rounded-[4px]" />
@@ -133,7 +133,7 @@ function MatchesPage() {
           </Link>
           <Link
             to="/login"
-            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[10px] px-2 py-1"
+            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px] px-2 py-1"
           >
             Log in
           </Link>
@@ -160,7 +160,7 @@ function MatchesPage() {
           )}
         </ol>
 
-        <section className="mt-10 rounded-[14px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 sm:p-8">
+        <section className="mt-10 rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 sm:p-8">
           <h2 className="text-2xl">Create your account to save these matches</h2>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
             We'll email your daily digest and keep your preferences safe.
@@ -193,7 +193,7 @@ function MatchesPage() {
                     type="email"
                     value={answers.email ?? ""}
                     readOnly
-                    className="mt-1.5 h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 text-sm text-[color:var(--color-text-secondary)]"
+                    className="mt-1.5 h-11 w-full rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 text-sm text-[color:var(--color-text-secondary)]"
                   />
                 </div>
                 <div>
@@ -207,7 +207,7 @@ function MatchesPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="At least 8 characters"
                     className={cn(
-                      "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                      "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                       error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
                     )}
                   />
@@ -261,13 +261,13 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 function JobCard({ job }: { job: Job }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   return (
-    <li className="rounded-[12px] bg-[#F1F3F3] p-1">
-      <article className="group relative rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
+    <li className="rounded-[20px] bg-[#F1F3F3] p-1">
+      <article className="group relative rounded-[16px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
         <div className="flex w-full items-center gap-4">
           {job.logo ? (
-            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
+            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[12px] object-cover" />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
               {job.company.charAt(0)}
             </div>
           )}
