@@ -16,10 +16,17 @@ const HERO_COLORS: [number, number, number][] = [
 ];
 
 
-// SSR + reduced-motion + WebGL-unavailable fallback. Light gradient in the same
-// family so there is no dark flash before the canvas mounts.
+// SSR + reduced-motion + WebGL-unavailable fallback, and the bed the canvas
+// cross-fades in over. Composed from the shader's own palette rather than by
+// eye: #0E735A occupies slots 0, 1 and 3 (slot 0 doubling as the base wash)
+// and #22936C slot 2, so the field is mostly deep green; evaluating shade()'s
+// pool centres at t=0 puts the pink of slot 4 up and left and the #2CFF8E of
+// slot 5 down and right. Each bloom fades to its own hue at zero alpha, not to
+// `transparent`, which some browsers interpolate through black.
 const STATIC_FALLBACK =
-  "radial-gradient(140% 120% at 30% 0%, #FBBCDE 0%, #CBCDCF 18%, #7DA49C 38%, #22936C 60%, #2CFF8E 85%)";
+  "radial-gradient(65% 55% at 8% 12%, #FBBCDE 0%, rgba(251, 188, 222, 0) 60%)," +
+  "radial-gradient(70% 60% at 92% 88%, #2CFF8E 0%, rgba(44, 255, 142, 0) 62%)," +
+  "radial-gradient(120% 110% at 50% 45%, #22936C 0%, #0E735A 65%)";
 
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
