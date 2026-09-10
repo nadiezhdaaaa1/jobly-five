@@ -4,6 +4,7 @@ import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp a
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import { Wordmark } from "@/components/site/Wordmark";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
@@ -127,12 +128,8 @@ function MatchesPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
-          <Link
-            to="/"
-            className="text-[30px] font-bold text-[color:var(--color-green)]"
-            style={{ fontFamily: "var(--font-logo)" }}
-          >
-            jobly
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
+            <Wordmark className="!text-current" />
           </Link>
           <Link
             to="/login"
@@ -174,7 +171,7 @@ function MatchesPage() {
               type="button"
               onClick={handleGoogle}
               disabled={submitting}
-              className="button-medium inline-flex h-12 items-center justify-center gap-3 rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              className="secondary_button secondary_button--on-light w-full justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
             >
               <GoogleMark />
               Continue with Google
@@ -184,7 +181,7 @@ function MatchesPage() {
               <button
                 type="button"
                 onClick={() => setMode("email")}
-                className="button-medium inline-flex h-12 items-center justify-center rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                className="main_accent_button main_accent_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Continue with email
               </button>
@@ -223,7 +220,7 @@ function MatchesPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="button-medium inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+                  className="main_accent_button main_accent_button--on-light w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
                 >
                   {submitting ? (
                     <>
