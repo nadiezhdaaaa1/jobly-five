@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { IconLogout as LogOut, IconMenu2 as Menu, IconX as X } from "@tabler/icons-react";
+import { IconMenu2 as Menu, IconX as X } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -94,14 +94,22 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         <div className="hidden items-center gap-6 lg:flex">
           {loading ? null : user ? (
             <>
-              <button type="button" onClick={handleSignOut} className={`inline-flex items-center gap-2 ${linkClass}`}>
-                <LogOut size={14} /> Sign out
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className={`secondary_button secondary_button--sm${
+                  isOverlay ? "" : " secondary_button--on-light"
+                }`}
+              >
+                Sign out
               </button>
               <Link
                 to="/dashboard"
-                className="inline-flex h-10 items-center rounded-[14px] border border-current px-4 text-[14px] font-light leading-5 text-current transition-opacity hover:opacity-70"
+                className={`main_accent_button main_accent_button--sm${
+                  isOverlay ? "" : " main_accent_button--on-light"
+                }`}
               >
-                Dashboard
+                Digest
               </Link>
             </>
           ) : (
@@ -164,7 +172,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
             {user ? (
               <>
                 <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-[12px] px-3 py-3 text-base text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
-                  Dashboard
+                  Digest
                 </Link>
                 <button
                   type="button"
