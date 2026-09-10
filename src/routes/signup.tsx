@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { IconLoader2 as Loader2 } from "@tabler/icons-react";
+import { IconCheck as Check, IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
@@ -221,8 +221,22 @@ function SignupPage() {
                 type="checkbox"
                 checked={acceptedPolicies}
                 onChange={(e) => setAcceptedPolicies(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded-[4px]"
+                className="peer sr-only"
               />
+              {/* The native control is hidden rather than restyled: a UA-painted
+                  checkbox ignores border-radius, so the box is drawn here. Same
+                  construction as the checkboxes in the quiz. */}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-[6px] border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[color:var(--color-ring)] peer-focus-visible:ring-offset-2",
+                  acceptedPolicies
+                    ? "border-[color:var(--color-green)] bg-[color:var(--color-green)]"
+                    : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)]"
+                )}
+              >
+                {acceptedPolicies && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+              </span>
               <span>
                 I agree to the{" "}
                 <Link to="/legal/terms" className="text-[color:var(--color-green)] hover:underline">
