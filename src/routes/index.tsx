@@ -468,15 +468,21 @@ function KeyNumbers() {
 function Counter({ label, value }: { label: string; value: number }) {
   const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const [n, setN] = useState(0);
+  // Seeded to the real figure so the server render, the no-JS case and the
+  // first client paint all show it rather than a placeholder 0.
+  const [n, setN] = useState(value);
 
   useEffect(() => {
-    if (reduced) {
-      setN(value);
-      return;
-    }
+    // Reduced motion: the figure is already correct, nothing to animate.
+    if (reduced) return;
     const el = ref.current;
     if (!el) return;
+    // Already on screen at load: keep the real figure rather than snapping to
+    // 0 and rolling up in front of someone who is already looking at it. The
+    // roll is a reveal for readers who scroll down to it, not a loading state.
+    const box = el.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) return;
+    setN(0);
     let raf = 0;
     const io = new IntersectionObserver(
       ([entry]) => {
