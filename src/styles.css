@@ -612,6 +612,55 @@ select::-ms-expand {
   background-color: var(--secondary-button-light-hover);
 }
 
+/* Destructive confirm on a light surface. The button set has no destructive
+ * variant, so this mirrors .secondary_button--on-light's inside-stroke
+ * construction and swaps in the danger fill: a "Start over" that discards
+ * saved answers must not read as a neutral secondary. The white top highlight
+ * is 30% rather than 50% because on a saturated red a half-white inset reads
+ * as a pink band. The hover shade is invented — Figma has no state for it. */
+.danger_button--on-light {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background-color: var(--danger);
+  background-clip: border-box;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 14px;
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+    inset 0px 2px 1px 0px rgba(255, 255, 255, 0.3),
+    inset 0px -2px 1px 0px rgba(0, 0, 0, 0.1);
+  transition: background-color 140ms ease-out;
+}
+.danger_button--on-light:hover {
+  background-color: #B80B01;
+}
+
+/* Disabled state for the button set. The older accent buttons inherited this
+ * from the global .bg-[color:var(--color-primary)] rule further up, which
+ * these classes do not match. The quiz needs it: Continue and Get my matches
+ * stay disabled until the step validates. Declared after every :hover above so
+ * it wins at equal specificity. */
+.main_accent_button:disabled,
+.main_accent_button[aria-disabled="true"],
+.secondary_button:disabled,
+.secondary_button[aria-disabled="true"],
+.danger_button--on-light:disabled,
+.danger_button--on-light[aria-disabled="true"] {
+  background-color: var(--color-surface-2);
+  color: var(--color-alt-light-mist);
+  border-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 /* Full-width CTA inside a card: 48px tall like the base button, but 14px type
    and 16px side padding, filling its container. */
 .main_accent_button--block,
@@ -645,7 +694,8 @@ select::-ms-expand {
 
 @media (prefers-reduced-motion: reduce) {
   .main_accent_button,
-  .secondary_button {
+  .secondary_button,
+  .danger_button--on-light {
     transition: none;
   }
 }
