@@ -32,8 +32,8 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
             className={
               "block px-2 py-1 transition-colors " +
               (active === it.id
-                ? "rounded-sm bg-[color:var(--color-surface-2)] text-[color:var(--color-foreground)]"
-                : "rounded-md text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]")
+                ? "rounded-[12px] bg-[color:var(--color-surface-2)] text-[color:var(--color-foreground)]"
+                : "rounded-[12px] text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]")
             }
           >
             {it.text}

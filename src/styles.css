@@ -623,6 +623,24 @@ select::-ms-expand {
   line-height: 24px;
 }
 
+/* Compact secondary, mirroring .main_accent_button--sm. */
+.secondary_button--sm {
+  height: 40px;
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+/* Icon-only square button, 40x40. Never combine with --sm or --block. */
+.main_accent_button--icon,
+.secondary_button--icon {
+  height: 40px;
+  width: 40px;
+  padding: 0;
+  justify-content: center;
+}
+
+
 
 
 @media (prefers-reduced-motion: reduce) {
