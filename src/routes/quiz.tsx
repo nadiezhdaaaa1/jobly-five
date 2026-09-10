@@ -52,6 +52,7 @@ import {
   type Role as TaxRole,
 } from "@/data/taxonomy";
 import rawTaxonomy from "@/data/jobly_taxonomy.json";
+import { Wordmark } from "@/components/site/Wordmark";
 
 const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
 
@@ -475,12 +476,8 @@ function QuizPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
-          <Link
-            to="/"
-            className="text-[30px] font-bold text-[color:var(--color-green)]"
-            style={{ fontFamily: "var(--font-logo)" }}
-          >
-            jobly
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
+            <Wordmark />
           </Link>
           <Link
             to="/login"
