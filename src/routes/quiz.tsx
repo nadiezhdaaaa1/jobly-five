@@ -477,7 +477,7 @@ function QuizPage() {
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-4">
           <Link to="/" aria-label="Jobly home" className="flex items-center">
-            <Wordmark />
+            <Wordmark className="!text-current" />
           </Link>
           <Link
             to="/login"
