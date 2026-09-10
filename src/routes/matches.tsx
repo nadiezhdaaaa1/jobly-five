@@ -4,6 +4,7 @@ import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp a
 
 import { cn } from "@/lib/utils";
 import { GoogleMark } from "@/components/site/GoogleMark";
+import { Wordmark } from "@/components/site/Wordmark";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
