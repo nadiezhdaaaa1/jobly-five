@@ -478,6 +478,7 @@ export function ShaderBackground({
     let visible = document.visibilityState === "visible"
     let inView = true
     let disposed = false
+    let firstFrameSignalled = false
     const start = performance.now()
     const timeAnimated = Math.abs(activeTimeScale) > 0.0001
 
