@@ -31,10 +31,15 @@ const STATIC_FALLBACK =
 export function HeroShaderBackground() {
   // TanStack Start renders on the server; the shader canvas is client-only.
   const [mounted, setMounted] = useState(false);
+  // Only true once the canvas has drawn a frame. Fading on mount alone would
+  // reveal an empty (transparent) canvas over the gradient for a frame or two.
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleFirstFrame = useCallback(() => setReady(true), []);
 
   return (
     <div
@@ -44,15 +49,20 @@ export function HeroShaderBackground() {
     >
       {/* Reduced motion is honoured inside ShaderBackground: one still frame. */}
       {mounted && (
-        <ShaderBackground
-          className="absolute inset-0 h-full w-full"
-          colors={HERO_COLORS}
-          colorCount={6}
-          seed={1453}
-          timeScale={0.16}
-          grain={0.06}
-        />
-
+        <div
+          className="absolute inset-0 transition-opacity duration-700 ease-out motion-reduce:transition-none"
+          style={{ opacity: ready ? 1 : 0 }}
+        >
+          <ShaderBackground
+            className="h-full w-full"
+            colors={HERO_COLORS}
+            colorCount={6}
+            seed={1453}
+            timeScale={0.16}
+            grain={0.06}
+            onFirstFrame={handleFirstFrame}
+          />
+        </div>
       )}
     </div>
   );
