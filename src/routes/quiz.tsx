@@ -1567,6 +1567,14 @@ export function CategorizedSkillStep({
     for (const c of customs) merged.add(c);
     onChange(Array.from(merged));
   };
+  // Only the soft-skills step passes `suggested`, so the control that calls
+  // this is rendered conditionally below. Merges into the current selection
+  // rather than replacing it, same as selectAll.
+  const selectEssential = () => {
+    const merged = new Set(value);
+    for (const s of suggested ?? []) merged.add(s);
+    onChange(Array.from(merged));
+  };
   const clearAll = () => {
     onChange([]);
     onCustomsChange([]);
