@@ -7,7 +7,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
     <Link
       to="/blog/$slug"
       params={{ slug: post.slug }}
-      className="group flex flex-col overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+      className="group flex flex-col overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
     >
       <div className="aspect-[16/9] w-full overflow-hidden bg-[color:var(--color-surface-2)]">
         <img
@@ -18,7 +18,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
         />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <span className="inline-flex w-fit items-center rounded-button bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
+        <span className="inline-flex w-fit items-center rounded-[12px] bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
           {post.category}
         </span>
         <h3 className="text-lg leading-snug">{post.title}</h3>
