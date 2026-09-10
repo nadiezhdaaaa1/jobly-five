@@ -120,16 +120,22 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
             </>
           )}
         </div>
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          className={`secondary_button secondary_button--icon lg:hidden${
-            isOverlay ? "" : " secondary_button--on-light"
-          }`}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X size={18} /> : <Menu size={18} />}
-        </button>
+        {/* Visibility lives on this wrapper, not on the button: the button
+            classes set `display` themselves in unlayered CSS, so an
+            `lg:hidden` utility on the button loses the cascade and the burger
+            would show on desktop. */}
+        <div className="lg:hidden">
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            className={`secondary_button secondary_button--icon${
+              isOverlay ? "" : " secondary_button--on-light"
+            }`}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
       </div>
       {open && (
         <div className="border-t border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] lg:hidden">
