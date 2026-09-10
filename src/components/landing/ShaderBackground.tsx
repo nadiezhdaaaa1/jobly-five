@@ -333,6 +333,7 @@ export function ShaderBackground({
   seed,
   timeScale,
   grain,
+  onFirstFrame,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
@@ -343,10 +344,19 @@ export function ShaderBackground({
   timeScale?: number
   /** Film-grain amount. Defaults to the module preset. */
   grain?: number
+  /** Fired once, after the first frame has actually been drawn to the canvas. */
+  onFirstFrame?: () => void
 }) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
+
+  // Held in a ref so it stays out of the effect's dependency list: a changing
+  // callback identity must not rebuild the WebGL context.
+  const onFirstFrameRef = useRef(onFirstFrame)
+  useEffect(() => {
+    onFirstFrameRef.current = onFirstFrame
+  }, [onFirstFrame])
 
   // Derived primitive so a re-render with the same palette (a fresh array
   // literal) does not tear down and rebuild the WebGL context.
@@ -468,6 +478,7 @@ export function ShaderBackground({
     let visible = document.visibilityState === "visible"
     let inView = true
     let disposed = false
+    let firstFrameSignalled = false
     const start = performance.now()
     const timeAnimated = Math.abs(activeTimeScale) > 0.0001
 
@@ -602,6 +613,10 @@ export function ShaderBackground({
         UNIFORMS.cursorRadius,
       )
       gl.drawArrays(gl.TRIANGLES, 0, 3)
+      if (!firstFrameSignalled) {
+        firstFrameSignalled = true
+        onFirstFrameRef.current?.()
+      }
       const pointerSettling =
         Math.abs(targetX - mouseX) > 0.001 ||
         Math.abs(targetY - mouseY) > 0.001 ||
