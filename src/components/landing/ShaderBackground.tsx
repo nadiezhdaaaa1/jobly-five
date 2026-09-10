@@ -333,6 +333,7 @@ export function ShaderBackground({
   seed,
   timeScale,
   grain,
+  onFirstFrame,
 }: {
   className?: string
   /** Normalised 0–1 RGB triples, same shape as UNIFORMS.colors. */
@@ -343,10 +344,19 @@ export function ShaderBackground({
   timeScale?: number
   /** Film-grain amount. Defaults to the module preset. */
   grain?: number
+  /** Fired once, after the first frame has actually been drawn to the canvas. */
+  onFirstFrame?: () => void
 }) {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const reduced = usePrefersReducedMotion()
+
+  // Held in a ref so it stays out of the effect's dependency list: a changing
+  // callback identity must not rebuild the WebGL context.
+  const onFirstFrameRef = useRef(onFirstFrame)
+  useEffect(() => {
+    onFirstFrameRef.current = onFirstFrame
+  }, [onFirstFrame])
 
   // Derived primitive so a re-render with the same palette (a fresh array
   // literal) does not tear down and rebuild the WebGL context.
