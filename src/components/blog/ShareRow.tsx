@@ -49,8 +49,8 @@ export function ShareRow({ url, title }: { url: string; title: string }) {
             aria-hidden="true"
             className="block size-5 bg-current"
             style={{
-              maskImage: `url(${l.icon})`,
-              WebkitMaskImage: `url(${l.icon})`,
+              maskImage: `url("${l.icon}")`,
+              WebkitMaskImage: `url("${l.icon}")`,
               maskSize: "contain",
               WebkitMaskSize: "contain",
               maskRepeat: "no-repeat",
