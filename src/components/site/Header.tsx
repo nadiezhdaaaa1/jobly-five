@@ -123,7 +123,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
         <button
           type="button"
           aria-label="Toggle menu"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-button border border-current text-current lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-current text-current lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? <X size={18} /> : <Menu size={18} />}
@@ -138,7 +138,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                   key={n.label}
                   to={n.to}
                   onClick={() => setOpen(false)}
-                  className="rounded-[4px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                  className="rounded-[12px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   {n.label}
                 </Link>
@@ -147,7 +147,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                   key={n.label}
                   href={n.href}
                   onClick={() => setOpen(false)}
-                  className="rounded-[4px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                  className="rounded-[12px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   {n.label}
                 </a>
@@ -155,7 +155,7 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
             )}
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-[4px] px-3 py-3 text-sm">
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-[12px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
                   Dashboard
                 </Link>
                 <button
@@ -164,14 +164,14 @@ export function Header({ overlay = false }: { overlay?: boolean }) {
                     setOpen(false);
                     void handleSignOut();
                   }}
-                  className="mt-2 inline-flex h-11 items-center justify-center rounded-button border border-[color:var(--color-border)] px-4 text-sm"
+                  className="mt-2 inline-flex h-11 items-center justify-center rounded-[12px] border border-[color:var(--color-border)] px-4 text-sm"
                 >
                   Sign out
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setOpen(false)} className="rounded-[4px] px-3 py-3 text-sm">
+                <Link to="/login" onClick={() => setOpen(false)} className="rounded-[12px] px-3 py-3 text-sm text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
                   Log in
                 </Link>
                 <Link
