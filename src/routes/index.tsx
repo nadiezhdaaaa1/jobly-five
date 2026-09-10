@@ -846,7 +846,7 @@ function FeatureCards() {
           </p>
           <div
             className="iso-stage mt-6 scale-[1.036] transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
+            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.11 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
             <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
@@ -876,7 +876,7 @@ function FeatureCards() {
           </p>
           <div
             className="iso-stage mt-6 scale-[1.036] transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
+            style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.11 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
             <div className="iso-plate rounded-[8px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-5">
