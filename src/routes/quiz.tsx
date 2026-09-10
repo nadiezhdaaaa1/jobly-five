@@ -484,7 +484,7 @@ function QuizPage() {
           </Link>
           <Link
             to="/login"
-            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[10px] px-2 py-1"
+            className="text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 rounded-[12px] px-2 py-1"
           >
             Log in
           </Link>
@@ -500,7 +500,7 @@ function QuizPage() {
         </div>
 
         {resumeOffer ? (
-          <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+          <div className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
             <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">
               Pick up where you left off?
             </h2>
@@ -540,7 +540,7 @@ function QuizPage() {
 
         {confirmStartOver ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-[400px] rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
+            <div className="w-full max-w-[400px] rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
               <h2 className="text-[16px] font-semibold text-[color:var(--color-foreground)]">Start over?</h2>
               <p className="body-small mt-1 text-[color:var(--color-text-secondary)]">
                 Your saved answers will be discarded.
@@ -816,13 +816,13 @@ export function StepShell({
         <button
           type="button"
           onClick={onEdit}
-          className="group flex w-full items-center justify-between gap-3 rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
+          className="group flex w-full items-center justify-between gap-3 rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3 text-left transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 min-h-[56px]"
           aria-label={`Edit ${SUMMARY_LABEL[stepKey]}`}
         >
           <div className="flex min-w-0 items-center gap-3">
             <span
               className={cn(
-                "flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px]",
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-[12px]",
                 invalid ? "bg-[#D0D6D8]" : "bg-[color:var(--color-primary)]"
               )}
               style={{ aspectRatio: "1 / 1" }}
@@ -842,7 +842,7 @@ export function StepShell({
               </div>
             </div>
           </div>
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] text-[color:var(--color-text-secondary)] group-hover:bg-[color:var(--color-surface-2)]">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] text-[color:var(--color-text-secondary)] group-hover:bg-[color:var(--color-surface-2)]">
             <Pencil className="h-4 w-4" />
           </span>
         </button>
@@ -852,7 +852,7 @@ export function StepShell({
 
   return (
     <li ref={ref} className="jobly-step-reveal">
-      <div className="rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-8">
+      <div className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5 sm:p-8">
         {children}
       </div>
       <style>{`
@@ -1014,7 +1014,7 @@ export function FieldStep({
                 aria-checked={selected}
                 onClick={() => onChange(f)}
                 className={cn(
-                  "inline-flex h-11 items-center rounded-[4px] border px-5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "inline-flex h-11 items-center rounded-[12px] border px-5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
                     ? "border-[color:var(--color-accent)] bg-[color:var(--color-accent)] text-[#090B0C]"
                     : "border-[color:var(--color-border)] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]"
@@ -1099,7 +1099,7 @@ export function RoleStep({
         Pick up to {MAX} roles that fit you best. Search across all roles.
       </p>
 
-      <div className="mt-4 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div className="mt-4 flex items-center gap-2 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -1126,11 +1126,11 @@ export function RoleStep({
             return (
               <span
                 key={r}
-                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+                className="inline-flex items-center gap-1.5 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
               >
                 <span>{r}</span>
                 {g && (
-                  <span className="rounded-[2px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
+                  <span className="rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-[color:var(--color-text-muted)]">
                     {g}
                   </span>
                 )}
@@ -1152,7 +1152,7 @@ export function RoleStep({
         </span>
       </div>
 
-      <div className="mt-3 rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      <div className="mt-3 rounded-[16px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         {grouped.length === 0 && (
           <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
@@ -1175,7 +1175,7 @@ export function RoleStep({
                       aria-pressed={selected}
                       title={atMax ? "max 3" : undefined}
                       className={cn(
-                        "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
+                        "inline-flex items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed",
                         selected
                           ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                           : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
@@ -1184,7 +1184,7 @@ export function RoleStep({
                     >
                       <span
                         className={cn(
-                          "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+                          "grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border",
                           selected
                             ? "border-[#0E735A] bg-[#0E735A]"
                             : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
@@ -1391,7 +1391,7 @@ function SkillsGroup({
       </div>
 
       <div ref={wrapRef} className="relative">
-      <div ref={inputWrapRef} className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div ref={inputWrapRef} className="mt-2 flex items-center gap-2 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -1418,7 +1418,7 @@ function SkillsGroup({
         ref={popRef}
         data-skill-dropdown="true"
         style={{ position: pos.position, left: pos.left, top: pos.top, width: pos.width, maxHeight: pos.maxHeight, zIndex: 100 }}
-        className="touch-pan-y overscroll-contain overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
+        className="touch-pan-y overscroll-contain overflow-y-auto rounded-[16px] border border-[color:var(--color-border)] bg-white p-3 shadow-[0px_8px_24px_-4px_rgba(12,12,13,0.18),0px_2px_6px_0px_rgba(12,12,13,0.08)]"
       >
         <div className="flex flex-col gap-[4px]">
           {filtered.map((s) => {
@@ -1430,7 +1430,7 @@ function SkillsGroup({
                 onClick={() => toggle(s)}
                 aria-pressed={selected}
                 className={cn(
-                  "flex w-full items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "flex w-full items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
                     ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
                     : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
@@ -1439,7 +1439,7 @@ function SkillsGroup({
               >
                 <span
                   className={cn(
-                    "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+                    "grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border",
                     selected
                       ? "border-[#0E735A] bg-[#0E735A]"
                       : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
@@ -1467,7 +1467,7 @@ function SkillsGroup({
           {value.map((s) => (
             <span
               key={s}
-              className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+              className="inline-flex items-center gap-1.5 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
             >
               {s}
               <button
@@ -1612,7 +1612,7 @@ export function CategorizedSkillStep({
         onClick={() => (opts.custom ? toggle(s) : toggle(s))}
         aria-pressed={selected}
         className={cn(
-          "inline-flex items-center rounded-[4px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+          "inline-flex items-center rounded-[12px] border text-sm text-[color:var(--color-foreground)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
           selected
             ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
             : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
@@ -1621,7 +1621,7 @@ export function CategorizedSkillStep({
       >
         <span
           className={cn(
-            "grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border",
+            "grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border",
             selected
               ? "border-[#0E735A] bg-[#0E735A]"
               : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
@@ -1648,7 +1648,7 @@ export function CategorizedSkillStep({
                 removeCustom(s);
               }
             }}
-            className="ml-1 grid h-4 w-4 place-items-center rounded-[2px] text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
+            className="ml-1 grid h-4 w-4 place-items-center rounded-[4px] text-[color:var(--color-text-muted)] hover:text-[color:var(--color-foreground)]"
           >
             <X className="h-3 w-3" />
           </span>
@@ -1688,7 +1688,7 @@ export function CategorizedSkillStep({
         </div>
       </div>
 
-      <div className="mt-2 flex items-center gap-2 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
+      <div className="mt-2 flex items-center gap-2 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 focus-within:ring-2 focus-within:ring-[color:var(--color-ring)] focus-within:ring-offset-2">
         <Search className="h-4 w-4 text-[color:var(--color-text-muted)]" />
         <input
           value={query}
@@ -1708,7 +1708,7 @@ export function CategorizedSkillStep({
         )}
       </div>
 
-      <div className="mt-3 max-h-[280px] overflow-y-auto rounded-[4px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
+      <div className="mt-3 max-h-[280px] overflow-y-auto rounded-[16px] border border-[color:var(--color-border)] bg-[#F9FBFB] p-3">
         {filtered.length === 0 && !customs.length && (
           <p className="text-sm text-[color:var(--color-text-muted)]">No matches.</p>
         )}
@@ -1740,7 +1740,7 @@ export function CategorizedSkillStep({
           <div>
             <div className="flex flex-wrap gap-2">
               {adding ? (
-                <span className="inline-flex items-center rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2 py-1">
+                <span className="inline-flex items-center rounded-[12px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2 py-1">
                   <input
                     autoFocus
                     value={pending}
@@ -1766,7 +1766,7 @@ export function CategorizedSkillStep({
                 <button
                   type="button"
                   onClick={() => setAdding(true)}
-                  className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2.5 py-1 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
+                  className="inline-flex items-center gap-1 rounded-[12px] border border-dashed border-[color:var(--color-border-strong)] bg-white px-2.5 py-1 text-sm text-[color:var(--color-text-secondary)] hover:text-[color:var(--color-foreground)]"
                 >
                   + Add your own
                 </button>
@@ -1956,7 +1956,7 @@ export function ExperienceStep({
               type="button"
               onClick={() => setLevel(l)}
               className={cn(
-                "relative flex h-[56px] items-center overflow-hidden rounded-[4px] border pl-4 pr-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "relative flex h-[56px] items-center overflow-hidden rounded-[16px] border pl-4 pr-0 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
                   ? "border-[#00F1A9] bg-[#00F1A9]"
                   : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
@@ -1965,7 +1965,7 @@ export function ExperienceStep({
             >
               <span className="flex items-center gap-2 text-[16px] font-light leading-[1.60] text-[#090B0C]">
                 {selected && (
-                  <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                  <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
                     <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   </span>
                 )}
@@ -1987,7 +1987,7 @@ export function ExperienceStep({
       {showTrackFork && (
         <div className="mt-4">
           <div className="text-sm font-light text-[#090B0C]">Track</div>
-          <div className="mt-2 inline-flex rounded-[4px] border border-[#E3E7E8] bg-white p-1">
+          <div className="mt-2 inline-flex rounded-[16px] border border-[#E3E7E8] bg-white p-1">
             {(["IC", "Mgmt"] as const).map((t) => {
               const label = t === "IC" ? "Individual contributor" : "Management";
               const active = track === t;
@@ -1997,7 +1997,7 @@ export function ExperienceStep({
                   type="button"
                   onClick={() => setTrack(t)}
                   className={cn(
-                    "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                    "rounded-[12px] px-3 py-1.5 text-sm font-light transition-colors",
                     active
                     ? "bg-[color:var(--color-green)] text-white"
                       : "text-[#67787C] hover:text-[#090B0C]",
@@ -2013,7 +2013,7 @@ export function ExperienceStep({
                 type="button"
                 onClick={() => setTrack("Exec")}
                 className={cn(
-                  "rounded-[4px] px-3 py-1.5 text-sm font-light transition-colors",
+                  "rounded-[12px] px-3 py-1.5 text-sm font-light transition-colors",
                   track === "Exec"
                     ? "bg-[color:var(--color-green)] text-white"
                     : "text-[#67787C] hover:text-[#090B0C]",
@@ -2035,7 +2035,7 @@ export function ExperienceStep({
                     type="button"
                     onClick={() => setLevel(l)}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
                       selected
                         ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
                         : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
@@ -2043,7 +2043,7 @@ export function ExperienceStep({
                     aria-pressed={selected}
                   >
                     {selected && (
-                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                      <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
                         <Check className="h-3 w-3 text-white" strokeWidth={3} />
                       </span>
                     )}
@@ -2064,7 +2064,7 @@ export function ExperienceStep({
                     type="button"
                     onClick={() => setLevel(l)}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-[4px] border px-3 py-1.5 text-sm font-light transition-colors",
+                      "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
                       selected
                         ? "border-[#00F1A9] bg-[#00F1A9] text-[#090B0C]"
                         : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
@@ -2072,7 +2072,7 @@ export function ExperienceStep({
                     aria-pressed={selected}
                   >
                     {selected && (
-                      <span className="grid h-4 w-4 place-items-center rounded-[2px] bg-[#0E735A]">
+                      <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
                         <Check className="h-3 w-3 text-white" strokeWidth={3} />
                       </span>
                     )}
@@ -2140,7 +2140,7 @@ export function ExperienceStep({
           <select
             value={primary}
             onChange={(ev) => onChange({ primaryLanguage: ev.target.value })}
-            className="select-native h-10 w-full rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full rounded-[12px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select English level"
           >
             {ENGLISH_LEVELS.map((lvl) => (
@@ -2158,7 +2158,7 @@ export function ExperienceStep({
           <select
             value={pendingLang}
             onChange={(ev) => setPendingLang(ev.target.value)}
-            className="select-native h-10 w-full flex-1 rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full flex-1 rounded-[12px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Select an additional language"
           >
             <option value="">Language</option>
@@ -2169,7 +2169,7 @@ export function ExperienceStep({
           <select
             value={pendingLevel}
             onChange={(ev) => setPendingLevel(ev.target.value as ProficiencyLevel)}
-            className="select-native h-10 w-full sm:w-[140px] rounded-[4px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            className="select-native h-10 w-full sm:w-[140px] rounded-[12px] border border-[color:var(--color-border)] bg-white pl-3 pr-8 text-sm text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             aria-label="Proficiency level"
           >
             {PROFICIENCY_LEVELS.map((lvl) => (
@@ -2190,14 +2190,14 @@ export function ExperienceStep({
             {extras.map((e) => (
               <span
                 key={e.lang}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-[#E3E7E8] bg-white py-1.5 pl-3 pr-1.5 text-sm font-light text-[#090B0C]"
+                className="inline-flex items-center gap-2 rounded-[12px] border border-[#E3E7E8] bg-white py-1.5 pl-3 pr-1.5 text-sm font-light text-[#090B0C]"
               >
                 {e.lang} • {e.level}
                 <button
                   type="button"
                   onClick={() => removeExtra(e.lang)}
                   aria-label={`Remove ${e.lang}`}
-                  className="grid h-6 w-6 place-items-center rounded-[4px] text-[#67787C] hover:bg-[#F9FBFB] hover:text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                  className="grid h-6 w-6 place-items-center rounded-[8px] text-[#67787C] hover:bg-[#F9FBFB] hover:text-[#090B0C] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -2365,7 +2365,7 @@ export function LocationStep({
                 }}
                 aria-pressed={selected}
                 className={cn(
-                  "flex h-[56px] items-center justify-center rounded-[4px] border px-4 text-[16px] font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                  "flex h-[56px] items-center justify-center rounded-[16px] border px-4 text-[16px] font-light transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                   selected
                     ? "border-[#00F1A9] bg-[#00F1A9]"
                     : "border-[#E3E7E8] bg-white hover:border-[color:var(--color-border-strong)]"
@@ -2412,12 +2412,12 @@ export function LocationStep({
               placeholder="Search city or state…"
               aria-label="Search city or state"
               autoComplete="off"
-              className="h-11 w-full rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+              className="h-11 w-full rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
             />
             {locOpen && locSuggestions.length > 0 && (
               <ul
                 role="listbox"
-                className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-64 overflow-auto rounded-[4px] border border-[color:var(--color-border)] bg-white shadow-md"
+                className="absolute left-0 right-0 top-[calc(100%+4px)] z-20 max-h-64 overflow-auto rounded-[16px] border border-[color:var(--color-border)] bg-white shadow-md"
               >
                 {locSuggestions.map((s, i) => (
                   <li
@@ -2447,7 +2447,7 @@ export function LocationStep({
               {locations.map((l) => (
                 <span
                   key={l}
-                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
+                  className="inline-flex items-center gap-1.5 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-2.5 py-1 text-sm"
                 >
                   {l}
                   <button
@@ -2573,7 +2573,7 @@ function ToggleRow({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3">
+    <div className="flex items-center justify-between rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 py-3">
       <div>
         <div className="text-base font-light leading-relaxed text-[#090B0C]">{label}</div>
         <div className="text-sm text-[color:var(--color-text-secondary)]">{hint}</div>
@@ -2641,7 +2641,7 @@ function EmailStep({
             placeholder="Enter your email"
             aria-invalid={showError}
             className={cn(
-              "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+              "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
               showError
                 ? "border-[color:var(--color-danger)]"
                 : "border-[color:var(--color-border)]"
@@ -2737,7 +2737,7 @@ export function AxesStep({
               aria-checked={selected}
               onClick={() => onPick(opt)}
               className={cn(
-                "inline-flex items-center rounded-[4px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "inline-flex items-center rounded-[12px] border text-sm text-[#090B0C] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 selected
                   ? "border-[#00F1A9] bg-[#00F1A9]"
                   : "border-[color:var(--color-border)] bg-white hover:border-[color:var(--color-border-strong)]"
@@ -2818,7 +2818,7 @@ function ContinueRow({
       className={cn(
         "flex items-center gap-2",
         onCancel
-          ? "sticky bottom-0 z-10 -mx-5 mt-6 rounded-b-[8px] border-t border-[color:var(--color-border)] bg-white px-5 py-4"
+          ? "sticky bottom-0 z-10 -mx-5 mt-6 rounded-b-[20px] border-t border-[color:var(--color-border)] bg-white px-5 py-4"
           : "mt-6"
       )}
     >
