@@ -180,7 +180,7 @@ function BlogListPage() {
                       to="/blog"
                       search={{ ...(category ? { category } : {}), page: current + 1 }}
                       rel="next"
-                      className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                      className="secondary_button secondary_button--on-light secondary_button--sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                     >
                       Next
                     </Link>
