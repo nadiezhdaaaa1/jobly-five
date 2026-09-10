@@ -87,7 +87,7 @@ function ContactPage() {
   };
 
   const fieldClass =
-    "mt-2 h-11 w-full rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]";
+    "mt-2 h-11 w-full rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]";
   const errClass = "border-[color:var(--color-danger)]";
 
   return (
@@ -104,7 +104,7 @@ function ContactPage() {
               </header>
 
               <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px]">
-                <section className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+                <section className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
                   {status === "success" ? (
                     <div className="py-6">
                       <h2 className="text-2xl">Thanks, we got your message.</h2>
@@ -117,7 +117,7 @@ function ContactPage() {
                           setForm({ name: "", email: "", subject: "", message: "" });
                           setStatus("idle");
                         }}
-                        className="mt-6 inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] px-4 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                        className="secondary_button secondary_button--on-light mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                       >
                         Send another message
                       </button>
@@ -125,7 +125,7 @@ function ContactPage() {
                   ) : (
                     <form onSubmit={onSubmit} noValidate>
                       {status === "error" && (
-                        <div className="mb-4 rounded-xl border border-[color:var(--color-danger)] bg-[color:var(--color-danger-subtle)] p-3 text-sm text-[color:var(--color-danger)]">
+                        <div className="mb-4 rounded-[16px] border border-[color:var(--color-danger)] bg-[color:var(--color-danger-subtle)] p-3 text-sm text-[color:var(--color-danger)]">
                           Something went wrong sending your message.{" "}
                           <button type="button" onClick={() => setStatus("idle")} className="underline">
                             Try again
@@ -185,7 +185,7 @@ function ContactPage() {
                           rows={6}
                           value={form.message}
                           onChange={(e) => setField("message", e.target.value)}
-                          className={`mt-2 w-full rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${errors.message ? errClass : ""}`}
+                          className={`mt-2 w-full rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3 text-sm text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${errors.message ? errClass : ""}`}
                           aria-invalid={!!errors.message}
                           aria-describedby={errors.message ? "message-err" : undefined}
                         />
@@ -195,7 +195,7 @@ function ContactPage() {
                         <button
                           type="submit"
                           disabled={!valid || status === "submitting"}
-                          className="inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+                          className="main_accent_button main_accent_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                         >
                           {status === "submitting" ? "Sending…" : "Send message"}
                         </button>
@@ -204,7 +204,7 @@ function ContactPage() {
                   )}
                 </section>
 
-                <aside className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
+                <aside className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-8">
                   <h2 className="text-lg">Before you write</h2>
                   <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
                     A few things people often ask — you might find your answer faster here.
