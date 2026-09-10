@@ -3,6 +3,7 @@ import { useState } from "react";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
+import { Wordmark } from "@/components/site/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
@@ -36,8 +37,8 @@ function ResetPasswordPage() {
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <header className="pt-6 pb-6">
         <div className="mx-auto flex h-14 max-w-md items-center justify-between px-4">
-          <Link to="/" className="text-[30px] font-bold text-[color:var(--color-green)]" style={{ fontFamily: "var(--font-logo)" }}>
-            jobly
+          <Link to="/" aria-label="Jobly home" className="flex items-center">
+            <Wordmark className="!text-current" />
           </Link>
         </div>
       </header>
@@ -52,7 +53,7 @@ function ResetPasswordPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="At least 8 characters"
               className={cn(
-                "mt-1.5 h-12 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
+                "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
                 error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
               )}
             />
@@ -61,7 +62,7 @@ function ResetPasswordPage() {
           <button
             type="submit"
             disabled={submitting}
-            className="button-medium inline-flex h-12 items-center justify-center gap-2 rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+            className="main_accent_button main_accent_button--on-light w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           >
             {submitting ? <><Loader2 className="h-4 w-4 animate-spin" />Saving…</> : "Save password"}
           </button>
