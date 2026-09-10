@@ -837,7 +837,7 @@ function FeatureCards() {
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
         <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div className="relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
+        <div className="group relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
@@ -845,7 +845,7 @@ function FeatureCards() {
             Every job is evaluated down to details like framework alignment, commute tolerance, and historical compensation ranges.
           </p>
           <div
-            className="iso-stage mt-6"
+            className="iso-stage mt-6 scale-[1.036] transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
@@ -867,7 +867,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
+        <div className="group relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
@@ -875,7 +875,7 @@ function FeatureCards() {
             Say goodbye to chaotic spreadsheets. We automatically detect when you apply and help coordinate follow-ups.
           </p>
           <div
-            className="iso-stage mt-6"
+            className="iso-stage mt-6 scale-[1.036] transition-transform duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:scale-100 motion-reduce:scale-100 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             style={{ ["--iso-stage-h" as string]: "252px", ["--iso-plate-w" as string]: "448px", ["--iso-scale" as string]: 1.15 }}
           >
             <div className="iso-ghost h-[218px] rounded-[8px] border border-[color:var(--color-border-strong)]" aria-hidden />
