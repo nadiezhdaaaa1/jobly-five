@@ -511,14 +511,14 @@ function QuizPage() {
               <button
                 type="button"
                 onClick={acceptResume}
-                className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-primary)] px-5 text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                className="main_accent_button main_accent_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Continue
               </button>
               <button
                 type="button"
                 onClick={() => void startFresh()}
-                className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                className="secondary_button secondary_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Start fresh
               </button>
@@ -549,14 +549,14 @@ function QuizPage() {
                 <button
                   type="button"
                   onClick={() => setConfirmStartOver(false)}
-                  className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                  className="secondary_button secondary_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={() => void startFresh()}
-                  className="button-medium inline-flex h-12 items-center justify-center rounded-button bg-[color:var(--color-danger)] px-5 text-[color:var(--color-surface-1)] transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                  className="danger_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
                 >
                   Start over
                 </button>
@@ -2180,7 +2180,7 @@ export function ExperienceStep({
             type="button"
             onClick={addExtra}
             disabled={!pendingLang}
-            className="h-10 rounded-[4px] bg-[#090B0C] px-4 text-sm font-light text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 sm:w-auto"
+            className="secondary_button secondary_button--on-light secondary_button--sm justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 sm:w-auto"
           >
             Add
           </button>
@@ -2658,8 +2658,7 @@ function EmailStep({
           type="submit"
           disabled={!valid || submitting}
           className={cn(
-            "button-medium mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-            "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            "main_accent_button main_accent_button--on-light mt-5 w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
           )}
         >
           {submitting ? (
@@ -2826,7 +2825,7 @@ function ContinueRow({
         <button
           type="button"
           onClick={onCancel}
-          className="button-medium inline-flex h-12 items-center justify-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-[color:var(--color-foreground)] transition-colors hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+          className="secondary_button secondary_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
         >
           Cancel
         </button>
@@ -2836,8 +2835,7 @@ function ContinueRow({
         disabled={disabled}
         onClick={onClick}
         className={cn(
-          "button-medium inline-flex h-12 flex-1 items-center justify-center rounded-button px-5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-          "bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+          "main_accent_button main_accent_button--on-light flex-1 justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
         )}
       >
         {primaryLabel}
