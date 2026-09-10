@@ -837,7 +837,7 @@ function FeatureCards() {
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
         <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-24">
-        <div className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-10">
+        <div className="relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Match score and why it fits
           </h3>
@@ -867,7 +867,7 @@ function FeatureCards() {
             </div>
           </div>
         </div>
-        <div className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 md:p-10">
+        <div className="relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
           <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
             Application tracker
           </h3>
