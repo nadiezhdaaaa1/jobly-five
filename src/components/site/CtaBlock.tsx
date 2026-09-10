@@ -22,10 +22,7 @@ export function CtaBlock({
             </h2>
             <p className="mt-3 leading-6 text-[color:var(--color-background)]">{subtitle}</p>
             <div className="mt-10">
-              <Link
-                to="/quiz"
-                className="inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)] transition-colors hover:bg-[color:var(--color-accent-hover)]"
-              >
+              <Link to="/quiz" className="main_accent_button">
                 {cta}
               </Link>
             </div>
