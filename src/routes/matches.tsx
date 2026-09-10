@@ -181,7 +181,7 @@ function MatchesPage() {
               <button
                 type="button"
                 onClick={() => setMode("email")}
-                className="button-medium inline-flex h-12 items-center justify-center rounded-button px-5 transition-colors bg-[color:var(--color-primary)] text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+                className="main_accent_button main_accent_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
               >
                 Continue with email
               </button>
