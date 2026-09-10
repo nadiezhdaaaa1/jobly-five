@@ -117,7 +117,7 @@ function ContactPage() {
                           setForm({ name: "", email: "", subject: "", message: "" });
                           setStatus("idle");
                         }}
-                        className="secondary_button secondary_button--on-light mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                        className="secondary_button secondary_button--on-light secondary_button--field mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                       >
                         Send another message
                       </button>
@@ -195,7 +195,7 @@ function ContactPage() {
                         <button
                           type="submit"
                           disabled={!valid || status === "submitting"}
-                          className="main_accent_button main_accent_button--on-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                          className="main_accent_button main_accent_button--on-light main_accent_button--field focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                         >
                           {status === "submitting" ? "Sending…" : "Send message"}
                         </button>

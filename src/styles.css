@@ -689,6 +689,16 @@ select::-ms-expand {
   justify-content: center;
 }
 
+/* 44px tall, to sit level with an h-11 form field. Only the vertical padding
+ * changes: 10 + 24px line-height + 10. Horizontal padding and the 16px type
+ * stay as the base, so it still reads as a full-size CTA. Declared after
+ * --block and --sm so it wins the padding at equal specificity. */
+.main_accent_button--field,
+.secondary_button--field {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 
 
 
