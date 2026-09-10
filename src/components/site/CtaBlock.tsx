@@ -1,5 +1,4 @@
-import { Link } from "@tanstack/react-router";
-
+import { CtaLink } from "./CtaLink";
 import { HeroShaderBackground } from "../landing/HeroShaderBackground";
 
 export function CtaBlock({
@@ -33,9 +32,7 @@ export function CtaBlock({
             </h2>
             <p className="mt-3 leading-6 text-[color:var(--color-background)]">{subtitle}</p>
             <div className="mt-10">
-              <Link to="/quiz" className="main_accent_button">
-                {cta}
-              </Link>
+              <CtaLink className="main_accent_button">{cta}</CtaLink>
             </div>
           </div>
         </div>
