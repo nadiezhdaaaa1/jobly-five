@@ -152,7 +152,7 @@ function BlogListPage() {
                         ...(current - 1 > 1 ? { page: current - 1 } : {}),
                       }}
                       rel="prev"
-                      className="inline-flex h-11 items-center rounded-button border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-5 text-sm hover:border-[color:var(--color-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
+                      className="secondary_button secondary_button--on-light secondary_button--sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]"
                     >
                       Previous
                     </Link>
@@ -166,11 +166,11 @@ function BlogListPage() {
                         ...(n > 1 ? { page: n } : {}),
                       }}
                       aria-current={n === current ? "page" : undefined}
-                      className={`inline-flex h-11 min-w-11 items-center justify-center rounded-button border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] ${
+                      className={`${
                         n === current
-                          ? "border-[color:var(--color-foreground)] bg-[color:var(--color-foreground)] text-[color:var(--color-background)]"
-                          : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
-                      }`}
+                          ? "main_accent_button main_accent_button--on-light main_accent_button--icon"
+                          : "secondary_button secondary_button--on-light secondary_button--icon"
+                      } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)]`}
                     >
                       {n}
                     </Link>

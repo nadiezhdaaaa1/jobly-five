@@ -7,7 +7,7 @@ export function GuideFaqSection({ items }: { items: { question: string; answer: 
         {items.map((f) => (
           <details
             key={f.question}
-            className="rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5"
+            className="rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5"
           >
             <summary className="cursor-pointer text-base font-semibold">{f.question}</summary>
             <p className="mt-3 leading-7 text-[color:var(--color-text-secondary)]">{f.answer}</p>

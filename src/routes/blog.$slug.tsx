@@ -101,10 +101,7 @@ function NotFound() {
         <p className="mt-2 text-[color:var(--color-text-secondary)]">
           The post you're looking for may have moved or been removed.
         </p>
-        <Link
-          to="/blog"
-          className="mt-6 inline-flex h-11 items-center rounded-button bg-[color:var(--color-accent)] px-5 text-sm text-[color:var(--color-on-accent)]"
-        >
+        <Link to="/blog" className="main_accent_button main_accent_button--on-light mt-6">
           Back to the blog
         </Link>
       </main>
@@ -141,7 +138,7 @@ function ArticlePage() {
                   ← Back to blog
                 </Link>
               </div>
-              <span className="mt-4 inline-flex items-center rounded-button bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
+              <span className="mt-4 inline-flex items-center rounded-[12px] bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">
                 {post.category}
               </span>
               <h1 className="mt-3 text-3xl leading-tight md:text-4xl">{post.title}</h1>
@@ -159,7 +156,7 @@ function ArticlePage() {
             </header>
 
             <div className="mx-auto max-w-[820px] px-5 md:px-8">
-              <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+              <div className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
                 <img src={post.coverImage} alt={post.coverAlt} className="h-auto w-full" />
               </div>
             </div>

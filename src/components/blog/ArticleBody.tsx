@@ -43,7 +43,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
           case "image":
             return (
               <figure key={i} className="mt-8">
-                <div className="overflow-hidden rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
+                <div className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
                   <img src={b.src} alt={b.alt} className="h-auto w-full" loading="lazy" />
                 </div>
                 {b.caption && (
@@ -65,7 +65,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             );
           case "table":
             return (
-              <div key={i} className="mt-8 overflow-x-auto rounded-lg border border-[color:var(--color-border)]">
+              <div key={i} className="mt-8 overflow-x-auto rounded-[20px] border border-[color:var(--color-border)]">
                 <table className="w-full text-left text-sm">
                   <thead className="bg-[color:var(--color-surface-2)]">
                     <tr>
@@ -94,7 +94,7 @@ export function ArticleBody({ blocks }: { blocks: ContentBlock[] }) {
             return (
               <aside
                 key={i}
-                className="mt-8 rounded-lg bg-[color:var(--color-mint)] p-5 text-[color:var(--color-green)]"
+                className="mt-8 rounded-[20px] bg-[color:var(--color-mint)] p-5 text-[color:var(--color-green)]"
               >
                 {b.title && <div className="text-sm font-semibold">{b.title}</div>}
                 <p className="mt-1 leading-7">{b.text}</p>
