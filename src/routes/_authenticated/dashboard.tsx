@@ -413,14 +413,14 @@ function TrackerWidget() {
     { n: c.rejection, l: "Rejected" },
   ];
   return (
-    <aside className="rounded-[8px] border bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
+    <aside className="rounded-[20px] border bg-[color:var(--color-surface-1)] shadow-[0_1px_4px_0_rgba(12,12,13,0.05)]">
       <div className="flex items-center justify-between px-4 pt-4">
         <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Tracker</h3>
         <IconTooltip label="Open Tracker">
           <Link
             to="/tracker"
             aria-label="Open Tracker"
-            className="inline-flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-[24px] w-[24px] items-center justify-center rounded-[8px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconArrowUpRight size={18} stroke={2} />
           </Link>
@@ -447,10 +447,10 @@ function TrackerWidget() {
 
 function TrackerUpsell() {
   return (
-    <aside className="rounded-[12px] bg-[#F1F3F3] p-[4px]">
+    <aside className="rounded-[20px] bg-[#F1F3F3] p-[4px]">
       <div
         data-tracker-upsell-mini
-        className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80"
+        className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[16px] border border-white bg-white/80"
         style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", padding: 16 }}
       >
         <div
@@ -488,8 +488,8 @@ function TrackerUpsell() {
 
 function SalaryTeaser() {
   return (
-    <aside className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
-      <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">In development</span>
+    <aside className="rounded-[20px] border bg-[color:var(--color-surface-1)] p-4 opacity-55" aria-disabled>
+      <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-surface-2)] px-2 py-0.5 text-[11px] text-[color:var(--color-text-muted)]">In development</span>
       <h3 className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">Salary insights</h3>
       <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>Your range vs the market.</p>
     </aside>
@@ -510,7 +510,7 @@ function StatusTag({ status }: { status: JobStatus }) {
   const s = map[status];
   if (!s) return null;
   return (
-    <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: s.bg, color: s.fg }}>{s.label}</span>
+    <span className="inline-flex items-center rounded-[12px] px-2 py-0.5 text-[14px] font-light leading-[1.5]" style={{ background: s.bg, color: s.fg }}>{s.label}</span>
   );
 }
 
@@ -540,9 +540,9 @@ function CompactSessionRow({ job, kind }: { job: EnrichedJob; kind: DigestSessio
     kind === "reported" ? "var(--color-danger)" :
     "var(--color-warning)";
   return (
-    <div className="flex h-[54px] items-center justify-between rounded-[8px] bg-[color:var(--color-surface-1)] px-4">
+    <div className="flex h-[54px] items-center justify-between rounded-[16px] bg-[color:var(--color-surface-1)] px-4">
       <div className="flex min-w-0 items-center gap-3">
-        <span className="inline-flex items-center rounded-[4px] px-2 py-0.5 text-[13px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
+        <span className="inline-flex items-center rounded-[12px] px-2 py-0.5 text-[13px] font-light leading-[1.5]" style={{ background: bg, color: fg }}>
           {label}
         </span>
         <span className="truncate text-[13px] text-[color:var(--color-text-secondary)]">{job.title}</span>
@@ -603,7 +603,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
 
   return (
     <article
-      className="relative cursor-pointer rounded-[8px] border p-5"
+      className="relative cursor-pointer rounded-[16px] border p-5"
       style={{
         background: "rgba(255, 255, 255, 0.9)",
         borderColor: "#FFFFFF",
@@ -618,9 +618,9 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
       <div className="w-full text-left">
         <div className="flex w-full items-center gap-4">
           {job.logo ? (
-            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[4px] object-cover" />
+            <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[12px] object-cover" />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
               {job.company.charAt(0)}
             </div>
           )}
@@ -652,13 +652,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 aria-label="Report this job"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => { e.stopPropagation(); setFlagOpen((v) => !v); }}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <Flag size={15} strokeWidth={1.6} />
               </button>
             </IconTooltip>
             {flagOpen && flagPos ? createPortal(
-              <div ref={flagRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: flagPos.top, right: flagPos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+              <div ref={flagRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]" style={{ top: flagPos.top, right: flagPos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                   <button
                     key={label}
@@ -688,13 +688,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 aria-label="Not interested"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => { e.stopPropagation(); setDislikeOpen((v) => !v); }}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <ThumbsDown size={15} strokeWidth={1.6} />
               </button>
             </IconTooltip>
             {dislikeOpen && dislikePos ? createPortal(
-              <div ref={dislikeRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: dislikePos.top, right: dislikePos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+              <div ref={dislikeRef as unknown as React.RefObject<HTMLDivElement>} role="menu" className="fixed z-[100] min-w-[240px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]" style={{ top: dislikePos.top, right: dislikePos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                 {["Not relevant to my role", "Wrong seniority", "Compensation too low", "Don't recommend the company"].map((label) => (
                   <button
                     key={label}
@@ -726,7 +726,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[4px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
                 background: saved ? "var(--color-mint)" : undefined,
@@ -740,7 +740,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
-            className="inline-flex h-[30px] items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-[30px] items-center rounded-[12px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
@@ -790,8 +790,8 @@ function JobRow({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
 
 function JobRowCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) {
   return (
-    <div className="rounded-[12px] bg-[#F1F3F3] p-1">
-      <div className="group rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
+    <div className="rounded-[20px] bg-[#F1F3F3] p-1">
+      <div className="group rounded-[16px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color,background-color] hover:border-[#D0D6D8] hover:bg-[#F9FBFB] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)]">
         <JobRow job={job} onOpen={onOpen} />
       </div>
     </div>
@@ -804,8 +804,8 @@ function JobRowSkeleton() {
 
 function EmptyMatchesState() {
   return (
-    <div className="w-full rounded-[16px] bg-[color:var(--color-surface-2)] p-2">
-      <div className="flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-[8px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-10">
+    <div className="w-full rounded-[20px] bg-[color:var(--color-surface-2)] p-2">
+      <div className="flex w-full flex-col items-center justify-center gap-4 overflow-hidden rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 md:p-10">
         <img
           src={emptyStateAsset.url}
           alt=""
@@ -825,10 +825,10 @@ function EmptyMatchesState() {
 
 function JobRowSkeletonInner() {
   return (
-    <div className="rounded-[12px] bg-[#F1F3F3] p-1" aria-hidden>
-      <div className="rounded-[8px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]">
+    <div className="rounded-[20px] bg-[#F1F3F3] p-1" aria-hidden>
+      <div className="rounded-[16px] border border-[#E3E7E8] bg-white p-5 shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]">
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 shrink-0 rounded-[4px] skeleton" />
+          <div className="h-12 w-12 shrink-0 rounded-[12px] skeleton" />
           <div className="min-w-0 flex-1">
             <div className="h-[15px] w-[52%] rounded-[4px] skeleton" />
             <div className="mt-2 h-[13px] w-[34%] rounded-[4px] skeleton" />
@@ -838,9 +838,9 @@ function JobRowSkeletonInner() {
         <div className="mt-4 flex items-center gap-2">
           <div className="h-[18px] w-[110px] rounded-[4px] skeleton" />
           <div className="ml-auto flex items-center gap-1">
-            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
-            <div className="h-[30px] w-[30px] rounded-[4px] skeleton" />
-            <div className="h-[30px] w-[84px] rounded-[4px] skeleton" />
+            <div className="h-[30px] w-[30px] rounded-[12px] skeleton" />
+            <div className="h-[30px] w-[30px] rounded-[12px] skeleton" />
+            <div className="h-[30px] w-[84px] rounded-[12px] skeleton" />
           </div>
         </div>
       </div>
@@ -865,7 +865,7 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function ProfileChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-[4px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
+    <span className="inline-flex items-center gap-1 rounded-[12px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
       {label}
       <button type="button" aria-label={`Remove ${label}`} onClick={onRemove} className="hover:opacity-70"><X size={12} strokeWidth={2} /></button>
     </span>
@@ -901,11 +901,11 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
-      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
+      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open && pos ? createPortal(
-        <div className="fixed z-[100] w-[260px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ top: pos.top, right: pos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }} ref={ref as unknown as React.RefObject<HTMLDivElement>}>
+        <div className="fixed z-[100] w-[260px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]" style={{ top: pos.top, right: pos.right, boxShadow: "0 8px 24px rgba(0,0,0,.12)" }} ref={ref as unknown as React.RefObject<HTMLDivElement>}>
           <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="w-full border-b bg-transparent px-3 py-2 text-[13px] outline-none" />
           <div className="max-h-[260px] overflow-y-auto">
             {filteredGroups ? (
@@ -938,7 +938,7 @@ function SelectChip({ label, selected, onClick, disabled }: { label: string; sel
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-[28px] items-center rounded-[4px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
+      className="inline-flex h-[28px] items-center rounded-[12px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
       style={
         selected
           ? { background: "var(--color-green)", color: "#fff" }
@@ -1002,7 +1002,7 @@ function FiltersSidebar({
         />
       ) : null}
       {open ? (
-      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[8px] lg:border lg:border-[#E3E7E8] lg:bg-white lg:p-[12px] lg:shadow-[0_1px_4px_0_rgba(12,12,13,0.05)] lg:max-h-[calc(100vh-6rem)]">
+      <div className="fixed top-0 right-0 bottom-0 z-50 w-[340px] max-w-[85vw] flex flex-col border-l bg-[color:var(--color-surface-1)] overflow-hidden lg:static lg:w-auto lg:max-w-none lg:rounded-[20px] lg:border lg:border-[#E3E7E8] lg:bg-white lg:p-[12px] lg:shadow-[0_1px_4px_0_rgba(12,12,13,0.05)] lg:max-h-[calc(100vh-6rem)]">
       <div className="flex-1 overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex items-center gap-1 border-b bg-[color:var(--color-surface-1)] px-4 py-3 lg:border-b-0 lg:bg-white lg:px-0 lg:pt-0">
           <h2 className="flex-1 min-w-0 text-[16px] font-semibold text-[color:var(--color-foreground)]">
@@ -1013,7 +1013,7 @@ function FiltersSidebar({
             type="button"
             onClick={onToggle}
             aria-label="Collapse filters"
-            className="inline-flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-[4px] bg-transparent text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-[12px] bg-transparent text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconChevronRight size={20} strokeWidth={1.8} />
           </button>
@@ -1198,12 +1198,12 @@ function FiltersSidebar({
                   key={b}
                   type="button"
                   onClick={() => set({ sources: selected ? p.sources.filter((x) => x !== b) : [...p.sources, b] })}
-                  className="inline-flex h-[28px] items-center gap-1 rounded-[4px] px-2.5 text-[12px] font-medium"
+                  className="inline-flex h-[28px] items-center gap-1 rounded-[12px] px-2.5 text-[12px] font-medium"
                   style={selected ? { background: "var(--color-green)", color: "#fff" } : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }}
                 >
                   {b}
                   {DIRECT_BOARDS.has(b) ? (
-                    <span className="ml-1 rounded-[3px] px-1 text-[10px]" style={{ background: selected ? "rgba(255,255,255,.25)" : "var(--color-mint)", color: selected ? "#fff" : "var(--color-green)" }}>Direct</span>
+                    <span className="ml-1 rounded-[4px] px-1 text-[10px]" style={{ background: selected ? "rgba(255,255,255,.25)" : "var(--color-mint)", color: selected ? "#fff" : "var(--color-green)" }}>Direct</span>
                   ) : null}
                 </button>
               );
@@ -1213,12 +1213,12 @@ function FiltersSidebar({
       </div>
 
       <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:border-t-0 lg:bg-white lg:px-0 lg:pb-0">
-        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
+        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[12px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
         <button
           type="button"
           onClick={onApply}
           disabled={!dirty}
-          className="inline-flex h-[34px] flex-1 items-center justify-center rounded-[4px] px-3 button-small"
+          className="inline-flex h-[34px] flex-1 items-center justify-center rounded-[12px] px-3 button-small"
           style={{
             background: dirty ? "var(--color-accent)" : "var(--color-surface-2)",
             color: dirty ? "var(--color-on-accent)" : "var(--color-text-muted)",
@@ -1246,7 +1246,7 @@ function Pagination({ page, pageCount, onChange }: { page: number; pageCount: nu
     if (i === 1 || i === pageCount || (i >= page - window && i <= page + window)) push(i);
     else if (pages[pages.length - 1] !== "…") push("…");
   }
-  const btn = "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] px-2 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40";
+  const btn = "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[12px] border border-[#E3E7E8] bg-[color:var(--color-surface-1)] px-2 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40";
   return (
     <nav aria-label="Pagination" className="mt-2 flex items-center justify-center gap-1">
       <button
@@ -1269,7 +1269,7 @@ function Pagination({ page, pageCount, onChange }: { page: number; pageCount: nu
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-2 text-[13px] font-semibold text-[color:var(--color-on-accent)]"
+                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-2 text-[13px] font-semibold text-[color:var(--color-on-accent)]"
                 : btn
             }
           >
