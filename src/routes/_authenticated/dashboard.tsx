@@ -461,7 +461,7 @@ function TrackerUpsell() {
             top: -60,
             width: 160,
             height: 160,
-            background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
+            background: "radial-gradient(circle, #2CFF8E 0%, rgba(44,255,142,0) 70%)",
             filter: "blur(40px)",
             opacity: 0.45,
           }}
@@ -476,8 +476,7 @@ function TrackerUpsell() {
         </div>
         <Link
           to="/settings"
-          className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
-          style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+          className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2] shrink-0"
         >
           Upgrade to Pro
         </Link>
@@ -740,7 +739,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
-            className="inline-flex h-[30px] items-center rounded-[12px] bg-[color:var(--color-accent)] px-3 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="inline-flex h-[30px] items-center rounded-[12px] bg-[color:var(--color-main-accent)] px-3 button-small text-[color:var(--on-main-accent)] hover:bg-[color:var(--main-accent-hover)]"
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
@@ -1220,8 +1219,8 @@ function FiltersSidebar({
           disabled={!dirty}
           className="inline-flex h-[34px] flex-1 items-center justify-center rounded-[12px] px-3 button-small"
           style={{
-            background: dirty ? "var(--color-accent)" : "var(--color-surface-2)",
-            color: dirty ? "var(--color-on-accent)" : "var(--color-text-muted)",
+            background: dirty ? "var(--main-accent)" : "var(--color-surface-2)",
+            color: dirty ? "var(--on-main-accent)" : "var(--color-text-muted)",
             cursor: dirty ? "pointer" : "not-allowed",
           }}
         >
@@ -1269,7 +1268,7 @@ function Pagination({ page, pageCount, onChange }: { page: number; pageCount: nu
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-2 text-[13px] font-semibold text-[color:var(--color-on-accent)]"
+                ? "inline-flex h-[32px] min-w-[32px] items-center justify-center rounded-[12px] bg-[color:var(--color-main-accent)] px-2 text-[13px] font-semibold text-[color:var(--on-main-accent)]"
                 : btn
             }
           >
