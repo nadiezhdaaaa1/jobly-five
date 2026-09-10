@@ -142,7 +142,7 @@ function MatchesPage() {
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
         <div>
-          <p className="text-sm text-[color:var(--color-green)] font-semibold">
+          <p className="text-sm text-[color:var(--color-green)] font-light">
             Matches ready
           </p>
           <h1 className="mt-1 text-3xl sm:text-4xl">Your top matches</h1>
@@ -188,7 +188,7 @@ function MatchesPage() {
             ) : (
               <form onSubmit={handleEmailCreate} className="flex flex-col gap-3">
                 <div>
-                  <label className="text-sm font-semibold">Email</label>
+                  <label className="text-sm font-light">Email</label>
                   <input
                     type="email"
                     value={answers.email ?? ""}
@@ -197,7 +197,7 @@ function MatchesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-semibold" htmlFor="pw">
+                  <label className="text-sm font-light" htmlFor="pw">
                     Choose a password
                   </label>
                   <input
@@ -267,12 +267,12 @@ function JobCard({ job }: { job: Job }) {
           {job.logo ? (
             <img src={job.logo} alt="" className="h-12 w-12 shrink-0 rounded-[12px] object-cover" />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] bg-[color:var(--color-foreground)] text-[16px] font-semibold text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] bg-[color:var(--color-foreground)] text-[16px] font-normal text-white">
               {job.company.charAt(0)}
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <span className="block text-[15px] font-semibold text-[color:var(--color-foreground)]">{job.title}</span>
+            <span className="block text-[15px] font-normal text-[color:var(--color-foreground)]">{job.title}</span>
             <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               {job.company} · {job.location}
             </div>
@@ -287,7 +287,7 @@ function JobCard({ job }: { job: Job }) {
             type="button"
             onClick={() => setDetailsOpen((v) => !v)}
             aria-expanded={detailsOpen}
-            className="ml-auto inline-flex items-center gap-1 text-[13px] font-semibold text-[color:var(--color-green)] hover:underline"
+            className="ml-auto inline-flex items-center gap-1 text-[13px] font-light text-[color:var(--color-green)] hover:underline"
           >
             {detailsOpen ? "Hide details" : "Match details"}
             {detailsOpen ? <ChevronUp size={14} strokeWidth={2} /> : <ChevronDown size={14} strokeWidth={2} />}
