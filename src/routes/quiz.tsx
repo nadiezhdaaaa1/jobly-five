@@ -52,6 +52,7 @@ import {
   type Role as TaxRole,
 } from "@/data/taxonomy";
 import rawTaxonomy from "@/data/jobly_taxonomy.json";
+import { Wordmark } from "@/components/site/Wordmark";
 
 const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
 
