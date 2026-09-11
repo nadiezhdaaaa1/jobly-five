@@ -750,7 +750,7 @@ function QuizPage() {
                   <LocationStep
                     answers={answers}
                     onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-                    submitting={submitting}
+                    submitLabel={submitting ? "Finding your matches…" : "Get my matches"}
                     onContinue={() => {
                       advance("loc", {
                         salaryMin: answers.salaryMin ?? 100_000,
