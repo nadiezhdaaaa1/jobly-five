@@ -10,6 +10,7 @@ import { z } from "zod";
 import { Wordmark } from "@/components/site/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
 import { PRICING, TRIAL_DAYS, total, usd } from "@/config/pricing";
+import { getDraftToken } from "@/lib/quiz-draft-store";
 
 const searchSchema = z.object({
   plan: z.enum(["trial", "pro"]).catch("trial"),
@@ -61,8 +62,11 @@ function ConfirmationPage() {
   }
 
   const isTrial = plan === "trial";
-  // An un-onboarded account still has to answer the quiz before a Digest exists.
-  const nextPath = onboarded ? "/dashboard" : "/quiz";
+  // An un-onboarded account still has to answer the quiz before a Digest
+  // exists — unless the answers already sit in an unclaimed draft (S1), which
+  // the app claims on entry.
+  const hasDraft = getDraftToken() !== null;
+  const nextPath = onboarded || hasDraft ? "/dashboard" : "/quiz";
   const renewal = isTrial
     ? usd(PRICING.monthly.perMonth)
     : cycle === "annual"
