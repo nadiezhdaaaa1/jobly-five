@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
+import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/site/Wordmark";
