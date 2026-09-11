@@ -11,7 +11,7 @@ export const CONTACT_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I try Jobly before paying?",
-    a: `Yes. The monthly plan opens with a ${TRIAL_DAYS}-day free trial — no charge until it ends, and you can cancel any time before then. The yearly plan is a direct purchase, so it starts straight away.`,
+    a: `Yes. Pick the free-trial plan and you get ${TRIAL_DAYS} days at no charge — cancel before it ends and you are not billed. The monthly and yearly plans are direct purchases, so they start straight away.`,
   },
   {
     q: "I did not get my digest — what should I do?",
