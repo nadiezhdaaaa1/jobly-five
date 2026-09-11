@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { Wordmark } from "@/components/site/Wordmark";
-import { supabase } from "@/integrations/supabase/client";
+
 import { recordConsent } from "@/lib/consent.functions";
 import { CONSENT_CHANNELS, POLICY_VERSION } from "@/config/consent";
 
@@ -37,6 +37,8 @@ function PreferencesPage() {
     if (busy) return;
     setBusy(true);
     try {
+      // Lazy import so the browser client doesn't load during SSR.
+      const { supabase } = await import("@/integrations/supabase/client");
       const { data } = await supabase.auth.getUser();
       const email = data.user?.email;
       if (email) {
