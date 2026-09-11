@@ -136,28 +136,11 @@ function MatchesPage() {
             Start with a {TRIAL_DAYS}-day free trial, or go straight to Pro. Cancel any time.
           </p>
 
-          <div className="mt-6 flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={() => void flow.selectPlan({ plan: "trial", cycle: "monthly", trial: true })}
-              className="main_accent_button main_accent_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-            >
-              Start {TRIAL_DAYS}-day free trial
-            </button>
-            <button
-              type="button"
-              onClick={() => void flow.selectPlan({ plan: "pro", cycle: "annual", trial: false })}
-              className="secondary_button secondary_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-            >
-              Get Pro for {usd(PRICING.annual.perMonth)} per month, billed yearly
-            </button>
-            <p className="text-xs text-[color:var(--color-text-muted)]">
-              Trial auto-renews at {usd(PRICING.monthly.perMonth)} until cancelled. Pro auto-renews
-              at {usd(total(PRICING.annual))} until cancelled. Cancel anytime in Settings → Plan in
-              two steps.
-            </p>
+          <div className="mt-6">
+            <PlanCardsGrid onSelect={(card) => void flow.selectPlan(card.choice)} />
           </div>
         </section>
+
       </main>
 
       <RegistrationModal
