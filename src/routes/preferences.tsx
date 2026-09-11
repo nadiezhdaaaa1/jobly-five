@@ -23,8 +23,8 @@ export const Route = createFileRoute("/preferences")({
 });
 
 function PreferencesPage() {
-  // Read only — an absent or arbitrary token still renders the page.
-  Route.useSearch();
+  // An absent or arbitrary token still renders the page.
+  const { token } = Route.useSearch();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const doneHeading = useRef<HTMLHeadingElement>(null);
@@ -37,25 +37,35 @@ function PreferencesPage() {
     if (busy) return;
     setBusy(true);
     try {
-      // Lazy import so the browser client doesn't load during SSR.
-      const { supabase } = await import("@/integrations/supabase/client");
-      const { data } = await supabase.auth.getUser();
-      const email = data.user?.email;
-      if (email) {
-        await Promise.allSettled(
-          NON_ESSENTIAL.map((channel) =>
-            recordConsent({
-              data: {
-                email,
-                channel,
-                granted: false,
-                source: "unsubscribe_link",
-                policyVersion: POLICY_VERSION,
-                consentText: `Unsubscribed via the preferences page (${channel})`,
-              },
-            }),
-          ),
-        );
+      if (token) {
+        // The path that works for a logged-out visitor arriving from an email.
+        // The endpoint writes the withdrawal rows, so no recordConsent loop here.
+        await fetch("/api/public/hooks/unsubscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token }),
+        });
+      } else {
+        // Lazy import so the browser client doesn't load during SSR.
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data } = await supabase.auth.getUser();
+        const email = data.user?.email;
+        if (email) {
+          await Promise.allSettled(
+            NON_ESSENTIAL.map((channel) =>
+              recordConsent({
+                data: {
+                  email,
+                  channel,
+                  granted: false,
+                  source: "unsubscribe_link",
+                  policyVersion: POLICY_VERSION,
+                  consentText: `Unsubscribed via the preferences page (${channel})`,
+                },
+              }),
+            ),
+          );
+        }
       }
     } catch {
       // Logged-out visitors must never see a failure.
