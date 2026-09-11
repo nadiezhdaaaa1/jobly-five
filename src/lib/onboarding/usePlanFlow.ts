@@ -12,12 +12,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { BillingCycle } from "@/lib/subscription.functions";
-import {
-  clearPostAuthPath,
-  savePlanIntent,
-  setPostAuthPath,
-  type IntentPlan,
-} from "@/lib/onboarding/planIntent";
+import { savePlanIntent, type IntentPlan } from "@/lib/onboarding/planIntent";
 import { EVENTS, track } from "@/lib/analytics";
 import type { RegistrationSource } from "@/components/auth/RegistrationModal";
 
@@ -36,7 +31,6 @@ export function usePlanFlow(source: RegistrationSource) {
 
   const goCheckout = useCallback(
     (choice: SelectPlanInput) => {
-      clearPostAuthPath();
       track(EVENTS.checkoutRedirect, { plan: choice.plan, cycle: choice.cycle, source });
       void navigate({ to: CHECKOUT_PATH });
     },
@@ -51,9 +45,8 @@ export function usePlanFlow(source: RegistrationSource) {
 
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        // 2. No session: register, then continue. Checkout never reopens the
-        //    modal, so the OAuth continuation cannot loop.
-        setPostAuthPath(CHECKOUT_PATH);
+        // 2. No session: register, then continue. Google comes back to
+        //    CHECKOUT_PATH via redirect_uri, so no stored path is involved.
         setPending(choice);
         track(EVENTS.registrationModalOpened, {
           source,
@@ -69,7 +62,6 @@ export function usePlanFlow(source: RegistrationSource) {
         const { data: ent } = await supabase.rpc("get_entitlements");
         const status = (ent as { status?: string } | null)?.status;
         if (status && !["none", "canceled"].includes(status)) {
-          clearPostAuthPath();
           void navigate({ to: "/settings" });
           return;
         }
@@ -85,7 +77,6 @@ export function usePlanFlow(source: RegistrationSource) {
 
   /** Closing keeps the saved intent and navigates nowhere. */
   const closeModal = useCallback(() => {
-    clearPostAuthPath();
     setModalOpen(false);
   }, []);
 
@@ -93,7 +84,6 @@ export function usePlanFlow(source: RegistrationSource) {
   const onAuthed = useCallback(() => {
     setModalOpen(false);
     const choice = pending;
-    clearPostAuthPath();
     if (choice) goCheckout(choice);
     else void navigate({ to: CHECKOUT_PATH });
   }, [goCheckout, navigate, pending]);

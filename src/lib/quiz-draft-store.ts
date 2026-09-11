@@ -26,7 +26,9 @@ export function ensureDraftToken(): string | null {
   if (existing) return existing;
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
-  const token = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const token = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   try {
     window.localStorage.setItem(TOKEN_KEY, token);
   } catch {
@@ -125,19 +127,6 @@ export function beaconDraftSave(input: {
  * when the token is lost between sign-up and the confirmation link.
  * No token means nothing to stamp — never creates a draft.
  */
-export async function stampDraftEmail(email: string): Promise<void> {
-  const token = getDraftToken();
-  const trimmed = email.trim();
-  if (!token || !trimmed) return;
-  try {
-    await saveQuizDraft({
-      data: { token, answers_patch: { email: trimmed }, schema_version: QUIZ_SCHEMA_VERSION },
-    });
-  } catch {
-    // ignore
-  }
-}
-
 export async function abandonDraft(): Promise<void> {
   const token = getDraftToken();
   clearDraftToken();

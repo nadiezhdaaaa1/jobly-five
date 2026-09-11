@@ -23,7 +23,6 @@ import {
   signUpWithEmail,
   startGoogleAuth,
 } from "@/lib/auth/authActions";
-import { stampDraftEmail } from "@/lib/quiz-draft-store";
 import { EVENTS, track } from "@/lib/analytics";
 
 export type RegistrationSource = "landing_card" | "pricing_section" | "matches_plan_step";
@@ -118,12 +117,6 @@ export function RegistrationModal({
       if (result.needCaptcha) setNeedCaptcha(true);
       setError(result.error);
       return;
-    }
-    if (mode === "signup") {
-      // Keeps draft recovery alive now that the quiz no longer asks for an email:
-      // a token lost between sign-up and the confirmation link can still be
-      // matched by address.
-      void stampDraftEmail(email);
     }
     if (result.kind === "notice") {
       setNotice(result.notice);

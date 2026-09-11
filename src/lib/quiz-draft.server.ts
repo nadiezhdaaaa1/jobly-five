@@ -11,7 +11,7 @@ const ALLOWED_KEYS = new Set([
   "hardSkills", "hardCustom", "softSkills", "softCustom", "tools", "toolsCustom",
   "level", "track", "years", "languages", "primaryLanguage", "additionalLanguages",
   "workMode", "remote", "location", "locations", "salaryMin", "salaryMax",
-  "openToRelocate", "openToTravel", "email", "scope", "segment", "motion",
+  "openToRelocate", "openToTravel", "scope", "segment", "motion",
   "visitedOptional",
 ]);
 
@@ -107,8 +107,11 @@ export async function saveDraft(input: SaveDraftInput): Promise<{ ok: boolean }>
   };
   if (!withinSizeCap(merged)) return { ok: false };
 
-  const email = typeof merged["email"] === "string" && merged["email"] ? (merged["email"] as string) : null;
-  const status = existing?.status === "claimed" ? "claimed" : email ? "completed" : "in_progress";
+  // Drafts never carry an email address: an unverified address on an anonymous
+  // draft is not proof of anything, and matching by it would let one person's
+  // answers land on another person's account. Recovery is token-only.
+  const email = null;
+  const status = existing?.status === "claimed" ? "claimed" : "in_progress";
 
   const row = {
     answers: merged as Json,

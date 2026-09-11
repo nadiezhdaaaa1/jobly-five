@@ -58,8 +58,15 @@ function CheckoutPage() {
         data:
           intent.plan === "trial"
             ? { action: "start_trial" }
-            : { action: "activate", cycle: intent.cycle },
+            : {
+                action: "activate",
+                cycle: intent.cycle,
+                // Only a decision made in Settings -> Plan may change the cycle
+                // of a live subscription; the server enforces the same rule.
+                allowCycleChange: intent.manage === true,
+              },
       });
+
       // The decision has been acted on: it must not outlive this checkout.
       clearPlanIntent();
       void navigate({
