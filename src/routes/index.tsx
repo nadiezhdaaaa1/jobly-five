@@ -38,7 +38,9 @@ import { HeroShaderBackground } from "../components/landing/HeroShaderBackground
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 import { MatchSphere } from "../components/landing/MatchSphere";
 
-import { PRICING, TRIAL_DAYS, money, savings, total, usd } from "@/config/pricing";
+import { PRICING, money, total } from "@/config/pricing";
+import { PlanCardsGrid } from "@/components/site/PlanCards";
+
 import {
   AshbyLogo,
   GreenhouseLogo,
