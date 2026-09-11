@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
+import {
+  IconLoader2 as Loader2,
+  IconChevronDown as ChevronDown,
+  IconChevronUp as ChevronUp,
+} from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { Wordmark } from "@/components/site/Wordmark";
@@ -8,16 +12,13 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { PRICING, TRIAL_DAYS, usd } from "@/config/pricing";
+import { PRICING, TRIAL_DAYS, total, usd } from "@/config/pricing";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
-    meta: [
-      { title: "Your top matches — Jobly" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Your top matches — Jobly" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: MatchesPage,
 });
@@ -38,10 +39,7 @@ const SEARCH_STEPS = [
 function MatchesSearching() {
   const [step, setStep] = useState(0);
   useEffect(() => {
-    const id = setInterval(
-      () => setStep((s) => (s + 1) % SEARCH_STEPS.length),
-      1600,
-    );
+    const id = setInterval(() => setStep((s) => (s + 1) % SEARCH_STEPS.length), 1600);
     return () => clearInterval(id);
   }, []);
 
@@ -114,12 +112,12 @@ function MatchesPage() {
 
       <main className="mx-auto max-w-3xl px-4 py-8 sm:py-12">
         <div>
-          <p className="text-sm text-[color:var(--color-green)] font-light">
-            Matches ready
-          </p>
+          <p className="text-sm text-[color:var(--color-green)] font-light">Matches ready</p>
           <h1 className="mt-1 text-3xl sm:text-4xl">Your top matches</h1>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            Ranked by fit against {(answers.roles && answers.roles.length ? answers.roles.join(", ") : answers.role) || "your role"}
+            Ranked by fit against{" "}
+            {(answers.roles && answers.roles.length ? answers.roles.join(", ") : answers.role) ||
+              "your role"}
             {answers.level ? `, ${answers.level.toLowerCase()} level` : ""}.
           </p>
         </div>
@@ -153,6 +151,11 @@ function MatchesPage() {
             >
               Get Pro for {usd(PRICING.annual.perMonth)} per month, billed yearly
             </button>
+            <p className="text-xs text-[color:var(--color-text-muted)]">
+              Trial auto-renews at {usd(PRICING.monthly.perMonth)} until cancelled. Pro auto-renews
+              at {usd(total(PRICING.annual))} until cancelled. Cancel anytime in Settings → Plan in
+              two steps.
+            </p>
           </div>
         </section>
       </main>
@@ -180,12 +183,41 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
   // that path comes to size / 2, so the disc fills the box with no seam.
   const perfect = score >= 100;
   return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
+    <div
+      className="relative flex shrink-0 items-center justify-center"
+      style={{ width: size, height: size }}
+      role="img"
+      aria-label={`${score} percent match`}
+    >
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill={perfect ? "#0E735A" : "none"} strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="#E3E7E8"
+          strokeWidth={stroke}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="#0E735A"
+          strokeWidth={stroke}
+          fill={perfect ? "#0E735A" : "none"}
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          strokeLinecap="butt"
+        />
       </svg>
-      <span className="absolute text-[14px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: perfect ? "#FFFFFF" : "#090B0C" }}>
+      <span
+        className="absolute text-[14px]"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontWeight: 400,
+          color: perfect ? "#FFFFFF" : "#090B0C",
+        }}
+      >
         {score}%
       </span>
     </div>
@@ -206,17 +238,20 @@ function JobCard({ job }: { job: Job }) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <span className="block text-[15px] font-normal text-[color:var(--color-foreground)]">{job.title}</span>
-            <div className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            <span className="block text-[15px] font-normal text-[color:var(--color-foreground)]">
+              {job.title}
+            </span>
+            <div
+              className="mt-0.5 text-[13px] text-[color:var(--color-text-secondary)]"
+              style={{ fontWeight: 300 }}
+            >
               {job.company} · {job.location}
             </div>
           </div>
           <ScoreRing score={job.score} />
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <div className="body-medium text-[color:var(--color-foreground)]">
-            {job.salary}
-          </div>
+          <div className="body-medium text-[color:var(--color-foreground)]">{job.salary}</div>
           <button
             type="button"
             onClick={() => setDetailsOpen((v) => !v)}
@@ -224,7 +259,11 @@ function JobCard({ job }: { job: Job }) {
             className="ml-auto inline-flex items-center gap-1 text-[13px] font-light text-[color:var(--color-green)] hover:underline"
           >
             {detailsOpen ? "Hide details" : "Match details"}
-            {detailsOpen ? <ChevronUp size={14} strokeWidth={2} /> : <ChevronDown size={14} strokeWidth={2} />}
+            {detailsOpen ? (
+              <ChevronUp size={14} strokeWidth={2} />
+            ) : (
+              <ChevronDown size={14} strokeWidth={2} />
+            )}
           </button>
         </div>
         {detailsOpen ? (

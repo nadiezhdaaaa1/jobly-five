@@ -17,11 +17,11 @@ import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VsIndexRouteImport } from './routes/vs.index'
 import { Route as GuidesIndexRouteImport } from './routes/guides.index'
+import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as VsCompetitorRouteImport } from './routes/vs.$competitor'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
@@ -32,6 +32,7 @@ import { Route as LegalDmcaRouteImport } from './routes/legal.dmca'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
+import { Route as CheckoutConfirmationRouteImport } from './routes/checkout.confirmation'
 import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
@@ -89,11 +90,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -111,6 +107,11 @@ const VsIndexRoute = VsIndexRouteImport.update({
 const GuidesIndexRoute = GuidesIndexRouteImport.update({
   id: '/guides/',
   path: '/guides/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
+  id: '/checkout/',
+  path: '/checkout/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -161,6 +162,11 @@ const LegalCookiesRoute = LegalCookiesRouteImport.update({
 const LegalBillingRoute = LegalBillingRouteImport.update({
   id: '/legal/billing',
   path: '/legal/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutConfirmationRoute = CheckoutConfirmationRouteImport.update({
+  id: '/checkout/confirmation',
+  path: '/checkout/confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRssDotxmlRoute = BlogRssDotxmlRouteImport.update({
@@ -253,7 +259,6 @@ const ApiPublicHooksConfirmEmailRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -269,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -293,7 +300,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -309,6 +315,7 @@ export interface FileRoutesByTo {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog': typeof BlogIndexRoute
+  '/checkout': typeof CheckoutIndexRoute
   '/guides': typeof GuidesIndexRoute
   '/vs': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -335,7 +343,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -351,6 +358,7 @@ export interface FileRoutesById {
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -361,6 +369,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -377,7 +386,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/checkout'
     | '/contact'
     | '/login'
     | '/matches'
@@ -393,6 +401,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog/'
+    | '/checkout/'
     | '/guides/'
     | '/vs/'
     | '/guides/$guide/$slug'
@@ -417,7 +427,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/checkout'
     | '/contact'
     | '/login'
     | '/matches'
@@ -433,6 +442,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -443,6 +453,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog'
+    | '/checkout'
     | '/guides'
     | '/vs'
     | '/guides/$guide/$slug'
@@ -458,7 +469,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
-    | '/checkout'
     | '/contact'
     | '/login'
     | '/matches'
@@ -474,6 +484,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -484,6 +495,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog/'
+    | '/checkout/'
     | '/guides/'
     | '/vs/'
     | '/guides/$guide/$slug'
@@ -500,7 +512,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
@@ -511,6 +522,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogRssDotxmlRoute: typeof BlogRssDotxmlRoute
+  CheckoutConfirmationRoute: typeof CheckoutConfirmationRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
@@ -521,6 +533,7 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   VsCompetitorRoute: typeof VsCompetitorRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
   GuidesIndexRoute: typeof GuidesIndexRoute
   VsIndexRoute: typeof VsIndexRoute
   GuidesGuideSlugRoute: typeof GuidesGuideSlugRoute
@@ -592,13 +605,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -625,6 +631,13 @@ declare module '@tanstack/react-router' {
       path: '/guides'
       fullPath: '/guides/'
       preLoaderRoute: typeof GuidesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/': {
+      id: '/checkout/'
+      path: '/checkout'
+      fullPath: '/checkout/'
+      preLoaderRoute: typeof CheckoutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/billing'
       fullPath: '/legal/billing'
       preLoaderRoute: typeof LegalBillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/confirmation': {
+      id: '/checkout/confirmation'
+      path: '/checkout/confirmation'
+      fullPath: '/checkout/confirmation'
+      preLoaderRoute: typeof CheckoutConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/rss.xml': {
@@ -834,7 +854,6 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
@@ -845,6 +864,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogRssDotxmlRoute: BlogRssDotxmlRoute,
+  CheckoutConfirmationRoute: CheckoutConfirmationRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
@@ -855,6 +875,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   VsCompetitorRoute: VsCompetitorRoute,
   BlogIndexRoute: BlogIndexRoute,
+  CheckoutIndexRoute: CheckoutIndexRoute,
   GuidesIndexRoute: GuidesIndexRoute,
   VsIndexRoute: VsIndexRoute,
   GuidesGuideSlugRoute: GuidesGuideSlugRoute,
