@@ -624,7 +624,7 @@ function PlanCardsBlock({
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
   const navigate = useNavigate();
-  const subCycle = useSubscription().cycle ?? null;
+  const subCycle = useEntitlements().entitlements.cycle;
   // Nothing to buy only when the displayed cycle is already the live one.
   const ctaDisabled = isPlanPro && period === (subCycle ?? "monthly");
 
@@ -986,12 +986,9 @@ function PlanCardsBlock({
                     color: "#67787C",
                   }}
                 >
-                  {TRIAL_DAYS} days free, then{" "}
-                  {period === "annual"
-                    ? `${usd(PRICING.annual.perMonth)}/mo billed annually (${usd(PRO_ANNUAL_TOTAL)})`
-                    : `${usd(PRO_MONTHLY)}/mo`}
-                  . Auto-renews at {period === "annual" ? usd(PRO_ANNUAL_TOTAL) : usd(PRO_MONTHLY)}{" "}
-                  until cancelled. Cancel anytime in Settings → Plan in two steps.
+                  {TRIAL_DAYS} days free, then {usd(PRO_MONTHLY)}/mo. Auto-renews at{" "}
+                  {usd(PRO_MONTHLY)} until cancelled. Cancel anytime in Settings → Plan in two
+                  steps.
                 </p>
               ) : null}
             </div>
