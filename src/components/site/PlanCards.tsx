@@ -22,6 +22,9 @@ export type PlanCardSpec = {
   badge: string;
   cta: string;
   disclosure: string;
+  /** Drives only the CTA variant: true = main accent button. */
+  ctaMain: boolean;
+  /** Drives only the glow and the lighter card background. */
   highlight: boolean;
   choice: { plan: IntentPlan; cycle: BillingCycle; trial: boolean };
 };
@@ -45,6 +48,7 @@ export const PLAN_CARDS: PlanCardSpec[] = [
     badge: "",
     cta: `Start ${TRIAL_DAYS}-day free trial`,
     disclosure: MONTHLY_DISCLOSURE,
+    ctaMain: false,
     highlight: false,
     choice: { plan: "trial", cycle: "monthly", trial: true },
   },
@@ -58,6 +62,7 @@ export const PLAN_CARDS: PlanCardSpec[] = [
     badge: "",
     cta: "Get Pro monthly",
     disclosure: MONTHLY_DISCLOSURE,
+    ctaMain: true,
     highlight: false,
     choice: { plan: "pro", cycle: "monthly", trial: false },
   },
@@ -71,6 +76,7 @@ export const PLAN_CARDS: PlanCardSpec[] = [
     badge: `Save ${discountPct(PRICING.annual)}%`,
     cta: "Get Pro annual",
     disclosure: ANNUAL_DISCLOSURE,
+    ctaMain: true,
     highlight: true,
     choice: { plan: "pro", cycle: "annual", trial: false },
   },
@@ -123,14 +129,14 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="flex-1 min-w-0"
-      style={{ background: "#F1F3F3", borderRadius: 28, padding: 16 }}
+      className="group relative z-0 flex-1 min-w-0 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[27.027px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[28px]"
+      style={{ background: "var(--color-surface-2)", borderRadius: 28, padding: 16 }}
     >
       <div
         className="relative flex h-full flex-col"
         style={{
-          background: card.highlight ? "rgba(255,255,255,0.8)" : "#F9FBFB",
-          border: "1px solid #FFFFFF",
+          background: card.highlight ? "rgba(255,255,255,0.8)" : "var(--color-background)",
+          border: "1px solid var(--color-surface-1)",
           borderRadius: 16,
           padding: 21,
           gap: 16,
@@ -152,7 +158,7 @@ export function PlanCard({
               width: 360,
               height: 360,
               background:
-                "radial-gradient(circle, var(--color-green) 0%, rgba(0,241,169,0) 70%)",
+                "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)",
               filter: "blur(60px)",
               opacity: 0.45,
               zIndex: 1,
@@ -201,7 +207,7 @@ export function PlanCard({
                 fontWeight: 300,
                 fontSize: 14,
                 lineHeight: 1.5,
-                color: "#67787C",
+                color: "var(--color-text-muted)",
                 textDecoration: card.struck ? "line-through" : "none",
               }}
             >
@@ -225,7 +231,7 @@ export function PlanCard({
                   fontWeight: 300,
                   fontSize: 14,
                   lineHeight: 1.5,
-                  color: "#67787C",
+                  color: "var(--color-text-muted)",
                 }}
               >
                 {card.suffix}
@@ -237,7 +243,7 @@ export function PlanCard({
                 fontWeight: 300,
                 fontSize: 13,
                 lineHeight: "19.5px",
-                color: "#4B585B",
+                color: "var(--color-text-secondary)",
               }}
             >
               {card.note}
@@ -253,7 +259,7 @@ export function PlanCard({
           type="button"
           onClick={() => onSelect(card)}
           className={
-            card.highlight
+            card.ctaMain
               ? "main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
               : "secondary_button secondary_button--on-light secondary_button--block relative z-[2]"
           }
