@@ -129,146 +129,140 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="group flex-1 min-w-0"
-      style={{ background: "var(--color-surface-2)", borderRadius: 28, padding: 16 }}
+      className="relative z-0 flex h-full flex-1 min-w-0 flex-col rounded-[16px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[15.444px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[16px]"
+      style={{
+        background: "var(--color-surface-1)",
+        border: "1px solid var(--color-border)",
+        padding: 21,
+        gap: 16,
+        boxShadow: card.highlight
+          ? "0 1px 4px rgba(12,12,13,0.05)"
+          : "0 1px 2px rgba(12,12,13,0.05)",
+        overflow: "hidden",
+        isolation: "isolate",
+      }}
     >
-      <div
-        className="relative z-0 flex h-full flex-col rounded-[16px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:z-10 group-hover:scale-[1.036] group-hover:rounded-[15.444px] motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-hover:rounded-[16px]"
-        style={{
-          background: card.highlight ? "rgba(255,255,255,0.8)" : "var(--color-background)",
-          border: "1px solid var(--color-surface-1)",
-          padding: 21,
-          gap: 16,
-          boxShadow: card.highlight
-            ? "0 1px 4px rgba(12,12,13,0.05)"
-            : "0 1px 2px rgba(12,12,13,0.05)",
-          overflow: "hidden",
-          isolation: "isolate",
-        }}
-      >
-        {card.highlight ? (
-          <span
-            aria-hidden="true"
-            className="pricing-paid-glow"
-            style={{
-              position: "absolute",
-              top: -120,
-              right: -120,
-              width: 360,
-              height: 360,
-              background:
-                "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)",
-              filter: "blur(60px)",
-              opacity: 0.45,
-              zIndex: 1,
-              pointerEvents: "none",
-            }}
-          />
-        ) : null}
+      {card.highlight ? (
+        <span
+          aria-hidden="true"
+          className="pricing-paid-glow"
+          style={{
+            position: "absolute",
+            top: -120,
+            right: -120,
+            width: 360,
+            height: 360,
+            background: "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)",
+            filter: "blur(60px)",
+            opacity: 0.45,
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+      ) : null}
 
-        <div className="relative flex flex-col" style={{ flex: 1, zIndex: 2 }}>
-          <div className="flex items-start justify-between" style={{ gap: 8 }}>
-            <div
+      <div className="relative flex flex-col" style={{ flex: 1, zIndex: 2 }}>
+        <div className="flex items-start justify-between" style={{ gap: 8 }}>
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 400,
+              fontSize: 16,
+              lineHeight: "24px",
+              color: "var(--color-foreground)",
+            }}
+          >
+            {card.name}
+          </div>
+          {card.badge ? (
+            <span
+              style={{
+                background: "var(--color-step-accent)",
+                borderRadius: 24,
+                padding: "4px 8px",
+                fontFamily: "var(--font-sans)",
+                fontWeight: 400,
+                fontSize: 12,
+                lineHeight: "16px",
+                color: "#FFFFFF",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {card.badge}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-auto flex flex-col" style={{ gap: 4, justifyContent: "flex-end" }}>
+          <div
+            style={{
+              minHeight: 20,
+              fontFamily: "var(--font-sans)",
+              fontWeight: 300,
+              fontSize: 14,
+              lineHeight: 1.5,
+              color: "var(--color-text-muted)",
+              textDecoration: card.struck ? "line-through" : "none",
+            }}
+          >
+            {card.struck || "\u00A0"}
+          </div>
+          <div className="flex flex-wrap items-baseline" style={{ gap: 8 }}>
+            <span
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 400,
-                fontSize: 16,
-                lineHeight: "24px",
+                fontSize: 32,
+                lineHeight: 1.05,
                 color: "var(--color-foreground)",
               }}
             >
-              {card.name}
-            </div>
-            {card.badge ? (
-              <span
-                style={{
-                  background: "var(--color-step-accent)",
-                  borderRadius: 24,
-                  padding: "4px 8px",
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 400,
-                  fontSize: 12,
-                  lineHeight: "16px",
-                  color: "#FFFFFF",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {card.badge}
-              </span>
-            ) : null}
-          </div>
-
-          <div className="mt-auto flex flex-col" style={{ gap: 4, justifyContent: "flex-end" }}>
-            <div
+              {card.price}
+            </span>
+            <span
               style={{
-                minHeight: 20,
                 fontFamily: "var(--font-sans)",
                 fontWeight: 300,
                 fontSize: 14,
                 lineHeight: 1.5,
                 color: "var(--color-text-muted)",
-                textDecoration: card.struck ? "line-through" : "none",
               }}
             >
-              {card.struck || "\u00A0"}
-            </div>
-            <div className="flex flex-wrap items-baseline" style={{ gap: 8 }}>
-              <span
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 400,
-                  fontSize: 32,
-                  lineHeight: 1.05,
-                  color: "var(--color-foreground)",
-                }}
-              >
-                {card.price}
-              </span>
-              <span
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 300,
-                  fontSize: 14,
-                  lineHeight: 1.5,
-                  color: "var(--color-text-muted)",
-                }}
-              >
-                {card.suffix}
-              </span>
-            </div>
-            <div
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontWeight: 300,
-                fontSize: 13,
-                lineHeight: "19.5px",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              {card.note}
-            </div>
+              {card.suffix}
+            </span>
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-sans)",
+              fontWeight: 300,
+              fontSize: 13,
+              lineHeight: "19.5px",
+              color: "var(--color-text-secondary)",
+            }}
+          >
+            {card.note}
           </div>
         </div>
-
-        <div style={{ position: "relative", zIndex: 2 }}>
-          <FeatureList />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => onSelect(card)}
-          className={
-            card.ctaMain
-              ? "main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
-              : "secondary_button secondary_button--on-light secondary_button--block relative z-[2]"
-          }
-        >
-          {card.cta}
-        </button>
-        <p className="relative z-[2] text-center text-xs text-[color:var(--color-text-muted)]">
-          {card.disclosure}
-        </p>
       </div>
+
+      <div style={{ position: "relative", zIndex: 2 }}>
+        <FeatureList />
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onSelect(card)}
+        className={
+          card.ctaMain
+            ? "main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
+            : "secondary_button secondary_button--on-light secondary_button--block relative z-[2]"
+        }
+      >
+        {card.cta}
+      </button>
+      <p className="relative z-[2] text-center text-xs text-[color:var(--color-text-muted)]">
+        {card.disclosure}
+      </p>
     </div>
   );
 }
