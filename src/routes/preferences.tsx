@@ -78,7 +78,7 @@ function PreferencesPage() {
     <div className="min-h-screen bg-[color:var(--color-background)]">
       <div className="mx-auto w-full max-w-[448px] px-5 py-16">
         <Link to="/" aria-label="Jobly home" className="inline-flex items-center">
-          <Wordmark />
+          <Wordmark className="!text-[color:var(--color-foreground)]" />
         </Link>
 
         {done ? (
