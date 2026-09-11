@@ -79,37 +79,54 @@ export const devPurgeAccount = createServerFn({ method: "POST" })
     }
 
     // Verify: re-count every table that could still reference this account.
-    const counts: Record<string, number> = {};
+    // A query that errors must never read as verified, so record it as failed
+    // rather than folding an undefined count into a clean zero.
+    const counts: Record<string, number | typeof CHECK_FAILED> = {};
+    const unverified: string[] = [];
+
+    const record = (label: string, count: number | null, error: unknown) => {
+      if (error || count === null || count === undefined) {
+        counts[label] = CHECK_FAILED;
+        unverified.push(label);
+        return;
+      }
+      counts[label] = count;
+    };
+
     const profileCount = await supabaseAdmin
       .from("profiles")
       .select("id", { count: "exact", head: true })
       .eq("id", userId);
-    counts["profiles"] = profileCount.count ?? 0;
+    record("profiles", profileCount.count, profileCount.error);
 
     for (const table of USER_ID_TABLES) {
-      const { count } = await supabaseAdmin
+      const { count, error } = await supabaseAdmin
         .from(table)
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId);
-      counts[`${table} (user_id)`] = count ?? 0;
+      record(`${table} (user_id)`, count, error);
     }
 
     for (const table of EMAIL_TABLES) {
-      const { count } = await supabaseAdmin
+      const { count, error } = await supabaseAdmin
         .from(table)
         .select("*", { count: "exact", head: true })
         .eq("email", data.email);
-      counts[`${table} (email)`] = count ?? 0;
+      record(`${table} (email)`, count, error);
     }
 
-    const clean = Object.values(counts).every((n) => n === 0);
-    return {
-      ok: true,
-      status: "purged",
-      clean,
-      counts,
-      message: clean
-        ? "Account purged — no rows remain."
-        : "Account purged, but some rows remain (cascade gap).",
-    };
+    const leftovers = Object.values(counts).some((n) => typeof n === "number" && n > 0);
+    const clean = unverified.length === 0 && !leftovers;
+
+    let message: string;
+    if (unverified.length > 0) {
+      message = `Account purged, but verification is incomplete — could not check: ${unverified.join(", ")}.`;
+      if (leftovers) message += " Some checked tables still hold rows (cascade gap).";
+    } else if (leftovers) {
+      message = "Account purged, but some rows remain (cascade gap).";
+    } else {
+      message = "Account purged — no rows remain.";
+    }
+
+    return { ok: true, status: "purged", clean, counts, unverified, message };
   });
