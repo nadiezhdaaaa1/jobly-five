@@ -576,7 +576,6 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
 
 const PRO_MONTHLY = PRICING.monthly.perMonth;
 const PRO_ANNUAL_MONTHLY = PRICING.annual.perMonth;
-const PRO_ANNUAL_TOTAL = total(PRICING.annual);
 
 function PlanCardsBlock({
   plan,
