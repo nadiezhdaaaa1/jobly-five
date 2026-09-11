@@ -1,6 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { IconCheck, IconEye, IconEyeOff, IconInfoCircle, IconLock, IconPlus, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconEye,
+  IconEyeOff,
+  IconInfoCircle,
+  IconLock,
+  IconPlus,
+  IconX,
+} from "@tabler/icons-react";
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { GoogleMark } from "@/components/site/GoogleMark";
 import { IconTooltip } from "@/components/app/IconTooltip";
@@ -25,7 +33,11 @@ import {
   type Plan,
 } from "@/lib/plan-store";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
-import { CANCEL_REASONS, recordCancelFeedback, type CancelReason } from "@/lib/cancel-feedback-store";
+import {
+  CANCEL_REASONS,
+  recordCancelFeedback,
+  type CancelReason,
+} from "@/lib/cancel-feedback-store";
 import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
@@ -51,10 +63,7 @@ const PAUSE_MONTHS = Math.round(PAUSE_DAYS / 30);
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
-    meta: [
-      { title: "Settings — Jobly" },
-      { name: "robots", content: "noindex, nofollow" },
-    ],
+    meta: [{ title: "Settings — Jobly" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: SettingsScreen,
 });
@@ -70,10 +79,16 @@ function SettingsScreen() {
     <div className="min-h-screen bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="settings" />
       <main className="mx-auto max-w-[880px] px-6 pb-24 pt-6">
-        <h1 className="text-[24px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}>
+        <h1
+          className="text-[24px] text-[color:var(--color-foreground)]"
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400 }}
+        >
           Settings
         </h1>
-        <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        <p
+          className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300 }}
+        >
           Plan, billing, notifications, hidden companies, security and account.
         </p>
         {flash ? (
@@ -95,7 +110,15 @@ function SettingsScreen() {
   );
 }
 
-function Card({ title, children, actions }: { title: string; children: React.ReactNode; actions?: React.ReactNode }) {
+function Card({
+  title,
+  children,
+  actions,
+}: {
+  title: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
   return (
     <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
       <div className="flex items-center justify-between gap-4">
@@ -174,29 +197,36 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     );
   }
 
-
   return (
     <Card
       title="Plan"
-      actions={plan === "pro" && !scheduledEnd ? (
-        <button
-          type="button"
-          onClick={() => setCancelStep(1)}
-          className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Cancel subscription
-        </button>
-      ) : null}
+      actions={
+        plan === "pro" && !scheduledEnd ? (
+          <button
+            type="button"
+            onClick={() => setCancelStep(1)}
+            className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          >
+            Cancel subscription
+          </button>
+        ) : null
+      }
     >
       {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <PlanBadge plan={plan} />
           <div className="min-w-0">
-            <p className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 300 }}>
+            <p
+              className="text-[13px] text-[color:var(--color-foreground)]"
+              style={{ fontWeight: 300 }}
+            >
               {plan === "free" ? freeSummary : proSummary}
             </p>
-            <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+            <p
+              className="mt-1 text-[12px] text-[color:var(--color-text-muted)]"
+              style={{ fontWeight: 300 }}
+            >
               {scheduledEnd
                 ? scheduledLine
                 : plan === "pro"
@@ -211,7 +241,10 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           {scheduledEnd ? (
             <button
               type="button"
-              onClick={() => { resumeSubscription(); onFlash("Cancellation undone — your Pro subscription continues."); }}
+              onClick={() => {
+                resumeSubscription();
+                onFlash("Cancellation undone — your Pro subscription continues.");
+              }}
               className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Resume subscription
@@ -221,7 +254,10 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <>
               <button
                 type="button"
-                onClick={() => { setPlan("pro"); onFlash("Welcome back — your matches start arriving tomorrow morning."); }}
+                onClick={() => {
+                  setPlan("pro");
+                  onFlash("Welcome back — your matches start arriving tomorrow morning.");
+                }}
                 className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
               >
                 Restart my search
@@ -239,7 +275,11 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       </div>
 
       {/* Two plan cards — Pro (wide, left) + Free (narrow, right) */}
-      <PlanCardsBlock plan={plan} onFlash={onFlash} onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)} />
+      <PlanCardsBlock
+        plan={plan}
+        onFlash={onFlash}
+        onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)}
+      />
 
       <p className="mt-3 text-[11px] text-[color:var(--color-text-muted)]">
         Payments aren't live in this preview — plan changes are simulated.
@@ -248,13 +288,21 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {/* Cancel Step 1 (only from active Pro) */}
       {cancelStep === 1 ? (
         <Modal onClose={closeCancel} title="Found a job?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Congrats! Pause Pro for {PAUSE_MONTHS} months instead — no emails, no charges, everything saved exactly as you left it.
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
+            Congrats! Pause Pro for {PAUSE_MONTHS} months instead — no emails, no charges,
+            everything saved exactly as you left it.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
-              onClick={() => { setPlan("paused"); closeCancel(); onFlash(`Pro paused for ${PAUSE_MONTHS} months.`); }}
+              onClick={() => {
+                setPlan("paused");
+                closeCancel();
+                onFlash(`Pro paused for ${PAUSE_MONTHS} months.`);
+              }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Pause Pro for {PAUSE_MONTHS} months
@@ -273,8 +321,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       {/* Cancel Step 2 — differs by plan state */}
       {cancelStep === 2 && plan === "paused" ? (
         <Modal onClose={closeCancel} title="Are you sure?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            Your pause will end and you'll move to Free immediately. Your tracker and profile are kept.
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
+            Your pause will end and you'll move to Free immediately. Your tracker and profile are
+            kept.
           </p>
           <CancelReasonPicker
             reason={reason}
@@ -293,7 +345,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               disabled={!reasonReady}
-              onClick={() => { saveReason(); setPlan("free"); closeCancel(); onFlash("Subscription canceled — moved to Free."); }}
+              onClick={() => {
+                saveReason();
+                setPlan("free");
+                closeCancel();
+                onFlash("Subscription canceled — moved to Free.");
+              }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
               style={{ borderColor: "#D00D01" }}
             >
@@ -305,13 +362,20 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
 
       {cancelStep === 2 && plan !== "paused" ? (
         <Modal onClose={closeCancel} title="Cancel your Pro subscription?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
             {periodEndLabel ? (
               <>
-                You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges. You can resume anytime.
+                You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges.
+                You can resume anytime.
               </>
             ) : (
-              <>You'll keep Pro until the end of your current period, then move to Free. No more charges. You can resume anytime.</>
+              <>
+                You'll keep Pro until the end of your current period, then move to Free. No more
+                charges. You can resume anytime.
+              </>
             )}
           </p>
           <CancelReasonPicker
@@ -368,10 +432,16 @@ function CancelReasonPicker({
 }) {
   return (
     <fieldset className="mt-5">
-      <legend className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 500 }}>
+      <legend
+        className="text-[13px] text-[color:var(--color-foreground)]"
+        style={{ fontWeight: 500 }}
+      >
         Why are you canceling?
       </legend>
-      <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+      <p
+        className="mt-1 text-[12px] text-[color:var(--color-text-muted)]"
+        style={{ fontWeight: 300 }}
+      >
         This helps us improve Jobly.
       </p>
       <div className="mt-3 flex flex-col gap-1">
@@ -424,7 +494,9 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
         <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
           Dev tools
         </span>
-        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">plan: {plan}</span>
+        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">
+          plan: {plan}
+        </span>
         <span className="flex-1" />
         <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
           <input
@@ -437,14 +509,20 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
         </label>
         <button
           type="button"
-          onClick={() => { devDowngradeNow(); onFlash("DEV ONLY — downgraded to Free instantly."); }}
+          onClick={() => {
+            devDowngradeNow();
+            onFlash("DEV ONLY — downgraded to Free instantly.");
+          }}
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Free now
         </button>
         <button
           type="button"
-          onClick={() => { devRestorePro(); onFlash("DEV ONLY — Pro restored."); }}
+          onClick={() => {
+            devRestorePro();
+            onFlash("DEV ONLY — Pro restored.");
+          }}
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Restore Pro
@@ -454,13 +532,19 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
             type="checkbox"
             className="h-3.5 w-3.5"
             checked={account.accountStatus === "pending_deletion"}
-            onChange={(e) => { devSetPendingDeletion(e.target.checked); onFlash("DEV ONLY — account status changed."); }}
+            onChange={(e) => {
+              devSetPendingDeletion(e.target.checked);
+              onFlash("DEV ONLY — account status changed.");
+            }}
           />
           <span>pending_deletion</span>
         </label>
         <button
           type="button"
-          onClick={() => { devFastForwardPastGrace(); onFlash("DEV ONLY — grace period moved into the past."); }}
+          onClick={() => {
+            devFastForwardPastGrace();
+            onFlash("DEV ONLY — grace period moved into the past.");
+          }}
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           Fast-forward past grace
@@ -505,7 +589,12 @@ function PlanCardsBlock({
   const [period, setPeriod] = useState<"annual" | "monthly">("annual");
   const tabsRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [indicator, setIndicator] = useState<{ left: number; width: number; height: number; top: number }>({ left: 0, width: 0, height: 0, top: 0 });
+  const [indicator, setIndicator] = useState<{
+    left: number;
+    width: number;
+    height: number;
+    top: number;
+  }>({ left: 0, width: 0, height: 0, top: 0 });
   const segments = ["annual", "monthly"] as const;
 
   useEffect(() => {
@@ -513,7 +602,12 @@ function PlanCardsBlock({
       const idx = segments.indexOf(period);
       const btn = btnRefs.current[idx];
       if (!btn) return;
-      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth, height: btn.offsetHeight, top: btn.offsetTop });
+      setIndicator({
+        left: btn.offsetLeft,
+        width: btn.offsetWidth,
+        height: btn.offsetHeight,
+        top: btn.offsetTop,
+      });
     };
     measure();
     const ro = new ResizeObserver(measure);
@@ -544,12 +638,11 @@ function PlanCardsBlock({
 
   const savings = money(annualSavings(PRICING.annual));
 
-  const proLabel =
-    isPlanPro
-      ? "Current plan"
-      : !hasHadPro
-        ? `Start free ${TRIAL_DAYS}-day trial`
-        : "Upgrade to Pro";
+  const proLabel = isPlanPro
+    ? "Current plan"
+    : !hasHadPro
+      ? `Start free ${TRIAL_DAYS}-day trial`
+      : "Upgrade to Pro";
 
   const freeFeatures: Array<{ label: string; included: boolean }> = [
     { label: "Matches per digest — Top 5", included: true },
@@ -651,7 +744,8 @@ function PlanCardsBlock({
                     background: "#FFFFFF",
                     borderRadius: 6,
                     boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-                    transition: "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
+                    transition:
+                      "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
                   }}
                 />
                 {segments.map((seg, idx) => {
@@ -660,7 +754,9 @@ function PlanCardsBlock({
                   return (
                     <button
                       key={seg}
-                      ref={(el) => { btnRefs.current[idx] = el; }}
+                      ref={(el) => {
+                        btnRefs.current[idx] = el;
+                      }}
                       role="tab"
                       type="button"
                       aria-selected={active}
@@ -812,7 +908,15 @@ function PlanCardsBlock({
                   >
                     <IconCheck size={11} strokeWidth={2.5} style={{ color: "#090B0C" }} />
                   </span>
-                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 13, lineHeight: "19.5px", color: "#090B0C" }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 300,
+                      fontSize: 13,
+                      lineHeight: "19.5px",
+                      color: "#090B0C",
+                    }}
+                  >
                     {label}
                   </span>
                 </li>
@@ -871,12 +975,12 @@ function PlanCardsBlock({
                     color: "#67787C",
                   }}
                 >
-                  {TRIAL_DAYS} days free, then {period === "annual"
+                  {TRIAL_DAYS} days free, then{" "}
+                  {period === "annual"
                     ? `${usd(PRICING.annual.perMonth)}/mo billed annually (${usd(PRO_ANNUAL_TOTAL)})`
                     : `${usd(PRO_MONTHLY)}/mo`}
-                  . Auto-renews at{" "}
-                  {period === "annual" ? usd(PRO_ANNUAL_TOTAL) : usd(PRO_MONTHLY)} until cancelled.
-                  Cancel anytime in Settings → Plan in two steps.
+                  . Auto-renews at {period === "annual" ? usd(PRO_ANNUAL_TOTAL) : usd(PRO_MONTHLY)}{" "}
+                  until cancelled. Cancel anytime in Settings → Plan in two steps.
                 </p>
               ) : null}
             </div>
@@ -943,10 +1047,20 @@ function PlanCardsBlock({
                       style={{ width: 16, height: 16 }}
                       aria-hidden
                     >
-                      <span style={{ width: 10, height: 2, background: "#D0D6D8", display: "block" }} />
+                      <span
+                        style={{ width: 10, height: 2, background: "#D0D6D8", display: "block" }}
+                      />
                     </span>
                   )}
-                  <span style={{ fontFamily: "var(--font-sans)", fontWeight: 300, fontSize: 13, lineHeight: "19.5px", color: "#4B585B" }}>
+                  <span
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontWeight: 300,
+                      fontSize: 13,
+                      lineHeight: "19.5px",
+                      color: "#4B585B",
+                    }}
+                  >
                     {f.label}
                   </span>
                 </li>
@@ -982,7 +1096,6 @@ function PlanCardsBlock({
           </div>
         </div>
       </div>
-
     </div>
   );
 }
@@ -991,7 +1104,10 @@ function BillingCard({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
       <Card title="Billing and payment">
-        <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+        <p
+          className="text-[13px] text-[color:var(--color-text-secondary)]"
+          style={{ fontWeight: 300 }}
+        >
           No billing yet. Start a Pro trial to see invoices here.
         </p>
       </Card>
@@ -1001,7 +1117,10 @@ function BillingCard({ plan }: { plan: Plan }) {
     <Card title="Billing and payment">
       {/* No provider is wired yet, so there is no payment method and no invoice
           history to read. Nothing here is invented. */}
-      <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+      <p
+        className="text-[13px] text-[color:var(--color-text-secondary)]"
+        style={{ fontWeight: 300 }}
+      >
         No invoices yet — payments aren't live in this preview.
       </p>
     </Card>
@@ -1010,7 +1129,8 @@ function BillingCard({ plan }: { plan: Plan }) {
 
 function NotificationsCard({ plan }: { plan: Plan }) {
   const pro = plan !== "free";
-  const { consents, prefs, loading, error, setConsent, setPreference, reload } = useNotificationSettings();
+  const { consents, prefs, loading, error, setConsent, setPreference, reload } =
+    useNotificationSettings();
   const freq = prefs.digest_frequency;
   type Row =
     | { kind: "consent"; key: ConsentKey; label: string; caption?: string }
@@ -1019,36 +1139,82 @@ function NotificationsCard({ plan }: { plan: Plan }) {
     {
       label: "Digest and matches",
       rows: [
-        { kind: "consent", key: "daily_digest", label: "New digest is ready", caption: "Your recurring batch of clean matches." },
-        { kind: "consent", key: "high_match_alerts", label: "Instant high-match alerts", caption: "A one-off email when a top match posts between digests." },
-        { kind: "consent", key: "weekly_report", label: "Weekly search report", caption: "Your week in numbers — matches, applied, replies." },
-        { kind: "pref", key: "pref_digest_tuned", label: `"We tuned your digest"`, caption: "When your feedback changes what you see." },
+        {
+          kind: "consent",
+          key: "daily_digest",
+          label: "New digest is ready",
+          caption: "Your recurring batch of clean matches.",
+        },
+        {
+          kind: "consent",
+          key: "high_match_alerts",
+          label: "Instant high-match alerts",
+          caption: "A one-off email when a top match posts between digests.",
+        },
+        {
+          kind: "consent",
+          key: "weekly_report",
+          label: "Weekly search report",
+          caption: "Your week in numbers — matches, applied, replies.",
+        },
+        {
+          kind: "pref",
+          key: "pref_digest_tuned",
+          label: `"We tuned your digest"`,
+          caption: "When your feedback changes what you see.",
+        },
       ],
     },
     {
       label: "Applications and tracker",
       rows: [
-        { kind: "pref", key: "pref_interview_reminders", label: "Interview reminders and prep", caption: "The day before, plus your prep pack." },
-        { kind: "pref", key: "pref_followup_nudges", label: "Follow-up nudges", caption: "A gentle nudge if an application goes quiet." },
-        { kind: "pref", key: "pref_stale_nudges", label: "Stale-application nudges", caption: "When something's sat untouched for weeks." },
+        {
+          kind: "pref",
+          key: "pref_interview_reminders",
+          label: "Interview reminders and prep",
+          caption: "The day before, plus your prep pack.",
+        },
+        {
+          kind: "pref",
+          key: "pref_followup_nudges",
+          label: "Follow-up nudges",
+          caption: "A gentle nudge if an application goes quiet.",
+        },
+        {
+          kind: "pref",
+          key: "pref_stale_nudges",
+          label: "Stale-application nudges",
+          caption: "When something's sat untouched for weeks.",
+        },
       ],
     },
     {
       label: "Account and lifecycle",
       rows: [
         { kind: "consent", key: "product_updates", label: "Product updates and tips" },
-        { kind: "consent", key: "reactivation", label: "Re-engagement when you're away", caption: "A reminder if matches pile up unread." },
+        {
+          kind: "consent",
+          key: "reactivation",
+          label: "Re-engagement when you're away",
+          caption: "A reminder if matches pile up unread.",
+        },
       ],
     },
   ];
 
   return (
     <Card title="Notifications">
-      <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+      <p
+        className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]"
+        style={{ fontWeight: 300 }}
+      >
         Choose what lands in your inbox. We only email what's useful — no spam.
       </p>
       {error ? (
-        <div className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]" style={{ background: "#FFE2E2", color: "#D00D01" }}>
+        <div
+          className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]"
+          style={{ background: "#FFE2E2", color: "#D00D01" }}
+        >
           <span>{error}</span>
           <button type="button" onClick={() => void reload()} className="shrink-0 underline">
             Retry
@@ -1056,7 +1222,17 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         </div>
       ) : null}
       <div>
-        <h6 className="text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 16, lineHeight: 1.4 }}>Digest frequency</h6>
+        <h6
+          className="text-[color:var(--color-foreground)]"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 400,
+            fontSize: 16,
+            lineHeight: 1.4,
+          }}
+        >
+          Digest frequency
+        </h6>
         <div className="mt-2 flex flex-wrap gap-2">
           <button
             type="button"
@@ -1070,7 +1246,11 @@ function NotificationsCard({ plan }: { plan: Plan }) {
           >
             Daily
             {!pro ? (
-              <span className={`rounded-[4px] px-1.5 py-0.5 text-[10px] font-semibold ${freq === "daily" ? "bg-white/20 text-white" : "bg-[color:var(--color-mint)] text-[color:var(--color-green)]"}`}>Pro</span>
+              <span
+                className={`rounded-[4px] px-1.5 py-0.5 text-[10px] font-semibold ${freq === "daily" ? "bg-white/20 text-white" : "bg-[color:var(--color-mint)] text-[color:var(--color-green)]"}`}
+              >
+                Pro
+              </span>
             ) : null}
           </button>
           <button
@@ -1096,7 +1276,9 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
               ))}
             </select>
           </label>
@@ -1109,7 +1291,9 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
               ))}
             </select>
           </label>
@@ -1122,12 +1306,17 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               className="h-10 w-[220px] max-w-full rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {timezoneOptions(prefs.timezone).map((tz) => (
-                <option key={tz} value={tz}>{tz.replace(/_/g, " ")}</option>
+                <option key={tz} value={tz}>
+                  {tz.replace(/_/g, " ")}
+                </option>
               ))}
             </select>
           </label>
         </div>
-        <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+        <p
+          className="mt-2 text-[12px] text-[color:var(--color-text-muted)]"
+          style={{ fontWeight: 300 }}
+        >
           We hold emails during quiet hours · pause anytime under "Found a job?"
         </p>
       </div>
@@ -1135,7 +1324,10 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       <div className="mt-6 flex flex-col gap-5">
         {groups.map((g) => (
           <div key={g.label}>
-            <div className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]" style={{ fontWeight: 600 }}>
+            <div
+              className="text-[11px] uppercase tracking-wide text-[color:var(--color-text-muted)]"
+              style={{ fontWeight: 600 }}
+            >
               {g.label}
             </div>
             <div className="mt-2 divide-y">
@@ -1145,9 +1337,23 @@ function NotificationsCard({ plan }: { plan: Plan }) {
                   className={`flex items-center justify-between gap-4 py-3 ${loading || error ? "opacity-60" : ""}`}
                 >
                   <div className="min-w-0">
-                    <h6 className="text-[16px] text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)", fontWeight: 400, lineHeight: 1.4 }}>{r.label}</h6>
+                    <h6
+                      className="text-[16px] text-[color:var(--color-foreground)]"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 400,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {r.label}
+                    </h6>
                     {r.caption ? (
-                      <div className="text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>{r.caption}</div>
+                      <div
+                        className="text-[12px] text-[color:var(--color-text-muted)]"
+                        style={{ fontWeight: 300 }}
+                      >
+                        {r.caption}
+                      </div>
                     ) : null}
                   </div>
                   {loading || (error && r.kind === "consent") ? (
@@ -1175,8 +1381,13 @@ function NotificationsCard({ plan }: { plan: Plan }) {
         ))}
       </div>
 
-      <div className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        <span className="font-semibold">Always on:</span> account and security (verify, sign-in, password), billing and receipts (trial, renewal, cancellation, failed payment), and data and legal (export, deletion). These are required and only sent when necessary.
+      <div
+        className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]"
+        style={{ fontWeight: 300 }}
+      >
+        <span className="font-semibold">Always on:</span> account and security (verify, sign-in,
+        password), billing and receipts (trial, renewal, cancellation, failed payment), and data and
+        legal (export, deletion). These are required and only sent when necessary.
       </div>
     </Card>
   );
@@ -1199,14 +1410,23 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
   }
   return (
     <Card title="Hide jobs from companies">
-      <p className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-        These companies won't appear in your digest or search results — your current employer, past ones, agencies you'd rather skip.
+      <p
+        className="-mt-2 mb-4 text-[13px] text-[color:var(--color-text-secondary)]"
+        style={{ fontWeight: 300 }}
+      >
+        These companies won't appear in your digest or search results — your current employer, past
+        ones, agencies you'd rather skip.
       </p>
       <div className="flex items-center gap-2">
         <input
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); submit(); } }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
           placeholder="Add a company to hide from"
           className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
         />
@@ -1221,34 +1441,57 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
         {list.length === 0 ? (
-          <p className="text-[13px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+          <p
+            className="text-[13px] text-[color:var(--color-text-muted)]"
+            style={{ fontWeight: 300 }}
+          >
             No hidden companies yet.
           </p>
-        ) : list.map((c) => (
-          <span key={c} className="inline-flex items-center gap-2 rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]">
-            {c}
-            <IconTooltip label={`Show jobs from ${c} again`}>
-              <button
-                type="button"
-                aria-label={`Show jobs from ${c} again`}
-                onClick={() => { unblockCompany(c); onFlash(`${c} is visible again.`); }}
-                className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[rgba(0,0,0,0.08)]"
-              >
-                <IconX size={12} strokeWidth={1.8} />
-              </button>
-            </IconTooltip>
-          </span>
-        ))}
+        ) : (
+          list.map((c) => (
+            <span
+              key={c}
+              className="inline-flex items-center gap-2 rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]"
+            >
+              {c}
+              <IconTooltip label={`Show jobs from ${c} again`}>
+                <button
+                  type="button"
+                  aria-label={`Show jobs from ${c} again`}
+                  onClick={() => {
+                    unblockCompany(c);
+                    onFlash(`${c} is visible again.`);
+                  }}
+                  className="flex h-4 w-4 items-center justify-center rounded-[3px] text-[color:var(--color-text-muted)] hover:bg-[rgba(0,0,0,0.08)]"
+                >
+                  <IconX size={12} strokeWidth={1.8} />
+                </button>
+              </IconTooltip>
+            </span>
+          ))
+        )}
       </div>
     </Card>
   );
 }
 
-function RadioRow({ checked, onChange, label, caption, disabled }: {
-  checked: boolean; onChange: () => void; label: React.ReactNode; caption?: string; disabled?: boolean;
+function RadioRow({
+  checked,
+  onChange,
+  label,
+  caption,
+  disabled,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: React.ReactNode;
+  caption?: string;
+  disabled?: boolean;
 }) {
   return (
-    <label className={`flex items-start gap-3 rounded-[6px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}>
+    <label
+      className={`flex items-start gap-3 rounded-[6px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+    >
       <input
         type="radio"
         className="mt-1 h-4 w-4 accent-[color:var(--color-accent)]"
@@ -1258,13 +1501,25 @@ function RadioRow({ checked, onChange, label, caption, disabled }: {
       />
       <span className="min-w-0">
         <span className="block text-[color:var(--color-foreground)]">{label}</span>
-        {caption ? <span className="mt-0.5 block text-[12px] text-[color:var(--color-text-muted)]">{caption}</span> : null}
+        {caption ? (
+          <span className="mt-0.5 block text-[12px] text-[color:var(--color-text-muted)]">
+            {caption}
+          </span>
+        ) : null}
       </span>
     </label>
   );
 }
 
-function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+function Toggle({
+  on,
+  onChange,
+  label,
+}: {
+  on: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -1328,7 +1583,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
     const g = ids.find((i) => i.provider === "google");
     setGoogleIdentity((g as { identity_id?: string } | undefined) ?? null);
     setGoogleEmail(
-      g ? ((g.identity_data?.["email"] as string | undefined) ?? user?.email ?? null) : null
+      g ? ((g.identity_data?.["email"] as string | undefined) ?? user?.email ?? null) : null,
     );
   };
 
@@ -1372,7 +1627,11 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       void logSecurityEvent({ data: { event: needsCurrent ? "password_changed" : "password_set" } })
         .then(() => loadPasswordChange())
         .catch(() => {});
-      onFlash(needsCurrent ? "Password updated." : "Password set. You can now sign in with your email too.");
+      onFlash(
+        needsCurrent
+          ? "Password updated."
+          : "Password set. You can now sign in with your email too.",
+      );
     } finally {
       setBusy(false);
     }
@@ -1388,9 +1647,12 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         </div>
       ) : hasPassword === false && !settingPw ? (
         <div className="flex flex-col items-start gap-3">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
-            You sign in with Google. You don&apos;t have a password yet — you can add one as a second
-            way in, and Google will keep working.
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
+            You sign in with Google. You don&apos;t have a password yet — you can add one as a
+            second way in, and Google will keep working.
           </p>
           <button
             type="button"
@@ -1403,15 +1665,40 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       ) : (
         <form onSubmit={submitPassword} className="flex flex-col gap-3">
           {needsCurrent ? (
-            <PasswordField label="Current password" value={current} onChange={setCurrent} show={showCur} onToggle={() => setShowCur((v) => !v)} />
+            <PasswordField
+              label="Current password"
+              value={current}
+              onChange={setCurrent}
+              show={showCur}
+              onToggle={() => setShowCur((v) => !v)}
+            />
           ) : (
-            <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            <p
+              className="text-[13px] text-[color:var(--color-text-secondary)]"
+              style={{ fontWeight: 300 }}
+            >
               Choose a password for {user?.email ?? "your email"}. Google sign-in keeps working.
             </p>
           )}
-          <PasswordField label="New password" value={next} onChange={setNext} show={showNew} onToggle={() => setShowNew((v) => !v)} hint="At least 8 characters" />
-          <PasswordField label="Confirm new password" value={confirm} onChange={setConfirm} show={showNew} onToggle={() => setShowNew((v) => !v)} error={mismatch ? "Passwords don't match" : undefined} />
-          {formError ? <span className="text-[12px] text-[color:var(--color-danger)]">{formError}</span> : null}
+          <PasswordField
+            label="New password"
+            value={next}
+            onChange={setNext}
+            show={showNew}
+            onToggle={() => setShowNew((v) => !v)}
+            hint="At least 8 characters"
+          />
+          <PasswordField
+            label="Confirm new password"
+            value={confirm}
+            onChange={setConfirm}
+            show={showNew}
+            onToggle={() => setShowNew((v) => !v)}
+            error={mismatch ? "Passwords don't match" : undefined}
+          />
+          {formError ? (
+            <span className="text-[12px] text-[color:var(--color-danger)]">{formError}</span>
+          ) : null}
           <div className="flex items-center gap-2">
             <button
               type="submit"
@@ -1444,7 +1731,10 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             Password last changed
           </span>
           {!pwChangedLoaded ? (
-            <span className="h-3 w-[90px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" aria-hidden />
+            <span
+              className="h-3 w-[90px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]"
+              aria-hidden
+            />
           ) : (
             <span className="text-[color:var(--color-foreground)]">
               {pwChangedLabel ?? "Never changed"}
@@ -1454,18 +1744,28 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
       ) : null}
 
       <div className="mt-6 border-t pt-4">
-        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Connected accounts</div>
+        <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">
+          Connected accounts
+        </div>
         <div className="mt-3 flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white" aria-hidden>
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white"
+            aria-hidden
+          >
             <GoogleMark size={18} />
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-[14px] text-[color:var(--color-foreground)]">Google</div>
             {hasPassword === null ? (
-              <div className="mt-1 h-3 w-[160px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]" aria-hidden />
+              <div
+                className="mt-1 h-3 w-[160px] animate-pulse rounded-[4px] bg-[color:var(--color-surface-2)]"
+                aria-hidden
+              />
             ) : (
               <div className="truncate text-[12px] text-[color:var(--color-text-muted)]">
-                {googleIdentity ? `Connected as ${googleEmail ?? "your Google account"}` : "Not connected"}
+                {googleIdentity
+                  ? `Connected as ${googleEmail ?? "your Google account"}`
+                  : "Not connected"}
               </div>
             )}
           </div>
@@ -1486,7 +1786,10 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           </div>
         </div>
         {hasPassword === false && googleIdentity ? (
-          <p className="mt-2 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
+          <p
+            className="mt-2 text-[12px] text-[color:var(--color-text-muted)]"
+            style={{ fontWeight: 300 }}
+          >
             Google is your only way to sign in. Set a password first, then you can remove it.{" "}
             <button
               type="button"
@@ -1518,9 +1821,13 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
 
       {gConfirm ? (
         <Modal onClose={() => setGConfirm(false)} title="Remove Google sign-in?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
             This removes Google as a way to sign in to Jobly. You&apos;ll sign in with{" "}
-            {user?.email ?? "your email"} and your password instead. Nothing changes in your Google account.
+            {user?.email ?? "your email"} and your password instead. Nothing changes in your Google
+            account.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
@@ -1535,7 +1842,9 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   // the last usable way in.
                   const { data: fresh, error: readErr } = await supabase.auth.getUserIdentities();
                   if (readErr) {
-                    setIdentityError("We couldn't check your sign-in methods. Nothing was changed.");
+                    setIdentityError(
+                      "We couldn't check your sign-in methods. Nothing was changed.",
+                    );
                     return;
                   }
                   const ids = fresh?.identities ?? [];
@@ -1545,7 +1854,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                     setGConfirm(false);
                     await loadIdentities();
                     setIdentityError(
-                      "Google is your only way to sign in. Set a password first, then you can remove it."
+                      "Google is your only way to sign in. Set a password first, then you can remove it.",
                     );
                     void logSecurityEvent({
                       data: { event: "identity_unlink_refused", reason: "no_other_credential" },
@@ -1589,8 +1898,22 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
   );
 }
 
-function PasswordField({ label, value, onChange, show, onToggle, hint, error }: {
-  label: string; value: string; onChange: (v: string) => void; show: boolean; onToggle: () => void; hint?: string; error?: string;
+function PasswordField({
+  label,
+  value,
+  onChange,
+  show,
+  onToggle,
+  hint,
+  error,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  show: boolean;
+  onToggle: () => void;
+  hint?: string;
+  error?: string;
 }) {
   return (
     <label className="flex flex-col gap-1 text-[12px] text-[color:var(--color-text-muted)]">
@@ -1609,11 +1932,19 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, error }: 
             aria-label={show ? "Hide password" : "Show password"}
             className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
-            {show ? <IconEyeOff size={15} strokeWidth={1.6} /> : <IconEye size={15} strokeWidth={1.6} />}
+            {show ? (
+              <IconEyeOff size={15} strokeWidth={1.6} />
+            ) : (
+              <IconEye size={15} strokeWidth={1.6} />
+            )}
           </button>
         </IconTooltip>
       </div>
-      {error ? <span className="text-[12px] text-[color:var(--color-danger)]">{error}</span> : hint ? <span>{hint}</span> : null}
+      {error ? (
+        <span className="text-[12px] text-[color:var(--color-danger)]">{error}</span>
+      ) : hint ? (
+        <span>{hint}</span>
+      ) : null}
     </label>
   );
 }
@@ -1713,8 +2044,13 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
       <Card title="Danger zone">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">Delete account</div>
-            <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+            <div className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
+              Delete account
+            </div>
+            <p
+              className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]"
+              style={{ fontWeight: 300 }}
+            >
               {DELETION_COPY.dangerCaption}
             </p>
           </div>
@@ -1733,12 +2069,14 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             Delete account
           </button>
         </div>
-
       </Card>
 
       {confirmOpen ? (
         <Modal onClose={() => setConfirmOpen(false)} title="Delete your account?">
-          <p className="text-[14px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+          <p
+            className="text-[14px] text-[color:var(--color-text-secondary)]"
+            style={{ fontWeight: 300 }}
+          >
             {DELETION_COPY.confirmBody(scheduledFor)} Type <b>DELETE</b> to confirm.
           </p>
           <input
@@ -1750,12 +2088,18 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             className="mt-4 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
           {reauthOk ? (
-            <p className="mt-4 flex items-center gap-1.5 text-[13px] text-[color:var(--color-green)]" style={{ fontWeight: 300 }}>
+            <p
+              className="mt-4 flex items-center gap-1.5 text-[13px] text-[color:var(--color-green)]"
+              style={{ fontWeight: 300 }}
+            >
               <IconCheck size={15} strokeWidth={1.8} /> Identity confirmed
             </p>
           ) : hasPassword === null ? null : hasPassword ? (
             <div className="mt-4">
-              <label className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              <label
+                className="text-[13px] text-[color:var(--color-text-secondary)]"
+                style={{ fontWeight: 300 }}
+              >
                 Confirm your password
               </label>
               <div className="mt-1.5 flex gap-2">
@@ -1770,7 +2114,9 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                 <button
                   type="button"
                   disabled={!password || busy}
-                  onClick={() => { void verifyPassword(); }}
+                  onClick={() => {
+                    void verifyPassword();
+                  }}
                   className="h-10 shrink-0 rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
                 >
                   Confirm
@@ -1779,12 +2125,17 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             </div>
           ) : (
             <div className="mt-4">
-              <p className="text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
+              <p
+                className="text-[13px] text-[color:var(--color-text-secondary)]"
+                style={{ fontWeight: 300 }}
+              >
                 Your account uses Google sign-in. Confirm it's you before we schedule the deletion.
               </p>
               <button
                 type="button"
-                onClick={() => { void reauthWithGoogle(); }}
+                onClick={() => {
+                  void reauthWithGoogle();
+                }}
                 className="mt-2 h-10 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Confirm with Google
@@ -1798,9 +2149,15 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="button"
               disabled={!canDelete}
-              onClick={() => { void confirmDeletion(); }}
+              onClick={() => {
+                void confirmDeletion();
+              }}
               className="h-11 w-full rounded-[4px] px-4 button-small text-white"
-              style={{ background: canDelete ? "#D00D01" : "var(--color-surface-2)", color: canDelete ? "#fff" : "var(--color-alt-light-mist)", cursor: canDelete ? "pointer" : "not-allowed" }}
+              style={{
+                background: canDelete ? "#D00D01" : "var(--color-surface-2)",
+                color: canDelete ? "#fff" : "var(--color-alt-light-mist)",
+                cursor: canDelete ? "pointer" : "not-allowed",
+              }}
             >
               Delete account
             </button>
@@ -1818,7 +2175,15 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
   );
 }
 
-function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -1832,14 +2197,26 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
     };
   }, [onClose]);
   return (
-    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="absolute inset-0"
+        style={{ background: "rgba(9,11,12,.32)" }}
+        onClick={onClose}
+        aria-hidden
+      />
       <div
         className="relative z-10 w-full max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <div className="flex items-start justify-between gap-4 pr-10">
-          <h2 className="text-[18px] font-semibold text-[color:var(--color-foreground)]" style={{ fontFamily: "var(--font-display)" }}>
+          <h2
+            className="text-[18px] font-semibold text-[color:var(--color-foreground)]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
             {title}
           </h2>
           <button
