@@ -82,12 +82,10 @@ function MatchesSearching() {
 }
 
 function MatchesPage() {
-  const navigate = useNavigate();
   const [answers, setAnswers] = useState<QuizAnswers>({});
-  const [mode, setMode] = useState<"choose" | "email">("choose");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // The plan decision after the quiz. Registration and checkout both live in
+  // the flow hook, so this screen no longer creates accounts on its own.
+  const flow = usePlanFlow("matches_plan_step");
 
   useEffect(() => {
     setAnswers(loadQuiz());
@@ -96,33 +94,6 @@ function MatchesPage() {
 
   const matched = useMatchedJobs(70);
   const topJobs = matched.slice(0, 5);
-
-  async function handleGoogle() {
-    setError(null);
-    setSubmitting(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/dashboard`,
-    });
-    if (result.error) {
-      setError(result.error.message || "Google sign-in failed. Please try again.");
-      setSubmitting(false);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard" });
-  }
-
-  async function handleEmailCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-    setError(null);
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-    navigate({ to: "/dashboard" });
-  }
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
