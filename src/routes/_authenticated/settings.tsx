@@ -32,6 +32,8 @@ import {
   devRestorePro,
   type Plan,
 } from "@/lib/plan-store";
+import { savePlanIntent } from "@/lib/onboarding/planIntent";
+import { CHECKOUT_PATH } from "@/lib/onboarding/usePlanFlow";
 import { blockCompany, unblockCompany, useBlockedCompanies } from "@/lib/blocked-companies-store";
 import {
   CANCEL_REASONS,
@@ -139,7 +141,7 @@ function PlanBadge({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
       <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
-        Free
+        No plan
       </span>
     );
   }
@@ -178,8 +180,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
       ? `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`
       : `Billed annually · ${usd(total(PRICING.annual))}/yr`;
   const scheduledLine = periodEndLabel
-    ? `Pro until ${periodEndLabel} · then Free`
-    : "Pro until your current period ends · then Free";
+    ? `Pro until ${periodEndLabel} · then no plan`
+    : "Pro until your current period ends · then no plan";
   const pausedLine = pauseEndLabel
     ? `Paused until ${pauseEndLabel} · no charges while paused`
     : "Paused · no charges while paused";
@@ -325,7 +327,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             className="text-[14px] text-[color:var(--color-text-secondary)]"
             style={{ fontWeight: 300 }}
           >
-            Your pause will end and you'll move to Free immediately. Your tracker and profile are
+            Your pause will end and your plan will stop immediately. Your tracker and profile are
             kept.
           </p>
           <CancelReasonPicker
@@ -349,7 +351,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 saveReason();
                 setPlan("free");
                 closeCancel();
-                onFlash("Subscription canceled — moved to Free.");
+                onFlash("Subscription canceled — you no longer have a plan.");
               }}
               className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
               style={{ borderColor: "#D00D01" }}
@@ -368,13 +370,13 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           >
             {periodEndLabel ? (
               <>
-                You'll keep Pro until <b>{periodEndLabel}</b>, then move to Free. No more charges.
+                You'll keep Pro until <b>{periodEndLabel}</b>, then your plan ends. No more charges.
                 You can resume anytime.
               </>
             ) : (
               <>
-                You'll keep Pro until the end of your current period, then move to Free. No more
-                charges. You can resume anytime.
+                You'll keep Pro until the end of your current period, then your plan ends. No
+                more charges. You can resume anytime.
               </>
             )}
           </p>
@@ -511,7 +513,7 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
           type="button"
           onClick={() => {
             devDowngradeNow();
-            onFlash("DEV ONLY — downgraded to Free instantly.");
+            onFlash("DEV ONLY — plan removed instantly.");
           }}
           className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
@@ -621,6 +623,10 @@ function PlanCardsBlock({
 
   const isPlanFree = plan === "free";
   const isPlanPro = plan === "pro" || plan === "paused";
+  const navigate = useNavigate();
+  const subCycle = useSubscription().cycle ?? null;
+  // Nothing to buy only when the displayed cycle is already the live one.
+  const ctaDisabled = isPlanPro && period === (subCycle ?? "monthly");
 
   // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
   const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
@@ -638,9 +644,15 @@ function PlanCardsBlock({
 
   const savings = money(annualSavings(PRICING.annual));
 
+  // The trial exists on monthly only, once per account.
+  const trialOffer = !hasHadPro && period === "monthly";
   const proLabel = isPlanPro
-    ? "Current plan"
-    : !hasHadPro
+    ? period === (subCycle ?? "monthly")
+      ? "Current plan"
+      : period === "annual"
+        ? "Switch to yearly"
+        : "Switch to monthly"
+    : trialOffer
       ? `Start free ${TRIAL_DAYS}-day trial`
       : "Upgrade to Pro";
 
@@ -662,7 +674,7 @@ function PlanCardsBlock({
   ];
 
   function onProClick() {
-    if (isPlanPro) return;
+    if (ctaDisabled) return;
     if (needsBillingTerms && !billingTermsTicked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
@@ -675,13 +687,12 @@ function PlanCardsBlock({
         .then(() => setNeedsBillingTerms(false))
         .catch(() => undefined);
     }
-    if (!hasHadPro) {
-      setPlan("pro");
-      onFlash(`Welcome to Pro — your ${TRIAL_DAYS}-day trial has started.`);
-    } else {
-      setPlan("pro");
-      onFlash("Welcome back to Pro.");
-    }
+    // Every plan change goes through the one flow and the one server action:
+    // the intent is saved, then checkout confirms it. `manage` marks this as an
+    // explicit decision by the account holder, the only case allowed to change
+    // the cycle of a live subscription.
+    savePlanIntent({ plan: trialOffer ? "trial" : "pro", cycle: period, manage: true });
+    void navigate({ to: CHECKOUT_PATH });
   }
 
   return (
@@ -945,7 +956,7 @@ function PlanCardsBlock({
               <button
                 type="button"
                 onClick={onProClick}
-                disabled={isPlanPro || (needsBillingTerms && !billingTermsTicked)}
+                disabled={ctaDisabled || (needsBillingTerms && !billingTermsTicked)}
                 className="w-full inline-flex items-center justify-center"
                 style={{
                   background: "#00F1A9",
@@ -957,14 +968,14 @@ function PlanCardsBlock({
                   fontWeight: 400,
                   fontSize: 14,
                   lineHeight: "20px",
-                  opacity: isPlanPro || (needsBillingTerms && !billingTermsTicked) ? 0.6 : 1,
+                  opacity: ctaDisabled || (needsBillingTerms && !billingTermsTicked) ? 0.6 : 1,
                   cursor:
-                    isPlanPro || (needsBillingTerms && !billingTermsTicked) ? "default" : "pointer",
+                    ctaDisabled || (needsBillingTerms && !billingTermsTicked) ? "default" : "pointer",
                 }}
               >
                 {proLabel}
               </button>
-              {!isPlanPro && !hasHadPro ? (
+              {trialOffer && !isPlanPro ? (
                 <p
                   className="mt-2 text-center"
                   style={{
