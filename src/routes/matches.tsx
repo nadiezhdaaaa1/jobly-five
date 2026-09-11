@@ -12,9 +12,11 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { PRICING, TRIAL_DAYS, total, usd } from "@/config/pricing";
+import { TRIAL_DAYS } from "@/config/pricing";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { PlanCardsGrid } from "@/components/site/PlanCards";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
+
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
