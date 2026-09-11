@@ -9,9 +9,15 @@ export type Features = {
   found_a_job_pause: boolean;
 };
 
+/** Billing cycle. Access still comes from `plan`; this is the billed period. */
+export type BillingCycle = "monthly" | "annual";
+
 export type Entitlements = {
   plan: Plan;
   status: SubStatus;
+  cycle: BillingCycle | null;
+  /** True once the quiz answers have landed on the profile. */
+  onboarded: boolean;
   trial_ends_at: string | null;
   current_period_end: string | null;
   pause_ends_at: string | null;
@@ -21,6 +27,8 @@ export type Entitlements = {
 export const FREE_ENTITLEMENTS: Entitlements = {
   plan: "free",
   status: "none",
+  cycle: null,
+  onboarded: false,
   trial_ends_at: null,
   current_period_end: null,
   pause_ends_at: null,
@@ -74,6 +82,8 @@ export async function fetchEntitlements(): Promise<Entitlements> {
   return {
     plan: e.plan === "pro" ? "pro" : e.status === "paused" ? "paused" : "free",
     status: e.status ?? "none",
+    cycle: e.cycle === "annual" || e.cycle === "monthly" ? e.cycle : null,
+    onboarded: Boolean(e.onboarded),
     trial_ends_at: e.trial_ends_at ?? null,
     current_period_end: e.current_period_end ?? null,
     pause_ends_at: e.pause_ends_at ?? null,

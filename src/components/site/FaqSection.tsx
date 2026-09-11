@@ -4,7 +4,7 @@ import { IconChevronDown as ChevronDown } from "@tabler/icons-react";
 export const faqs = [
   {
     q: "What is Jobly?",
-    a: "Jobly is an email-first job discovery service for tech candidates. You fill out a short profile once and receive five ranked, AI-scored matches in your inbox — daily on Pro, weekly on Free.",
+    a: "Jobly is an email-first job discovery service for tech candidates. You fill out a short profile once and receive five ranked, AI-scored matches in your inbox every day.",
   },
   {
     q: "How does matching work?",

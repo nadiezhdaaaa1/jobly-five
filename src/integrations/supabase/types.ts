@@ -698,6 +698,7 @@ export type Database = {
           canceled_at: string | null
           created_at: string
           current_period_end: string | null
+          cycle: string | null
           ever_subscribed: boolean
           pause_ends_at: string | null
           paused_at: string | null
@@ -717,6 +718,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
+          cycle?: string | null
           ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
@@ -736,6 +738,7 @@ export type Database = {
           canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
+          cycle?: string | null
           ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
