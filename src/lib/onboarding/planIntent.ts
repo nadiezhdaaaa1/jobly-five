@@ -17,7 +17,11 @@ export type PlanIntent = {
 
 const INTENT_KEY = "jobly.plan.intent";
 
-export function savePlanIntent(intent: { plan: IntentPlan; cycle: BillingCycle; manage?: boolean }) {
+export function savePlanIntent(intent: {
+  plan: IntentPlan;
+  cycle: BillingCycle;
+  manage?: boolean;
+}) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(

@@ -26,7 +26,9 @@ export function ensureDraftToken(): string | null {
   if (existing) return existing;
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
-  const token = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const token = Array.from(bytes)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   try {
     window.localStorage.setItem(TOKEN_KEY, token);
   } catch {

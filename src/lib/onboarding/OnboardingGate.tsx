@@ -35,8 +35,13 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
   // itself — it is where the plan is bought.
   const onPlanPage = pathname.startsWith(PLAN_PATH);
   const claiming =
-    !loading && !error && !entitlements.onboarded && Boolean(getDraftToken()) && claimWaits.current < CLAIM_RETRIES;
-  const settled = !loading && !error && entitlements.onboarded && SETTLED.includes(entitlements.status);
+    !loading &&
+    !error &&
+    !entitlements.onboarded &&
+    Boolean(getDraftToken()) &&
+    claimWaits.current < CLAIM_RETRIES;
+  const settled =
+    !loading && !error && entitlements.onboarded && SETTLED.includes(entitlements.status);
 
   useEffect(() => {
     if (loading) return;

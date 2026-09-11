@@ -34,7 +34,8 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
     const { sha256Hex, QUIZ_SCHEMA_VERSION } = await import("./quiz-draft.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const userId = context.userId;
-    const email = typeof context.claims["email"] === "string" ? (context.claims["email"] as string) : null;
+    const email =
+      typeof context.claims["email"] === "string" ? (context.claims["email"] as string) : null;
 
     let draft: {
       id: string;
@@ -53,7 +54,6 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
         .maybeSingle();
       draft = byToken ?? null;
     }
-
 
     if (!draft) return { ok: true, claimed: false };
     // A draft already bound to another account is never re-bound, whoever holds
