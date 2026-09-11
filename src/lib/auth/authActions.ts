@@ -7,11 +7,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import {
-  guardAuthAttempt,
-  getSigninGate,
-  reportSigninFailure,
-} from "@/lib/auth-guard.functions";
+import { guardAuthAttempt, getSigninGate, reportSigninFailure } from "@/lib/auth-guard.functions";
 import { isDisposableEmail } from "@/lib/disposable-domains";
 import { markPendingSignupAcceptance, recordSignupAcceptance } from "@/lib/policy-acceptance";
 

@@ -35,8 +35,7 @@ export function readPlanIntent(): PlanIntent | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<PlanIntent>;
     const plan = parsed.plan === "trial" || parsed.plan === "pro" ? parsed.plan : null;
-    const cycle =
-      parsed.cycle === "monthly" || parsed.cycle === "annual" ? parsed.cycle : null;
+    const cycle = parsed.cycle === "monthly" || parsed.cycle === "annual" ? parsed.cycle : null;
     if (!plan || !cycle) return null;
     return { plan, cycle, savedAt: Number(parsed.savedAt) || Date.now() };
   } catch {
