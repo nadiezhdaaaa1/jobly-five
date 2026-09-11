@@ -647,7 +647,20 @@ function DevHardPurgeRow() {
               ))}
             </ul>
           ) : null}
-          {result.clean === false ? <div className="mt-1">clean: false</div> : null}
+          {typeof result.clean === "boolean" ? (
+            <div className="mt-1">clean: {String(result.clean)}</div>
+          ) : null}
+          {result.status === "purged" ? (
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = "/";
+              }}
+              className="mt-2 inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            >
+              Done — reload
+            </button>
+          ) : null}
         </div>
       ) : null}
     </div>
