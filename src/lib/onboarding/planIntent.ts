@@ -9,14 +9,15 @@ export type IntentPlan = "trial" | "pro";
 export type PlanIntent = {
   plan: IntentPlan;
   cycle: BillingCycle;
+  /** True when the decision came from Settings -> Plan on an existing account:
+   *  the only case allowed to change the billing cycle of a live subscription. */
+  manage?: boolean;
   savedAt: number;
 };
 
 const INTENT_KEY = "jobly.plan.intent";
-/** Where to land after an OAuth round trip. Session-scoped on purpose. */
-const POST_AUTH_KEY = "jobly.postAuthPath";
 
-export function savePlanIntent(intent: { plan: IntentPlan; cycle: BillingCycle }) {
+export function savePlanIntent(intent: { plan: IntentPlan; cycle: BillingCycle; manage?: boolean }) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(
@@ -37,7 +38,12 @@ export function readPlanIntent(): PlanIntent | null {
     const plan = parsed.plan === "trial" || parsed.plan === "pro" ? parsed.plan : null;
     const cycle = parsed.cycle === "monthly" || parsed.cycle === "annual" ? parsed.cycle : null;
     if (!plan || !cycle) return null;
-    return { plan, cycle, savedAt: Number(parsed.savedAt) || Date.now() };
+    return {
+      plan,
+      cycle,
+      manage: parsed.manage === true,
+      savedAt: Number(parsed.savedAt) || Date.now(),
+    };
   } catch {
     return null;
   }
@@ -47,35 +53,6 @@ export function clearPlanIntent() {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(INTENT_KEY);
-  } catch {
-    // ignore
-  }
-}
-
-export function setPostAuthPath(path: string) {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(POST_AUTH_KEY, path);
-  } catch {
-    // ignore
-  }
-}
-
-export function readPostAuthPath(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const value = window.sessionStorage.getItem(POST_AUTH_KEY);
-    // Same-origin paths only — never follow an absolute URL from storage.
-    return value && value.startsWith("/") && !value.startsWith("//") ? value : null;
-  } catch {
-    return null;
-  }
-}
-
-export function clearPostAuthPath() {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.removeItem(POST_AUTH_KEY);
   } catch {
     // ignore
   }

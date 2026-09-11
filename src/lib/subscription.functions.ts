@@ -71,7 +71,13 @@ export const getSubscriptionRow = createServerFn({ method: "GET" })
 export const applySubscriptionAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { action: SubscriptionAction; cycle?: BillingCycle; everSubscribed?: boolean }) => {
+    (input: {
+      action: SubscriptionAction;
+      cycle?: BillingCycle;
+      everSubscribed?: boolean;
+      /** Only Settings -> Plan sets this: an explicit cycle change on a live subscription. */
+      allowCycleChange?: boolean;
+    }) => {
     const allowed: SubscriptionAction[] = [
       "start_trial",
       "activate",
@@ -128,8 +134,18 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       case "activate": {
         const cycle: BillingCycle = data.cycle === "annual" ? "annual" : "monthly";
         const span = cycle === "annual" ? 365 * DAY : 30 * DAY;
-        // Keep a paid period only when the same cycle is simply being renewed.
-        const keepSame = current.status === "active" && current.cycle === cycle ? keepEnd : null;
+        // A live subscription is never silently re-activated, and a stale saved
+        // intent can never switch its billing cycle. Only an explicit request
+        // from the account's own plan settings may change a live one.
+        const live =
+          current.status === "active" ||
+          current.status === "trialing" ||
+          current.status === "past_due";
+        if (live && (!data.allowCycleChange || current.cycle === cycle)) return current;
+        // Keep the paid period when the cycle is unchanged. Rows written before
+        // `cycle` existed carry NULL and count as matching, so re-activating
+        // them must not reset the period they already paid for.
+        const keepSame = current.cycle === null || current.cycle === cycle ? keepEnd : null;
         patch = {
           status: "active",
           plan: "pro",
