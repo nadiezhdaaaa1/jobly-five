@@ -6,6 +6,7 @@ Disallow: /preferences
 Disallow: /signup
 Disallow: /reset-password
 Disallow: /quiz
+Disallow: /checkout
 Disallow: /matches
 Disallow: /dashboard
 Disallow: /tracker

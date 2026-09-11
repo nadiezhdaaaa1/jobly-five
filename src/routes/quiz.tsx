@@ -117,8 +117,7 @@ export type StepKey =
   | "soft"
   | "axes"
   | "level"
-  | "loc"
-  | "email";
+  | "loc";
 export const STEP_ORDER: StepKey[] = [
   "field",
   "role",
@@ -129,7 +128,6 @@ export const STEP_ORDER: StepKey[] = [
   "axes",
   "level",
   "loc",
-  "email",
 ];
 
 function formatMoney(n: number) {
@@ -336,7 +334,6 @@ function QuizPage() {
     loc:
       !!answers.workMode &&
       (answers.workMode === "remote" || (answers.locations?.length ?? 0) > 0),
-    email: !!answers.email,
   };
 
   const completedKeys = STEP_ORDER.filter((k) => completed[k]);
@@ -382,7 +379,7 @@ function QuizPage() {
 
   useEffect(() => {
     if (!hydrated || resumeOffer) return;
-    let next: StepKey = "email";
+    let next: StepKey = "loc";
     for (const k of STEP_ORDER) if (!completed[k]) { next = k; break; }
     setCurrent(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -465,10 +462,11 @@ function QuizPage() {
     setEditing(key);
   }
 
-  async function handleSubmit(email: string) {
-    setAnswers((a) => ({ ...a, email }));
+  // The quiz no longer asks for an email: the last answer leads straight to the
+  // matches screen, where the plan choice (and registration) happens.
+  async function handleSubmit() {
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1200));
     navigate({ to: "/matches" });
   }
 
@@ -752,19 +750,14 @@ function QuizPage() {
                   <LocationStep
                     answers={answers}
                     onChange={(patch) => setAnswers((a) => ({ ...a, ...patch }))}
-                    onContinue={() =>
+                    submitLabel={submitting ? "Finding your matches…" : "Get my matches"}
+                    onContinue={() => {
                       advance("loc", {
                         salaryMin: answers.salaryMin ?? 100_000,
                         salaryMax: answers.salaryMax ?? 160_000,
-                      })
-                    }
-                  />
-                )}
-                {key === "email" && (
-                  <EmailStep
-                    answers={answers}
-                    submitting={submitting}
-                    onSubmit={handleSubmit}
+                      });
+                      void handleSubmit();
+                    }}
                   />
                 )}
               </StepShell>
@@ -876,7 +869,6 @@ export const SUMMARY_LABEL: Record<StepKey, string> = {
    axes: "Scope and focus",
   level: "Experience",
   loc: "Location and salary",
-  email: "Email",
 };
 
 export function summaryValue(key: StepKey, a: QuizAnswers): string {
@@ -939,8 +931,6 @@ export function summaryValue(key: StepKey, a: QuizAnswers): string {
           : "";
       return [money, where].filter(Boolean).join(" · ");
     }
-    case "email":
-      return a.email ?? "";
   }
 }
 
@@ -2696,82 +2686,6 @@ function ToggleRow({
           )}
         />
       </button>
-    </div>
-  );
-}
-
-// ---------- 5. Email gate ----------
-
-function EmailStep({
-  answers,
-  submitting,
-  onSubmit,
-}: {
-  answers: QuizAnswers;
-  submitting: boolean;
-  onSubmit: (email: string) => void;
-}) {
-  const [email, setEmail] = useState(answers.email ?? "");
-  const [touched, setTouched] = useState(false);
-
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  const showError = touched && !valid;
-
-  return (
-    <div>
-      <StepHeading>Where should we send your matches?</StepHeading>
-      <p className="mt-2 text-sm text-[color:var(--color-text-secondary)]">
-        Your first digest arrives within 24 hours. No spam, unsubscribe anytime.
-      </p>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setTouched(true);
-          if (valid && !submitting) onSubmit(email.trim());
-        }}
-        className="mt-5"
-      >
-        <label className="block">
-          <span className="text-sm font-light text-[#090B0C]">Email</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setTouched(true)}
-            placeholder="Enter your email"
-            aria-invalid={showError}
-            className={cn(
-              "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-              showError
-                ? "border-[color:var(--color-danger)]"
-                : "border-[color:var(--color-border)]"
-            )}
-          />
-          {showError && (
-            <span className="mt-1.5 block text-sm text-[color:var(--color-danger)]">
-              Enter a valid email address.
-            </span>
-          )}
-        </label>
-
-        <button
-          type="submit"
-          disabled={!valid || submitting}
-          className={cn(
-            "main_accent_button main_accent_button--on-light mt-5 w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-          )}
-        >
-          {submitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Finding your matches…
-            </>
-          ) : (
-            "Get my matches"
-          )}
-        </button>
-      </form>
     </div>
   );
 }

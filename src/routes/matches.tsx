@@ -1,15 +1,16 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
-import { GoogleMark } from "@/components/site/GoogleMark";
 import { Wordmark } from "@/components/site/Wordmark";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { lovable } from "@/integrations/lovable/index";
+import { PRICING, TRIAL_DAYS, usd } from "@/config/pricing";
+import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
@@ -82,12 +83,10 @@ function MatchesSearching() {
 }
 
 function MatchesPage() {
-  const navigate = useNavigate();
   const [answers, setAnswers] = useState<QuizAnswers>({});
-  const [mode, setMode] = useState<"choose" | "email">("choose");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // The plan decision after the quiz. Registration and checkout both live in
+  // the flow hook, so this screen no longer creates accounts on its own.
+  const flow = usePlanFlow("matches_plan_step");
 
   useEffect(() => {
     setAnswers(loadQuiz());
@@ -96,33 +95,6 @@ function MatchesPage() {
 
   const matched = useMatchedJobs(70);
   const topJobs = matched.slice(0, 5);
-
-  async function handleGoogle() {
-    setError(null);
-    setSubmitting(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/dashboard`,
-    });
-    if (result.error) {
-      setError(result.error.message || "Google sign-in failed. Please try again.");
-      setSubmitting(false);
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/dashboard" });
-  }
-
-  async function handleEmailCreate(e: React.FormEvent) {
-    e.preventDefault();
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-    setError(null);
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-    navigate({ to: "/dashboard" });
-  }
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
@@ -161,81 +133,39 @@ function MatchesPage() {
         </ol>
 
         <section className="mt-10 rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 sm:p-8">
-          <h2 className="text-2xl">Create your account to save these matches</h2>
+          <h2 className="text-2xl">Pick a plan to keep these matches</h2>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            We'll email your daily digest and keep your preferences safe.
+            Start with a {TRIAL_DAYS}-day free trial, or go straight to Pro. Cancel any time.
           </p>
 
           <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"
-              onClick={handleGoogle}
-              disabled={submitting}
-              className="secondary_button secondary_button--on-light w-full justify-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2 disabled:opacity-50"
+              onClick={() => void flow.selectPlan({ plan: "trial", cycle: "monthly", trial: true })}
+              className="main_accent_button main_accent_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
             >
-              <GoogleMark />
-              Continue with Google
+              Start {TRIAL_DAYS}-day free trial
             </button>
-
-            {mode === "choose" ? (
-              <button
-                type="button"
-                onClick={() => setMode("email")}
-                className="main_accent_button main_accent_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-              >
-                Continue with email
-              </button>
-            ) : (
-              <form onSubmit={handleEmailCreate} className="flex flex-col gap-3">
-                <div>
-                  <label className="text-sm font-light">Email</label>
-                  <input
-                    type="email"
-                    value={answers.email ?? ""}
-                    readOnly
-                    className="mt-1.5 h-11 w-full rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] px-3 text-sm text-[color:var(--color-text-secondary)]"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-light" htmlFor="pw">
-                    Choose a password
-                  </label>
-                  <input
-                    id="pw"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="At least 8 characters"
-                    className={cn(
-                      "mt-1.5 h-12 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3.5 text-[15px] outline-none placeholder:text-[color:var(--color-text-muted)] focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2",
-                      error ? "border-[color:var(--color-danger)]" : "border-[color:var(--color-border)]"
-                    )}
-                  />
-                  {error && (
-                    <span className="mt-1.5 block text-sm text-[color:var(--color-danger)]">
-                      {error}
-                    </span>
-                  )}
-                </div>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="main_accent_button main_accent_button--on-light w-full justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-                >
-                  {submitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Creating account…
-                    </>
-                  ) : (
-                    "Create account"
-                  )}
-                </button>
-              </form>
-            )}
+            <button
+              type="button"
+              onClick={() => void flow.selectPlan({ plan: "pro", cycle: "annual", trial: false })}
+              className="secondary_button secondary_button--on-light w-full justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
+            >
+              Get Pro for {usd(PRICING.annual.perMonth)} per month, billed yearly
+            </button>
           </div>
         </section>
       </main>
+
+      <RegistrationModal
+        open={flow.modalOpen}
+        onOpenChange={(v) => {
+          if (!v) flow.closeModal();
+        }}
+        onAuthed={flow.onAuthed}
+        googleRedirectPath={flow.googleRedirectPath}
+        source="matches_plan_step"
+      />
     </div>
   );
 }

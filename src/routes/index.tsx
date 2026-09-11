@@ -26,6 +26,8 @@ import {
   UsaJobsLogo,
 } from "../components/landing/logos";
 import { CtaLink } from "../components/site/CtaLink";
+import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
 import { Header } from "../components/site/Header";
 import { Footer } from "../components/site/Footer";
 import { FaqSection, faqs } from "../components/site/FaqSection";
@@ -87,12 +89,6 @@ export const Route = createFileRoute("/")({
           operatingSystem: "Web",
           url: ORIGIN,
           offers: [
-            {
-              "@type": "Offer",
-              name: "Free",
-              price: "0",
-              priceCurrency: "USD",
-            },
             {
               "@type": "Offer",
               name: "Pro (monthly)",
@@ -975,6 +971,9 @@ function QualityOverQuantity() {
 
 function Pricing() {
   const [period, setPeriod] = useState<"monthly" | "annual">("annual");
+  // Both cards are paid: the trial card and the toggled Pro card. The flow hook
+  // owns registration, the already-subscribed case, and checkout.
+  const flow = usePlanFlow("pricing_section");
   const tabsRef = useRef<HTMLDivElement>(null);
   const periods: Array<"monthly" | "annual"> = ["annual", "monthly"];
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -1253,7 +1252,7 @@ function Pricing() {
                     color: "#090B0C",
                   }}
                 >
-                  Free
+                  Free trial
                 </div>
                 <div
                   className="mt-auto flex flex-col"
@@ -1275,10 +1274,16 @@ function Pricing() {
                   </div>
                 </div>
               </div>
-              <FeatureList plan="free" />
-              <CtaLink className="secondary_button secondary_button--on-light secondary_button--block">
-                Get started free
-              </CtaLink>
+              <FeatureList plan="paid" />
+              <button
+                type="button"
+                onClick={() =>
+                  void flow.selectPlan({ plan: "trial", cycle: "monthly", trial: true })
+                }
+                className="secondary_button secondary_button--on-light secondary_button--block"
+              >
+                Start {TRIAL_DAYS}-day free trial
+              </button>
             </div>
           </div>
 
@@ -1395,9 +1400,13 @@ function Pricing() {
               <div style={{ position: "relative", zIndex: 2 }}>
                 <FeatureList plan="paid" />
               </div>
-              <CtaLink className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]">
-                Start {TRIAL_DAYS}-day free trial
-              </CtaLink>
+              <button
+                type="button"
+                onClick={() => void flow.selectPlan({ plan: "pro", cycle: period, trial: false })}
+                className="main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
+              >
+                Get Jobly Pro
+              </button>
             </div>
           </div>
         </div>
@@ -1409,6 +1418,15 @@ function Pricing() {
           #pricing .pricing-paid-glow { width: 140px !important; height: 140px !important; }
         }
       `}</style>
+      <RegistrationModal
+        open={flow.modalOpen}
+        onOpenChange={(v) => {
+          if (!v) flow.closeModal();
+        }}
+        onAuthed={flow.onAuthed}
+        googleRedirectPath={flow.googleRedirectPath}
+        source="pricing_section"
+      />
     </section>
   );
 }

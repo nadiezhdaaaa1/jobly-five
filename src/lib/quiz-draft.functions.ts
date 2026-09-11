@@ -35,12 +35,19 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
     const userId = context.userId;
     const email = typeof context.claims["email"] === "string" ? (context.claims["email"] as string) : null;
 
-    let draft: { id: string; answers: unknown; schema_version: number; status: string } | null = null;
+    let draft: {
+      id: string;
+      answers: unknown;
+      schema_version: number;
+      status: string;
+      user_id: string | null;
+      email: string | null;
+    } | null = null;
 
     if (data.token) {
       const { data: byToken } = await supabaseAdmin
         .from("quiz_drafts")
-        .select("id, answers, schema_version, status")
+        .select("id, answers, schema_version, status, user_id, email")
         .eq("token_hash", await sha256Hex(data.token))
         .maybeSingle();
       draft = byToken ?? null;
@@ -48,7 +55,7 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
     if (!draft && email) {
       const { data: byEmail } = await supabaseAdmin
         .from("quiz_drafts")
-        .select("id, answers, schema_version, status")
+        .select("id, answers, schema_version, status, user_id, email")
         .eq("email", email)
         .eq("status", "completed")
         .order("last_seen_at", { ascending: false })
@@ -58,7 +65,14 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
     }
 
     if (!draft) return { ok: true, claimed: false };
-    if (draft.status === "claimed") return { ok: true, claimed: true };
+    // A draft already bound to another account is never re-bound, whoever holds
+    // the token: it carries that person's answers.
+    if (draft.user_id && draft.user_id !== userId) return { ok: true, claimed: false };
+    // Same rule by address: if the draft names an email, it must be this account's.
+    if (draft.email && email && draft.email.toLowerCase() !== email.toLowerCase()) {
+      return { ok: true, claimed: false };
+    }
+    if (draft.status === "claimed") return { ok: true, claimed: draft.user_id === userId };
     if (draft.schema_version !== QUIZ_SCHEMA_VERSION) return { ok: true, claimed: false };
 
     const { error: claimError } = await supabaseAdmin

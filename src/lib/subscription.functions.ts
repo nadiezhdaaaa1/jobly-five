@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { TRIAL_DAYS } from "@/config/pricing";
 
 /**
  * Placeholder billing writes. No provider is wired yet, so the app owns the
@@ -10,6 +11,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * is loaded inside the handler and scoped to `context.userId`.
  */
 export type SubscriptionAction =
+  | "start_trial"
   | "activate"
   | "pause"
   | "unpause"
@@ -18,8 +20,12 @@ export type SubscriptionAction =
   | "cancel_now"
   | "set_ever_subscribed";
 
+/** Billed period. Access still comes from `plan`; this never gates a feature. */
+export type BillingCycle = "monthly" | "annual";
+
 export type SubscriptionRow = {
   status: string;
+  cycle: BillingCycle | null;
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: string | null;
   trialEndsAt: string | null;
@@ -34,11 +40,13 @@ const DAY = 86_400_000;
 export const PAUSE_DAYS = 180;
 const isoIn = (ms: number) => new Date(Date.now() + ms).toISOString();
 const COLS =
-  "status, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed, activation_source";
+  "status, cycle, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, ever_subscribed, activation_source";
 
 function shape(row: Record<string, unknown> | null): SubscriptionRow {
+  const cycle = row?.["cycle"];
   return {
     status: (row?.["status"] as string) ?? "none",
+    cycle: cycle === "annual" || cycle === "monthly" ? cycle : null,
     cancelAtPeriodEnd: Boolean(row?.["cancel_at_period_end"]),
     currentPeriodEnd: (row?.["current_period_end"] as string | null) ?? null,
     trialEndsAt: (row?.["trial_ends_at"] as string | null) ?? null,
@@ -62,8 +70,10 @@ export const getSubscriptionRow = createServerFn({ method: "GET" })
 
 export const applySubscriptionAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { action: SubscriptionAction; everSubscribed?: boolean }) => {
+  .inputValidator(
+    (input: { action: SubscriptionAction; cycle?: BillingCycle; everSubscribed?: boolean }) => {
     const allowed: SubscriptionAction[] = [
+      "start_trial",
       "activate",
       "pause",
       "unpause",
@@ -72,9 +82,13 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       "cancel_now",
       "set_ever_subscribed",
     ];
-    if (!allowed.includes(input.action)) throw new Error("Unknown subscription action");
-    return input;
-  })
+      if (!allowed.includes(input.action)) throw new Error("Unknown subscription action");
+      if (input.cycle && input.cycle !== "monthly" && input.cycle !== "annual") {
+        throw new Error("Unknown billing cycle");
+      }
+      return input;
+    },
+  )
   .handler(async ({ data, context }): Promise<SubscriptionRow> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin
@@ -90,19 +104,46 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
 
     let patch: Record<string, unknown>;
     switch (data.action) {
-      case "activate":
+      case "start_trial": {
+        // One trial per account, and re-clicking can never extend a live one.
+        if (current.status === "trialing" || current.everSubscribed) return current;
+        const trialEnd = isoIn(TRIAL_DAYS * DAY);
         patch = {
-          status: "active",
+          status: "trialing",
           plan: "pro",
+          // The trial only ever converts to monthly.
+          cycle: "monthly",
           cancel_at_period_end: false,
           canceled_at: null,
           paused_at: null,
           pause_ends_at: null,
-          current_period_end: keepEnd ?? isoIn(30 * DAY),
+          trial_started_at: new Date().toISOString(),
+          trial_ends_at: trialEnd,
+          current_period_end: trialEnd,
           ever_subscribed: true,
           activation_source: "manual_preview",
         };
         break;
+      }
+      case "activate": {
+        const cycle: BillingCycle = data.cycle === "annual" ? "annual" : "monthly";
+        const span = cycle === "annual" ? 365 * DAY : 30 * DAY;
+        // Keep a paid period only when the same cycle is simply being renewed.
+        const keepSame = current.status === "active" && current.cycle === cycle ? keepEnd : null;
+        patch = {
+          status: "active",
+          plan: "pro",
+          cycle,
+          cancel_at_period_end: false,
+          canceled_at: null,
+          paused_at: null,
+          pause_ends_at: null,
+          current_period_end: keepSame ?? isoIn(span),
+          ever_subscribed: true,
+          activation_source: "manual_preview",
+        };
+        break;
+      }
       case "pause": {
         // Already paused: no-op, so re-clicking can never extend the pause.
         if (current.status === "paused") return current;

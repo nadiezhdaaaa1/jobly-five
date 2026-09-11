@@ -119,6 +119,25 @@ export function beaconDraftSave(input: {
   }
 }
 
+/**
+ * Stamps the account email onto an existing draft after modal sign-up. The quiz
+ * no longer asks for an email, so this is what keeps recovery-by-address alive
+ * when the token is lost between sign-up and the confirmation link.
+ * No token means nothing to stamp — never creates a draft.
+ */
+export async function stampDraftEmail(email: string): Promise<void> {
+  const token = getDraftToken();
+  const trimmed = email.trim();
+  if (!token || !trimmed) return;
+  try {
+    await saveQuizDraft({
+      data: { token, answers_patch: { email: trimmed }, schema_version: QUIZ_SCHEMA_VERSION },
+    });
+  } catch {
+    // ignore
+  }
+}
+
 export async function abandonDraft(): Promise<void> {
   const token = getDraftToken();
   clearDraftToken();

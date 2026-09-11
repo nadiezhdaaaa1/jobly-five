@@ -12,6 +12,7 @@ import { resetJobInteractionsForSignOut } from "@/lib/job-interactions-store";
 import { resetQuizForSignOut } from "@/lib/quiz-store";
 import { resetAccountForSignOut } from "@/lib/account-store";
 import { resetTimezoneCache } from "@/lib/dates";
+import { clearDraftToken } from "@/lib/quiz-draft-store";
 
 export function clearUserStateForSignOut() {
   resetTrackerForSignOut();
@@ -23,5 +24,8 @@ export function clearUserStateForSignOut() {
   resetQuizForSignOut();
   resetAccountForSignOut();
   resetTimezoneCache();
+  // The draft token is a bearer credential for one person's answers: it must
+  // never survive into the next account signed in on this tab.
+  clearDraftToken();
   clearLocalUserData();
 }
