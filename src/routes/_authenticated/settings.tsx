@@ -203,7 +203,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                   ? proBilling
                   : plan === "paused"
                     ? pausedLine
-                    : "Free plan — no billing"}
+                    : "No active plan — no billing"}
             </p>
           </div>
         </div>
@@ -872,16 +872,19 @@ function PlanCardsBlock({
                   }}
                 >
                   {TRIAL_DAYS} days free, then {period === "annual"
-                    ? `$${PRO_ANNUAL_MONTHLY.toFixed(2)}/mo billed annually ($${PRO_ANNUAL_TOTAL.toFixed(2)})`
-                    : `$${PRO_MONTHLY.toFixed(2)}/mo`}
-                  . Cancel anytime.
+                    ? `${usd(PRICING.annual.perMonth)}/mo billed annually (${usd(PRO_ANNUAL_TOTAL)})`
+                    : `${usd(PRO_MONTHLY)}/mo`}
+                  . Auto-renews at{" "}
+                  {period === "annual" ? usd(PRO_ANNUAL_TOTAL) : usd(PRO_MONTHLY)} until cancelled.
+                  Cancel anytime in Settings → Plan in two steps.
                 </p>
               ) : null}
             </div>
           </div>
         </div>
 
-        {/* Free card — right, narrower */}
+        {/* No-plan card — right, narrower. Not a tier you can buy: it is what
+            the account falls back to after cancelling. */}
         <div
           className="rounded-[12px] p-2 md:p-3 lg:min-w-0"
           style={{ background: "#F1F3F3", flex: "280 0 0" }}
@@ -904,7 +907,7 @@ function PlanCardsBlock({
                   color: "#090B0C",
                 }}
               >
-                Free
+                No plan
               </div>
               <div className="mt-6 flex flex-col gap-1">
                 <div style={{ height: 20 }} />
@@ -973,7 +976,7 @@ function PlanCardsBlock({
                   cursor: isPlanFree ? "default" : "pointer",
                 }}
               >
-                {isPlanFree ? "Current plan" : "Downgrade to Free"}
+                {isPlanFree ? "Current state" : "Cancel Pro"}
               </button>
             </div>
           </div>
