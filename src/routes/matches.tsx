@@ -1,15 +1,16 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconLoader2 as Loader2, IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
+import { IconChevronDown as ChevronDown, IconChevronUp as ChevronUp } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
-import { GoogleMark } from "@/components/site/GoogleMark";
 import { Wordmark } from "@/components/site/Wordmark";
 import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { lovable } from "@/integrations/lovable/index";
+import { PRICING, TRIAL_DAYS, usd } from "@/config/pricing";
+import { RegistrationModal } from "@/components/auth/RegistrationModal";
+import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
 
 export const Route = createFileRoute("/matches")({
   head: () => ({
