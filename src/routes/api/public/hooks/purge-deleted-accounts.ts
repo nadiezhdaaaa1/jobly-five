@@ -45,24 +45,13 @@ export const Route = createFileRoute("/api/public/hooks/purge-deleted-accounts")
         const purged: string[] = [];
         const failed: { id: string; error: string }[] = [];
 
+        const { purgeAccount } = await import("@/lib/purge-account.server");
+
         for (const row of due ?? []) {
           const id = row.id;
-          try {
-            for (const bucket of ["avatars", "resumes"]) {
-              const { data: files } = await supabaseAdmin.storage.from(bucket).list(id);
-              if (files?.length) {
-                await supabaseAdmin.storage.from(bucket).remove(files.map((f) => `${id}/${f.name}`));
-              }
-            }
-            await supabaseAdmin.from("user_job_state").delete().eq("user_id", id);
-            await supabaseAdmin.from("user_roles").delete().eq("user_id", id);
-            await supabaseAdmin.from("profiles").delete().eq("id", id);
-            const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
-            if (authError) throw authError;
-            purged.push(id);
-          } catch (e) {
-            failed.push({ id, error: e instanceof Error ? e.message : String(e) });
-          }
+          const result = await purgeAccount(id);
+          if (result.ok) purged.push(id);
+          else failed.push({ id, error: result.error ?? "Unknown error" });
         }
 
         return json({
