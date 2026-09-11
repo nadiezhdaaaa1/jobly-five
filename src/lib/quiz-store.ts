@@ -195,10 +195,9 @@ export function quizSummary(q: QuizAnswers = loadQuiz()): QuizSummary {
 
   const level = q.level ?? "";
   const years = typeof q.years === "number" ? `${q.years}y` : "";
-  const langsArr = [
-    q.primaryLanguage,
-    ...((q.additionalLanguages ?? []).map((l) => l.lang)),
-  ].filter(Boolean) as string[];
+  const langsArr = [q.primaryLanguage, ...(q.additionalLanguages ?? []).map((l) => l.lang)].filter(
+    Boolean,
+  ) as string[];
   const languages = langsArr.length ? langsArr.join(" · ") : "";
   const expParts = [level, years, languages].filter(Boolean);
   const experience = expParts.length ? expParts.join(" · ") : DASH;
@@ -207,7 +206,7 @@ export function quizSummary(q: QuizAnswers = loadQuiz()): QuizSummary {
   const locations = locs.length ? locs.join(" · ") : "";
   const salary =
     typeof q.salaryMin === "number" && typeof q.salaryMax === "number"
-      ? `$${Math.round((q.salaryMin >= 1000 ? q.salaryMin / 1000 : q.salaryMin))}k–$${Math.round((q.salaryMax >= 1000 ? q.salaryMax / 1000 : q.salaryMax))}k`
+      ? `$${Math.round(q.salaryMin >= 1000 ? q.salaryMin / 1000 : q.salaryMin)}k–$${Math.round(q.salaryMax >= 1000 ? q.salaryMax / 1000 : q.salaryMax)}k`
       : "";
   const locSalParts = [locations, salary].filter(Boolean);
   const locationAndSalary = locSalParts.length ? locSalParts.join(" · ") : DASH;
