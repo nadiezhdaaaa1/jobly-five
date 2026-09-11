@@ -23,8 +23,9 @@ export const getQuizDraft = createServerFn({ method: "POST" })
 /**
  * Claims a draft for the signed-in user and copies the answers onto their
  * profile row. Idempotent — a second claim is a no-op.
- * Falls back to a completed draft matching the account email when the token
- * is gone (finished the quiz, lost the tab, signed up later).
+ * Recovery is token-only: nothing may be claimed by email address, because an
+ * address on a draft is never proof that the person holding the draft controls
+ * it. Anyone could otherwise push their own answers into someone else's profile.
  */
 export const claimQuizDraft = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -52,17 +53,7 @@ export const claimQuizDraft = createServerFn({ method: "POST" })
         .maybeSingle();
       draft = byToken ?? null;
     }
-    if (!draft && email) {
-      const { data: byEmail } = await supabaseAdmin
-        .from("quiz_drafts")
-        .select("id, answers, schema_version, status, user_id, email")
-        .eq("email", email)
-        .eq("status", "completed")
-        .order("last_seen_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      draft = byEmail ?? null;
-    }
+
 
     if (!draft) return { ok: true, claimed: false };
     // A draft already bound to another account is never re-bound, whoever holds
