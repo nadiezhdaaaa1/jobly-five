@@ -594,9 +594,10 @@ function DevHardPurgeRow() {
       const res = await purge({ data: { email: target } });
       setResult(res);
       if (res.ok && res.status === "purged") {
+        // Tear down immediately so no draft token or plan intent survives into
+        // the next signup — but stay on the page so the counts stay readable.
         clearUserStateForSignOut();
         await supabase.auth.signOut();
-        window.location.href = "/";
       }
     } catch (e) {
       setResult({
