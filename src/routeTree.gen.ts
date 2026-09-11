@@ -33,6 +33,7 @@ import { Route as LegalDmcaRouteImport } from './routes/legal.dmca'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
+import { Route as CheckoutConfirmationRouteImport } from './routes/checkout.confirmation'
 import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
@@ -169,6 +170,11 @@ const LegalBillingRoute = LegalBillingRouteImport.update({
   path: '/legal/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutConfirmationRoute = CheckoutConfirmationRouteImport.update({
+  id: '/confirmation',
+  path: '/confirmation',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 const BlogRssDotxmlRoute = BlogRssDotxmlRouteImport.update({
   id: '/blog/rss.xml',
   path: '/blog/rss.xml',
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -315,6 +322,7 @@ export interface FileRoutesByTo {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -714,6 +726,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalBillingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/confirmation': {
+      id: '/checkout/confirmation'
+      path: '/confirmation'
+      fullPath: '/checkout/confirmation'
+      preLoaderRoute: typeof CheckoutConfirmationRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
     '/blog/rss.xml': {
       id: '/blog/rss.xml'
       path: '/blog/rss.xml'
@@ -849,10 +868,12 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface CheckoutRouteChildren {
+  CheckoutConfirmationRoute: typeof CheckoutConfirmationRoute
   CheckoutIndexRoute: typeof CheckoutIndexRoute
 }
 
 const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutConfirmationRoute: CheckoutConfirmationRoute,
   CheckoutIndexRoute: CheckoutIndexRoute,
 }
 
