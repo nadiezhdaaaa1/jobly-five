@@ -7,6 +7,7 @@ import { hydrateAccountFromDb, isPastGrace, resetAccountForSignOut, useAccount }
 import { clearLocalUserData } from "@/lib/local-data";
 import { RestoreAccountScreen } from "@/components/app/RestoreAccountScreen";
 import { EntitlementProvider } from "@/lib/entitlements-provider";
+import { OnboardingGate } from "@/lib/onboarding/OnboardingGate";
 import { claimQuizDraft } from "@/lib/quiz-draft.functions";
 import { clearDraftToken, getDraftToken } from "@/lib/quiz-draft-store";
 import { hydrateQuizFromProfile, resetQuizForSignOut } from "@/lib/quiz-store";
@@ -123,7 +124,9 @@ export const Route = createFileRoute("/_authenticated")({
     const { user } = Route.useRouteContext();
     return (
       <EntitlementProvider>
-        <AuthedShell userId={user.id} />
+        <OnboardingGate>
+          <AuthedShell userId={user.id} />
+        </OnboardingGate>
       </EntitlementProvider>
     );
   },
