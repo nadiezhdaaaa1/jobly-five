@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 
 Disallow: /login
+Disallow: /preferences
 Disallow: /signup
 Disallow: /reset-password
 Disallow: /quiz
