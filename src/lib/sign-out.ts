@@ -13,6 +13,7 @@ import { resetQuizForSignOut } from "@/lib/quiz-store";
 import { resetAccountForSignOut } from "@/lib/account-store";
 import { resetTimezoneCache } from "@/lib/dates";
 import { clearDraftToken } from "@/lib/quiz-draft-store";
+import { clearPlanIntent } from "@/lib/onboarding/planIntent";
 
 export function clearUserStateForSignOut() {
   resetTrackerForSignOut();
@@ -27,5 +28,8 @@ export function clearUserStateForSignOut() {
   // The draft token is a bearer credential for one person's answers: it must
   // never survive into the next account signed in on this tab.
   clearDraftToken();
+  // Plan intent lives in browser-global storage: a stale one must never route a
+  // later visitor into checkout for a plan they never chose.
+  clearPlanIntent();
   clearLocalUserData();
 }

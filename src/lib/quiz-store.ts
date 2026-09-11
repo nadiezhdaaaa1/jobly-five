@@ -34,6 +34,9 @@ export type QuizAnswers = {
   salaryMax?: number;
   openToRelocate?: boolean;
   openToTravel?: boolean;
+  // Recovery field ONLY. No quiz step sets it, no UI collects it, nothing
+  // renders it: the registration modal writes it onto an anonymous draft so a
+  // lost draft token can still be matched by address. Do not add a quiz step.
   email?: string;
   // Match-weighting axes (conditional per role/level; see quiz.tsx AxesStep).
   scope?: { orgSize?: string; budget?: string; stage?: string };
