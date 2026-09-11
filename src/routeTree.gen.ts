@@ -22,6 +22,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VsIndexRouteImport } from './routes/vs.index'
 import { Route as GuidesIndexRouteImport } from './routes/guides.index'
+import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as VsCompetitorRouteImport } from './routes/vs.$competitor'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
@@ -112,6 +113,11 @@ const GuidesIndexRoute = GuidesIndexRouteImport.update({
   id: '/guides/',
   path: '/guides/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CheckoutRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
@@ -253,7 +259,7 @@ const ApiPublicHooksConfirmEmailRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -293,7 +300,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -319,6 +325,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog': typeof BlogIndexRoute
+  '/checkout': typeof CheckoutIndexRoute
   '/guides': typeof GuidesIndexRoute
   '/vs': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -335,7 +342,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contact': typeof ContactRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -361,6 +368,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/guides/': typeof GuidesIndexRoute
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
@@ -403,6 +411,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog/'
+    | '/checkout/'
     | '/guides/'
     | '/vs/'
     | '/guides/$guide/$slug'
@@ -417,7 +426,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/checkout'
     | '/contact'
     | '/login'
     | '/matches'
@@ -443,6 +451,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog'
+    | '/checkout'
     | '/guides'
     | '/vs'
     | '/guides/$guide/$slug'
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/vs/$competitor'
     | '/blog/'
+    | '/checkout/'
     | '/guides/'
     | '/vs/'
     | '/guides/$guide/$slug'
@@ -500,7 +510,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   ContactRoute: typeof ContactRoute
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
@@ -626,6 +636,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/guides/'
       preLoaderRoute: typeof GuidesIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/checkout/': {
+      id: '/checkout/'
+      path: '/'
+      fullPath: '/checkout/'
+      preLoaderRoute: typeof CheckoutIndexRouteImport
+      parentRoute: typeof CheckoutRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -831,10 +848,22 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface CheckoutRouteChildren {
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutIndexRoute: CheckoutIndexRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutRoute: CheckoutRouteWithChildren,
   ContactRoute: ContactRoute,
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
