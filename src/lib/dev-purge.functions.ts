@@ -8,12 +8,17 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 /** The only address this tool may ever touch. Exact match, no patterns. */
 export const DEV_PURGE_ALLOWLIST = ["sergekrush@gmail.com"] as const;
 
+/** A count of leftover rows, or the literal marker for a check that failed. */
+export const CHECK_FAILED = "check failed" as const;
+
 export type DevPurgeResult = {
   ok: boolean;
   status: "purged" | "nothing-to-purge" | "refused" | "error";
   message: string;
   clean?: boolean;
-  counts?: Record<string, number>;
+  counts?: Record<string, number | typeof CHECK_FAILED>;
+  /** Tables whose verification query errored, so completeness is unproven. */
+  unverified?: string[];
 };
 
 /** Tables that can hold this account's data, keyed by the column to match on. */
