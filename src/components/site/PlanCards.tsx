@@ -265,8 +265,8 @@ export function PlanCard({
         <p className="relative z-[2] text-center text-xs text-[color:var(--color-text-muted)]">
           {card.disclosure}
         </p>
-      </div>
     </div>
+
   );
 }
 
