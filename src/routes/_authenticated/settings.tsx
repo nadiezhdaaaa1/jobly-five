@@ -1,5 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  devPurgeAccount,
+  DEV_PURGE_ALLOWLIST,
+  type DevPurgeResult,
+} from "@/lib/dev-purge.functions";
 import {
   IconCheck,
   IconEye,
@@ -570,6 +576,79 @@ function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) 
           Run purge now
         </button>
       </div>
+      <DevHardPurgeRow />
+    </div>
+  );
+}
+
+function DevHardPurgeRow() {
+  const target = DEV_PURGE_ALLOWLIST[0];
+  const purge = useServerFn(devPurgeAccount);
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<DevPurgeResult | null>(null);
+
+  const run = async () => {
+    setBusy(true);
+    try {
+      const res = await purge({ data: { email: target } });
+      setResult(res);
+      if (res.ok && res.status === "purged") {
+        clearUserStateForSignOut();
+        await supabase.auth.signOut();
+        window.location.href = "/";
+      }
+    } catch (e) {
+      setResult({
+        ok: false,
+        status: "error",
+        message: e instanceof Error ? e.message : "Purge failed.",
+      });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 border-t pt-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+          Hard purge test account
+        </span>
+        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">{target}</span>
+        <span className="flex-1" />
+        <input
+          type="email"
+          value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          placeholder={`Type ${target} to confirm`}
+          aria-label="Confirm the target email"
+          className="h-7 w-[240px] rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
+        />
+        <button
+          type="button"
+          disabled={typed.trim().toLowerCase() !== target || busy}
+          onClick={() => void run()}
+          className="danger_button danger_button--on-light h-7 px-2 text-[11px] disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {busy ? "Purging…" : "Purge and sign out"}
+        </button>
+      </div>
+      {result ? (
+        <div className="mt-2 text-[11px] text-[color:var(--color-text-muted)]">
+          <div>{result.message}</div>
+          {result.counts ? (
+            <ul className="mt-1 space-y-0.5">
+              {Object.entries(result.counts).map(([table, count]) => (
+                <li key={table}>
+                  {table}: {count}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {result.clean === false ? <div className="mt-1">clean: false</div> : null}
+        </div>
+      ) : null}
     </div>
   );
 }
