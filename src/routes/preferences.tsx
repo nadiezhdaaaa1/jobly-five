@@ -106,7 +106,7 @@ function PreferencesPage() {
             <h1 className="font-[family-name:var(--font-display)] text-[30px] leading-tight">
               Stop all Jobly emails
             </h1>
-            <p className="mt-3 text-[14px] text-[color:var(--color-text-secondary)]">
+            <p className="mt-3 text-[16px] text-[color:var(--color-text-secondary)]">
               You'll stop receiving job alerts, updates, and offers. Account and billing emails
               still arrive when needed.
             </p>
