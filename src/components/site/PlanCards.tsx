@@ -129,23 +129,20 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="group flex-1 min-w-0"
-      style={{ background: "var(--color-surface-2)", borderRadius: 28, padding: 16 }}
+      className="relative z-0 flex h-full flex-1 min-w-0 flex-col rounded-[16px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[15.444px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[16px]"
+      style={{
+        background: "var(--color-surface-1)",
+        border: "1px solid var(--color-border)",
+        padding: 21,
+        gap: 16,
+        boxShadow: card.highlight
+          ? "0 1px 4px rgba(12,12,13,0.05)"
+          : "0 1px 2px rgba(12,12,13,0.05)",
+        overflow: "hidden",
+        isolation: "isolate",
+      }}
     >
-      <div
-        className="relative z-0 flex h-full flex-col rounded-[16px] transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] group-hover:z-10 group-hover:scale-[1.036] group-hover:rounded-[15.444px] motion-reduce:transition-none motion-reduce:group-hover:scale-100 motion-reduce:group-hover:rounded-[16px]"
-        style={{
-          background: card.highlight ? "rgba(255,255,255,0.8)" : "var(--color-background)",
-          border: "1px solid var(--color-surface-1)",
-          padding: 21,
-          gap: 16,
-          boxShadow: card.highlight
-            ? "0 1px 4px rgba(12,12,13,0.05)"
-            : "0 1px 2px rgba(12,12,13,0.05)",
-          overflow: "hidden",
-          isolation: "isolate",
-        }}
-      >
+
         {card.highlight ? (
           <span
             aria-hidden="true"
