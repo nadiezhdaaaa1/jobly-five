@@ -1284,6 +1284,10 @@ function Pricing() {
               >
                 Start {TRIAL_DAYS}-day free trial
               </button>
+              <p className="mt-3 text-center text-xs text-[color:var(--color-text-muted)]">
+                Auto-renews at {usd(PRICING.monthly.perMonth)} until cancelled. Cancel anytime in
+                Settings → Plan in two steps.
+              </p>
             </div>
           </div>
 
@@ -1407,6 +1411,11 @@ function Pricing() {
               >
                 Get Jobly Pro
               </button>
+              <p className="relative z-[2] mt-3 text-center text-xs text-[color:var(--color-text-muted)]">
+                Auto-renews at{" "}
+                {period === "annual" ? usd(total(PRICING.annual)) : usd(PRICING.monthly.perMonth)}{" "}
+                until cancelled. Cancel anytime in Settings → Plan in two steps.
+              </p>
             </div>
           </div>
         </div>

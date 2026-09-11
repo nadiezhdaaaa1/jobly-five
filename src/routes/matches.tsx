@@ -153,6 +153,11 @@ function MatchesPage() {
             >
               Get Pro for {usd(PRICING.annual.perMonth)} per month, billed yearly
             </button>
+            <p className="text-xs text-[color:var(--color-text-muted)]">
+              Trial auto-renews at {usd(PRICING.monthly.perMonth)} until cancelled. Pro auto-renews
+              at {usd(total(PRICING.annual))} until cancelled. Cancel anytime in Settings → Plan in
+              two steps.
+            </p>
           </div>
         </section>
       </main>
