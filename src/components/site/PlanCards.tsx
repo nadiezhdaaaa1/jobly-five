@@ -22,6 +22,9 @@ export type PlanCardSpec = {
   badge: string;
   cta: string;
   disclosure: string;
+  /** Drives only the CTA variant: true = main accent button. */
+  ctaMain: boolean;
+  /** Drives only the glow and the lighter card background. */
   highlight: boolean;
   choice: { plan: IntentPlan; cycle: BillingCycle; trial: boolean };
 };
