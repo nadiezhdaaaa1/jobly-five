@@ -594,6 +594,7 @@ function QuizPage() {
                 key={key}
                 stepKey={key}
                 expanded={isExpanded}
+                scrollOnMount={isExpanded && advancedRef.current}
                 answers={answers}
                 invalid={invalid}
                 onEdit={() => openEdit(key)}
