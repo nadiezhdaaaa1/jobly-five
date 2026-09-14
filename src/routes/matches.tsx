@@ -114,13 +114,54 @@ function MatchesSearching() {
 
 function MatchesPage() {
   const [answers, setAnswers] = useState<QuizAnswers>({});
+  const search = Route.useSearch();
   // The plan decision after the quiz. Registration and checkout both live in
   // the flow hook, so this screen no longer creates accounts on its own.
   const flow = usePlanFlow("matches_plan_step");
+  const [access, setAccess] = useState<PlanAccess>(() =>
+    maybeSignedInSync() ? "unknown" : "paywall",
+  );
+  // A valid ?sku wins over any older saved intent (it is the more recent
+  // decision); otherwise the quiz -> matches handoff rides on the saved intent.
+  const [initialSku] = useState<SkuId | undefined>(() => {
+    if (search.sku) {
+      savePlanIntent({ sku: search.sku, trial: search.sku === TRIAL_SKU });
+      return search.sku;
+    }
+    return readPlanIntent()?.sku;
+  });
 
   useEffect(() => {
     setAnswers(loadQuiz());
     void loadJobs();
+  }, []);
+
+  // This page sells, so an unreadable entitlement renders the paywall — the
+  // opposite of OnboardingGate, which treats an unknown state as no access.
+  // Both are correct: that one guards the app, this one guards a sales page.
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!alive) return;
+      // Anonymous: no entitlements request at all.
+      if (!data.session) {
+        setAccess("paywall");
+        return;
+      }
+      try {
+        const { data: ent, error } = await supabase.rpc("get_entitlements");
+        if (error) throw error;
+        if (!alive) return;
+        const status = (ent as { status?: string } | null)?.status;
+        setAccess(hasPlanStatus(status) ? "has-plan" : "paywall");
+      } catch {
+        if (alive) setAccess("paywall");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const matched = useMatchedJobs(70);
