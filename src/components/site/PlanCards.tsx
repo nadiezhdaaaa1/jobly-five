@@ -47,7 +47,7 @@ export type PlanCardSpec = {
   /** Watch renders its badge in the title row: the switcher owns the top-right corner. */
   badgeInTitle: boolean;
   /** Corner glow hue, when the card carries one. */
-  glow: "accent" | "step" | null;
+  glow: "accent" | "step" | "neutral";
   /** Column gap inside the white card. */
   innerGap: number;
   choice: SelectPlanInput;
@@ -78,7 +78,7 @@ function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanC
     disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
     badge: annual ? savingsBadge(sku, "accent") : null,
     badgeInTitle: true,
-    glow: null,
+    glow: "neutral",
     innerGap: 32,
     choice: { sku, trial: false },
   };
@@ -102,7 +102,7 @@ export const PRO_CARDS: PlanCardSpec[] = [
     disclosure: `${TRIAL_DAYS} days free, then ${renewalPhrase("pro_monthly")} until cancelled`,
     badge: null,
     badgeInTitle: false,
-    glow: null,
+    glow: "neutral",
     innerGap: 24,
     choice: { sku: "pro_monthly", trial: true },
   },
@@ -170,8 +170,8 @@ function WatchPeriodSwitch({
       aria-label="Watch billing period"
       className="absolute flex items-center"
       style={{
-        top: 24,
-        right: 24,
+        top: 25,
+        right: 25,
         height: 28,
         padding: 2,
         borderRadius: 20,
@@ -202,7 +202,7 @@ function WatchPeriodSwitch({
             onClick={() => onChange(o.id)}
             className="relative"
             style={{
-              width: 63,
+              width: o.id === "annual" ? 56 : 63,
               padding: "2px 8px",
               fontFamily: "var(--font-sans)",
               fontWeight: 400,
@@ -230,8 +230,8 @@ function SavingsBadge({
     <span
       className={inTitle ? "" : "absolute"}
       style={{
-        top: inTitle ? undefined : 24,
-        right: inTitle ? undefined : 20,
+        top: inTitle ? undefined : 25,
+        right: inTitle ? undefined : 21.5,
         padding: "4px 12px",
         borderRadius: 16,
         background: badge.background,
@@ -260,11 +260,16 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex flex-1 min-w-0 flex-col transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
+      className="relative z-0 flex flex-1 min-w-0 flex-col max-lg:!h-auto transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
       style={{
-        border: "1px solid rgba(0,0,0,0.1)",
+        // Inset ring instead of a border so the design's 269x405 / 34 / 371
+        // geometry is not shifted inward by 1px on each edge.
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
         borderRadius: 24,
         background: card.tint,
+        // Design fixes the wrapper at 269x405; the button block bottom-aligns so
+        // the CTA starts at y=253 inside the inner card on all four.
+        height: 405,
       }}
     >
       {/* Header band */}
@@ -291,35 +296,38 @@ export function PlanCard({
         className="relative flex w-full flex-col"
         style={{
           background: "var(--color-surface-1)",
-          border: "1px solid rgba(0,0,0,0.16)",
+          boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.16)",
           borderRadius: 20,
           padding: 20,
           gap: card.innerGap,
+          flex: "1 1 auto",
           overflow: "hidden",
           isolation: "isolate",
         }}
       >
-        {card.glow ? (
+        {(
           <span
             aria-hidden="true"
             className="pricing-paid-glow"
             style={{
               position: "absolute",
-              top: -80,
-              right: -79.5,
+              top: -79,
+              right: -78.5,
               width: 200,
               height: 200,
               background:
                 card.glow === "accent"
                   ? "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)"
-                  : "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)",
+                  : card.glow === "step"
+                    ? "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)"
+                    : "radial-gradient(circle, rgba(103,120,124,0.5) 0%, rgba(103,120,124,0) 70%)",
               filter: "blur(40px)",
               opacity: 0.5,
               zIndex: 1,
               pointerEvents: "none",
             }}
           />
-        ) : null}
+        )}
 
         {switcher ?? null}
         {card.badge && !card.badgeInTitle ? <SavingsBadge badge={card.badge} /> : null}
@@ -394,10 +402,16 @@ export function PlanCard({
           </div>
         </div>
 
+        {/* Button + disclosure sit at a fixed offset from the bottom so the CTA
+            starts at y=253 inside the 371-tall inner card on every card. */}
+        <div
+          className="absolute flex flex-col"
+          style={{ left: 20, right: 20, bottom: 20, gap: 16, zIndex: 2 }}
+        >
         <button
           type="button"
           onClick={() => onSelect(card)}
-          className="relative mt-auto w-full"
+          className="relative w-full"
           style={{
             zIndex: 2,
             padding: "12px 16px",
@@ -407,7 +421,7 @@ export function PlanCard({
               "0 1px 2px rgba(0,0,0,0.1), inset 0 2px 1px rgba(255,255,255,0.5), inset 0 -2px 1px rgba(0,0,0,0.1)",
             background: card.ctaMain ? "var(--main-accent)" : "var(--secondary-button-light)",
             color: card.ctaMain ? "var(--on-accent)" : "var(--color-foreground)",
-            height: card.ctaMain ? 50 : undefined,
+            height: 50,
             fontFamily: "var(--font-sans)",
             fontWeight: 300,
             fontSize: 14,
@@ -432,6 +446,7 @@ export function PlanCard({
         >
           {card.disclosure}
         </p>
+        </div>
       </div>
     </div>
   );
@@ -443,7 +458,7 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
   const watch = watchCard(watchPeriod === "annual" ? "watch_annual" : "watch_monthly");
 
   return (
-    <div className="flex w-full flex-col items-center gap-6">
+    <div className="flex w-full flex-col items-center gap-10">
       <div className="flex w-full items-start gap-5 max-lg:!flex-col">
         <PlanCard
           card={watch}
