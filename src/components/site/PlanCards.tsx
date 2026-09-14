@@ -47,7 +47,7 @@ export type PlanCardSpec = {
   /** Watch renders its badge in the title row: the switcher owns the top-right corner. */
   badgeInTitle: boolean;
   /** Corner glow hue, when the card carries one. */
-  glow: "accent" | "step" | null;
+  glow: "accent" | "step" | "neutral";
   /** Column gap inside the white card. */
   innerGap: number;
   choice: SelectPlanInput;
@@ -78,7 +78,7 @@ function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanC
     disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
     badge: annual ? savingsBadge(sku, "accent") : null,
     badgeInTitle: true,
-    glow: null,
+    glow: "neutral",
     innerGap: 32,
     choice: { sku, trial: false },
   };
@@ -102,7 +102,7 @@ export const PRO_CARDS: PlanCardSpec[] = [
     disclosure: `${TRIAL_DAYS} days free, then ${renewalPhrase("pro_monthly")} until cancelled`,
     badge: null,
     badgeInTitle: false,
-    glow: null,
+    glow: "neutral",
     innerGap: 24,
     choice: { sku: "pro_monthly", trial: true },
   },
@@ -170,8 +170,8 @@ function WatchPeriodSwitch({
       aria-label="Watch billing period"
       className="absolute flex items-center"
       style={{
-        top: 24,
-        right: 24,
+        top: 25,
+        right: 25,
         height: 28,
         padding: 2,
         borderRadius: 20,
@@ -202,7 +202,7 @@ function WatchPeriodSwitch({
             onClick={() => onChange(o.id)}
             className="relative"
             style={{
-              width: 63,
+              width: o.id === "annual" ? 56 : 63,
               padding: "2px 8px",
               fontFamily: "var(--font-sans)",
               fontWeight: 400,
@@ -230,8 +230,8 @@ function SavingsBadge({
     <span
       className={inTitle ? "" : "absolute"}
       style={{
-        top: inTitle ? undefined : 24,
-        right: inTitle ? undefined : 20,
+        top: inTitle ? undefined : 25,
+        right: inTitle ? undefined : 21.5,
         padding: "4px 12px",
         borderRadius: 16,
         background: badge.background,
@@ -299,27 +299,29 @@ export function PlanCard({
           isolation: "isolate",
         }}
       >
-        {card.glow ? (
+        {(
           <span
             aria-hidden="true"
             className="pricing-paid-glow"
             style={{
               position: "absolute",
-              top: -80,
-              right: -79.5,
+              top: -79,
+              right: -78.5,
               width: 200,
               height: 200,
               background:
                 card.glow === "accent"
                   ? "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)"
-                  : "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)",
+                  : card.glow === "step"
+                    ? "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)"
+                    : "radial-gradient(circle, rgba(103,120,124,0.5) 0%, rgba(103,120,124,0) 70%)",
               filter: "blur(40px)",
               opacity: 0.5,
               zIndex: 1,
               pointerEvents: "none",
             }}
           />
-        ) : null}
+        )}
 
         {switcher ?? null}
         {card.badge && !card.badgeInTitle ? <SavingsBadge badge={card.badge} /> : null}
@@ -407,7 +409,7 @@ export function PlanCard({
               "0 1px 2px rgba(0,0,0,0.1), inset 0 2px 1px rgba(255,255,255,0.5), inset 0 -2px 1px rgba(0,0,0,0.1)",
             background: card.ctaMain ? "var(--main-accent)" : "var(--secondary-button-light)",
             color: card.ctaMain ? "var(--on-accent)" : "var(--color-foreground)",
-            height: card.ctaMain ? 50 : undefined,
+            height: 50,
             fontFamily: "var(--font-sans)",
             fontWeight: 300,
             fontSize: 14,
@@ -443,7 +445,7 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
   const watch = watchCard(watchPeriod === "annual" ? "watch_annual" : "watch_monthly");
 
   return (
-    <div className="flex w-full flex-col items-center gap-6">
+    <div className="flex w-full flex-col items-center gap-10">
       <div className="flex w-full items-start gap-5 max-lg:!flex-col">
         <PlanCard
           card={watch}
