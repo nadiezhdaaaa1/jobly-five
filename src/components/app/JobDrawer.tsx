@@ -447,7 +447,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               <img
                 src={job.logo}
                 alt={`${job.company} logo`}
-                className="shrink-0 rounded-[8px] object-cover"
+                className="shrink-0 rounded-[12px] object-cover"
                 style={{ width: 64, height: 64 }}
               />
             ) : (
