@@ -192,7 +192,7 @@ function ConfirmationPage() {
           >
             <p className="flex-1 text-[16px] font-normal leading-[1.6] text-[color:var(--color-text-secondary)]">
               Every match is scored before it reaches you —{" "}
-              <span className="text-[color:var(--color-foreground)]">ghost jobs never do</span>.
+              <span className="text-[color:var(--color-foreground)]">ghost jobs never do</span>
             </p>
             <span className="block shrink-0" style={{ width: 52, height: 52 }}>
               <img
