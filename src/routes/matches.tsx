@@ -12,7 +12,7 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { TRIAL_DAYS } from "@/config/pricing";
+
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
@@ -134,9 +134,7 @@ function MatchesPage() {
 
         <section className="mt-10">
           <h2 className="text-2xl">Pick a plan to keep these matches</h2>
-          <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            Start with a {TRIAL_DAYS}-day free trial, or go straight to Pro. Cancel any time.
-          </p>
+
 
           <div className="mt-6">
             <PlanPaywall onSelect={(card) => void flow.selectPlan(card.choice)} />
