@@ -136,8 +136,14 @@ export function BoardColumnsDialog({
               addInterviewColumn(newInterviewTitle);
               setNewInterviewTitle("");
             }}
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[12px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
-            style={{ background: "var(--color-accent)" }}
+            className="main_accent_button main_accent_button--on-light inline-flex shrink-0 items-center gap-1.5"
+            style={{
+              borderRadius: 12,
+              fontSize: 13,
+              height: 36,
+              padding: "0 12px",
+              justifyContent: "center",
+            }}
           >
             <Plus size={14} strokeWidth={2} />
             Add column
@@ -279,7 +285,14 @@ export function BoardColumnsDialog({
           <button
             type="button"
             onClick={onClose}
-            className="h-9 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="main_accent_button main_accent_button--on-light"
+            style={{
+              borderRadius: 12,
+              fontSize: 13,
+              height: 36,
+              padding: "0 16px",
+              justifyContent: "center",
+            }}
           >
             Done
           </button>
