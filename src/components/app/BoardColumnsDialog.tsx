@@ -92,7 +92,7 @@ export function BoardColumnsDialog({
     <div className="fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] w-[92%] max-w-[560px] flex-col rounded-[8px] border bg-white p-6"
+        className="relative z-10 flex max-h-[90vh] w-[92%] max-w-[560px] flex-col rounded-[20px] border bg-white p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <div className="absolute right-3 top-3">
@@ -101,7 +101,7 @@ export function BoardColumnsDialog({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <X size={16} strokeWidth={1.6} />
             </button>
@@ -126,7 +126,7 @@ export function BoardColumnsDialog({
                 setNewInterviewTitle("");
               }
             }}
-            className="h-9 min-w-0 flex-1 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="h-9 min-w-0 flex-1 rounded-[12px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
             style={{ borderColor: "#E3E7E8" }}
           />
           <button
@@ -136,7 +136,7 @@ export function BoardColumnsDialog({
               addInterviewColumn(newInterviewTitle);
               setNewInterviewTitle("");
             }}
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[12px] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
             style={{ background: "var(--color-accent)" }}
           >
             <Plus size={14} strokeWidth={2} />
@@ -145,7 +145,7 @@ export function BoardColumnsDialog({
         </div>
 
         <div
-          className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[12px] border p-1"
+          className="mt-3 flex flex-1 flex-col gap-1 overflow-y-auto rounded-[16px] border p-1"
           style={{ background: "#F1F3F3", borderColor: "#F1F3F3" }}
         >
           {columns.map((c, idx) => {
@@ -179,7 +179,7 @@ export function BoardColumnsDialog({
                 setDragId(null);
                 setOverId(null);
               }}
-              className="rounded-[8px] border p-2"
+              className="rounded-[12px] border p-2"
               style={{
                 background: "rgba(255,255,255,0.9)",
                 borderColor: overId === c.id && dragId && dragId !== c.id ? "var(--color-accent)" : "#FFFFFF",
@@ -203,7 +203,7 @@ export function BoardColumnsDialog({
                       aria-label="Move up"
                       aria-disabled={idx === 0}
                       onClick={() => idx !== 0 && moveColumn(c.id, -1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
+                      className="flex h-6 w-6 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                     >
                       <ArrowUp size={14} strokeWidth={1.8} />
                     </button>
@@ -214,7 +214,7 @@ export function BoardColumnsDialog({
                       aria-label="Move down"
                       aria-disabled={idx === columns.length - 1}
                       onClick={() => idx !== columns.length - 1 && moveColumn(c.id, 1)}
-                      className="flex h-6 w-6 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
+                      className="flex h-6 w-6 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                     >
                       <ArrowDown size={14} strokeWidth={1.8} />
                     </button>
@@ -231,7 +231,7 @@ export function BoardColumnsDialog({
                       if (v && v !== c.title) renameColumn(c.id, v);
                       else setDraftTitles((s) => ({ ...s, [c.id]: c.title }));
                     }}
-                    className="h-9 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    className="h-9 rounded-[12px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
                     style={{ borderColor: "#E3E7E8" }}
                   />
                   </IconTooltip>
@@ -245,7 +245,7 @@ export function BoardColumnsDialog({
                         onClose();
                         onEditStages(c.id);
                       }}
-                      className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                      className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
                     >
                       <ListDetails size={16} strokeWidth={1.6} />
                     </button>
@@ -257,7 +257,7 @@ export function BoardColumnsDialog({
                     aria-label="Delete column"
                     aria-disabled={!deleteAllowed}
                     onClick={() => deleteAllowed && deleteColumn(c.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
+                    className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                   >
                     <Trash size={16} strokeWidth={1.6} />
                   </button>
@@ -272,14 +272,14 @@ export function BoardColumnsDialog({
           <button
             type="button"
             onClick={() => setConfirmReset(true)}
-            className="h-9 rounded-[4px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+            className="h-9 rounded-[12px] px-3 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             Reset to defaults
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="h-9 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="h-9 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Done
           </button>
@@ -295,7 +295,7 @@ export function BoardColumnsDialog({
             aria-hidden
           />
           <div
-            className="relative z-10 w-[92%] max-w-[480px] rounded-[8px] border bg-white p-6"
+            className="relative z-10 w-[92%] max-w-[480px] rounded-[20px] border bg-white p-6"
             style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
           >
             <div className="absolute right-3 top-3">
@@ -304,7 +304,7 @@ export function BoardColumnsDialog({
                   type="button"
                   onClick={() => setConfirmReset(false)}
                   aria-label="Close"
-                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                  className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   <X size={16} strokeWidth={1.6} />
                 </button>
@@ -344,7 +344,7 @@ export function BoardColumnsDialog({
 
             {blockedByCards ? (
               <div
-                className="mt-4 rounded-[4px] border p-3 text-[13px]"
+                className="mt-4 rounded-[12px] border p-3 text-[13px]"
                 style={{ background: "#FDECEC", borderColor: "#F5C2C2", color: "#8E2A2A" }}
               >
                 Move the cards out of these columns before resetting — they would otherwise lose their column.
@@ -355,7 +355,7 @@ export function BoardColumnsDialog({
               <button
                 type="button"
                 onClick={() => setConfirmReset(false)}
-                className="h-9 rounded-[4px] border px-4 text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                className="h-9 rounded-[12px] border px-4 text-[13px] font-medium text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                 style={{ borderColor: "#E3E7E8" }}
               >
                 Cancel
@@ -367,7 +367,7 @@ export function BoardColumnsDialog({
                   resetColumns();
                   setConfirmReset(false);
                 }}
-                className="h-9 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-40 disabled:hover:bg-[color:var(--color-accent)]"
+                className="h-9 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-40 disabled:hover:bg-[color:var(--color-accent)]"
               >
                 Reset columns
               </button>

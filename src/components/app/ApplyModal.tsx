@@ -118,18 +118,18 @@ export function ApplyModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[520px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[520px] rounded-[20px] p-5">
         <DialogTitle className="sr-only">Apply to {job.title}</DialogTitle>
         <div className="flex min-w-0 items-center gap-3">
           {job.logo ? (
             <img
               src={job.logo}
               alt={`${job.company} logo`}
-              className="h-10 w-10 shrink-0 rounded-[6px] border object-cover"
+              className="h-10 w-10 shrink-0 rounded-[8px] border object-cover"
             />
           ) : (
             <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[6px] border bg-[color:var(--color-surface-2)] text-[13px] font-semibold text-[color:var(--color-text-secondary)]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] border bg-[color:var(--color-surface-2)] text-[13px] font-semibold text-[color:var(--color-text-secondary)]"
               aria-hidden
             >
               {job.company.charAt(0)}
@@ -165,7 +165,7 @@ export function ApplyModal({
             <select
               value={resumeId}
               onChange={(e) => setResumeId(e.target.value)}
-              className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+              className="mt-2 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
             >
               {resumes.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -193,7 +193,7 @@ export function ApplyModal({
             <select
               value={letterId}
               onChange={(e) => setLetterId(e.target.value)}
-              className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
+              className="mt-2 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px]"
             >
               {letters.map((l) => (
                 <option key={l.id} value={l.id}>
@@ -207,20 +207,20 @@ export function ApplyModal({
 
         {/* Actions */}
         {askReturn ? (
-          <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] border bg-[color:var(--color-surface-2)] p-3">
+          <div className="mt-6 flex items-center justify-between gap-3 rounded-[12px] border bg-[color:var(--color-surface-2)] p-3">
             <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Did you apply?</div>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={commitApplied}
-                className="inline-flex h-9 items-center rounded-[4px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="inline-flex h-9 items-center rounded-[12px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
               >
                 Yes, applied
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-9 items-center rounded-[4px] border px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)]"
+                className="inline-flex h-9 items-center rounded-[12px] border px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)]"
               >
                 Not yet
               </button>
@@ -228,7 +228,7 @@ export function ApplyModal({
           </div>
         ) : (
           <>
-            <div className="mt-6 flex items-center justify-between gap-3 rounded-[6px] p-3" style={{ background: "#E3E7E8" }}>
+            <div className="mt-6 flex items-center justify-between gap-3 rounded-[12px] p-3" style={{ background: "#E3E7E8" }}>
               <div className="body-small text-[color:var(--color-foreground)]">
                 Bundle of the files for Applying to this vacancy
               </div>
@@ -236,7 +236,7 @@ export function ApplyModal({
                 type="button"
                 onClick={downloadBundle}
                 disabled={!selectedResume && !selectedLetter}
-                className="inline-flex h-9 shrink-0 items-center gap-1 rounded-[4px] border bg-white px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)] disabled:opacity-40"
+                className="inline-flex h-9 shrink-0 items-center gap-1 rounded-[12px] border bg-white px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-1)] disabled:opacity-40"
               >
                 <Download size={14} strokeWidth={1.8} /> Download files
               </button>
@@ -245,14 +245,14 @@ export function ApplyModal({
             <button
               type="button"
               onClick={commitApplied}
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-11 flex-1 items-center justify-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 text-[14px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
               I already applied
             </button>
             <button
               type="button"
               onClick={handleApplyOnSite}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply
@@ -315,7 +315,7 @@ export function FollowUpDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[560px] max-h-[90vh] overflow-y-auto rounded-[8px] bg-white p-5">
+      <DialogContent className="max-w-[560px] max-h-[90vh] overflow-y-auto rounded-[20px] bg-white p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Follow-up letter draft
         </DialogTitle>
@@ -330,7 +330,7 @@ export function FollowUpDialog({
           <input
             value={fromEmail}
             readOnly
-            className="h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-2)] px-3 text-[13px] text-[color:var(--color-foreground)]"
+            className="h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-2)] px-3 text-[13px] text-[color:var(--color-foreground)]"
           />
         </div>
         <div className="mt-2 flex flex-col gap-2">
@@ -340,7 +340,7 @@ export function FollowUpDialog({
             value={to}
             onChange={(e) => setTo(e.target.value)}
             placeholder="recruiter@company.com"
-            className="h-10 w-full rounded-[4px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="h-10 w-full rounded-[12px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
         </div>
         <div className="mt-2 flex flex-col gap-2">
@@ -348,7 +348,7 @@ export function FollowUpDialog({
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="h-10 w-full rounded-[4px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="h-10 w-full rounded-[12px] border px-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
         </div>
         <div className="mt-2 flex flex-col gap-2">
@@ -357,7 +357,7 @@ export function FollowUpDialog({
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={9}
-            className="w-full resize-y rounded-[4px] border p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="w-full resize-y rounded-[12px] border p-3 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
         </div>
 
@@ -370,14 +370,14 @@ export function FollowUpDialog({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-10 items-center rounded-[12px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             Close
           </button>
           <button
             type="button"
             onClick={copy}
-            className="inline-flex h-10 items-center rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-10 items-center rounded-[12px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             Copy
           </button>
@@ -385,7 +385,7 @@ export function FollowUpDialog({
             type="button"
             onClick={send}
             disabled={!canSend}
-            className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-10 items-center rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {sending ? "Sending…" : sent ? "Sent" : "Send (demo)"}
           </button>

@@ -99,14 +99,14 @@ export function SingleColumnDialog({
     <div className="fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] w-[92%] max-w-[480px] flex-col rounded-[8px] border bg-white p-6"
+        className="relative z-10 flex max-h-[90vh] w-[92%] max-w-[480px] flex-col rounded-[20px] border bg-white p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <X size={16} strokeWidth={1.6} />
         </button>
@@ -114,7 +114,7 @@ export function SingleColumnDialog({
           <button
             type="button"
             onClick={onBack}
-            className="absolute left-3 top-3 inline-flex h-8 w-fit items-center gap-1 rounded-[4px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute left-3 top-3 inline-flex h-8 w-fit items-center gap-1 rounded-[8px] px-2 text-[13px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             <LayoutColumns size={14} strokeWidth={1.8} />
             Back to all
@@ -140,7 +140,7 @@ export function SingleColumnDialog({
                   (e.currentTarget as HTMLInputElement).blur();
                 }
               }}
-              className="h-9 rounded-[4px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-9 rounded-[12px] border bg-white px-2 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
               style={{ borderColor: "#E3E7E8" }}
             />
           </div>
@@ -168,7 +168,7 @@ export function SingleColumnDialog({
                         if (v && v !== s) renameStage(col.id, s, v);
                         else setDraftStages((d) => ({ ...d, [s]: s }));
                       }}
-                      className="h-8 flex-1 rounded-[4px] border bg-white px-2 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      className="h-8 flex-1 rounded-[8px] border bg-white px-2 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
                       style={{ borderColor: "#E3E7E8" }}
                     />
                     <IconTooltip label={reason}>
@@ -177,7 +177,7 @@ export function SingleColumnDialog({
                         aria-label="Delete stage"
                         aria-disabled={disabled}
                         onClick={() => !disabled && tryDeleteStage(s)}
-                        className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
+                        className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] aria-disabled:cursor-default aria-disabled:opacity-30 aria-disabled:hover:bg-transparent"
                       >
                         <Trash size={14} strokeWidth={1.6} />
                       </button>
@@ -197,7 +197,7 @@ export function SingleColumnDialog({
                       setNewStage("");
                     }
                   }}
-                  className="h-8 flex-1 rounded-[4px] border bg-white px-2 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  className="h-8 flex-1 rounded-[8px] border bg-white px-2 text-[13px] outline-none focus-visible:border-[color:var(--color-accent)]"
                   style={{ borderColor: "#E3E7E8" }}
                 />
                 <button
@@ -207,7 +207,7 @@ export function SingleColumnDialog({
                     addStage(col.id, newStage);
                     setNewStage("");
                   }}
-                  className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
+                  className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] font-semibold text-[color:var(--color-on-accent)] disabled:opacity-40"
                   style={{ background: "var(--color-accent)" }}
                 >
                   <Plus size={12} strokeWidth={2} />
@@ -225,7 +225,7 @@ export function SingleColumnDialog({
                 type="button"
                 onClick={tryDeleteColumn}
                 title="Delete column"
-                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border px-3 text-[13px]"
+                className="inline-flex h-9 items-center gap-1.5 rounded-[12px] border px-3 text-[13px]"
                 style={{ borderColor: "#E3E7E8", color: "#D00D01" }}
               >
                 <Trash size={14} strokeWidth={1.6} />
@@ -240,7 +240,7 @@ export function SingleColumnDialog({
           <button
             type="button"
             onClick={onClose}
-            className="h-9 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="h-9 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Done
           </button>

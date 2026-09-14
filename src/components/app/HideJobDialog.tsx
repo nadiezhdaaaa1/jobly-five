@@ -42,14 +42,14 @@ export function HideJobDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex h-10 items-center rounded-[4px] border px-4 text-[14px] font-semibold hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-10 items-center rounded-[12px] border px-4 text-[14px] font-semibold hover:bg-[color:var(--color-surface-2)]"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="inline-flex h-10 items-center rounded-[4px] px-4 text-[14px] font-semibold"
+            className="inline-flex h-10 items-center rounded-[12px] px-4 text-[14px] font-semibold"
             style={
               reported
                 ? { background: "var(--color-danger)", color: "#fff" }

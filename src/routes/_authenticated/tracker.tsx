@@ -95,13 +95,13 @@ function CompanyLogo({ name, logo }: { name: string; logo?: string }) {
       <img
         src={logo}
         alt={`${name} logo`}
-        className="h-7 w-7 shrink-0 rounded-[4px] object-cover"
+        className="h-7 w-7 shrink-0 rounded-[8px] object-cover"
       />
     );
   }
   return (
     <div
-      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[12px] font-semibold text-white"
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-[color:var(--color-foreground)] text-[12px] font-semibold text-white"
       aria-hidden
     >
       {name.charAt(0).toUpperCase()}
@@ -147,7 +147,7 @@ function IconBtn({
   noBorder?: boolean;
   children: React.ReactNode;
 }) {
-  const base = `flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[4px] ${noBorder && !active ? "" : "border"} p-[7px] transition-colors`;
+  const base = `flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[8px] ${noBorder && !active ? "" : "border"} p-[7px] transition-colors`;
   const cls = active
     ? `${base}`
     : `${base} bg-white hover:bg-[color:var(--color-surface-2)]`;
@@ -255,7 +255,7 @@ function KanbanCard({
         onDragEnd?.(e);
       }}
       onClick={onOpen}
-      className={`group relative cursor-pointer rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color] hover:border-[#D0D6D8] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)] ${isDragging ? "hidden" : ""}`}
+      className={`group relative cursor-pointer rounded-[16px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)] transition-[box-shadow,border-color] hover:border-[#D0D6D8] hover:shadow-[0_2px_10px_0_rgba(12,12,13,0.10)] ${isDragging ? "hidden" : ""}`}
       style={{
         padding: 13,
         opacity: isArchived && archivedView ? 0.55 : 1,
@@ -345,8 +345,18 @@ function KanbanCard({
             <button
               type="button"
               onClick={onRequestApply}
-              className="flex h-[30px] flex-1 items-center justify-center gap-1 rounded-[4px] text-[12px]"
-              style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
+              className="main_accent_button main_accent_button--on-light flex h-[30px] flex-1 items-center gap-1"
+              /* .main_accent_button is an unlayered rule in styles.css, so it beats
+                 Tailwind utilities on this element: radius, font-size, padding and
+                 centring have to be inline. These values reproduce exactly what the
+                 hand-rolled green button rendered before. */
+              style={{
+                borderRadius: 8,
+                fontSize: 12,
+                height: 30,
+                padding: "0 12px",
+                justifyContent: "center",
+              }}
             >
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply
@@ -372,7 +382,7 @@ function KanbanCard({
                   aria-haspopup="menu"
                   aria-expanded={moveOpen}
                   onClick={() => setMoveOpen((v) => !v)}
-                  className="inline-flex h-[30px] w-full items-center justify-between gap-1 rounded-[4px] border bg-white px-2 text-[12px]"
+                  className="inline-flex h-[30px] w-full items-center justify-between gap-1 rounded-[8px] border bg-white px-2 text-[12px]"
                   style={{ borderColor: BORDER_LIGHT, color: DARK, minWidth: 91 }}
                 >
                   Move to
@@ -430,7 +440,7 @@ function KanbanCard({
         }
       }}
     >
-      <DialogContent className="max-w-[440px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[440px] rounded-[20px] p-5">
         <DialogTitle
           className="text-[16px] font-semibold"
           style={{ fontFamily: "var(--font-display)" }}
@@ -454,7 +464,7 @@ function KanbanCard({
             onChange={(e) => setArchiveReason(e.target.value)}
             placeholder="e.g. Position filled, lost interest, poor fit…"
             rows={3}
-            className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+            className="w-full rounded-[12px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
             style={{ borderColor: BORDER_LIGHT, resize: "vertical" }}
           />
           <p className="mt-1.5 text-[12px] font-light" style={{ color: MUTED_TEXT }}>
@@ -465,7 +475,7 @@ function KanbanCard({
           <button
             type="button"
             onClick={() => { setConfirmArchiveOpen(false); setArchiveReason(""); }}
-            className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px]"
+            className="inline-flex h-9 items-center rounded-[12px] border bg-white px-3 text-[13px]"
             style={{ borderColor: BORDER_LIGHT, color: DARK }}
           >
             Cancel
@@ -478,7 +488,7 @@ function KanbanCard({
               setArchiveReason("");
               onArchive(reason || undefined);
             }}
-            className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
+            className="inline-flex h-9 items-center rounded-[12px] px-3 text-[13px] font-medium text-white"
             style={{ background: "#D00D01" }}
           >
             Archive
@@ -524,7 +534,7 @@ function Chip({ children, tone = "orange" }: { children: React.ReactNode; tone?:
         background: tone === "mint" ? CHIP_MINT : CHIP_ORANGE,
         color: DARK,
         padding: "4px 6px",
-        borderRadius: 4,
+        borderRadius: 8,
         lineHeight: "16px",
       }}
     >
@@ -581,7 +591,7 @@ function MenuPop({
           ref={menuRef}
           role="menu"
           data-menu-pop
-          className="fixed z-[70] overflow-y-auto rounded-[6px] border bg-white"
+          className="fixed z-[70] overflow-y-auto rounded-[16px] border bg-white"
           style={{
             boxShadow: "0 8px 24px rgba(0,0,0,.12)",
             minWidth,
@@ -624,13 +634,13 @@ function KanbanCardSkeleton() {
   return (
     <div
       aria-hidden
-      className="rounded-[8px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]"
+      className="rounded-[16px] border border-[#E3E7E8] bg-white shadow-[0_1px_6px_0_rgba(12,12,13,0.08)]"
       style={{ padding: 13 }}
     >
       <div className="flex flex-col" style={{ gap: 8 }}>
         <div className="flex items-start justify-between gap-2">
-          <div className="skeleton h-7 w-7 shrink-0 rounded-[4px]" />
-          <div className="skeleton h-[20px] w-[42px] rounded-[4px]" />
+          <div className="skeleton h-7 w-7 shrink-0 rounded-[8px]" />
+          <div className="skeleton h-[20px] w-[42px] rounded-[8px]" />
         </div>
         <div className="min-w-0">
           <div className="skeleton h-[14px] w-[80%] rounded-[4px]" />
@@ -639,8 +649,8 @@ function KanbanCardSkeleton() {
         <div className="skeleton h-[16px] w-[45%] rounded-[4px]" />
       </div>
       <div className="mt-4 flex items-center gap-1">
-        <div className="skeleton h-[30px] w-[30px] rounded-[4px]" />
-        <div className="skeleton ml-auto h-[30px] w-[76px] rounded-[4px]" />
+        <div className="skeleton h-[30px] w-[30px] rounded-[8px]" />
+        <div className="skeleton ml-auto h-[30px] w-[76px] rounded-[8px]" />
       </div>
     </div>
   );
@@ -716,7 +726,7 @@ function KanbanColumn({
           </span>
           <span
             className="inline-flex items-center justify-center text-[14px]"
-            style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 4, color: DARK, fontFamily: "var(--font-display)" }}
+            style={{ width: 22, height: 22, background: "#E3E7E8", borderRadius: 8, color: DARK, fontFamily: "var(--font-display)" }}
           >
             {skeletonCount ? skeletonCount : jobs.length}
           </span>
@@ -726,7 +736,7 @@ function KanbanColumn({
             type="button"
             onClick={onEditColumn}
             aria-label="Edit column"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] transition-opacity hover:bg-white max-lg:opacity-100 lg:opacity-0 lg:group-hover/col:opacity-100 lg:focus-within:opacity-100"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] transition-opacity hover:bg-white max-lg:opacity-100 lg:opacity-0 lg:group-hover/col:opacity-100 lg:focus-within:opacity-100"
           >
             <Pencil size={14} strokeWidth={1.8} />
           </button>
@@ -745,11 +755,11 @@ function KanbanColumn({
       {/* Cards */}
       <div
         className={`flex-col ${collapsed ? "hidden lg:flex" : "flex"}`}
-        style={{ gap: 4, background: "#F1F3F3", padding: 4, borderRadius: 12 }}
+        style={{ gap: 4, background: "#F1F3F3", padding: 4, borderRadius: 20 }}
       >
         {isDropTarget ? (
           <div
-            className="rounded-[8px] border-2 border-dashed"
+            className="rounded-[16px] border-2 border-dashed"
             style={{ borderColor: "#D0D6D8", height: placeholderHeight || 96 }}
           />
         ) : null}
@@ -760,7 +770,7 @@ function KanbanColumn({
         ) : null}
         {!skeletonCount && jobs.length === 0 && !isDropTarget ? (
           <div
-            className="rounded-[8px] border border-dashed p-4 text-center text-[12px]"
+            className="rounded-[16px] border border-dashed p-4 text-center text-[12px]"
             style={{ borderColor: BORDER_LIGHT, color: MUTED_TEXT }}
           >
             Nothing here yet
@@ -828,7 +838,7 @@ function TrackerScreen() {
         <main className="mx-auto max-w-[1200px] px-6 pt-6">
           <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
             <div
-              className="animate-pulse rounded-[12px] border border-white bg-white/80"
+              className="animate-pulse rounded-[16px] border border-white bg-white/80"
               style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", height: 320 }}
               aria-label="Loading your plan"
             />
@@ -846,7 +856,7 @@ function TrackerScreen() {
           <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
             <div
               data-tracker-upsell
-              className="relative isolate flex flex-col items-center justify-center overflow-hidden rounded-[12px] border border-white bg-white/80"
+              className="relative isolate flex flex-col items-center justify-center overflow-hidden rounded-[16px] border border-white bg-white/80"
               style={{
                 boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
                 gap: 32,
@@ -905,7 +915,7 @@ function TrackerScreen() {
               <Link
                 data-tu-btn
                 to="/settings"
-                className="relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
+                className="relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
                 style={{ zIndex: 2, padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
               >
                 Upgrade to Pro
@@ -1052,7 +1062,7 @@ function TrackerScreen() {
             <button
               type="button"
               onClick={() => setColumnsDialogOpen(true)}
-              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[12px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
               style={{ color: MUTED_TEXT }}
             >
               <LayoutColumns size={14} strokeWidth={1.8} />
@@ -1062,13 +1072,13 @@ function TrackerScreen() {
               <button
                 type="button"
                 onClick={() => setCompareOpen(true)}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[4px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex h-8 items-center gap-1.5 rounded-[12px] px-2 text-[13px] hover:bg-[color:var(--color-surface-2)]"
                 style={{ color: MUTED_TEXT }}
               >
                 <Columns size={14} strokeWidth={1.8} />
                 Compare offers
                 <span
-                  className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[4px] px-1 text-[11px]"
+                  className="ml-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[8px] px-1 text-[11px]"
                   style={{ background: "#E3E7E8", color: DARK }}
                 >
                   {offerEntries.length}
@@ -1220,7 +1230,7 @@ function TrackerScreen() {
       ) : null}
 
       {toast ? (
-        <div className="fixed bottom-6 left-1/2 z-[80] -translate-x-1/2 rounded-[6px] bg-[color:var(--color-foreground)] px-4 py-2 text-[13px] text-white shadow-lg">
+        <div className="fixed bottom-6 left-1/2 z-[80] -translate-x-1/2 rounded-[12px] bg-[color:var(--color-foreground)] px-4 py-2 text-[13px] text-white shadow-lg">
           {toast}
         </div>
       ) : null}
