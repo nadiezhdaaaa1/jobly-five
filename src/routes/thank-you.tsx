@@ -97,10 +97,7 @@ function ConfirmationPage() {
   if (!live) {
     return (
       <div className="min-h-screen bg-[color:var(--color-background)]">
-        <header className="flex items-center px-6 py-6 lg:px-12">
-          <Wordmark className="!text-[color:var(--color-foreground)]" />
-        </header>
-        <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20">
+        <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20 pt-16 lg:pt-[171px]">
           <div className="flex flex-col items-center gap-3 px-4 text-center">
             <h1 className="font-[family-name:var(--font-display)] text-[48px] font-normal leading-[1.3] tracking-[-1.45px] text-[color:var(--color-foreground)]">
               No plan yet
