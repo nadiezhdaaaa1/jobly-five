@@ -21,14 +21,15 @@ import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
 import { getLastPasswordChange } from "@/lib/security-events.functions";
 import { useDateLabel } from "@/lib/dates";
-import { PAUSE_DAYS } from "@/lib/subscription.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
 import { useEntitlements } from "@/lib/entitlements-provider";
 import {
   usePlan,
-  setPlan,
+  pausePlan,
+  unpausePlan,
+  cancelPlanNow,
   useHasHadPro,
   setHasHadPro,
   useSubscription,
@@ -46,7 +47,8 @@ import {
   recordCancelFeedback,
   type CancelReason,
 } from "@/lib/cancel-feedback-store";
-import { PRICING, TRIAL_DAYS, money, savings as annualSavings, total, usd } from "@/config/pricing";
+import { BANKED_DAYS_TTL_MONTHS, SKUS, TRIAL_DAYS, renewalPhrase } from "@/config/pricing";
+import { PlanCardsGrid, type PlanCardSpec } from "@/components/site/PlanCards";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
@@ -67,7 +69,6 @@ import {
 } from "@/lib/notifications-store";
 
 // Derived from the canonical pause length — never hardcode the duration in copy.
-const PAUSE_MONTHS = Math.round(PAUSE_DAYS / 30);
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -181,17 +182,22 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   const providerBilled = sub.activationSource === "provider";
 
   const proSummary = "Daily digest · match scores · application tracker";
-  const proBilling =
-    providerBilled && periodEndLabel
-      ? `Billed annually · ${usd(total(PRICING.annual))}/yr · renews ${periodEndLabel}`
-      : `Billed annually · ${usd(total(PRICING.annual))}/yr`;
+  const watchSummary = "Weekly digest · match scores · ghost filtering · 1 saved search";
+  // Renewal quotes the SKU actually purchased, never a list price for another one.
+  const renewal = sub.sku ? renewalPhrase(sub.sku) : null;
+  const proBilling = renewal
+    ? providerBilled && periodEndLabel
+      ? `${renewal} · renews ${periodEndLabel}`
+      : renewal
+    : "Billing starts when payments go live";
   const scheduledLine = periodEndLabel
     ? `Pro until ${periodEndLabel} · then no plan`
     : "Pro until your current period ends · then no plan";
   const pausedLine = pauseEndLabel
     ? `Paused until ${pauseEndLabel} · no charges while paused`
     : "Paused · no charges while paused";
-  const freeSummary = "Weekly digest · match scores · basic tracker";
+  const freeSummary = "Weekly digest · no match scores, tracker or reminders";
+  const tier = sub.sku ? SKUS[sub.sku].tier : null;
 
   if (entLoading) {
     return (
@@ -229,7 +235,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               className="text-[13px] text-[color:var(--color-foreground)]"
               style={{ fontWeight: 300 }}
             >
-              {plan === "free" ? freeSummary : proSummary}
+              {plan === "free" ? freeSummary : tier === "watch" ? watchSummary : proSummary}
             </p>
             <p
               className="mt-1 text-[12px] text-[color:var(--color-text-muted)]"
@@ -263,7 +269,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               <button
                 type="button"
                 onClick={() => {
-                  setPlan("pro");
+                  unpausePlan();
                   onFlash("Welcome back — your matches start arriving tomorrow morning.");
                 }}
                 className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
@@ -300,20 +306,21 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             className="text-[14px] text-[color:var(--color-text-secondary)]"
             style={{ fontWeight: 300 }}
           >
-            Congrats! Pause Pro for {PAUSE_MONTHS} months instead — no emails, no charges,
-            everything saved exactly as you left it.
+            Congrats! Pause instead — no emails, no charges, everything saved exactly as you
+            left it. On a 3- or 6-month plan the days you have already paid for are banked and
+            wait {BANKED_DAYS_TTL_MONTHS} months for you.
           </p>
           <div className="mt-5 flex flex-col gap-2">
             <button
               type="button"
               onClick={() => {
-                setPlan("paused");
+                pausePlan();
                 closeCancel();
-                onFlash(`Pro paused for ${PAUSE_MONTHS} months.`);
+                onFlash("Your plan is paused — no charges while it's paused.");
               }}
               className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
-              Pause Pro for {PAUSE_MONTHS} months
+              Pause my plan
             </button>
             <button
               type="button"
@@ -355,7 +362,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               disabled={!reasonReady}
               onClick={() => {
                 saveReason();
-                setPlan("free");
+                cancelPlanNow();
                 closeCancel();
                 onFlash("Subscription canceled — you no longer have a plan.");
               }}
