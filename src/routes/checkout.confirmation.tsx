@@ -1,7 +1,7 @@
 // Confirmation step of the mock checkout. What it reports is read back from the
 // account's own subscription row — never from the URL: /checkout/confirmation
 // with hand-typed search params must not be able to render a success page.
-// The params only seed the display while that read is in flight.
+// The param only seeds the display while that read is in flight.
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -10,13 +10,20 @@ import { z } from "zod";
 
 import { Wordmark } from "@/components/site/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
-import { PRICING, TRIAL_DAYS, total, usd } from "@/config/pricing";
+import {
+  SHARED_PLAN_DISCLOSURE,
+  SKUS,
+  SKU_IDS,
+  TRIAL_DAYS,
+  TRIAL_SKU,
+  renewalPhrase,
+  type SkuId,
+} from "@/config/pricing";
 import { getSubscriptionRow } from "@/lib/subscription.functions";
 import { getDraftToken } from "@/lib/quiz-draft-store";
 
 const searchSchema = z.object({
-  plan: z.enum(["trial", "pro"]).catch("trial"),
-  cycle: z.enum(["monthly", "annual"]).catch("monthly"),
+  sku: z.enum(SKU_IDS as [SkuId, ...SkuId[]]).catch(TRIAL_SKU),
 });
 
 export const Route = createFileRoute("/checkout/confirmation")({
@@ -33,7 +40,7 @@ export const Route = createFileRoute("/checkout/confirmation")({
 });
 
 /** States that mean the account really is on a plan right now. */
-const LIVE = ["trialing", "active", "past_due", "paused"];
+const LIVE = ["trialing", "active", "past_due"];
 
 function ConfirmationPage() {
   const navigate = useNavigate();
@@ -41,8 +48,8 @@ function ConfirmationPage() {
   const [ready, setReady] = useState(false);
   const [onboarded, setOnboarded] = useState(false);
   // Server-derived truth. Seeded from the URL for the first paint only.
-  const [isTrial, setIsTrial] = useState(seed.plan === "trial");
-  const [cycle, setCycle] = useState<"monthly" | "annual">(seed.cycle);
+  const [isTrial, setIsTrial] = useState(false);
+  const [sku, setSku] = useState<SkuId>(seed.sku);
   const [live, setLive] = useState(false);
 
   useEffect(() => {
@@ -62,7 +69,7 @@ function ConfirmationPage() {
         const row = await getSubscriptionRow();
         setLive(LIVE.includes(row.status));
         setIsTrial(row.status === "trialing");
-        setCycle(row.cycle === "annual" ? "annual" : "monthly");
+        if (row.sku) setSku(row.sku);
       } catch {
         // An unknown state is never reported as a success.
         setLive(false);
@@ -84,11 +91,7 @@ function ConfirmationPage() {
   // the app claims on entry.
   const hasDraft = getDraftToken() !== null;
   const nextPath = onboarded || hasDraft ? "/dashboard" : "/quiz";
-  const renewal = isTrial
-    ? usd(PRICING.monthly.perMonth)
-    : cycle === "annual"
-      ? usd(total(PRICING.annual))
-      : usd(PRICING.monthly.perMonth);
+  const tierName = SKUS[sku].tier === "watch" ? "Watch" : "Pro";
 
   if (!live) {
     return (
@@ -133,12 +136,12 @@ function ConfirmationPage() {
           <p className="text-[15px] text-[color:var(--color-text-secondary)]">
             {isTrial
               ? `Your ${TRIAL_DAYS}-day free trial has started. We'll remind you before it ends.`
-              : "Your Pro plan is active."}
+              : `Your Jobly ${tierName} plan is active.`}
           </p>
           <p className="text-xs text-[color:var(--color-text-muted)]">
-            Auto-renews at {renewal} until cancelled. Cancel anytime in Settings → Plan in two
-            steps.
+            Auto-renews at {renewalPhrase(sku)} until cancelled.
           </p>
+          <p className="text-xs text-[color:var(--color-text-muted)]">{SHARED_PLAN_DISCLOSURE}</p>
           <button
             type="button"
             onClick={() => void navigate({ to: nextPath })}

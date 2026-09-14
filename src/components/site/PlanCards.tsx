@@ -1,17 +1,31 @@
-// The single source of truth for the three plan cards. Both the landing pricing
-// section and the plan step after /matches render this, so the copy, cycles and
-// auto-renewal disclosures cannot drift between the two surfaces.
+// The single source of truth for the four plan cards. Both the landing pricing
+// section and the plan step after /matches render this, so the copy, SKUs and
+// disclosures cannot drift between the two surfaces.
 //
 // Every price, total, percentage and trial length comes from @/config/pricing.
+//
+// The Watch card carries its own local Monthly/Annual switch. That is per-card
+// by design — there is deliberately no section-wide period toggle.
 
+import { useState } from "react";
 import { IconCheck as Check } from "@tabler/icons-react";
 
-import { PRICING, TRIAL_DAYS, discountPct, total, usd } from "@/config/pricing";
-import type { BillingCycle } from "@/lib/subscription.functions";
-import type { IntentPlan } from "@/lib/onboarding/planIntent";
+import {
+  SHARED_PLAN_DISCLOSURE,
+  SKUS,
+  TRIAL_DAYS,
+  WATCH_MONTHLY_ANNUALISED,
+  discountPct,
+  perMonth,
+  skuDisclosure,
+  skuTotal,
+  usd,
+  type SkuId,
+} from "@/config/pricing";
+import type { SelectPlanInput } from "@/lib/onboarding/usePlanFlow";
 
 export type PlanCardSpec = {
-  key: "trial" | "monthly" | "annual";
+  key: "watch" | "pro_monthly" | "pro_3month" | "pro_6month";
   name: string;
   /** Struck-through comparison price, empty when the card has none. */
   struck: string;
@@ -21,69 +35,70 @@ export type PlanCardSpec = {
   note: string;
   badge: string;
   cta: string;
+  /** Price + interval for this card. The shared line never replaces it. */
   disclosure: string;
   /** Drives only the CTA variant: true = main accent button. */
   ctaMain: boolean;
-  /** Drives only the glow and the lighter card background. */
+  /** Drives only the glow and the card emphasis. */
   highlight: boolean;
-  choice: { plan: IntentPlan; cycle: BillingCycle; trial: boolean };
+  /** Feature bullets belong to the Pro tier only until the marketing pass. */
+  showFeatures: boolean;
+  choice: SelectPlanInput;
 };
 
-const MONTHLY_DISCLOSURE = `Auto-renews at ${usd(
-  PRICING.monthly.perMonth,
-)}/month until cancelled. Cancel anytime in Settings → Plan in two steps.`;
-
-const ANNUAL_DISCLOSURE = `Auto-renews at ${usd(
-  total(PRICING.annual),
-)}/year until cancelled. Cancel anytime in Settings → Plan in two steps.`;
-
-export const PLAN_CARDS: PlanCardSpec[] = [
-  {
-    key: "trial",
-    name: "Free trial",
-    struck: "",
-    price: usd(PRICING.monthly.perMonth),
+function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanCardSpec {
+  const annual = sku === "watch_annual";
+  return {
+    key: "watch",
+    name: "Watch",
+    struck: annual ? usd(perMonth("watch_monthly")) : "",
+    price: usd(perMonth(sku)),
     suffix: "per month",
-    note: `Free for the first ${TRIAL_DAYS} days`,
-    badge: "",
-    cta: `Start ${TRIAL_DAYS}-day free trial`,
-    disclosure: MONTHLY_DISCLOSURE,
+    note: annual
+      ? `Billed ${usd(skuTotal(sku))} yearly`
+      : `${usd(WATCH_MONTHLY_ANNUALISED)} a year at this rate`,
+    badge: annual ? `Save ${discountPct(sku)}%` : "",
+    cta: annual ? "Get Watch yearly" : "Get Watch monthly",
+    disclosure: skuDisclosure(sku),
     ctaMain: false,
     highlight: false,
-    choice: { plan: "trial", cycle: "monthly", trial: true },
-  },
-  {
-    key: "monthly",
-    name: "Monthly",
-    struck: "",
-    price: usd(PRICING.monthly.perMonth),
+    showFeatures: false,
+    choice: { sku, trial: false },
+  };
+}
+
+function proCard(
+  sku: Extract<SkuId, "pro_monthly" | "pro_3month" | "pro_6month">,
+): PlanCardSpec {
+  const { months } = SKUS[sku];
+  const trial = sku === "pro_monthly";
+  return {
+    key: sku,
+    name: trial ? "Pro monthly" : `Pro ${months} months`,
+    struck: trial ? "" : usd(perMonth("pro_monthly")),
+    price: usd(perMonth(sku)),
     suffix: "per month",
-    note: "Starts today, no trial",
-    badge: "",
-    cta: "Get Pro monthly",
-    disclosure: MONTHLY_DISCLOSURE,
+    // The trial folds into the Pro monthly card; there is no standalone trial card.
+    note: trial
+      ? `Free for the first ${TRIAL_DAYS} days`
+      : `Billed ${usd(skuTotal(sku))} every ${months} months`,
+    badge: trial ? "" : `Save ${discountPct(sku)}%`,
+    cta: trial ? `Start ${TRIAL_DAYS}-day free trial` : `Get Pro — ${months} months`,
+    disclosure: skuDisclosure(sku),
     ctaMain: true,
-    highlight: false,
-    choice: { plan: "pro", cycle: "monthly", trial: false },
-  },
-  {
-    key: "annual",
-    name: "Annual",
-    struck: usd(PRICING.monthly.perMonth),
-    price: usd(PRICING.annual.perMonth),
-    suffix: "per month",
-    note: `Billed ${usd(total(PRICING.annual))} yearly`,
-    badge: `Save ${discountPct(PRICING.annual)}%`,
-    cta: "Get Pro annual",
-    disclosure: ANNUAL_DISCLOSURE,
-    ctaMain: true,
-    highlight: true,
-    choice: { plan: "pro", cycle: "annual", trial: false },
-  },
+    highlight: sku === "pro_6month",
+    showFeatures: true,
+    choice: { sku, trial },
+  };
+}
+
+export const PRO_CARDS: PlanCardSpec[] = [
+  proCard("pro_monthly"),
+  proCard("pro_3month"),
+  proCard("pro_6month"),
 ];
 
-// The trial now grants full Pro access, so every card shows the same list.
-const FEATURES = [
+const PRO_FEATURES = [
   "Matches per digest — Top 5",
   "Digest frequency — Daily",
   'AI match score and "why it fits"',
@@ -95,7 +110,7 @@ const FEATURES = [
 function FeatureList() {
   return (
     <ul className="flex flex-col" style={{ gap: 12, padding: "8px 0" }}>
-      {FEATURES.map((label) => (
+      {PRO_FEATURES.map((label) => (
         <li key={label} className="flex items-center" style={{ gap: 8 }}>
           <span
             className="inline-flex shrink-0 items-center justify-center rounded-full"
@@ -120,12 +135,65 @@ function FeatureList() {
   );
 }
 
+/** Watch-only Monthly/Annual switch. Never a section-wide toggle. */
+function WatchPeriodSwitch({
+  value,
+  onChange,
+}: {
+  value: "monthly" | "annual";
+  onChange: (v: "monthly" | "annual") => void;
+}) {
+  const options: Array<{ id: "monthly" | "annual"; label: string }> = [
+    { id: "monthly", label: "Monthly" },
+    { id: "annual", label: "Annual" },
+  ];
+  return (
+    <div
+      role="group"
+      aria-label="Watch billing period"
+      className="inline-flex items-center"
+      style={{
+        background: "var(--color-surface-2)",
+        borderRadius: 24,
+        padding: 3,
+        gap: 2,
+      }}
+    >
+      {options.map((o) => {
+        const active = o.id === value;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(o.id)}
+            style={{
+              borderRadius: 24,
+              padding: "4px 10px",
+              fontFamily: "var(--font-sans)",
+              fontWeight: 400,
+              fontSize: 12,
+              lineHeight: "16px",
+              background: active ? "var(--color-surface-1)" : "transparent",
+              color: active ? "var(--color-foreground)" : "var(--color-text-muted)",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function PlanCard({
   card,
   onSelect,
+  headerExtra,
 }: {
   card: PlanCardSpec;
   onSelect: (card: PlanCardSpec) => void;
+  headerExtra?: React.ReactNode;
 }) {
   return (
     <div
@@ -193,6 +261,8 @@ export function PlanCard({
           ) : null}
         </div>
 
+        {headerExtra ? <div className="mt-3">{headerExtra}</div> : null}
+
         <div className="mt-auto flex flex-col" style={{ gap: 4, justifyContent: "flex-end" }}>
           <div
             style={{
@@ -245,17 +315,19 @@ export function PlanCard({
         </div>
       </div>
 
-      <div style={{ position: "relative", zIndex: 2 }}>
-        <FeatureList />
-      </div>
+      {card.showFeatures ? (
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <FeatureList />
+        </div>
+      ) : null}
 
       <button
         type="button"
         onClick={() => onSelect(card)}
         className={
           card.ctaMain
-            ? "main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2]"
-            : "secondary_button secondary_button--on-light secondary_button--block relative z-[2]"
+            ? "main_accent_button main_accent_button--on-light main_accent_button--block relative z-[2] mt-auto"
+            : "secondary_button secondary_button--on-light secondary_button--block relative z-[2] mt-auto"
         }
       >
         {card.cta}
@@ -268,11 +340,27 @@ export function PlanCard({
 }
 
 export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => void }) {
+  // Local to the Watch card only.
+  const [watchPeriod, setWatchPeriod] = useState<"monthly" | "annual">("monthly");
+  const watch = watchCard(watchPeriod === "annual" ? "watch_annual" : "watch_monthly");
+
   return (
-    <div className="flex w-full items-stretch gap-5 max-lg:!flex-col">
-      {PLAN_CARDS.map((card) => (
-        <PlanCard key={card.key} card={card} onSelect={onSelect} />
-      ))}
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full items-stretch gap-5 max-lg:!flex-col">
+        <PlanCard
+          card={watch}
+          onSelect={onSelect}
+          headerExtra={<WatchPeriodSwitch value={watchPeriod} onChange={setWatchPeriod} />}
+        />
+        {PRO_CARDS.map((card) => (
+          <PlanCard key={card.key} card={card} onSelect={onSelect} />
+        ))}
+      </div>
+      {/* One shared line under all four: cancellation path, the pre-charge email
+          promise and the currency. It never replaces a card's own disclosure. */}
+      <p className="text-center text-xs text-[color:var(--color-text-muted)]">
+        {SHARED_PLAN_DISCLOSURE}
+      </p>
     </div>
   );
 }

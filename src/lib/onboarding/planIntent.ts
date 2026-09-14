@@ -1,32 +1,34 @@
-// What plan the visitor decided on, kept as an enum plan + cycle (never a
-// boolean) so it survives the registration modal, an OAuth redirect, and plain
-// abandonment. Nothing here grants access — the server owns that.
+// What plan the visitor decided on, kept as a flat SKU (never a boolean, never a
+// tier x cycle pair) so it survives the registration modal, an OAuth redirect,
+// and plain abandonment. Nothing here grants access — the server owns that.
 
-import type { BillingCycle } from "@/lib/subscription.functions";
-
-export type IntentPlan = "trial" | "pro";
+import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
 
 export type PlanIntent = {
-  plan: IntentPlan;
-  cycle: BillingCycle;
+  sku: SkuId;
+  /** True when the visitor chose the free trial, which only pro_monthly has. */
+  trial: boolean;
   /** True when the decision came from Settings -> Plan on an existing account:
-   *  the only case allowed to change the billing cycle of a live subscription. */
+   *  the only case allowed to change the SKU of a live subscription. */
   manage?: boolean;
   savedAt: number;
 };
 
 const INTENT_KEY = "jobly.plan.intent";
 
-export function savePlanIntent(intent: {
-  plan: IntentPlan;
-  cycle: BillingCycle;
-  manage?: boolean;
-}) {
+export function savePlanIntent(intent: { sku: SkuId; trial?: boolean; manage?: boolean }) {
   if (typeof window === "undefined") return;
   try {
+    // A trial can only ever attach to the one SKU that has one.
+    const trial = intent.trial === true && intent.sku === TRIAL_SKU;
     window.localStorage.setItem(
       INTENT_KEY,
-      JSON.stringify({ ...intent, savedAt: Date.now() } satisfies PlanIntent),
+      JSON.stringify({
+        sku: intent.sku,
+        trial,
+        manage: intent.manage === true,
+        savedAt: Date.now(),
+      } satisfies PlanIntent),
     );
   } catch {
     // A blocked storage must never stop the flow.
@@ -39,12 +41,10 @@ export function readPlanIntent(): PlanIntent | null {
     const raw = window.localStorage.getItem(INTENT_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<PlanIntent>;
-    const plan = parsed.plan === "trial" || parsed.plan === "pro" ? parsed.plan : null;
-    const cycle = parsed.cycle === "monthly" || parsed.cycle === "annual" ? parsed.cycle : null;
-    if (!plan || !cycle) return null;
+    if (!isSkuId(parsed.sku)) return null;
     return {
-      plan,
-      cycle,
+      sku: parsed.sku,
+      trial: parsed.trial === true && parsed.sku === TRIAL_SKU,
       manage: parsed.manage === true,
       savedAt: Number(parsed.savedAt) || Date.now(),
     };

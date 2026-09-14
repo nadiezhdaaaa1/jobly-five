@@ -2,7 +2,7 @@
 // and the plan step after the matches screen all call selectPlan().
 //
 // Rules it enforces:
-//  - the choice is stored as an enum plan + cycle before anything else happens
+//  - the choice is stored as a flat SKU before anything else happens
 //  - no session -> registration modal, then continue
 //  - already subscribed -> Settings (Plan card). Never a second subscription.
 //  - otherwise -> mock checkout
@@ -11,16 +11,15 @@ import { useCallback, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
-import type { BillingCycle } from "@/lib/subscription.functions";
-import { savePlanIntent, type IntentPlan } from "@/lib/onboarding/planIntent";
+import type { SkuId } from "@/config/pricing";
+import { savePlanIntent } from "@/lib/onboarding/planIntent";
 import { EVENTS, track } from "@/lib/analytics";
 import type { RegistrationSource } from "@/components/auth/RegistrationModal";
 
 export const CHECKOUT_PATH = "/checkout";
 
 export type SelectPlanInput = {
-  plan: IntentPlan;
-  cycle: BillingCycle;
+  sku: SkuId;
   trial: boolean;
 };
 
@@ -31,7 +30,7 @@ export function usePlanFlow(source: RegistrationSource) {
 
   const goCheckout = useCallback(
     (choice: SelectPlanInput) => {
-      track(EVENTS.checkoutRedirect, { plan: choice.plan, cycle: choice.cycle, source });
+      track(EVENTS.checkoutRedirect, { sku: choice.sku, trial: choice.trial, source });
       void navigate({ to: CHECKOUT_PATH });
     },
     [navigate, source],
@@ -41,18 +40,14 @@ export function usePlanFlow(source: RegistrationSource) {
     async (choice: SelectPlanInput) => {
       // 1. The decision is saved first, so it survives the modal, an OAuth
       //    round trip, and abandonment.
-      savePlanIntent({ plan: choice.plan, cycle: choice.cycle });
+      savePlanIntent({ sku: choice.sku, trial: choice.trial });
 
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
         // 2. No session: register, then continue. Google comes back to
         //    CHECKOUT_PATH via redirect_uri, so no stored path is involved.
         setPending(choice);
-        track(EVENTS.registrationModalOpened, {
-          source,
-          plan: choice.plan,
-          cycle: choice.cycle,
-        });
+        track(EVENTS.registrationModalOpened, { source, sku: choice.sku });
         setModalOpen(true);
         return;
       }

@@ -693,6 +693,8 @@ export type Database = {
       subscriptions: {
         Row: {
           activation_source: string
+          banked_days: number
+          banked_days_expire_at: string | null
           billing_period: string | null
           cancel_at_period_end: boolean
           canceled_at: string | null
@@ -703,6 +705,8 @@ export type Database = {
           pause_ends_at: string | null
           paused_at: string | null
           plan: string
+          purchase_price: number | null
+          sku: Database["public"]["Enums"]["subscription_sku"] | null
           status: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
@@ -713,6 +717,8 @@ export type Database = {
         }
         Insert: {
           activation_source?: string
+          banked_days?: number
+          banked_days_expire_at?: string | null
           billing_period?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
@@ -723,6 +729,8 @@ export type Database = {
           pause_ends_at?: string | null
           paused_at?: string | null
           plan?: string
+          purchase_price?: number | null
+          sku?: Database["public"]["Enums"]["subscription_sku"] | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -733,6 +741,8 @@ export type Database = {
         }
         Update: {
           activation_source?: string
+          banked_days?: number
+          banked_days_expire_at?: string | null
           billing_period?: string | null
           cancel_at_period_end?: boolean
           canceled_at?: string | null
@@ -743,6 +753,8 @@ export type Database = {
           pause_ends_at?: string | null
           paused_at?: string | null
           plan?: string
+          purchase_price?: number | null
+          sku?: Database["public"]["Enums"]["subscription_sku"] | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
@@ -896,6 +908,7 @@ export type Database = {
       }
     }
     Functions: {
+      active_tier: { Args: { p_user_id: string }; Returns: string }
       can_send: {
         Args: {
           p_channel: Database["public"]["Enums"]["consent_channel"]
@@ -933,6 +946,7 @@ export type Database = {
         | "billing_terms"
         | "terms"
         | "privacy"
+        | "renewal_reminders"
       job_status:
         | "default"
         | "saved"
@@ -945,6 +959,12 @@ export type Database = {
         | "interview_screen"
         | "interview_tech"
         | "test_task"
+      subscription_sku:
+        | "watch_monthly"
+        | "watch_annual"
+        | "pro_monthly"
+        | "pro_3month"
+        | "pro_6month"
       subscription_status:
         | "none"
         | "trialing"
@@ -1091,6 +1111,7 @@ export const Constants = {
         "billing_terms",
         "terms",
         "privacy",
+        "renewal_reminders",
       ],
       job_status: [
         "default",
@@ -1104,6 +1125,13 @@ export const Constants = {
         "interview_screen",
         "interview_tech",
         "test_task",
+      ],
+      subscription_sku: [
+        "watch_monthly",
+        "watch_annual",
+        "pro_monthly",
+        "pro_3month",
+        "pro_6month",
       ],
       subscription_status: [
         "none",
