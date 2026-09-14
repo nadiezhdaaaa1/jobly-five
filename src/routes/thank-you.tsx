@@ -181,7 +181,7 @@ function ConfirmationPage() {
               ? `Your ${TRIAL_DAYS}-day free trial is running. Full Pro access from now — nothing has been charged.`
               : isWatch
                 ? "Your Watch plan is active. One email a week, scored matches only."
-                : "Your Pro plan is active. Jobly now scores every new posting against your profile."}
+                : "Your Pro plan is active. Jobly now scores every new posting against your profile"}
           </p>
         </div>
 
