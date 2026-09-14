@@ -134,9 +134,7 @@ function MatchesPage() {
 
         <section className="mt-10">
           <h2 className="text-2xl">Pick a plan to keep these matches</h2>
-          <p className="mt-2 text-[color:var(--color-text-secondary)]">
-            Start with a {TRIAL_DAYS}-day free trial, or go straight to Pro. Cancel any time.
-          </p>
+
 
           <div className="mt-6">
             <PlanPaywall onSelect={(card) => void flow.selectPlan(card.choice)} />
