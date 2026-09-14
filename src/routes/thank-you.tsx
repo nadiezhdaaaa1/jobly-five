@@ -65,8 +65,7 @@ function ConfirmationPage() {
     void (async () => {
       const mod = await import("canvas-confetti");
       if (cancelled) return;
-      const create = mod.default;
-      instance = create(canvas, { resize: true, useWorker: true });
+      instance = mod.default.create(canvas, { resize: true, useWorker: true });
       const rect = card.getBoundingClientRect();
       const css = getComputedStyle(document.documentElement);
       const token = (name: string) => css.getPropertyValue(name).trim();
