@@ -29,12 +29,22 @@ function SkuSwitcher({
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const segRefs = useRef<Partial<Record<SkuId, HTMLButtonElement | null>>>({});
-  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
+  const [pill, setPill] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const measure = useCallback(() => {
     const el = segRefs.current[value];
     if (!el) return;
-    setPill({ left: el.offsetLeft, width: el.offsetWidth });
+    setPill({
+      left: el.offsetLeft,
+      top: el.offsetTop,
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+    });
   }, [value]);
 
   useLayoutEffect(() => {
@@ -45,6 +55,7 @@ function SkuSwitcher({
     ro.observe(track);
     return () => ro.disconnect();
   }, [measure]);
+
 
   return (
     <div
