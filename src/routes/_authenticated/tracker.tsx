@@ -345,8 +345,19 @@ function KanbanCard({
             <button
               type="button"
               onClick={onRequestApply}
-              className="flex h-[30px] flex-1 items-center justify-center gap-1 rounded-[4px] text-[12px]"
-              style={{ background: "#00F1A9", border: "1px solid #00F1A9", color: DARK }}
+              className="main_accent_button main_accent_button--on-light flex h-[30px] flex-1 items-center gap-1"
+              /* .main_accent_button is an unlayered rule in styles.css, so it beats
+                 Tailwind utilities on this element: radius, font-size, padding and
+                 centring have to be inline. These values reproduce exactly what the
+                 hand-rolled green button rendered before. */
+              style={{
+                borderRadius: 8,
+                fontSize: 12,
+                height: 30,
+                paddingLeft: 12,
+                paddingRight: 12,
+                justifyContent: "center",
+              }}
             >
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply
