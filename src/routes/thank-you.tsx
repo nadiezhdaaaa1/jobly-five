@@ -10,15 +10,7 @@ import { z } from "zod";
 
 import badgeAsset from "@/assets/thank-you-check-badge.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  SHARED_PLAN_DISCLOSURE,
-  SKUS,
-  SKU_IDS,
-  TRIAL_DAYS,
-  TRIAL_SKU,
-  renewalPhrase,
-  type SkuId,
-} from "@/config/pricing";
+import { SKUS, SKU_IDS, TRIAL_DAYS, TRIAL_SKU, type SkuId } from "@/config/pricing";
 import { getSubscriptionRow } from "@/lib/subscription.functions";
 import { getDraftToken } from "@/lib/quiz-draft-store";
 
@@ -174,11 +166,6 @@ function ConfirmationPage() {
         >
           {setUp ? "Go to your Digest" : "Set up your matches"}
         </button>
-
-        <div className="flex flex-col items-center gap-2 text-center text-[12px] font-extralight leading-[1.6] text-[color:var(--color-text-muted)]">
-          <p>Auto-renews at {renewalPhrase(sku)} until cancelled.</p>
-          <p>{SHARED_PLAN_DISCLOSURE}</p>
-        </div>
       </main>
     </div>
   );
