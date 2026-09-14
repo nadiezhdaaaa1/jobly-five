@@ -387,7 +387,13 @@ function QuizPage() {
 
   const activeStep = editing ?? current;
 
+  // True once the user has advanced in this session. Lets a step that mounts
+  // already expanded scroll itself into view, without scrolling on first paint
+  // or when a saved draft is resumed.
+  const advancedRef = useRef(false);
+
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
+    advancedRef.current = true;
     persistDraft(patch, nextFrom);
     setAnswers((a) => {
       const merged = { ...a, ...patch };
