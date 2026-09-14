@@ -916,7 +916,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <button
               type="button"
               onClick={() => setApplyOpen(true)}
-              className="inline-flex h-10 flex-1 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light inline-flex h-10 flex-1 items-center"
+              /* .main_accent_button is unlayered CSS in styles.css and beats Tailwind
+                 utilities here, so radius (12 to match Flag/Dislike/Saved in this row),
+                 font-size, height, padding and centring are inline. */
+              style={{
+                borderRadius: 12,
+                fontSize: 14,
+                height: 40,
+                padding: "0 12px",
+                justifyContent: "center",
+              }}
             >
               <ExternalLink size={16} strokeWidth={1.8} className="mr-1" />
               Apply
