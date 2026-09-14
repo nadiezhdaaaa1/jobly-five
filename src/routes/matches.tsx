@@ -14,7 +14,7 @@ import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
 import { TRIAL_DAYS } from "@/config/pricing";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
-import { PlanCardsGrid } from "@/components/site/PlanCards";
+import { PlanPaywall } from "@/components/site/PlanPaywall";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
 
 
@@ -139,7 +139,7 @@ function MatchesPage() {
           </p>
 
           <div className="mt-6">
-            <PlanCardsGrid onSelect={(card) => void flow.selectPlan(card.choice)} />
+            <PlanPaywall onSelect={(card) => void flow.selectPlan(card.choice)} />
           </div>
         </section>
 
