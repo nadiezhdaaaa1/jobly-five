@@ -402,10 +402,16 @@ export function PlanCard({
           </div>
         </div>
 
+        {/* Button + disclosure sit at a fixed offset from the bottom so the CTA
+            starts at y=253 inside the 371-tall inner card on every card. */}
+        <div
+          className="absolute flex flex-col"
+          style={{ left: 20, right: 20, bottom: 20, gap: 16, zIndex: 2 }}
+        >
         <button
           type="button"
           onClick={() => onSelect(card)}
-          className="relative mt-auto w-full"
+          className="relative w-full"
           style={{
             zIndex: 2,
             padding: "12px 16px",
@@ -440,6 +446,7 @@ export function PlanCard({
         >
           {card.disclosure}
         </p>
+        </div>
       </div>
     </div>
   );
