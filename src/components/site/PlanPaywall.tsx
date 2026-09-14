@@ -123,17 +123,30 @@ function PaywallCard({
 }) {
   return (
     <div
-      className="w-full"
+      className="relative w-full"
       style={{
         background: spec.tint,
-        border: "1px solid rgba(0,0,0,0.15)",
         borderRadius: 24,
-        // Matches the design's `overflow-clip` on 434:5121: without it the inner
-        // card's 24px curve sits inside the wrapper's 23px padding-box curve and
-        // the tint leaks at the bottom corners.
+        // The 1px rule is an overlay ring (below), not a border on this box: a
+        // border would give the wrapper a 23px padding-box curve while the inner
+        // card curves at 24, and the tint would leak at the bottom corners.
+        // With no border the two curves coincide exactly. `overflow: hidden`
+        // matches the design's `overflow-clip` on 434:5121.
         overflow: "hidden",
       }}
     >
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute"
+        style={{
+          inset: 0,
+          border: "1px solid rgba(0,0,0,0.15)",
+          borderRadius: 24,
+          zIndex: 4,
+        }}
+      />
+
+
 
       {/* Band row */}
       <div
