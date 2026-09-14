@@ -35,6 +35,10 @@
   --color-green: var(--green);
   --color-match-teal: var(--match-teal);
   --color-step-accent: var(--step-accent);
+  --color-plan-tint-popular: var(--plan-tint-popular);
+  --color-plan-tint-best-value: var(--plan-tint-best-value);
+  --color-plan-band-popular: var(--plan-band-popular);
+  --color-plan-band-best-value: var(--plan-band-best-value);
   --color-mint: var(--mint);
   --color-success: var(--success);
   --color-success-subtle: var(--success-subtle);
@@ -107,6 +111,12 @@
   --secondary-button-light-hover: #E9EBEB;
   /* Step badges in "How Jobly works". */
   --step-accent: #8251E1;
+
+  /* Plan card wrapper tints and their header-band text, by card role. */
+  --plan-tint-popular: #C1F8D9;
+  --plan-tint-best-value: #DFD3F7;
+  --plan-band-popular: #075844;
+  --plan-band-best-value: #4B3080;
 
   --green: #0E735A;
   --match-teal: #22817E;

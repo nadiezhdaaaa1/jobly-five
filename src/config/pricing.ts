@@ -136,4 +136,4 @@ export function skuDisclosure(id: SkuId): string {
  * pre-charge email promise and the currency. Never replaces a card disclosure.
  */
 export const SHARED_PLAN_DISCLOSURE =
-  "Cancel anytime in Settings → Plan in two steps. We email you before every charge. Prices in USD.";
+  "All plans renew automatically until you cancel. You can cancel any time in Settings → Plan, and we email you before every charge. Prices in USD.";
