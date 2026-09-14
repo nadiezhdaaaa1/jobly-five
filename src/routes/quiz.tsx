@@ -149,7 +149,9 @@ function QuizPage() {
   // Display-only preselection: seed the saved intent so /matches opens on that
   // card. Nothing is purchased here; every checkout still needs a click.
   useEffect(() => {
-    if (search.sku) savePlanIntent({ sku: search.sku, trial: search.sku === TRIAL_SKU });
+    // Re-validated here too: the router hands back whatever the URL carried.
+    const sku = isSkuId(search.sku) ? search.sku : undefined;
+    if (sku) savePlanIntent({ sku, trial: sku === TRIAL_SKU });
   }, [search.sku]);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [hydrated, setHydrated] = useState(false);
