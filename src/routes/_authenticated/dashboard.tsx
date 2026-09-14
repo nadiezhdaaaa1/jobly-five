@@ -346,28 +346,9 @@ function applyFilters(jobs: EnrichedJob[], f: FilterState): EnrichedJob[] {
 // ============================================================
 
 function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
+  // Same entitlement read as before — no new request, no new gating rule.
   const plan = usePlan();
   const { loading: entLoading } = useEntitlements();
-  if (entLoading) {
-    return (
-      <div
-        className="shrink-0 animate-pulse rounded-full"
-        style={{ width: size, height: size, background: "var(--color-surface-2)" }}
-        aria-label="Loading match score"
-      />
-    );
-  }
-  if (!isPro(plan)) {
-    return (
-      <div
-        className="relative flex shrink-0 items-center justify-center rounded-full"
-        style={{ width: size, height: size, background: "var(--color-surface-2)" }}
-        aria-label="Match score locked — upgrade to Pro"
-      >
-        <span style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: 1, color: "#090B0C" }}>--%</span>
-      </div>
-    );
-  }
   return (
     <SharedScoreRing
       score={score}
@@ -376,9 +357,12 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
       trackColor="var(--color-border)"
       accentColor="var(--color-green)"
       ariaLabel={`${score}%`}
+      loading={entLoading}
+      locked={!isPro(plan)}
     />
   );
 }
+
 
 
 function useOutsideClose(open: boolean, onClose: () => void) {
