@@ -5,10 +5,10 @@
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconCheck as Check, IconLoader2 as Loader2 } from "@tabler/icons-react";
+import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 import { z } from "zod";
 
-import { Wordmark } from "@/components/site/Wordmark";
+import badgeAsset from "@/assets/thank-you-check-badge.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import {
   SHARED_PLAN_DISCLOSURE,
@@ -97,10 +97,7 @@ function ConfirmationPage() {
   if (!live) {
     return (
       <div className="min-h-screen bg-[color:var(--color-background)]">
-        <header className="flex items-center px-6 py-6 lg:px-12">
-          <Wordmark className="!text-[color:var(--color-foreground)]" />
-        </header>
-        <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20">
+        <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20 pt-16 lg:pt-[171px]">
           <div className="flex flex-col items-center gap-3 px-4 text-center">
             <h1 className="font-[family-name:var(--font-display)] text-[48px] font-normal leading-[1.3] tracking-[-1.45px] text-[color:var(--color-foreground)]">
               No plan yet
@@ -125,10 +122,7 @@ function ConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
-      <header className="flex items-center px-6 py-6 lg:px-12">
-        <Wordmark className="!text-[color:var(--color-foreground)]" />
-      </header>
-      <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20">
+      <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20 pt-16 lg:pt-[171px]">
         <div className="flex flex-col items-center gap-3 px-4 text-center">
           <h1 className="font-[family-name:var(--font-display)] text-[48px] font-normal leading-[1.3] tracking-[-1.45px] text-[color:var(--color-foreground)]">
             Thank you!
@@ -151,11 +145,13 @@ function ConfirmationPage() {
               Every match is scored before it reaches you —{" "}
               <span className="text-[color:var(--color-foreground)]">ghost jobs never do</span>.
             </p>
-            <span
-              className="grid shrink-0 place-items-center rounded-full bg-[color:var(--color-green)]"
-              style={{ width: 52, height: 52 }}
-            >
-              <Check className="h-6 w-6 text-white" strokeWidth={3} />
+            <span className="block shrink-0" style={{ width: 52, height: 52 }}>
+              <img
+                src={badgeAsset.url}
+                alt=""
+                aria-hidden="true"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
             </span>
           </div>
         </div>
