@@ -263,20 +263,28 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex min-w-0 flex-col"
+      className="relative z-0 flex w-full min-w-0 flex-col"
       style={{
-        flex: "0 1 269px",
-        // Inset ring instead of a border so the design's 269x405 / 34 / 371
-        // geometry is not shifted inward by 1px on each edge.
-        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
         borderRadius: 24,
         background: card.tint,
-        // Design fixes the wrapper at 269x405; the button block bottom-aligns so
-        // the CTA starts at y=253 inside the inner card on all four.
+        // The button block bottom-aligns so the CTA starts at y=253 inside the
+        // inner card on all four.
         height: 405,
-        maxWidth: 269,
       }}
     >
+      {/* Continuous 1px outline. An overlay above band + inner card, so the
+          inner card cannot paint over the sides or bottom of the ring. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute"
+        style={{
+          inset: 0,
+          border: "1px solid rgba(0,0,0,0.1)",
+          borderRadius: 24,
+          zIndex: 4,
+        }}
+      />
+
       {/* Header band */}
       <div
         className="flex w-full items-center justify-center"
