@@ -366,20 +366,18 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
       </div>
     );
   }
-  const stroke = 3;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
   return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score}%`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-green)" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
-      </svg>
-      <span className="absolute" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: 1, color: "#090B0C" }}>{score}%</span>
-    </div>
+    <SharedScoreRing
+      score={score}
+      size={size}
+      stroke={3}
+      trackColor="var(--color-border)"
+      accentColor="var(--color-green)"
+      ariaLabel={`${score}%`}
+    />
   );
 }
+
 
 function useOutsideClose(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement | null>(null);
