@@ -635,7 +635,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 aria-label="Report this job"
                 onMouseDown={(e) => e.stopPropagation()}
                 onClick={(e) => { e.stopPropagation(); setFlagOpen((v) => !v); }}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <Flag size={15} strokeWidth={1.6} />
               </button>
