@@ -128,8 +128,13 @@ function PaywallCard({
         background: spec.tint,
         border: "1px solid rgba(0,0,0,0.15)",
         borderRadius: 24,
+        // Matches the design's `overflow-clip` on 434:5121: without it the inner
+        // card's 24px curve sits inside the wrapper's 23px padding-box curve and
+        // the tint leaks at the bottom corners.
+        overflow: "hidden",
       }}
     >
+
       {/* Band row */}
       <div
         className="flex items-center justify-between gap-3"
