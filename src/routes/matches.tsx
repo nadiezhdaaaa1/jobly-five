@@ -115,6 +115,9 @@ function MatchesSearching() {
 function MatchesPage() {
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const search = Route.useSearch();
+  // Re-validated at the point of use as well as in validateSearch: the router
+  // hands back whatever the URL carried, and this is untrusted input.
+  const urlSku = isSkuId(search.sku) ? search.sku : undefined;
   // The plan decision after the quiz. Registration and checkout both live in
   // the flow hook, so this screen no longer creates accounts on its own.
   const flow = usePlanFlow("matches_plan_step");
@@ -124,9 +127,9 @@ function MatchesPage() {
   // A valid ?sku wins over any older saved intent (it is the more recent
   // decision); otherwise the quiz -> matches handoff rides on the saved intent.
   const [initialSku] = useState<SkuId | undefined>(() => {
-    if (search.sku) {
-      savePlanIntent({ sku: search.sku, trial: search.sku === TRIAL_SKU });
-      return search.sku;
+    if (urlSku) {
+      savePlanIntent({ sku: urlSku, trial: urlSku === TRIAL_SKU });
+      return urlSku;
     }
     return readPlanIntent()?.sku;
   });
