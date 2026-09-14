@@ -93,6 +93,18 @@ function PurgeCard() {
     setResult(null);
     setSessionEnded(false);
     try {
+      // The server guard requires an authenticated caller. Without a session the
+      // request has no bearer token and fails with an opaque 500, so check first.
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setResult({
+          ok: false,
+          status: "error",
+          message: `Not signed in. Sign in as ${target} first, then run the purge.`,
+        });
+        return;
+      }
+
       // The typed text only arms the button. The submitted address always comes
       // from the allowlist constant, never from the input value.
       const res = await purge({ data: { email: DEV_PURGE_ALLOWLIST[0] } });
