@@ -900,7 +900,7 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
-      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
+      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[8px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open && pos ? createPortal(
