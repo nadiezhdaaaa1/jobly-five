@@ -88,7 +88,7 @@ function EditableCell({
             }
           }}
           rows={8}
-          className="w-full resize-y rounded-[4px] border px-2 py-1.5 text-[14px] outline-none focus:border-[color:var(--color-foreground)]"
+          className="w-full resize-y rounded-[12px] border px-2 py-1.5 text-[14px] outline-none focus:border-[color:var(--color-foreground)]"
           style={{ borderColor: BORDER_LIGHT }}
         />
         <div className="mt-2 flex items-center gap-2">
@@ -98,7 +98,7 @@ function EditableCell({
               onSave(draft);
               setEditing(false);
             }}
-            className="h-8 rounded-[4px] bg-[color:var(--color-foreground)] px-3 text-[13px] font-medium text-white"
+            className="h-8 rounded-[8px] bg-[color:var(--color-foreground)] px-3 text-[13px] font-medium text-white"
           >
             Save
           </button>
@@ -108,7 +108,7 @@ function EditableCell({
               setDraft(value);
               setEditing(false);
             }}
-            className="h-8 rounded-[4px] border px-3 text-[13px]"
+            className="h-8 rounded-[8px] border px-3 text-[13px]"
             style={{ borderColor: BORDER_LIGHT, color: META_GREY }}
           >
             Cancel
@@ -132,7 +132,7 @@ function EditableCell({
           setDraft(value);
           setEditing(true);
         }}
-        className="absolute right-0 top-0 flex h-7 w-7 items-center justify-center rounded-[4px] bg-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 hover:bg-[color:var(--color-surface-2)]"
+        className="absolute right-0 top-0 flex h-7 w-7 items-center justify-center rounded-[8px] bg-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100 hover:bg-[color:var(--color-surface-2)]"
         style={{ color: META_GREY }}
       >
         <Pencil size={14} strokeWidth={1.6} />
@@ -194,7 +194,7 @@ export function CompareOffersDialog({
     <div className="fixed inset-0 z-[70] flex items-center justify-center" role="dialog" aria-modal="true" aria-label="Compare offers">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onClose} aria-hidden />
       <div
-        className="relative z-10 flex max-h-[90vh] flex-col overflow-hidden rounded-[8px] border bg-white"
+        className="relative z-10 flex max-h-[90vh] flex-col overflow-hidden rounded-[20px] border bg-white"
         style={{
           borderColor: BORDER_LIGHT,
           boxShadow: "0 8px 24px rgba(0,0,0,.12)",
@@ -216,7 +216,7 @@ export function CompareOffersDialog({
               type="button"
               onClick={() => setOnlyDifferences((v) => !v)}
               aria-pressed={onlyDifferences}
-              className="hidden h-8 items-center rounded-[4px] border px-2.5 text-[13px] hover:bg-[color:var(--color-surface-2)] sm:inline-flex"
+              className="hidden h-8 items-center rounded-[8px] border px-2.5 text-[13px] hover:bg-[color:var(--color-surface-2)] sm:inline-flex"
               style={{
                 borderColor: BORDER_LIGHT,
                 color: onlyDifferences ? "var(--color-foreground)" : META_GREY,
@@ -229,7 +229,7 @@ export function CompareOffersDialog({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="-mr-2 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="-mr-2 flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <X size={16} strokeWidth={1.6} />
             </button>
@@ -237,7 +237,7 @@ export function CompareOffersDialog({
         </div>
 
         {/* Matrix */}
-        <div ref={scrollRef} className="flex-1 overflow-auto rounded-b-[8px]">
+        <div ref={scrollRef} className="flex-1 overflow-auto rounded-b-[20px]">
           <table className="w-max border-separate" style={{ borderSpacing: 0 }}>
             <thead>
               <tr>
@@ -257,9 +257,9 @@ export function CompareOffersDialog({
                   >
                     <div className="flex items-start gap-2">
                       {e.job.logo ? (
-                        <img src={e.job.logo} alt="" className="h-7 w-7 shrink-0 rounded-[4px] object-cover" />
+                        <img src={e.job.logo} alt="" className="h-7 w-7 shrink-0 rounded-[8px] object-cover" />
                       ) : (
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[12px] font-semibold text-white" aria-hidden>
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[8px] bg-[color:var(--color-foreground)] text-[12px] font-semibold text-white" aria-hidden>
                           {e.job.company.charAt(0).toUpperCase()}
                         </div>
                       )}
@@ -276,7 +276,7 @@ export function CompareOffersDialog({
                       <button
                         type="button"
                         onClick={() => onOpenJob(e.job)}
-                        className="mt-2 inline-flex h-7 items-center gap-1 rounded-[4px] px-1.5 text-[13px] font-normal hover:bg-[color:var(--color-surface-2)]"
+                        className="mt-2 inline-flex h-7 items-center gap-1 rounded-[8px] px-1.5 text-[13px] font-normal hover:bg-[color:var(--color-surface-2)]"
                         style={{ color: META_GREY }}
                       >
                         Open job
@@ -318,7 +318,7 @@ export function CompareOffersDialog({
                             {v}
                             {isBestSalary ? (
                               <span
-                                className="ml-2 inline-block rounded-[4px] px-1.5 py-0.5 align-middle text-[11px]"
+                                className="ml-2 inline-block rounded-[8px] px-1.5 py-0.5 align-middle text-[11px]"
                                 style={{ background: "#D8FBEF", color: "#0B3B2E" }}
                               >
                                 Highest

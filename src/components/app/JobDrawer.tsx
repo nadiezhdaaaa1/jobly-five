@@ -118,7 +118,7 @@ function ListingMetaBlock({ job }: { job: Job }) {
   );
   const item = "inline-flex items-baseline gap-1.5";
   return (
-    <div className="mt-4 rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2">
+    <div className="mt-4 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-3 py-2">
       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
         <span className={item}>
           <span className={label}>Posted</span>
@@ -433,7 +433,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="flex h-8 w-8 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-8 w-8 items-center justify-center rounded-[8px] border bg-[color:var(--color-surface-1)] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <X size={16} strokeWidth={1.6} />
             </button>
@@ -447,12 +447,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               <img
                 src={job.logo}
                 alt={`${job.company} logo`}
-                className="shrink-0 rounded-[4px] object-cover"
+                className="shrink-0 rounded-[8px] object-cover"
                 style={{ width: 64, height: 64 }}
               />
             ) : (
               <div
-                className="flex shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-foreground)] text-[18px] font-semibold text-white"
+                className="flex shrink-0 items-center justify-center rounded-[8px] bg-[color:var(--color-foreground)] text-[18px] font-semibold text-white"
                 style={{ width: 64, height: 64 }}
               >
                 {job.company.charAt(0)}
@@ -482,7 +482,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 <div className="flex items-center gap-2">
                   <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Status</span>
                   <span
-                    className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px]"
+                    className="inline-flex h-9 items-center rounded-[12px] px-3 text-[13px]"
                     style={{ background: "var(--color-surface-2)", color: "var(--color-foreground)" }}
                   >
                     {currentColumnTitle}
@@ -494,7 +494,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     aria-haspopup="menu"
                     aria-expanded={moveOpen}
                     onClick={() => setMoveOpen((v) => !v)}
-                    className="inline-flex h-9 items-center justify-between gap-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                    className="inline-flex h-9 items-center justify-between gap-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
                   >
                     Move to
                     <ChevronDown size={14} strokeWidth={2} />
@@ -502,7 +502,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   {moveOpen ? (
                     <div
                       role="menu"
-                      className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]"
+                      className="absolute right-0 top-[40px] z-30 min-w-[180px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]"
                       style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
                     >
                       {moveOptions.map((c) => (
@@ -531,7 +531,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Stage</div>
                   {currentColumn.stages.length ? (
                     <select
-                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      className="mt-2 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
                       value={record.interviewStage ?? currentColumn.stages[0]}
                       onChange={(e) => setInterviewStage(job.id, e.target.value)}
                     >
@@ -551,7 +551,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Offer stage</div>
                   {currentColumn.stages.length ? (
                     <select
-                      className="mt-2 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      className="mt-2 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 pr-8 text-[14px] outline-none focus-visible:border-[color:var(--color-accent)]"
                       value={record.offerStatus ?? currentColumn.stages[0]}
                       onChange={(e) => setOfferStatus(job.id, e.target.value)}
                     >
@@ -571,7 +571,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                   <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Reminder</div>
                   {record.reminderAt ? (
                     <div
-                      className={`mt-2 flex items-center justify-between rounded-[4px] px-3 py-2 text-[13px] ${
+                      className={`mt-2 flex items-center justify-between rounded-[12px] px-3 py-2 text-[13px] ${
                         status === "offer" ? "bg-[#D8FBEF]" : "bg-[#FFEDD4]"
                       }`}
                     >
@@ -604,14 +604,14 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                         <button
                           type="button"
                           onClick={() => setOfferEditing(true)}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={handleOfferDelete}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                         >
                           Delete
                         </button>
@@ -622,7 +622,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                           <button
                             type="button"
                             onClick={handleOfferCancel}
-                            className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                            className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                           >
                             Cancel
                           </button>
@@ -631,7 +631,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                           type="button"
                           onClick={handleOfferSave}
                           disabled={offerDraft.trim() === (record.offerDetails ?? "")}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           Save
                         </button>
@@ -639,7 +639,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     )}
                   </div>
                   {record.offerDetails && !offerEditing ? (
-                    <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                    <div className="mt-2 whitespace-pre-wrap rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
                       {record.offerDetails}
                     </div>
                   ) : (
@@ -648,7 +648,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       onChange={(e) => setOfferDraft(e.target.value)}
                       rows={4}
                       placeholder="Comp, deadline, notes (optional)"
-                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      className="mt-2 w-full resize-y rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
                     />
                   )}
                 </div>
@@ -662,14 +662,14 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                         <button
                           type="button"
                           onClick={() => setRejectionEditing(true)}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                         >
                           Edit
                         </button>
                         <button
                           type="button"
                           onClick={handleRejectionDelete}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                         >
                           Delete
                         </button>
@@ -680,7 +680,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                           <button
                             type="button"
                             onClick={handleRejectionCancel}
-                            className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                            className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                           >
                             Cancel
                           </button>
@@ -689,7 +689,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                           type="button"
                           onClick={handleRejectionSave}
                           disabled={rejectionDraft.trim() === (record.rejectionDetails ?? "")}
-                          className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                          className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           Save
                         </button>
@@ -697,7 +697,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     )}
                   </div>
                   {record.rejectionDetails && !rejectionEditing ? (
-                    <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                    <div className="mt-2 whitespace-pre-wrap rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
                       {record.rejectionDetails}
                     </div>
                   ) : (
@@ -706,7 +706,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       onChange={(e) => setRejectionDraft(e.target.value)}
                       rows={4}
                       placeholder="What happened? (optional)"
-                      className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                      className="mt-2 w-full resize-y rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
                     />
                   )}
                 </div>
@@ -732,7 +732,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
 
           {/* Archived — show the reason the user gave */}
           {record.archived ? (
-            <div className="mt-5 rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
+            <div className="mt-5 rounded-[16px] border bg-[color:var(--color-surface-1)] p-4">
               <div className="flex items-center gap-2">
                 <Archive size={14} strokeWidth={1.6} className="text-[color:var(--color-text-secondary)]" />
                 <span className="text-[13px] font-semibold text-[color:var(--color-foreground)]">Archived</span>
@@ -761,14 +761,14 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     <button
                       type="button"
                       onClick={() => setNotesEditing(true)}
-                      className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                     >
                       Edit
                     </button>
                     <button
                       type="button"
                       onClick={handleNotesDelete}
-                      className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                      className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                     >
                       Delete
                     </button>
@@ -779,7 +779,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       <button
                         type="button"
                         onClick={handleNotesCancel}
-                        className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                        className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
                       >
                         Cancel
                       </button>
@@ -788,7 +788,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                       type="button"
                       onClick={handleNotesSave}
                       disabled={notes.trim() === (record.notes ?? "")}
-                      className="inline-flex h-8 items-center gap-1 rounded-[4px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex h-8 items-center gap-1 rounded-[8px] px-2 text-[12px] text-[color:var(--color-green)] hover:bg-[color:var(--color-surface-2)] disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       Save
                     </button>
@@ -796,7 +796,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 )}
               </div>
               {record.notes && !notesEditing ? (
-                <div className="mt-2 whitespace-pre-wrap rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
+                <div className="mt-2 whitespace-pre-wrap rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)]">
                   {record.notes}
                 </div>
               ) : (
@@ -805,7 +805,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                     onChange={(e) => setNotesLocal(e.target.value)}
                     rows={4}
                     placeholder="Notes — contacts, salary discussed, next steps…"
-                    className="mt-2 w-full resize-y rounded-[4px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                    className="mt-2 w-full resize-y rounded-[12px] border bg-[color:var(--color-surface-1)] p-3 text-[13px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
                 />
               )}
             </div>
@@ -815,15 +815,15 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <div className="mt-5" />
           ) : null}
           {!pro ? (
-            <div className="rounded-[6px] border bg-[color:var(--color-mint)]/40 p-4">
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
+            <div className="rounded-[16px] border bg-[color:var(--color-mint)]/40 p-4">
+              <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-mint)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--color-green)]">Pro</span>
               <div className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">Track this application</div>
               <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
                 Save, mark applied, set interview reminders. Available on Pro.
               </p>
               <Link
                 to="/settings"
-                className="mt-3 inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="mt-3 inline-flex h-10 items-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
               >
                 Go Pro
               </Link>
@@ -846,12 +846,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 type="button"
                 aria-label="Report this job"
                 onClick={() => setFlagOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-10 items-center justify-center rounded-[12px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <Flag size={16} strokeWidth={1.6} />
               </button>
               {flagOpen ? (
-                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                   {["Spam or scam", "Incorrect match (wrong role)", "Ghost or expired posting", "Duplicate posting"].map((label) => (
                     <button
                       key={label}
@@ -872,12 +872,12 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 type="button"
                 aria-label="Not interested"
                 onClick={() => setDislikeOpen((v) => !v)}
-                className="flex h-10 w-10 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="flex h-10 w-10 items-center justify-center rounded-[12px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 <ThumbsDown size={16} strokeWidth={1.6} />
               </button>
               {dislikeOpen ? (
-                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[6px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
+                <div role="menu" className="absolute left-0 bottom-[44px] z-30 min-w-[220px] overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)]" style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}>
                   {["Don't like the job", "Don't like the company", "Not a relevant job"].map((label) => (
                     <button
                       key={label}
@@ -902,7 +902,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[12px] border px-3 text-[13px] font-semibold transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
                 background: saved ? "var(--color-mint)" : undefined,
@@ -916,7 +916,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <button
               type="button"
               onClick={() => setApplyOpen(true)}
-              className="inline-flex h-10 flex-1 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="inline-flex h-10 flex-1 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               <ExternalLink size={16} strokeWidth={1.8} className="mr-1" />
               Apply
@@ -960,14 +960,14 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               type="button"
               aria-label="Archive job"
               onClick={() => setArchiveOpen(true)}
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
               <Cancel size={16} strokeWidth={1.8} />
             </button>
             <button
               type="button"
               onClick={() => setFollowUpOpen(true)}
-              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[4px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-10 shrink-0 items-center gap-2 rounded-[12px] border px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
               <MailShare size={15} strokeWidth={1.6} />
               Send a follow-up
@@ -976,7 +976,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               href={job.sources?.[0]?.url && job.sources[0].url !== "#" ? job.sources[0].url : "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[4px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[12px] border text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             >
               <ExternalLink size={16} strokeWidth={1.8} />
               Open original vacancy
@@ -994,7 +994,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
           }
         }}
       >
-        <DialogContent className="max-w-[440px] rounded-[8px] p-5">
+        <DialogContent className="max-w-[440px] rounded-[20px] p-5">
           <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
             Archive this job?
           </DialogTitle>
@@ -1015,7 +1015,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
               onChange={(e) => setArchiveReason(e.target.value)}
               placeholder="e.g. Position filled, lost interest, poor fit…"
               rows={3}
-              className="w-full rounded-[4px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
+              className="w-full rounded-[12px] border bg-white p-2 text-[13px] outline-none focus:border-[#0E735A]"
               style={{ resize: "vertical" }}
             />
             <p className="mt-1.5 text-[12px] font-light" style={{ color: "var(--color-text-muted)" }}>
@@ -1026,7 +1026,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
             <button
               type="button"
               onClick={() => { setArchiveOpen(false); setArchiveReason(""); }}
-              className="inline-flex h-9 items-center rounded-[4px] border bg-white px-3 text-[13px] text-[color:var(--color-foreground)]"
+              className="inline-flex h-9 items-center rounded-[12px] border bg-white px-3 text-[13px] text-[color:var(--color-foreground)]"
             >
               Cancel
             </button>
@@ -1039,7 +1039,7 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 archiveJobWithReason(job.id, reason || undefined);
                 onClose();
               }}
-              className="inline-flex h-9 items-center rounded-[4px] px-3 text-[13px] font-medium text-white"
+              className="inline-flex h-9 items-center rounded-[12px] px-3 text-[13px] font-medium text-white"
               style={{ background: "#D00D01" }}
             >
               Archive

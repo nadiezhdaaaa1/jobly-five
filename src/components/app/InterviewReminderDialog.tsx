@@ -34,7 +34,7 @@ function TimePickerAmPm({ value, onChange }: { value: string; onChange: (v: stri
   };
 
   const selectCls =
-    "h-10 rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
+    "h-10 rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]";
 
   return (
     <div className="flex items-center gap-1">
@@ -131,14 +131,14 @@ export function InterviewReminderDialog({
     <div className="fixed inset-0 z-[60] flex items-center justify-center" role="dialog" aria-modal="true">
       <div className="absolute inset-0" style={{ background: "rgba(9,11,12,.32)" }} onClick={onCancel} aria-hidden />
       <div
-        className="relative z-10 w-[92%] max-w-[420px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+        className="relative z-10 w-[92%] max-w-[420px] rounded-[20px] border bg-[color:var(--color-surface-1)] p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <button
           type="button"
           onClick={onCancel}
           aria-label="Close"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <X size={16} strokeWidth={1.6} />
         </button>
@@ -156,7 +156,7 @@ export function InterviewReminderDialog({
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="flex h-10 items-center justify-between gap-2 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-left text-[14px] text-[color:var(--color-foreground)] outline-none hover:bg-[color:var(--color-surface-2)] focus-visible:border-[color:var(--color-accent)]"
+                  className="flex h-10 items-center justify-between gap-2 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-left text-[14px] text-[color:var(--color-foreground)] outline-none hover:bg-[color:var(--color-surface-2)] focus-visible:border-[color:var(--color-accent)]"
                 >
                   <span>{(() => { const [y,m,d] = date.split("-").map(Number); return formatUS(new Date(y, (m??1)-1, d??1)); })()}</span>
                   <IconCalendar size={16} strokeWidth={1.6} className="text-[color:var(--color-text-muted)]" />
@@ -164,7 +164,7 @@ export function InterviewReminderDialog({
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="z-[70] w-auto rounded-[8px] border bg-[color:var(--color-surface-1)] p-0"
+                className="z-[70] w-auto rounded-[16px] border bg-[color:var(--color-surface-1)] p-0"
                 style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
               >
                 <Calendar
@@ -187,7 +187,7 @@ export function InterviewReminderDialog({
         </div>
         {conflicts.length > 0 ? (
           <div
-            className="mt-3 rounded-[4px] px-3 py-2 text-[12px]"
+            className="mt-3 rounded-[12px] px-3 py-2 text-[12px]"
             style={{ background: "#FFE2E2", color: "#D00D01" }}
           >
             <div style={{ fontWeight: 600 }}>Heads up — reminder conflict</div>
@@ -207,14 +207,14 @@ export function InterviewReminderDialog({
           <button
             type="button"
             onClick={onCancel}
-            className="h-10 rounded-[4px] px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+            className="h-10 rounded-[12px] px-4 text-[14px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="h-10 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+            className="h-10 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
           >
             Save reminder
           </button>
