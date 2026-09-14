@@ -38,7 +38,7 @@ import { HeroShaderBackground } from "../components/landing/HeroShaderBackground
 import { HeroMatchDeck } from "../components/landing/HeroMatchDeck";
 import { MatchSphere } from "../components/landing/MatchSphere";
 
-import { PRICING, money, total } from "@/config/pricing";
+import { SKUS, money, skuTotal } from "@/config/pricing";
 import { PlanCardsGrid } from "@/components/site/PlanCards";
 
 import {
@@ -111,22 +111,17 @@ export const Route = createFileRoute("/")({
           applicationCategory: "BusinessApplication",
           operatingSystem: "Web",
           url: ORIGIN,
-          offers: [
-            {
-              "@type": "Offer",
-              name: "Pro (monthly)",
-              price: money(total(PRICING.monthly)),
-              priceCurrency: "USD",
-              category: "Monthly subscription",
-            },
-            {
-              "@type": "Offer",
-              name: "Pro (annual)",
-              price: money(total(PRICING.annual)),
-              priceCurrency: "USD",
-              category: "Annual subscription",
-            },
-          ],
+          // One offer per purchasable SKU. There is no pro_annual and no
+          // watch_3month: the SKU list is flat, not tier x cycle.
+          offers: Object.values(SKUS).map((sku) => ({
+            "@type": "Offer",
+            name: `${sku.tier === "watch" ? "Watch" : "Pro"} (${
+              sku.months === 1 ? "monthly" : sku.months === 12 ? "yearly" : `${sku.months} months`
+            })`,
+            price: money(skuTotal(sku.id)),
+            priceCurrency: "USD",
+            category: sku.months === 1 ? "Monthly subscription" : "Prepaid subscription",
+          })),
         }),
       },
       {

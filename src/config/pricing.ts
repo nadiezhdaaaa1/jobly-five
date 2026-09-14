@@ -41,6 +41,9 @@ export function isSkuId(value: unknown): value is SkuId {
   return typeof value === "string" && value in SKUS;
 }
 
+/** How long banked days survive after a pause, in months. */
+export const BANKED_DAYS_TTL_MONTHS = 12;
+
 /** Prepaid multi-month SKUs — the only ones whose days bank on pause. */
 export const PREPAID_SKUS: SkuId[] = ["pro_3month", "pro_6month"];
 
