@@ -11,7 +11,7 @@ import { useState } from "react";
 
 import {
   SHARED_PLAN_DISCLOSURE,
-  SKUS,
+  
   TRIAL_DAYS,
   WATCH_MONTHLY_ANNUALISED,
   discountPct,
