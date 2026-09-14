@@ -127,12 +127,20 @@ function MatchesPage() {
   // The decision is taken before the first paint below.
   const [access, setAccess] = useState<PlanAccess>("unknown");
   // Pre-paint, no network: a browser with no stored session gets the paywall
-  // straight away, and no entitlement request is ever made for it.
+  // straight away, and no entitlement request is ever made for it. A layout
+  // effect (not useEffect) so the swap happens before the browser paints the
+  // empty state; it is only skipped on the server, where "unknown" is exactly
+  // the state we want the SSR markup to keep. Verified: this route's server
+  // render emits no React useLayoutEffect warning.
   useLayoutEffect(() => {
     if (!maybeSignedInSync()) setAccess("paywall");
   }, []);
   // A valid ?sku wins over any older saved intent (it is the more recent
   // decision); otherwise the quiz -> matches handoff rides on the saved intent.
+  // savePlanIntent runs in this initializer on purpose: it must land before the
+  // first paint so the right card opens selected, and it is safe to repeat —
+  // window-guarded, try/catch'd and idempotent, so a StrictMode double-invoke
+  // just writes the same value twice.
   const [initialSku] = useState<SkuId | undefined>(() => {
     if (urlSku) {
       savePlanIntent({ sku: urlSku, trial: urlSku === TRIAL_SKU });
