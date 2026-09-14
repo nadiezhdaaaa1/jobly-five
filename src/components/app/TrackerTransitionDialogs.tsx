@@ -238,7 +238,11 @@ function FooterButtons({ onCancel, onSave }: { onCancel: () => void; onSave: () 
       <button
         type="button"
         onClick={onSave}
-        className="h-10 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+        // The design-system class sets radius 14px, font-size 16px and
+        // padding 12px 20px as unlayered CSS, and no justify-content; this
+        // footer's buttons are 40px tall at 14px with a 12px radius.
+        className="main_accent_button main_accent_button--on-light"
+        style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
       >
         Save
       </button>
