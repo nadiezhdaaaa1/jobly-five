@@ -354,8 +354,7 @@ function KanbanCard({
                 borderRadius: 8,
                 fontSize: 12,
                 height: 30,
-                paddingLeft: 12,
-                paddingRight: 12,
+                padding: "0 12px",
                 justifyContent: "center",
               }}
             >
