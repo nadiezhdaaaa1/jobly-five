@@ -387,7 +387,13 @@ function QuizPage() {
 
   const activeStep = editing ?? current;
 
+  // True once the user has advanced in this session. Lets a step that mounts
+  // already expanded scroll itself into view, without scrolling on first paint
+  // or when a saved draft is resumed.
+  const advancedRef = useRef(false);
+
   function advance(nextFrom: StepKey, patch: Partial<QuizAnswers>) {
+    advancedRef.current = true;
     persistDraft(patch, nextFrom);
     setAnswers((a) => {
       const merged = { ...a, ...patch };
@@ -588,6 +594,15 @@ function QuizPage() {
                 key={key}
                 stepKey={key}
                 expanded={isExpanded}
+                scrollMode={
+                  !isExpanded
+                    ? "none"
+                    : editing === key
+                      ? "center"
+                      : advancedRef.current
+                        ? "start"
+                        : "none"
+                }
                 answers={answers}
                 invalid={invalid}
                 onEdit={() => openEdit(key)}
@@ -774,6 +789,7 @@ function QuizPage() {
 export function StepShell({
   stepKey,
   expanded,
+  scrollMode = "none",
   answers,
   onEdit,
   invalid = false,
@@ -781,6 +797,12 @@ export function StepShell({
 }: {
   stepKey: StepKey;
   expanded: boolean;
+  /**
+   * How this step should scroll when it becomes the active one:
+   * "start" when the user advanced to it, "center" when re-opened for editing,
+   * "none" on first paint and when resuming a saved draft.
+   */
+  scrollMode?: "none" | "start" | "center";
   answers: QuizAnswers;
   onEdit: () => void;
   invalid?: boolean;
@@ -788,16 +810,21 @@ export function StepShell({
 }) {
   const ref = useRef<HTMLLIElement>(null);
   const prev = useRef(expanded);
+  const mounted = useRef(false);
 
   useEffect(() => {
-    if (expanded && !prev.current && ref.current) {
+    const first = !mounted.current;
+    mounted.current = true;
+    const becameActive = expanded && (!prev.current || first);
+    if (ref.current && becameActive && scrollMode !== "none") {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       ref.current.scrollIntoView({
         behavior: reduced ? "auto" : "smooth",
-        block: "center",
+        block: scrollMode,
       });
     }
     prev.current = expanded;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expanded]);
 
   if (!expanded) {
