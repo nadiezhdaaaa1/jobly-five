@@ -116,7 +116,7 @@ export const PRO_CARDS: PlanCardSpec[] = [
     price: usd(perMonth("pro_3month")),
     suffix: "/month",
     subLine: `${usd(skuTotal("pro_3month"))} billed today`,
-    description: `Everything in Pro, prepaid for ${SKUS.pro_3month.months} months at a lower rate.`,
+    description: "The median US job search runs 11 weeks. That's exactly one period.",
     cta: "Get 3 months",
     ctaMain: true,
     disclosure: `Charged today. ${renewalPhrase("pro_3month")} until cancelled`,
@@ -135,7 +135,8 @@ export const PRO_CARDS: PlanCardSpec[] = [
     price: usd(perMonth("pro_6month")),
     suffix: "/month",
     subLine: `${usd(skuTotal("pro_6month"))} billed today`,
-    description: `Everything in Pro, prepaid for ${SKUS.pro_6month.months} months at our lowest rate.`,
+    description:
+      "The average tech search runs 6–7 months. Land early and your unused days are banked.",
     cta: "Get 6 months",
     ctaMain: true,
     disclosure: `Charged today. ${renewalPhrase("pro_6month")} until cancelled`,
