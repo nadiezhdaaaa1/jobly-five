@@ -461,7 +461,13 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
 
   return (
     <div className="flex w-full flex-col items-center gap-10">
-      <div className="flex w-full flex-wrap items-start justify-center" style={{ gap: 20 }}>
+      {/* Only 4, 2 or 1 per row: a three-column step always strands one card.
+          Switch points are set where the price line and the CTA label stop
+          fitting on one line, measured — not at round numbers. */}
+      <div
+        className="grid w-full items-start [grid-template-columns:minmax(0,1fr)] min-[520px]:[grid-template-columns:repeat(2,minmax(0,1fr))] min-[1120px]:[grid-template-columns:repeat(4,minmax(0,1fr))]"
+        style={{ gap: 20 }}
+      >
         <PlanCard
           card={watch}
           onSelect={onSelect}
