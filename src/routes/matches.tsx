@@ -12,6 +12,8 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
+import { ScoreRing } from "@/components/app/ScoreRing";
+
 
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
@@ -268,56 +270,8 @@ function MatchesPage() {
   );
 }
 
-function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
-  const stroke = 4;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
-  // A perfect match reads as a solid disc rather than a closed ring. Filling
-  // the progress circle lands exactly: radius r plus the 4px stroke centred on
-  // that path comes to size / 2, so the disc fills the box with no seam.
-  const perfect = score >= 100;
-  return (
-    <div
-      className="relative flex shrink-0 items-center justify-center"
-      style={{ width: size, height: size }}
-      role="img"
-      aria-label={`${score} percent match`}
-    >
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="#E3E7E8"
-          strokeWidth={stroke}
-          fill="none"
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          stroke="#0E735A"
-          strokeWidth={stroke}
-          fill={perfect ? "#0E735A" : "none"}
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          strokeLinecap="butt"
-        />
-      </svg>
-      <span
-        className="absolute text-[14px]"
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontWeight: 400,
-          color: perfect ? "#FFFFFF" : "#090B0C",
-        }}
-      >
-        {score}%
-      </span>
-    </div>
-  );
-}
+
+
 
 function JobCard({ job }: { job: Job }) {
   const [detailsOpen, setDetailsOpen] = useState(false);

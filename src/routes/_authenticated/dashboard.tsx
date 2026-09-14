@@ -20,6 +20,8 @@ import emptyStateAsset from "@/assets/empty-state.png.asset.json";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal } from "@/components/app/ApplyModal";
+import { ScoreRing as SharedScoreRing } from "@/components/app/ScoreRing";
+
 import { useJobs } from "@/lib/jobs-store";
 import { getDbJobById } from "@/lib/jobs-store";
 import { rolesOverlap } from "@/lib/match";
@@ -366,20 +368,18 @@ function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
       </div>
     );
   }
-  const stroke = 3;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
   return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score}%`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-border)" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="var(--color-green)" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
-      </svg>
-      <span className="absolute" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, fontSize: 14, lineHeight: 1, color: "#090B0C" }}>{score}%</span>
-    </div>
+    <SharedScoreRing
+      score={score}
+      size={size}
+      stroke={3}
+      trackColor="var(--color-border)"
+      accentColor="var(--color-green)"
+      ariaLabel={`${score}%`}
+    />
   );
 }
+
 
 function useOutsideClose(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -725,7 +725,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
                 background: saved ? "var(--color-mint)" : undefined,
@@ -739,7 +739,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
-            className="inline-flex h-[30px] items-center rounded-[12px] bg-[color:var(--color-main-accent)] px-3 button-small text-[color:var(--on-main-accent)] hover:bg-[color:var(--main-accent-hover)]"
+            className="main_accent_button main_accent_button--on-light h-[30px] px-3 py-0 button-small"
+            // The design-system class sets border-radius: 14px as a plain CSS
+            // rule, which beats a Tailwind utility; the card's radius is 8.
+            style={{ borderRadius: 8 }}
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
@@ -864,7 +867,7 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function ProfileChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-[12px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
+    <span className="inline-flex items-center gap-1 rounded-[8px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
       {label}
       <button type="button" aria-label={`Remove ${label}`} onClick={onRemove} className="hover:opacity-70"><X size={12} strokeWidth={2} /></button>
     </span>
@@ -900,7 +903,7 @@ function AddChip({ options, groups, onAdd }: { options: string[]; groups?: { lab
   const filtered = options.filter((o) => o.toLowerCase().includes(ql)).slice(0, 12);
   return (
     <span className="relative inline-block" ref={ref}>
-      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
+      <button ref={btnRef} type="button" onClick={() => setOpen((v) => !v)} className="inline-flex items-center gap-1 rounded-[8px] border bg-[color:var(--color-surface-1)] px-2 py-1 text-[12px] text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">
         <IconPlus size={12} strokeWidth={2} /> Add
       </button>
       {open && pos ? createPortal(
@@ -937,7 +940,7 @@ function SelectChip({ label, selected, onClick, disabled }: { label: string; sel
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-[28px] items-center rounded-[12px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
+      className="inline-flex h-[28px] items-center rounded-[8px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
       style={
         selected
           ? { background: "var(--color-green)", color: "#fff" }
@@ -1197,7 +1200,7 @@ function FiltersSidebar({
                   key={b}
                   type="button"
                   onClick={() => set({ sources: selected ? p.sources.filter((x) => x !== b) : [...p.sources, b] })}
-                  className="inline-flex h-[28px] items-center gap-1 rounded-[12px] px-2.5 text-[12px] font-medium"
+                  className="inline-flex h-[28px] items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-medium"
                   style={selected ? { background: "var(--color-green)", color: "#fff" } : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }}
                 >
                   {b}
@@ -1212,17 +1215,12 @@ function FiltersSidebar({
       </div>
 
       <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:border-t-0 lg:bg-white lg:px-0 lg:pb-0">
-        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[12px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
+        <button type="button" onClick={onReset} className="secondary_button secondary_button--on-light">Reset</button>
         <button
           type="button"
           onClick={onApply}
           disabled={!dirty}
-          className="inline-flex h-[34px] flex-1 items-center justify-center rounded-[12px] px-3 button-small"
-          style={{
-            background: dirty ? "var(--main-accent)" : "var(--color-surface-2)",
-            color: dirty ? "var(--on-main-accent)" : "var(--color-text-muted)",
-            cursor: dirty ? "pointer" : "not-allowed",
-          }}
+          className="main_accent_button main_accent_button--on-light flex-1 justify-center"
         >
           Apply
         </button>
