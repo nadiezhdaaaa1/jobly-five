@@ -148,7 +148,7 @@ function ConfirmationPage() {
             </h1>
             <p className="text-[18px] font-extralight leading-[1.6] text-[color:var(--color-text-secondary)]">
               We couldn't find an active plan on this account. Pick one and we'll get your matches
-              going.
+              going
             </p>
           </div>
           <button
@@ -178,9 +178,9 @@ function ConfirmationPage() {
           </h1>
           <p className="text-[18px] font-extralight leading-[1.6] text-[color:var(--color-text-secondary)]">
             {isTrial
-              ? `Your ${TRIAL_DAYS}-day free trial is running. Full Pro access from now — nothing has been charged.`
+              ? `Your ${TRIAL_DAYS}-day free trial is running. Full Pro access from now — nothing has been charged`
               : isWatch
-                ? "Your Watch plan is active. One email a week, scored matches only."
+                ? "Your Watch plan is active. One email a week, scored matches only"
                 : "Your Pro plan is active. Jobly now scores every new posting against your profile"}
           </p>
         </div>
@@ -208,7 +208,7 @@ function ConfirmationPage() {
         <p className="max-w-[488px] text-center text-[16px] font-extralight leading-[1.6] text-[color:var(--color-text-secondary)]">
           {setUp
             ? "Your digest is already set up from your quiz answers. Change roles, seniority, salary or location any time in Settings — every change re-scores your matches"
-            : "Next, answer a few questions about the role you want: stack, seniority, salary, location. Jobly turns that into a live search and scores new postings the moment they appear."}
+            : "Next, answer a few questions about the role you want: stack, seniority, salary, location. Jobly turns that into a live search and scores new postings the moment they appear"}
         </p>
 
         <p className="max-w-[420px] text-center text-[14px] font-extralight leading-[1.2] text-[color:var(--color-text-secondary)]">
