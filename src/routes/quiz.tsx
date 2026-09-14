@@ -781,7 +781,7 @@ function QuizPage() {
 export function StepShell({
   stepKey,
   expanded,
-  scrollOnMount = false,
+  scrollMode = "none",
   answers,
   onEdit,
   invalid = false,
@@ -789,8 +789,12 @@ export function StepShell({
 }: {
   stepKey: StepKey;
   expanded: boolean;
-  /** Set when this step is revealed by the user advancing in this session. */
-  scrollOnMount?: boolean;
+  /**
+   * How this step should scroll when it becomes the active one:
+   * "start" when the user advanced to it, "center" when re-opened for editing,
+   * "none" on first paint and when resuming a saved draft.
+   */
+  scrollMode?: "none" | "start" | "center";
   answers: QuizAnswers;
   onEdit: () => void;
   invalid?: boolean;
@@ -803,13 +807,12 @@ export function StepShell({
   useEffect(() => {
     const first = !mounted.current;
     mounted.current = true;
-    const reveal = expanded && !prev.current;
-    const mountExpanded = first && expanded && scrollOnMount;
-    if (ref.current && (reveal || mountExpanded)) {
+    const becameActive = expanded && (!prev.current || first);
+    if (ref.current && becameActive && scrollMode !== "none") {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       ref.current.scrollIntoView({
         behavior: reduced ? "auto" : "smooth",
-        block: mountExpanded ? "start" : "center",
+        block: scrollMode,
       });
     }
     prev.current = expanded;
