@@ -213,7 +213,8 @@ export function ApplyModal({
               <button
                 type="button"
                 onClick={commitApplied}
-                className="inline-flex h-9 items-center rounded-[12px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="main_accent_button main_accent_button--on-light inline-flex items-center"
+                style={{ borderRadius: 12, fontSize: 13, height: 36, padding: "0 12px", justifyContent: "center" }}
               >
                 Yes, applied
               </button>
