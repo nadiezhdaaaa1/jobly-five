@@ -725,7 +725,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
                 else setStatus(job.id, "saved");
                 if (!saved) toast("Saved to the Tracker");
               }}
-              className="flex h-[30px] w-[30px] items-center justify-center rounded-[12px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
+              className="flex h-[30px] w-[30px] items-center justify-center rounded-[8px] border transition-colors hover:bg-[color:var(--color-surface-2)]"
               style={{
                 borderColor: saved ? "var(--color-green)" : undefined,
                 background: saved ? "var(--color-mint)" : undefined,
