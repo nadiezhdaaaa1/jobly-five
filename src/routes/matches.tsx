@@ -12,6 +12,8 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
+import { ScoreRing } from "@/components/app/ScoreRing";
+
 
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
