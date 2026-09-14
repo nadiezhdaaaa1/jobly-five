@@ -106,7 +106,7 @@ export function watchCard(
     // Watch carries no savings pill on the landing grid: the switcher owns the
     // top-right corner and the saving is already stated in the sub-line.
     badge: null,
-    savings: savingsFor(sku, "accent"),
+    savings: savingsFor(sku, "neutral"),
     badgeInTitle: false,
     glow: "none",
     innerGap: 32,
