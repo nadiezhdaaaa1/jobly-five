@@ -17,6 +17,8 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
   const plan = usePlan();
   const planReady = useEntitlementsReady();
   const pro = isPro(plan);
+  // The badge names the plan state; a pause grants nothing but is still shown.
+  const badge = plan === "free" ? null : plan === "paused" ? "Paused" : plan === "watch" ? "Watch" : "Pro";
   return (
     <header className="sticky top-0 z-40 h-14 border-b bg-[color:var(--color-surface-1)]">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-6">
@@ -28,13 +30,13 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
               aria-label="Loading your plan"
               className="inline-flex h-[26px] w-[52px] rounded-[12px] skeleton"
             />
-          ) : pro ? (
+          ) : badge ? (
             <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-mint)] px-2.5 py-1 text-[13px] font-semibold text-[color:var(--color-green)]">
-              {plan === "paused" ? "Paused" : "Pro"}
+              {badge}
             </span>
           ) : null}
         </Link>
-        {planReady && !pro ? (
+        {planReady && !badge ? (
           <Link
             to="/settings"
             className="group hidden md:inline-flex relative h-9 w-[120px] items-center overflow-hidden rounded-[14px] bg-[color:var(--color-main-accent)] pl-4 pr-14 text-[14px] font-medium text-[color:var(--on-main-accent)] hover:bg-[color:var(--main-accent-hover)]"

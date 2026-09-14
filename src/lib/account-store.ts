@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { deletionDateFrom } from "@/config/account";
-import { setPlan } from "@/lib/plan-store";
+import { cancelPlanNow } from "@/lib/plan-store";
 import { dropLegacyCache, readUserCache, writeUserCache } from "@/lib/user-cache";
 import {
   getAccountState,
@@ -71,7 +71,7 @@ export function scheduleFor(requestedAt: Date): AccountState {
 export function requestAccountDeletion(now: Date = new Date()) {
   commit(scheduleFor(now));
   // Immediate cancellation — NOT cancel-at-period-end.
-  setPlan("free");
+  cancelPlanNow();
 }
 
 /** Server-of-record write. Local state is updated optimistically first. */
