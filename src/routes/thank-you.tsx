@@ -145,11 +145,13 @@ function ConfirmationPage() {
               Every match is scored before it reaches you —{" "}
               <span className="text-[color:var(--color-foreground)]">ghost jobs never do</span>.
             </p>
-            <span
-              className="grid shrink-0 place-items-center rounded-full bg-[color:var(--color-green)]"
-              style={{ width: 52, height: 52 }}
-            >
-              <Check className="h-6 w-6 text-white" strokeWidth={3} />
+            <span className="block shrink-0" style={{ width: 52, height: 52 }}>
+              <img
+                src={badgeAsset.url}
+                alt=""
+                aria-hidden="true"
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              />
             </span>
           </div>
         </div>
