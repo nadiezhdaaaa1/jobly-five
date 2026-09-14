@@ -65,7 +65,7 @@ export function Footer() {
   return (
     <footer className="bg-[color:var(--color-background)]">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-      <div className="mx-auto max-w-[1200px] px-5 pt-24 pb-14 md:px-8">
+      <div className="mx-auto max-w-[1200px] px-5 pt-24 pb-14 md:pt-[108px] md:pb-[68px] md:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_minmax(0,3fr)]">
           <div>
             <Wordmark className="!text-[color:var(--color-text-muted)]" />
