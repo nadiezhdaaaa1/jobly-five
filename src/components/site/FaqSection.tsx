@@ -25,7 +25,7 @@ export function FaqSection() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-      <div className="mx-auto max-w-[820px] px-5 py-16 md:px-8 md:pt-[120px] md:pb-[119px]">
+      <div className="mx-auto max-w-[820px] px-5 py-16 md:px-8 md:pt-[104px] md:pb-[103px]">
         <h2
           className="text-center text-3xl font-light leading-10 md:text-4xl"
           style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
