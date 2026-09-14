@@ -349,8 +349,17 @@ function PaywallCard({
   );
 }
 
-export function PlanPaywall({ onSelect }: { onSelect: (card: PlanCardSpec) => void }) {
-  const [sku, setSku] = useState<SkuId>(PAYWALL_DEFAULT_SKU);
+export function PlanPaywall({
+  onSelect,
+  initialSku,
+}: {
+  onSelect: (card: PlanCardSpec) => void;
+  /** Which card opens selected. This is a DISPLAY choice only — every price,
+   *  total and interval still comes from @/config/pricing, so a caller (or a
+   *  URL param upstream) can never influence what anything costs. */
+  initialSku?: SkuId;
+}) {
+  const [sku, setSku] = useState<SkuId>(initialSku ?? PAYWALL_DEFAULT_SKU);
   const spec = planSpec(sku);
 
   return (
