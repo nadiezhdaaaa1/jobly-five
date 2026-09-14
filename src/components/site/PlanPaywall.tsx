@@ -314,7 +314,13 @@ function PaywallCard({
           <button
             type="button"
             onClick={() => onSelect(spec)}
-            className="main_accent_button main_accent_button--on-light main_accent_button--block h-[48px] shrink-0"
+            className={
+              (spec.ctaMain
+                ? "main_accent_button main_accent_button--on-light main_accent_button--block"
+                : "secondary_button secondary_button--on-light secondary_button--block") +
+              " h-[48px] shrink-0"
+            }
+
             style={{ width: 200 }}
           >
             {spec.cta}

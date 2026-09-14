@@ -58,15 +58,31 @@ export type PlanCardSpec = {
   choice: SelectPlanInput;
 };
 
-export const savingsBadge = (sku: SkuId, tone: "accent" | "step"): BadgeSpec => ({
+export const savingsBadge = (
+  sku: SkuId,
+  tone: "accent" | "step" | "neutral",
+): BadgeSpec => ({
   label: `save ${discountPct(sku)}%`,
-  background: tone === "accent" ? "var(--main-accent)" : "var(--step-accent)",
-  color: tone === "accent" ? "var(--on-accent)" : "#FFFFFF",
+  background:
+    tone === "accent"
+      ? "var(--main-accent)"
+      : tone === "step"
+        ? "var(--step-accent)"
+        : "var(--color-alt-light-mist)",
+  color:
+    tone === "accent"
+      ? "var(--on-accent)"
+      : tone === "step"
+        ? "#FFFFFF"
+        : "var(--color-foreground)",
 });
 
 /** A pill only where the SKU actually saves against its tier baseline. */
-const savingsFor = (sku: SkuId, tone: "accent" | "step"): BadgeSpec | null =>
-  discountPct(sku) > 0 ? savingsBadge(sku, tone) : null;
+const savingsFor = (
+  sku: SkuId,
+  tone: "accent" | "step" | "neutral",
+): BadgeSpec | null => (discountPct(sku) > 0 ? savingsBadge(sku, tone) : null);
+
 
 export function watchCard(
   sku: Extract<SkuId, "watch_monthly" | "watch_annual">,
@@ -90,7 +106,7 @@ export function watchCard(
     // Watch carries no savings pill on the landing grid: the switcher owns the
     // top-right corner and the saving is already stated in the sub-line.
     badge: null,
-    savings: savingsFor(sku, "accent"),
+    savings: savingsFor(sku, "neutral"),
     badgeInTitle: false,
     glow: "none",
     innerGap: 32,
