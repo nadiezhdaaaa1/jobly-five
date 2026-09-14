@@ -72,7 +72,7 @@ function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanC
     subLine: annual
       ? `${usd(skuTotal(sku))}/year — save ${discountPct(sku)}%`
       : `${usd(WATCH_MONTHLY_ANNUALISED)}/year`,
-    description: "Stay in the loop — a weekly digest of scored matches, ghost jobs filtered out.",
+    description: "One email a week. For when you're not looking — but you'd move for the right thing.",
     cta: "Get Watch",
     ctaMain: false,
     disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
@@ -97,8 +97,7 @@ export const PRO_CARDS: PlanCardSpec[] = [
     suffix: "/month",
     // The trial folds into the Pro monthly card; there is no standalone trial card.
     subLine: `${TRIAL_DAYS} days free, then ${usd(skuTotal("pro_monthly"))}`,
-    description:
-      "Full Pro access — a daily digest, match scores, the application tracker and follow-ups.",
+    description: "Try it on your real search. No commitment, cancel any time.",
     cta: `Start ${TRIAL_DAYS}-day free`,
     ctaMain: false,
     disclosure: `${TRIAL_DAYS} days free, then ${renewalPhrase("pro_monthly")} until cancelled`,
