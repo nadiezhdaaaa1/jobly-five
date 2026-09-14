@@ -1212,17 +1212,12 @@ function FiltersSidebar({
       </div>
 
       <div className="sticky bottom-0 z-10 flex items-center gap-2 border-t bg-[color:var(--color-surface-1)] p-3 lg:border-t-0 lg:bg-white lg:px-0 lg:pb-0">
-        <button type="button" onClick={onReset} className="inline-flex h-[34px] items-center rounded-[12px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">Reset</button>
+        <button type="button" onClick={onReset} className="secondary_button secondary_button--on-light">Reset</button>
         <button
           type="button"
           onClick={onApply}
           disabled={!dirty}
-          className="inline-flex h-[34px] flex-1 items-center justify-center rounded-[12px] px-3 button-small"
-          style={{
-            background: dirty ? "var(--main-accent)" : "var(--color-surface-2)",
-            color: dirty ? "var(--on-main-accent)" : "var(--color-text-muted)",
-            cursor: dirty ? "pointer" : "not-allowed",
-          }}
+          className="main_accent_button main_accent_button--on-light flex-1 justify-center"
         >
           Apply
         </button>
