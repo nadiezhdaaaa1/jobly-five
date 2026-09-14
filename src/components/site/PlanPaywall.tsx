@@ -29,12 +29,22 @@ function SkuSwitcher({
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const segRefs = useRef<Partial<Record<SkuId, HTMLButtonElement | null>>>({});
-  const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
+  const [pill, setPill] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const measure = useCallback(() => {
     const el = segRefs.current[value];
     if (!el) return;
-    setPill({ left: el.offsetLeft, width: el.offsetWidth });
+    setPill({
+      left: el.offsetLeft,
+      top: el.offsetTop,
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+    });
   }, [value]);
 
   useLayoutEffect(() => {
@@ -45,6 +55,7 @@ function SkuSwitcher({
     ro.observe(track);
     return () => ro.disconnect();
   }, [measure]);
+
 
   return (
     <div
@@ -57,12 +68,13 @@ function SkuSwitcher({
       {pill ? (
         <span
           aria-hidden="true"
-          className="absolute transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
+          className="absolute transition-[left,top,width,height] duration-200 ease-out motion-reduce:transition-none"
           style={{
-            top: 4,
+            top: pill.top,
             left: pill.left,
             width: pill.width,
-            height: 32,
+            height: pill.height,
+
             borderRadius: 20,
             background: "#fff",
             boxShadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)",
@@ -302,7 +314,7 @@ function PaywallCard({
           <button
             type="button"
             onClick={() => onSelect(spec)}
-            className="main_accent_button main_accent_button--on-light h-[50px] shrink-0"
+            className="main_accent_button main_accent_button--on-light main_accent_button--block h-[48px] shrink-0"
             style={{ width: 200 }}
           >
             {spec.cta}
