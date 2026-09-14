@@ -465,7 +465,7 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
           Switch points are set where the price line and the CTA label stop
           fitting on one line, measured — not at round numbers. */}
       <div
-        className="grid w-full items-start [grid-template-columns:minmax(0,1fr)] min-[520px]:[grid-template-columns:repeat(2,minmax(0,1fr))] min-[1120px]:[grid-template-columns:repeat(4,minmax(0,1fr))]"
+        className="grid w-full items-start [grid-template-columns:minmax(0,1fr)] min-[520px]:[grid-template-columns:repeat(2,minmax(0,1fr))] min-[1100px]:[grid-template-columns:repeat(4,minmax(0,1fr))]"
         style={{ gap: 20 }}
       >
         <PlanCard
