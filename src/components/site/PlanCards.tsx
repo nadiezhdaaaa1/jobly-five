@@ -263,8 +263,9 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center"
+      className="relative z-0 flex min-w-0 flex-col"
       style={{
+        flex: "0 1 269px",
         // Inset ring instead of a border so the design's 269x405 / 34 / 371
         // geometry is not shifted inward by 1px on each edge.
         boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
