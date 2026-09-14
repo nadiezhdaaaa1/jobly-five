@@ -15,7 +15,9 @@ export async function suppressByToken(
 
   try {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { CONSENT_CHANNELS, POLICY_VERSION } = await import("@/config/consent");
+    const { CONSENT_CHANNELS, ESSENTIAL_CHANNELS, POLICY_VERSION } = await import(
+      "@/config/consent"
+    );
     const { data: contact } = await supabaseAdmin
       .from("email_contacts")
       .select("email, user_id, suppressed_at")
@@ -23,11 +25,16 @@ export async function suppressByToken(
       .maybeSingle();
     if (!contact) return { ok: false, reason: "not_found" };
 
+    const essential = ESSENTIAL_CHANNELS as readonly string[];
     const channel = opts?.channel ?? null;
+    // Essential channels are never withdrawn, whether asked for by name or not.
     const requested =
       channel && (CONSENT_CHANNELS as readonly string[]).includes(channel)
-        ? [channel]
-        : [...CONSENT_CHANNELS].filter((c) => c !== "resume_storage" && c !== "billing_terms");
+        ? essential.includes(channel)
+          ? []
+          : [channel]
+        : [...CONSENT_CHANNELS].filter((c) => !essential.includes(c));
+
 
     // Withdrawal is a new row per channel; history is never rewritten.
     await supabaseAdmin.from("consent_records").insert(

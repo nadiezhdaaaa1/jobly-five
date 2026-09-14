@@ -3,6 +3,7 @@ import { getPlan, resolveIsPro, resolvePlan, type Subscription } from "./plan-st
 
 const sub = (o: Partial<Subscription>): Subscription => ({
   status: "canceling",
+  sku: "pro_monthly",
   cancelAtPeriodEnd: true,
   currentPeriodEnd: new Date().toISOString(),
   ...o,
@@ -23,15 +24,24 @@ describe("entitlement resolution", () => {
     expect(resolveIsPro(sub({ status: "active", cancelAtPeriodEnd: false }))).toBe(true);
     expect(resolveIsPro(sub({ status: "trialing", cancelAtPeriodEnd: false }))).toBe(true);
   });
-  it("canceled is Free, paused keeps entitlements", () => {
+  it("canceled is Free", () => {
     expect(resolveIsPro(sub({ status: "canceled", cancelAtPeriodEnd: false }))).toBe(false);
-    expect(resolvePlan(sub({ status: "paused", cancelAtPeriodEnd: false }))).toBe("paused");
+  });
+  it("paused suspends access: labelled paused, and never Pro", () => {
+    const paused = sub({ status: "paused", cancelAtPeriodEnd: false });
+    expect(resolvePlan(paused)).toBe("paused");
+    expect(resolveIsPro(paused)).toBe(false);
+  });
+  it("a live watch SKU is the watch tier, not Pro", () => {
+    const watch = sub({ status: "active", sku: "watch_annual", cancelAtPeriodEnd: false });
+    expect(resolvePlan(watch)).toBe("watch");
+    expect(resolveIsPro(watch)).toBe(false);
   });
 });
 
 describe("fail-closed entitlements", () => {
   it("unknown status resolves to Free", () => {
-    const s = sub({ status: "none", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() });
+    const s = sub({ status: "none", sku: null, cancelAtPeriodEnd: false, currentPeriodEnd: new Date(0).toISOString() });
     expect(resolveIsPro(s)).toBe(false);
     expect(resolvePlan(s)).toBe("free");
   });

@@ -1,44 +1,65 @@
 import { supabase } from "@/integrations/supabase/client";
+import { isSkuId, type SkuId, type Tier } from "@/config/pricing";
 import type { Plan, SubStatus, Subscription } from "@/lib/plan-store";
 
+/**
+ * Per-feature granularity, driven by tier on the server. `saved_searches` is a
+ * limit, not a flag: 0 = none, 1 = Watch, null = unlimited (Pro).
+ */
 export type Features = {
   match_score: boolean;
+  ghost_filtering: boolean;
   daily_digest: boolean;
+  high_match_alerts: boolean;
   tracker: boolean;
   follow_up_reminders: boolean;
   found_a_job_pause: boolean;
+  saved_searches: number | null;
 };
-
-/** Billing cycle. Access still comes from `plan`; this is the billed period. */
-export type BillingCycle = "monthly" | "annual";
 
 export type Entitlements = {
   plan: Plan;
+  tier: Tier | "none";
   status: SubStatus;
-  cycle: BillingCycle | null;
+  /** The purchased SKU. NULL on rows written before SKUs existed. */
+  sku: SkuId | null;
+  /** What the account actually paid — what a renewal charges. */
+  purchase_price: number | null;
   /** True once the quiz answers have landed on the profile. */
   onboarded: boolean;
   trial_ends_at: string | null;
   current_period_end: string | null;
-  pause_ends_at: string | null;
+  pause_ends_at: string | null
+  /** Days frozen by pausing a prepaid plan, and when they expire. */
+  banked_days: number;
+  banked_days_expire_at: string | null;
   features: Features;
+};
+
+export const NO_FEATURES: Features = {
+  match_score: false,
+  ghost_filtering: false,
+  daily_digest: false,
+  high_match_alerts: false,
+  tracker: false,
+  follow_up_reminders: false,
+  found_a_job_pause: false,
+  saved_searches: 0,
 };
 
 export const FREE_ENTITLEMENTS: Entitlements = {
   plan: "free",
+  tier: "none",
   status: "none",
-  cycle: null,
+  sku: null,
+  purchase_price: null,
   onboarded: false,
   trial_ends_at: null,
   current_period_end: null,
   pause_ends_at: null,
-  features: {
-    match_score: false,
-    daily_digest: false,
-    tracker: false,
-    follow_up_reminders: false,
-    found_a_job_pause: false,
-  },
+  banked_days: 0,
+  banked_days_expire_at: null,
+  features: NO_FEATURES,
 };
 
 /** Legacy client-side plan keys. A browser value is not evidence of a subscription. */
@@ -64,13 +85,18 @@ export function demoForcePro(): boolean {
 export const PRO_DEMO_ENTITLEMENTS: Entitlements = {
   ...FREE_ENTITLEMENTS,
   plan: "pro",
+  tier: "pro",
   status: "active",
+  sku: "pro_monthly",
   features: {
     match_score: true,
+    ghost_filtering: true,
     daily_digest: true,
+    high_match_alerts: true,
     tracker: true,
     follow_up_reminders: true,
     found_a_job_pause: true,
+    saved_searches: null,
   },
 };
 
@@ -79,15 +105,27 @@ export async function fetchEntitlements(): Promise<Entitlements> {
   const { data, error } = await supabase.rpc("get_entitlements");
   if (error || !data || typeof data !== "object") throw error ?? new Error("No entitlements");
   const e = data as unknown as Entitlements;
+  const tier: Tier | "none" = e.tier === "pro" || e.tier === "watch" ? e.tier : "none";
   return {
-    plan: e.plan === "pro" ? "pro" : e.status === "paused" ? "paused" : "free",
+    plan:
+      e.status === "paused"
+        ? "paused"
+        : tier === "pro"
+          ? "pro"
+          : tier === "watch"
+            ? "watch"
+            : "free",
+    tier,
     status: e.status ?? "none",
-    cycle: e.cycle === "annual" || e.cycle === "monthly" ? e.cycle : null,
+    sku: isSkuId(e.sku) ? e.sku : null,
+    purchase_price: e.purchase_price === null || e.purchase_price === undefined ? null : Number(e.purchase_price),
     onboarded: Boolean(e.onboarded),
     trial_ends_at: e.trial_ends_at ?? null,
     current_period_end: e.current_period_end ?? null,
     pause_ends_at: e.pause_ends_at ?? null,
-    features: { ...FREE_ENTITLEMENTS.features, ...(e.features ?? {}) },
+    banked_days: Number(e.banked_days ?? 0) || 0,
+    banked_days_expire_at: e.banked_days_expire_at ?? null,
+    features: { ...NO_FEATURES, ...(e.features ?? {}) },
   };
 }
 
@@ -96,26 +134,35 @@ export function toSubscription(
   e: Entitlements,
   row?: {
     status: string;
+    sku: SkuId | null;
     cancelAtPeriodEnd: boolean;
     currentPeriodEnd: string | null;
     pauseEndsAt?: string | null;
+    bankedDays?: number;
+    bankedDaysExpireAt?: string | null;
     activationSource?: string;
   } | null,
 ): Subscription {
   if (row) {
     return {
       status: (row.cancelAtPeriodEnd ? "canceling" : row.status) as SubStatus,
+      sku: row.sku ?? e.sku,
       cancelAtPeriodEnd: row.cancelAtPeriodEnd,
       currentPeriodEnd: row.currentPeriodEnd ?? e.trial_ends_at ?? new Date(0).toISOString(),
       pauseEndsAt: row.pauseEndsAt ?? e.pause_ends_at ?? null,
+      bankedDays: row.bankedDays ?? e.banked_days,
+      bankedDaysExpireAt: row.bankedDaysExpireAt ?? e.banked_days_expire_at,
       activationSource: row.activationSource ?? "none",
     };
   }
   return {
-    status: e.status === "canceled" && e.current_period_end ? "canceled" : (e.status as SubStatus),
-    cancelAtPeriodEnd: e.status === "active" && Boolean(e.current_period_end) ? false : false,
+    status: e.status ?? "none",
+    sku: e.sku,
+    cancelAtPeriodEnd: false,
     currentPeriodEnd: e.current_period_end ?? e.trial_ends_at ?? new Date(0).toISOString(),
     pauseEndsAt: e.pause_ends_at ?? null,
+    bankedDays: e.banked_days,
+    bankedDaysExpireAt: e.banked_days_expire_at,
     activationSource: "none",
   };
 }

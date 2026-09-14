@@ -5,11 +5,11 @@ import { z } from "zod";
 import { Wordmark } from "@/components/site/Wordmark";
 
 import { recordConsent } from "@/lib/consent.functions";
-import { CONSENT_CHANNELS, POLICY_VERSION } from "@/config/consent";
+import { CONSENT_CHANNELS, ESSENTIAL_CHANNELS, POLICY_VERSION } from "@/config/consent";
 
-const NON_ESSENTIAL = CONSENT_CHANNELS.filter(
-  (c) => c !== "resume_storage" && c !== "billing_terms",
-);
+// Essential channels are never withdrawn here — renewal reminders included,
+// since the plan disclosure promises an email before every charge.
+const NON_ESSENTIAL = CONSENT_CHANNELS.filter((c) => !ESSENTIAL_CHANNELS.includes(c));
 
 export const Route = createFileRoute("/preferences")({
   validateSearch: z.object({ token: z.string().optional() }),

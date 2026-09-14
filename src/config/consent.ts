@@ -31,9 +31,22 @@ export const CONSENT_CHANNELS = [
   "reactivation",
   "resume_storage",
   "billing_terms",
+  "renewal_reminders",
 ] as const;
 
 export type ConsentChannelName = (typeof CONSENT_CHANNELS)[number];
 
 /** The core service email; exempt from the double opt-in requirement. */
 export const CORE_SERVICE_CHANNEL: ConsentChannelName = "daily_digest";
+
+/**
+ * Channels a user cannot switch off. `renewal_reminders` is essential because
+ * the shared plan disclosure promises an email before every charge: 7 days
+ * before each renewal, plus a day-before reminder for the pro_monthly trial's
+ * first charge. Switching it off would break that promise.
+ */
+export const ESSENTIAL_CHANNELS: ConsentChannelName[] = [
+  "resume_storage",
+  "billing_terms",
+  "renewal_reminders",
+];

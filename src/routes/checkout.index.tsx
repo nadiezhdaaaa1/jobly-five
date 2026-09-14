@@ -8,7 +8,15 @@ import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { Wordmark } from "@/components/site/Wordmark";
 import { supabase } from "@/integrations/supabase/client";
-import { PRICING, TRIAL_DAYS, discountPct, total, usd } from "@/config/pricing";
+import {
+  SHARED_PLAN_DISCLOSURE,
+  SKUS,
+  TRIAL_DAYS,
+  discountPct,
+  renewalPhrase,
+  skuTotal,
+  usd,
+} from "@/config/pricing";
 import { applySubscriptionAction } from "@/lib/subscription.functions";
 import { clearPlanIntent, readPlanIntent, type PlanIntent } from "@/lib/onboarding/planIntent";
 
@@ -23,6 +31,14 @@ export const Route = createFileRoute("/checkout/")({
   }),
   component: CheckoutPage,
 });
+
+const PLAN_NAMES = {
+  watch_monthly: "Jobly Watch — monthly",
+  watch_annual: "Jobly Watch — yearly",
+  pro_monthly: "Jobly Pro — monthly",
+  pro_3month: "Jobly Pro — 3 months",
+  pro_6month: "Jobly Pro — 6 months",
+} as const;
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -55,24 +71,20 @@ function CheckoutPage() {
     setError(null);
     try {
       await applySubscriptionAction({
-        data:
-          intent.plan === "trial"
-            ? { action: "start_trial" }
-            : {
-                action: "activate",
-                cycle: intent.cycle,
-                // Only a decision made in Settings -> Plan may change the cycle
-                // of a live subscription; the server enforces the same rule.
-                allowCycleChange: intent.manage === true,
-              },
+        data: intent.trial
+          ? { action: "start_trial", sku: intent.sku }
+          : {
+              action: "activate",
+              sku: intent.sku,
+              // Only a decision made in Settings -> Plan may change the SKU of a
+              // live subscription; the server enforces the same rule.
+              allowSkuChange: intent.manage === true,
+            },
       });
 
       // The decision has been acted on: it must not outlive this checkout.
       clearPlanIntent();
-      void navigate({
-        to: "/checkout/confirmation",
-        search: { plan: intent.plan, cycle: intent.cycle },
-      });
+      void navigate({ to: "/checkout/confirmation", search: { sku: intent.sku } });
     } catch {
       setError("We couldn't confirm that just now. Please try again.");
       setPaying(false);
@@ -87,8 +99,9 @@ function CheckoutPage() {
     );
   }
 
-  const tier = intent.cycle === "annual" ? PRICING.annual : PRICING.monthly;
-  const isTrial = intent.plan === "trial";
+  const sku = SKUS[intent.sku];
+  const isTrial = intent.trial;
+  const discount = discountPct(sku.id);
 
   return (
     <div className="min-h-screen bg-[color:var(--color-surface-0)]">
@@ -103,25 +116,21 @@ function CheckoutPage() {
           <div className="flex flex-col gap-3 rounded-[12px] bg-[color:var(--color-surface-0)] p-4">
             <div className="flex items-baseline justify-between">
               <span className="text-[15px] text-[color:var(--color-foreground)]">
-                {isTrial ? `Pro — ${TRIAL_DAYS}-day free trial` : "Jobly Pro"}
+                {isTrial ? `${PLAN_NAMES[sku.id]} — ${TRIAL_DAYS}-day free trial` : PLAN_NAMES[sku.id]}
               </span>
               <span className="text-[15px] font-light text-[color:var(--color-foreground)]">
-                {isTrial ? usd(0) : usd(total(tier))}
+                {isTrial ? usd(0) : usd(skuTotal(sku.id))}
               </span>
             </div>
             <p className="text-sm text-[color:var(--color-text-secondary)]">
               {isTrial
-                ? `Free for ${TRIAL_DAYS} days, then ${usd(PRICING.monthly.perMonth)} per month. Cancel any time before it ends.`
-                : intent.cycle === "annual"
-                  ? `${usd(PRICING.annual.perMonth)} per month, billed yearly — ${discountPct(PRICING.annual)}% off.`
-                  : `${usd(PRICING.monthly.perMonth)} per month, billed monthly.`}
+                ? `Free for ${TRIAL_DAYS} days, then ${renewalPhrase(sku.id)}. Cancel any time before it ends.`
+                : discount > 0
+                  ? `${renewalPhrase(sku.id)} — ${discount}% off the monthly rate.`
+                  : `${renewalPhrase(sku.id)}.`}
             </p>
             <p className="text-xs text-[color:var(--color-text-muted)]">
-              {isTrial
-                ? `Auto-renews at ${usd(PRICING.monthly.perMonth)} until cancelled. Cancel anytime in Settings → Plan in two steps.`
-                : intent.cycle === "annual"
-                  ? `Auto-renews at ${usd(total(PRICING.annual))} until cancelled. Cancel anytime in Settings → Plan in two steps.`
-                  : `Auto-renews at ${usd(PRICING.monthly.perMonth)} until cancelled. Cancel anytime in Settings → Plan in two steps.`}
+              Auto-renews at {renewalPhrase(sku.id)} until cancelled.
             </p>
           </div>
           {error && <p className="text-sm text-[color:var(--color-danger)]">{error}</p>}
@@ -142,6 +151,9 @@ function CheckoutPage() {
               "Pay and activate"
             )}
           </button>
+          <p className="text-center text-xs text-[color:var(--color-text-muted)]">
+            {SHARED_PLAN_DISCLOSURE}
+          </p>
           <p className="text-center text-xs text-[color:var(--color-text-muted)]">
             No card is charged — payments are not live yet.
           </p>
