@@ -667,9 +667,6 @@ function DevHardPurgeRow() {
   );
 }
 
-const PRO_MONTHLY = PRICING.monthly.perMonth;
-const PRO_ANNUAL_MONTHLY = PRICING.annual.perMonth;
-
 function PlanCardsBlock({
   plan,
   onFlash,
@@ -680,94 +677,34 @@ function PlanCardsBlock({
   onDowngrade: () => void;
 }) {
   const hasHadPro = useHasHadPro();
-  const [period, setPeriod] = useState<"annual" | "monthly">("annual");
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [indicator, setIndicator] = useState<{
-    left: number;
-    width: number;
-    height: number;
-    top: number;
-  }>({ left: 0, width: 0, height: 0, top: 0 });
-  const segments = ["annual", "monthly"] as const;
-
-  useEffect(() => {
-    const measure = () => {
-      const idx = segments.indexOf(period);
-      const btn = btnRefs.current[idx];
-      if (!btn) return;
-      setIndicator({
-        left: btn.offsetLeft,
-        width: btn.offsetWidth,
-        height: btn.offsetHeight,
-        top: btn.offsetTop,
-      });
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (tabsRef.current) ro.observe(tabsRef.current);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [period]);
-
   const isPlanFree = plan === "free";
-  const isPlanPro = plan === "pro" || plan === "paused";
+  const isPaid = plan === "pro" || plan === "watch";
   const navigate = useNavigate();
-  const subCycle = useEntitlements().entitlements.cycle;
-  // Nothing to buy only when the displayed cycle is already the live one.
-  const ctaDisabled = isPlanPro && period === (subCycle ?? "monthly");
+  const currentSku = useEntitlements().entitlements.sku;
 
   // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
   const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
   const [billingTermsVersion, setBillingTermsVersion] = useState<string | null>(null);
   const [billingTermsTicked, setBillingTermsTicked] = useState(false);
   useEffect(() => {
-    if (isPlanPro) return;
+    if (isPaid) return;
     void billingTermsAccepted()
       .then((res) => {
         setNeedsBillingTerms(!res.accepted);
         setBillingTermsVersion(res.version);
       })
       .catch(() => undefined);
-  }, [isPlanPro]);
+  }, [isPaid]);
 
-  const savings = money(annualSavings(PRICING.annual));
+  const blocked = needsBillingTerms && !billingTermsTicked;
 
-  // The trial exists on monthly only, once per account.
-  const trialOffer = !hasHadPro && period === "monthly";
-  const proLabel = isPlanPro
-    ? period === (subCycle ?? "monthly")
-      ? "Current plan"
-      : period === "annual"
-        ? "Switch to yearly"
-        : "Switch to monthly"
-    : trialOffer
-      ? `Start free ${TRIAL_DAYS}-day trial`
-      : "Upgrade to Pro";
-
-  const freeFeatures: Array<{ label: string; included: boolean }> = [
-    { label: "Matches per digest — Top 5", included: true },
-    { label: "Digest frequency — Weekly", included: true },
-    { label: "AI match score and \u201Cwhy it fits\u201D", included: false },
-    { label: "Application tracker", included: false },
-    { label: "Follow-up reminders", included: false },
-    { label: "\u201CFound a job\u201D pause", included: false },
-  ];
-  const proFeatures: string[] = [
-    "Matches per digest — Top 5",
-    "Digest frequency — Daily",
-    "AI match score and \u201Cwhy it fits\u201D",
-    "Application tracker",
-    "Follow-up reminders",
-    "\u201CFound a job\u201D pause",
-  ];
-
-  function onProClick() {
-    if (ctaDisabled) return;
-    if (needsBillingTerms && !billingTermsTicked) return;
+  function onSelect(card: PlanCardSpec) {
+    // Already on this exact plan: nothing to buy.
+    if (card.choice.sku === currentSku) {
+      onFlash("That's the plan you're already on.");
+      return;
+    }
+    if (blocked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
         data: {
@@ -782,423 +719,64 @@ function PlanCardsBlock({
     // Every plan change goes through the one flow and the one server action:
     // the intent is saved, then checkout confirms it. `manage` marks this as an
     // explicit decision by the account holder, the only case allowed to change
-    // the cycle of a live subscription.
-    savePlanIntent({ plan: trialOffer ? "trial" : "pro", cycle: period, manage: true });
+    // the SKU of a live subscription. The trial is offered once per account.
+    savePlanIntent({
+      sku: card.choice.sku,
+      trial: card.choice.trial && !hasHadPro,
+      manage: true,
+    });
     void navigate({ to: CHECKOUT_PATH });
   }
 
   return (
-    <div className="mt-5 w-full max-w-[800px]">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch lg:gap-4">
-        {/* Pro card — left, wider */}
-        <div
-          className="rounded-[12px] p-2 md:p-3 lg:min-w-0"
-          style={{ background: "#F1F3F3", flex: "504 0 0" }}
-        >
-          <div
-            className="relative flex h-full flex-col gap-4 rounded-[8px] p-5 md:p-[21px]"
-            style={{
-              background: "rgba(255,255,255,0.8)",
-              border: "1px solid #FFFFFF",
-              boxShadow: "0 1px 4px rgba(12,12,13,0.05)",
-              overflow: "hidden",
-              isolation: "isolate",
-            }}
-          >
-            {/* Glow */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute"
-              style={{
-                width: 200,
-                height: 200,
-                top: -64,
-                right: -64,
-                zIndex: 1,
-                background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
-                filter: "blur(40px)",
-                opacity: 0.45,
-              }}
-            />
+    <div className="mt-5 w-full">
+      {!isPaid && needsBillingTerms && (
+        <label className="mb-4 flex items-start gap-2.5 text-[13px] leading-[19.5px] text-[color:var(--color-foreground)]">
+          <input
+            type="checkbox"
+            checked={billingTermsTicked}
+            onChange={(e) => setBillingTermsTicked(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded-[4px]"
+          />
+          <span>
+            I accept the{" "}
+            <Link to="/legal/billing" className="underline">
+              Subscription and Billing Terms
+            </Link>
+            , including automatic renewal until cancelled.
+          </span>
+        </label>
+      )}
 
-            {/* Head */}
-            <div className="relative flex-1" style={{ zIndex: 2 }}>
-              {/* Toggle (top-right on desktop; static on mobile) */}
-              <div
-                ref={tabsRef}
-                role="tablist"
-                aria-label="Billing period"
-                className="relative mb-3 flex w-full items-center gap-1 rounded-[10px] p-1 md:absolute md:right-0 md:top-0 md:mb-0 md:w-auto"
-                style={{ background: "rgba(0,0,0,0.08)" }}
-                onKeyDown={(e) => {
-                  if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-                    setPeriod((p) => (p === "annual" ? "monthly" : "annual"));
-                  }
-                }}
-              >
-                <span
-                  aria-hidden
-                  className="absolute pointer-events-none"
-                  style={{
-                    left: indicator.left,
-                    top: indicator.top,
-                    width: indicator.width,
-                    height: indicator.height,
-                    background: "#FFFFFF",
-                    borderRadius: 6,
-                    boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-                    transition:
-                      "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
-                  }}
-                />
-                {segments.map((seg, idx) => {
-                  const active = period === seg;
-                  const label = seg === "annual" ? "Annual" : "Monthly";
-                  return (
-                    <button
-                      key={seg}
-                      ref={(el) => {
-                        btnRefs.current[idx] = el;
-                      }}
-                      role="tab"
-                      type="button"
-                      aria-selected={active}
-                      onClick={() => setPeriod(seg)}
-                      className="relative flex-1 md:flex-none inline-flex items-center justify-center gap-1 rounded-[6px]"
-                      style={{
-                        background: "transparent",
-                        padding: seg === "annual" ? "4px 4px 4px 8px" : "5px 8px",
-                        zIndex: 1,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontFamily: "var(--font-sans)",
-                          fontWeight: 400,
-                          fontSize: 12,
-                          lineHeight: "16px",
-                          color: active ? "#090B0C" : "#4B585B",
-                          transition: "color 200ms ease",
-                        }}
-                      >
-                        {label}
-                      </span>
-                      {seg === "annual" ? (
-                        <span
-                          className="inline-flex items-center"
-                          style={{
-                            background: "var(--color-mint, #D8FBEF)",
-                            color: "var(--color-green, #0E735A)",
-                            borderRadius: 4,
-                            padding: "2px 4px",
-                            height: 16,
-                            fontFamily: "var(--font-sans)",
-                            fontWeight: 300,
-                            fontSize: 12,
-                            lineHeight: "16px",
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          Best value
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
+      <div aria-disabled={blocked} style={{ opacity: blocked ? 0.6 : 1 }}>
+        <PlanCardsGrid onSelect={onSelect} />
+      </div>
 
-              {/* Plan name */}
-              <div
-                style={{
-                  fontFamily: "var(--font-display, var(--font-sans))",
-                  fontWeight: 400,
-                  fontSize: 16,
-                  lineHeight: "24px",
-                  color: "#090B0C",
-                }}
-              >
-                {period === "annual" ? "Annual" : "Monthly"}
-              </div>
-
-              {/* Price group — pinned near bottom of head */}
-              <div className="mt-6 flex flex-col gap-1 relative">
-                {/* Struck row (always rendered) */}
-                <div style={{ height: 20 }}>
-                  {period === "annual" ? (
-                    <span
-                      style={{
-                        fontFamily: "var(--font-sans)",
-                        fontWeight: 300,
-                        fontSize: 14,
-                        lineHeight: 1.5,
-                        color: "#67787C",
-                        textDecoration: "line-through",
-                      }}
-                    >
-                      ${PRO_MONTHLY.toFixed(2)}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span
-                    style={{
-                      fontFamily: "var(--font-display, var(--font-sans))",
-                      fontWeight: 400,
-                      fontSize: 32,
-                      lineHeight: 1.05,
-                      color: "#090B0C",
-                    }}
-                  >
-                    ${period === "annual" ? PRO_ANNUAL_MONTHLY.toFixed(2) : PRO_MONTHLY.toFixed(2)}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 300,
-                      fontSize: 14,
-                      lineHeight: 1.5,
-                      color: "#67787C",
-                    }}
-                  >
-                    per month
-                  </span>
-                  {period === "annual" ? (
-                    <span
-                      className="ml-1 hidden md:inline-flex items-center md:absolute md:right-0 md:bottom-0"
-                      style={{
-                        background: "#0E735A",
-                        color: "#FFFFFF",
-                        borderRadius: 24,
-                        padding: "4px 8px",
-                        fontFamily: "var(--font-sans)",
-                        fontWeight: 400,
-                        fontSize: 12,
-                        lineHeight: "16px",
-                      }}
-                    >
-                      Save ${savings}
-                    </span>
-                  ) : null}
-                </div>
-                {period === "annual" ? (
-                  <span
-                    className="md:hidden inline-flex items-center self-start"
-                    style={{
-                      background: "#0E735A",
-                      color: "#FFFFFF",
-                      borderRadius: 24,
-                      padding: "4px 8px",
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 400,
-                      fontSize: 12,
-                      lineHeight: "16px",
-                    }}
-                  >
-                    Save ${savings}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Feature list */}
-            <ul className="relative flex flex-col gap-3 py-2" style={{ zIndex: 2 }}>
-              {proFeatures.map((label) => (
-                <li key={label} className="flex items-center gap-2">
-                  <span
-                    className="inline-flex shrink-0 items-center justify-center rounded-full"
-                    style={{ width: 16, height: 16, background: "#00F1A9" }}
-                  >
-                    <IconCheck size={11} strokeWidth={2.5} style={{ color: "#090B0C" }} />
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 300,
-                      fontSize: 13,
-                      lineHeight: "19.5px",
-                      color: "#090B0C",
-                    }}
-                  >
-                    {label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Button */}
-            <div className="relative" style={{ zIndex: 2 }}>
-              {!isPlanPro && needsBillingTerms && (
-                <label className="mb-3 flex items-start gap-2.5 text-[13px] leading-[19.5px] text-[#090B0C]">
-                  <input
-                    type="checkbox"
-                    checked={billingTermsTicked}
-                    onChange={(e) => setBillingTermsTicked(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded-[4px]"
-                  />
-                  <span>
-                    I accept the{" "}
-                    <Link to="/legal/billing" className="underline">
-                      Subscription and Billing Terms
-                    </Link>
-                    , including automatic renewal until cancelled.
-                  </span>
-                </label>
-              )}
-              <button
-                type="button"
-                onClick={onProClick}
-                disabled={ctaDisabled || (needsBillingTerms && !billingTermsTicked)}
-                className="w-full inline-flex items-center justify-center"
-                style={{
-                  background: "#00F1A9",
-                  border: "1px solid #00F1A9",
-                  color: "#090B0C",
-                  borderRadius: 4,
-                  padding: "13px 17px",
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 400,
-                  fontSize: 14,
-                  lineHeight: "20px",
-                  opacity: ctaDisabled || (needsBillingTerms && !billingTermsTicked) ? 0.6 : 1,
-                  cursor:
-                    ctaDisabled || (needsBillingTerms && !billingTermsTicked) ? "default" : "pointer",
-                }}
-              >
-                {proLabel}
-              </button>
-              {trialOffer && !isPlanPro ? (
-                <p
-                  className="mt-2 text-center"
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontWeight: 300,
-                    fontSize: 12,
-                    lineHeight: "16px",
-                    color: "#67787C",
-                  }}
-                >
-                  {TRIAL_DAYS} days free, then {usd(PRO_MONTHLY)}/mo. Auto-renews at{" "}
-                  {usd(PRO_MONTHLY)} until cancelled. Cancel anytime in Settings → Plan in two
-                  steps.
-                </p>
-              ) : null}
-            </div>
-          </div>
+      {/* Not a tier you can buy: it is what the account falls back to after
+          cancelling. */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
+        <div>
+          <p className="text-[14px] text-[color:var(--color-foreground)]">No plan — $0</p>
+          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
+            Weekly digest only. No match scores, tracker or reminders.
+          </p>
         </div>
-
-        {/* No-plan card — right, narrower. Not a tier you can buy: it is what
-            the account falls back to after cancelling. */}
-        <div
-          className="rounded-[12px] p-2 md:p-3 lg:min-w-0"
-          style={{ background: "#F1F3F3", flex: "280 0 0" }}
+        <button
+          type="button"
+          onClick={() => {
+            if (isPlanFree) return;
+            onDowngrade();
+          }}
+          disabled={isPlanFree}
+          className="inline-flex h-10 items-center justify-center rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] disabled:opacity-60"
         >
-          <div
-            className="flex h-full flex-col gap-4 rounded-[8px] p-5 md:p-[21px]"
-            style={{
-              background: "#F9FBFB",
-              border: "1px solid #FFFFFF",
-              boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-            }}
-          >
-            <div className="flex-1">
-              <div
-                style={{
-                  fontFamily: "var(--font-display, var(--font-sans))",
-                  fontWeight: 400,
-                  fontSize: 16,
-                  lineHeight: "24px",
-                  color: "#090B0C",
-                }}
-              >
-                No plan
-              </div>
-              <div className="mt-6 flex flex-col gap-1">
-                <div style={{ height: 20 }} />
-                <div className="flex items-baseline gap-2">
-                  <span
-                    style={{
-                      fontFamily: "var(--font-display, var(--font-sans))",
-                      fontWeight: 400,
-                      fontSize: 32,
-                      lineHeight: 1.05,
-                      color: "#090B0C",
-                    }}
-                  >
-                    $0
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <ul className="flex flex-col gap-3 py-2">
-              {freeFeatures.map((f) => (
-                <li key={f.label} className="flex items-center gap-2">
-                  {f.included ? (
-                    <span
-                      className="inline-flex shrink-0 items-center justify-center rounded-full"
-                      style={{ width: 16, height: 16, background: "#E3E7E8" }}
-                    >
-                      <IconCheck size={11} strokeWidth={2.5} style={{ color: "#67787C" }} />
-                    </span>
-                  ) : (
-                    <span
-                      className="inline-flex shrink-0 items-center justify-center"
-                      style={{ width: 16, height: 16 }}
-                      aria-hidden
-                    >
-                      <span
-                        style={{ width: 10, height: 2, background: "#D0D6D8", display: "block" }}
-                      />
-                    </span>
-                  )}
-                  <span
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 300,
-                      fontSize: 13,
-                      lineHeight: "19.5px",
-                      color: "#4B585B",
-                    }}
-                  >
-                    {f.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            <div>
-              <button
-                type="button"
-                onClick={() => {
-                  if (isPlanFree) return;
-                  onDowngrade();
-                }}
-                disabled={isPlanFree}
-                className="w-full inline-flex items-center justify-center"
-                style={{
-                  background: "#FFFFFF",
-                  border: "1px solid #E3E7E8",
-                  color: "#090B0C",
-                  borderRadius: 4,
-                  padding: "13px 17px",
-                  fontFamily: "var(--font-sans)",
-                  fontWeight: 400,
-                  fontSize: 14,
-                  lineHeight: "20px",
-                  opacity: isPlanFree ? 0.6 : 1,
-                  cursor: isPlanFree ? "default" : "pointer",
-                }}
-              >
-                {isPlanFree ? "Current state" : "Cancel Pro"}
-              </button>
-            </div>
-          </div>
-        </div>
+          {isPlanFree ? "Current state" : "Cancel plan"}
+        </button>
       </div>
     </div>
   );
 }
+
 
 function BillingCard({ plan }: { plan: Plan }) {
   if (plan === "free") {
