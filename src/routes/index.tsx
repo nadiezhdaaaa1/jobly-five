@@ -1054,12 +1054,12 @@ function Pricing() {
   return (
     <section
       id="pricing"
-      className="border-t border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
+      className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
     >
       <div className="bg-[color:var(--color-surface-1)] border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
         <div
-          className="mx-auto flex w-full flex-col items-center"
-          style={{ width: 1200, maxWidth: 1200, padding: "104px 32px", gap: 40 }}
+          className="mx-auto flex w-full flex-col items-center px-5 md:px-8 min-[1200px]:!px-8"
+          style={{ maxWidth: 1200, paddingTop: 104, paddingBottom: 104, gap: 40 }}
         >
           {/* Header */}
           <div className="text-center" style={{ maxWidth: 672 }}>
@@ -1097,7 +1097,7 @@ function Pricing() {
       </div>
       <style>{`
         @media (max-width: 767px) {
-          #pricing > div > div { padding: 48px 24px !important; }
+          #pricing > div > div { padding-top: 48px !important; padding-bottom: 48px !important; }
           #pricing .pricing-paid-glow { width: 140px !important; height: 140px !important; }
         }
       `}</style>

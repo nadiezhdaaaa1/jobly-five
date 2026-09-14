@@ -76,8 +76,10 @@ function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanC
     cta: "Get Watch",
     ctaMain: false,
     disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
-    badge: annual ? savingsBadge(sku, "accent") : null,
-    badgeInTitle: true,
+    // Watch carries no savings pill: the switcher owns the top-right corner and
+    // the saving is already stated in the sub-line.
+    badge: null,
+    badgeInTitle: false,
     glow: "neutral",
     innerGap: 32,
     choice: { sku, trial: false },
@@ -203,6 +205,7 @@ function WatchPeriodSwitch({
             className="relative"
             style={{
               width: o.id === "annual" ? 56 : 63,
+              marginLeft: o.id === "annual" ? -2 : 0,
               padding: "2px 8px",
               fontFamily: "var(--font-sans)",
               fontWeight: 400,
@@ -260,7 +263,7 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex flex-1 min-w-0 flex-col max-lg:!h-auto transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
+      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
       style={{
         // Inset ring instead of a border so the design's 269x405 / 34 / 371
         // geometry is not shifted inward by 1px on each edge.
@@ -270,6 +273,7 @@ export function PlanCard({
         // Design fixes the wrapper at 269x405; the button block bottom-aligns so
         // the CTA starts at y=253 inside the inner card on all four.
         height: 405,
+        maxWidth: 269,
       }}
     >
       {/* Header band */}
@@ -296,7 +300,6 @@ export function PlanCard({
         className="relative flex w-full flex-col"
         style={{
           background: "var(--color-surface-1)",
-          boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.16)",
           borderRadius: 20,
           padding: 20,
           gap: card.innerGap,
@@ -459,7 +462,7 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
 
   return (
     <div className="flex w-full flex-col items-center gap-10">
-      <div className="flex w-full items-start gap-5 max-lg:!flex-col">
+      <div className="grid w-full grid-cols-1 items-start justify-center gap-5 min-[640px]:grid-cols-2 min-[1200px]:grid-cols-4">
         <PlanCard
           card={watch}
           onSelect={onSelect}
