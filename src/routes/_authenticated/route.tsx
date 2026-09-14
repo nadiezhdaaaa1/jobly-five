@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { hydrateTrackerFromDb, resetTrackerForSignOut } from "@/lib/tracker-store";
 import { loadJobs } from "@/lib/jobs-store";
@@ -39,6 +39,24 @@ async function claimAndHydrateQuiz() {
   await hydrateQuizFromProfile();
 }
 
+/**
+ * The claim MUST live above OnboardingGate. `onboarded` is derived from the
+ * claimed answers, so running this inside the gated subtree meant it could
+ * never run for the accounts that need it: the gate withheld its children,
+ * the claim never happened, and the gate's retry loop timed out into /quiz.
+ * Renders nothing; it exists purely so the claim runs once per app entry
+ * whatever the gate decides. The ref keeps that "once" true under StrictMode.
+ */
+function QuizDraftClaim({ userId }: { userId: string }) {
+  const started = useRef<string | null>(null);
+  useEffect(() => {
+    if (started.current === userId) return;
+    started.current = userId;
+    void claimAndHydrateQuiz();
+  }, [userId]);
+  return null;
+}
+
 function AuthedShell({ userId }: { userId: string }) {
   const account = useAccount();
   useEffect(() => {
@@ -61,7 +79,9 @@ function AuthedShell({ userId }: { userId: string }) {
       void loadJobs();
       void hydrateTrackerFromDb(userId);
       void hydrateAccountFromDb(userId);
-      void claimAndHydrateQuiz();
+      // The quiz claim now runs in QuizDraftClaim, above the gate — exactly
+      // one call per app entry, so it must NOT be repeated here.
+
       void hydrateBoardColumnsFromDb(userId);
       void hydrateProfileExtrasFromDb(userId);
       void hydrateWorkHistoryFromDb(userId);
@@ -124,6 +144,9 @@ export const Route = createFileRoute("/_authenticated")({
     const { user } = Route.useRouteContext();
     return (
       <EntitlementProvider>
+        {/* Sibling of the gate on purpose: the gate's decision depends on the
+            result of this claim, so it cannot live inside the gated subtree. */}
+        <QuizDraftClaim userId={user.id} />
         <OnboardingGate>
           <AuthedShell userId={user.id} />
         </OnboardingGate>

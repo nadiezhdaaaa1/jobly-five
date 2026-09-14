@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { hasPlanStatus } from "@/lib/entitlements";
 import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
 import { readPlanIntent, savePlanIntent } from "@/lib/onboarding/planIntent";
+import { getDraftToken } from "@/lib/quiz-draft-store";
 
 export const Route = createFileRoute("/matches")({
   // `?sku=` is untrusted input: anything unrecognised, malformed or absent is
@@ -126,6 +127,11 @@ function MatchesPage() {
   // the paywall in the SSR markup makes it flash for accounts that already pay.
   // The decision is taken before the first paint below.
   const [access, setAccess] = useState<PlanAccess>("unknown");
+  // Read from the same get_entitlements call below — never a second request.
+  // A plan alone does not mean there is a Digest to show: the answers have to
+  // have landed on the profile (or still sit in a draft the app claims on
+  // entry), otherwise the first-run gate sends them to the quiz anyway.
+  const [onboarded, setOnboarded] = useState(false);
   // Pre-paint, no network: a browser with no stored session gets the paywall
   // straight away, and no entitlement request is ever made for it. A layout
   // effect (not useEffect) so the swap happens before the browser paints the
@@ -171,8 +177,9 @@ function MatchesPage() {
         const { data: ent, error } = await supabase.rpc("get_entitlements");
         if (error) throw error;
         if (!alive) return;
-        const status = (ent as { status?: string } | null)?.status;
-        setAccess(hasPlanStatus(status) ? "has-plan" : "paywall");
+        const row = ent as { status?: string; onboarded?: boolean } | null;
+        setOnboarded(Boolean(row?.onboarded));
+        setAccess(hasPlanStatus(row?.status) ? "has-plan" : "paywall");
       } catch {
         if (alive) setAccess("paywall");
       }
@@ -223,12 +230,13 @@ function MatchesPage() {
 
         {access === "unknown" ? null : access === "has-plan" ? (
           <section className="mt-10">
+            {/* Mirrors /thank-you: only promise the Digest where there is one. */}
             <Link
-              to="/dashboard"
+              to={onboarded || getDraftToken() ? "/dashboard" : "/quiz"}
               className="main_accent_button main_accent_button--on-light main_accent_button--block h-[48px]"
               style={{ width: 200 }}
             >
-              Go to your Digest
+              {onboarded || getDraftToken() ? "Go to your Digest" : "Set up your matches"}
             </Link>
           </section>
         ) : (
