@@ -53,6 +53,8 @@ import {
 } from "@/data/taxonomy";
 import rawTaxonomy from "@/data/jobly_taxonomy.json";
 import { Wordmark } from "@/components/site/Wordmark";
+import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
+import { savePlanIntent } from "@/lib/onboarding/planIntent";
 
 const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
 
@@ -143,6 +145,12 @@ function formatMoney(n: number) {
 
 function QuizPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  // Display-only preselection: seed the saved intent so /matches opens on that
+  // card. Nothing is purchased here; every checkout still needs a click.
+  useEffect(() => {
+    if (search.sku) savePlanIntent({ sku: search.sku, trial: search.sku === TRIAL_SKU });
+  }, [search.sku]);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [hydrated, setHydrated] = useState(false);
   const [current, setCurrent] = useState<StepKey>("field");
