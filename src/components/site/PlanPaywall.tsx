@@ -355,8 +355,11 @@ export function PlanPaywall({ onSelect }: { onSelect: (card: PlanCardSpec) => vo
 
   return (
     <div className="flex w-full flex-col items-center gap-6">
-      <SkuSwitcher value={sku} onChange={setSku} />
-      <PaywallCard sku={sku} spec={spec} onSelect={onSelect} />
+      <div className="flex w-full flex-col items-start gap-4">
+        <SkuSwitcher value={sku} onChange={setSku} />
+        <PaywallCard sku={sku} spec={spec} onSelect={onSelect} />
+      </div>
+
       {/* The one shared line: cancellation path, pre-charge email promise and
           currency. It never replaces a SKU's own disclosure. */}
       <p
