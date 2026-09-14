@@ -724,9 +724,10 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
             className="main_accent_button main_accent_button--on-light h-[30px] px-3 py-0 button-small"
-            // The design-system class sets border-radius: 14px as a plain CSS
-            // rule, which beats a Tailwind utility; the card's radius is 8.
-            style={{ borderRadius: 8 }}
+            // The design-system class sets border-radius: 14px and
+            // font-size: 16px as plain CSS rules, which beat Tailwind
+            // utilities; the card's radius is 8 and its label is 14px.
+            style={{ borderRadius: 8, fontSize: 14 }}
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
