@@ -263,7 +263,7 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center max-lg:!h-auto transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
+      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
       style={{
         // Inset ring instead of a border so the design's 269x405 / 34 / 371
         // geometry is not shifted inward by 1px on each edge.
