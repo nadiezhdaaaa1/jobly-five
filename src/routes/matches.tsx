@@ -121,9 +121,16 @@ function MatchesPage() {
   // The plan decision after the quiz. Registration and checkout both live in
   // the flow hook, so this screen no longer creates accounts on its own.
   const flow = usePlanFlow("matches_plan_step");
-  const [access, setAccess] = useState<PlanAccess>(() =>
-    maybeSignedInSync() ? "unknown" : "paywall",
-  );
+  // "unknown" holds the plan section empty. Server-rendered HTML must stay in
+  // this state: the server cannot know whether there is a session, and shipping
+  // the paywall in the SSR markup makes it flash for accounts that already pay.
+  // The decision is taken before the first paint below.
+  const [access, setAccess] = useState<PlanAccess>("unknown");
+  // Pre-paint, no network: a browser with no stored session gets the paywall
+  // straight away, and no entitlement request is ever made for it.
+  useLayoutEffect(() => {
+    if (!maybeSignedInSync()) setAccess("paywall");
+  }, []);
   // A valid ?sku wins over any older saved intent (it is the more recent
   // decision); otherwise the quiz -> matches handoff rides on the saved intent.
   const [initialSku] = useState<SkuId | undefined>(() => {
