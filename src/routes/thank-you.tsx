@@ -212,7 +212,7 @@ function ConfirmationPage() {
         </p>
 
         <p className="max-w-[420px] text-center text-[14px] font-extralight leading-[1.2] text-[color:var(--color-text-secondary)]">
-          Stop refreshing job boards. We'll email you when something is worth your time.
+          Stop refreshing job boards. We'll email you when something is worth your time
         </p>
 
         <button
