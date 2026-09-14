@@ -41,7 +41,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     Boolean(getDraftToken()) &&
     claimWaits.current < CLAIM_RETRIES;
   const settled =
-    !loading && !error && entitlements.onboarded && SETTLED.includes(entitlements.status);
+    !loading && !error && entitlements.onboarded && hasPlanStatus(entitlements.status);
 
   useEffect(() => {
     if (loading) return;
@@ -64,7 +64,7 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
       void navigate({ to: "/quiz", replace: true });
       return;
     }
-    if (!SETTLED.includes(entitlements.status)) {
+    if (!hasPlanStatus(entitlements.status)) {
       // A saved decision resumes at checkout; otherwise the plan card in
       // Settings is where they pay.
       void navigate({ to: readPlanIntent() ? CHECKOUT_PATH : PLAN_PATH, replace: true });
