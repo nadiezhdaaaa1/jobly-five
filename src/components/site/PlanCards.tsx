@@ -452,7 +452,7 @@ export function PlanCardsGrid({ onSelect }: { onSelect: (card: PlanCardSpec) => 
 
   return (
     <div className="flex w-full flex-col items-center gap-10">
-      <div className="grid w-full grid-cols-1 items-start justify-center gap-5 min-[640px]:grid-cols-2 min-[1200px]:grid-cols-4">
+      <div className="flex w-full flex-wrap items-start justify-center" style={{ gap: 20 }}>
         <PlanCard
           card={watch}
           onSelect={onSelect}
