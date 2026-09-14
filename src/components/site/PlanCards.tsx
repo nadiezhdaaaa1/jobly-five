@@ -263,7 +263,7 @@ export function PlanCard({
 }) {
   return (
     <div
-      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
+      className="relative z-0 flex w-full min-w-0 flex-col justify-self-center"
       style={{
         // Inset ring instead of a border so the design's 269x405 / 34 / 371
         // geometry is not shifted inward by 1px on each edge.
@@ -414,26 +414,16 @@ export function PlanCard({
         <button
           type="button"
           onClick={() => onSelect(card)}
-          className="relative w-full"
-          style={{
-            zIndex: 2,
-            padding: "12px 16px",
-            borderRadius: 14,
-            border: "1px solid rgba(0,0,0,0.2)",
-            boxShadow:
-              "0 1px 2px rgba(0,0,0,0.1), inset 0 2px 1px rgba(255,255,255,0.5), inset 0 -2px 1px rgba(0,0,0,0.1)",
-            background: card.ctaMain ? "var(--main-accent)" : "var(--secondary-button-light)",
-            color: card.ctaMain ? "var(--on-accent)" : "var(--color-foreground)",
-            height: 50,
-            fontFamily: "var(--font-sans)",
-            fontWeight: 300,
-            fontSize: 14,
-            lineHeight: "24px",
-            textAlign: "center",
-          }}
+          className={`relative h-[50px] ${
+            card.ctaMain
+              ? "main_accent_button main_accent_button--on-light main_accent_button--block"
+              : "secondary_button secondary_button--on-light secondary_button--block"
+          }`}
+          style={{ zIndex: 2 }}
         >
           {card.cta}
         </button>
+
 
         <p
           className="relative text-center"
