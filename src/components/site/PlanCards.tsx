@@ -9,149 +9,16 @@
 
 import { useState } from "react";
 
+import { SHARED_PLAN_DISCLOSURE } from "@/config/pricing";
 import {
-  SHARED_PLAN_DISCLOSURE,
-  TRIAL_DAYS,
-  WATCH_MONTHLY_ANNUALISED,
-  discountPct,
-  perMonth,
-  renewalPhrase,
-  skuTotal,
-  usd,
-  type SkuId,
-} from "@/config/pricing";
-import type { SelectPlanInput } from "@/lib/onboarding/usePlanFlow";
+  BAND_COLOR,
+  PRO_CARDS,
+  watchCard,
+  type PlanCardSpec,
+} from "@/components/site/planSpecs";
 
-type BandTone = "muted" | "popular" | "best-value";
-
-export type PlanCardSpec = {
-  key: "watch" | "pro_monthly" | "pro_3month" | "pro_6month";
-  /** Uppercase label in the header band above the card. */
-  band: string;
-  bandTone: BandTone;
-  /** Wrapper tint behind the header band. */
-  tint: string;
-  name: string;
-  price: string;
-  suffix: string;
-  /** One line that makes the card's billing moment legible. */
-  subLine: string;
-  description: string;
-  cta: string;
-  /** Drives only the CTA variant: true = main accent button. */
-  ctaMain: boolean;
-  /** Price + interval for this card. The shared line never replaces it. */
-  disclosure: string;
-  badge: { label: string; background: string; color: string } | null;
-  /** Watch renders its badge in the title row: the switcher owns the top-right corner. */
-  badgeInTitle: boolean;
-  /** Corner glow hue, when the card carries one. */
-  glow: "accent" | "step" | "none";
-  /** Column gap inside the white card. */
-  innerGap: number;
-  choice: SelectPlanInput;
-};
-
-const savingsBadge = (sku: SkuId, tone: "accent" | "step") => ({
-  label: `save ${discountPct(sku)}%`,
-  background: tone === "accent" ? "var(--main-accent)" : "var(--step-accent)",
-  color: tone === "accent" ? "var(--on-accent)" : "#FFFFFF",
-});
-
-function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanCardSpec {
-  const annual = sku === "watch_annual";
-  return {
-    key: "watch",
-    band: "FOR PASSIVE CANDIDATES",
-    bandTone: "muted",
-    tint: "var(--color-surface-2)",
-    name: "Watch",
-    price: usd(perMonth(sku)),
-    suffix: "/month",
-    subLine: annual
-      ? `${usd(skuTotal(sku))}/year — save ${discountPct(sku)}%`
-      : `${usd(WATCH_MONTHLY_ANNUALISED)}/year`,
-    description: "One email a week. For when you're not looking — but you'd move for the right thing.",
-    cta: "Get Watch",
-    ctaMain: false,
-    disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
-    // Watch carries no savings pill: the switcher owns the top-right corner and
-    // the saving is already stated in the sub-line.
-    badge: null,
-    badgeInTitle: false,
-    glow: "none",
-    innerGap: 32,
-    choice: { sku, trial: false },
-  };
-}
-
-export const PRO_CARDS: PlanCardSpec[] = [
-  {
-    key: "pro_monthly",
-    band: "START HERE",
-    bandTone: "muted",
-    tint: "var(--color-surface-2)",
-    name: "Pro · monthly",
-    price: usd(perMonth("pro_monthly")),
-    suffix: "/month",
-    // The trial folds into the Pro monthly card; there is no standalone trial card.
-    subLine: `${TRIAL_DAYS} days free, then ${usd(skuTotal("pro_monthly"))}`,
-    description: "Try it on your real search. No commitment, cancel any time.",
-    cta: `Start ${TRIAL_DAYS}-day free`,
-    ctaMain: false,
-    disclosure: `${TRIAL_DAYS} days free, then ${renewalPhrase("pro_monthly")} until cancelled`,
-    badge: null,
-    badgeInTitle: false,
-    glow: "none",
-    innerGap: 24,
-    choice: { sku: "pro_monthly", trial: true },
-  },
-  {
-    key: "pro_3month",
-    band: "MOST POPULAR",
-    bandTone: "popular",
-    tint: "var(--plan-tint-popular)",
-    name: "Pro · 3 months",
-    price: usd(perMonth("pro_3month")),
-    suffix: "/month",
-    subLine: `${usd(skuTotal("pro_3month"))} billed today`,
-    description: "The median US job search runs 11 weeks. That's exactly one period.",
-    cta: "Get 3 months",
-    ctaMain: true,
-    disclosure: `Charged today. ${renewalPhrase("pro_3month")} until cancelled`,
-    badge: savingsBadge("pro_3month", "accent"),
-    badgeInTitle: false,
-    glow: "accent",
-    innerGap: 32,
-    choice: { sku: "pro_3month", trial: false },
-  },
-  {
-    key: "pro_6month",
-    band: "BEST VALUE",
-    bandTone: "best-value",
-    tint: "var(--plan-tint-best-value)",
-    name: "Pro · 6 months",
-    price: usd(perMonth("pro_6month")),
-    suffix: "/month",
-    subLine: `${usd(skuTotal("pro_6month"))} billed today`,
-    description:
-      "The average tech search runs 6–7 months. Land early and your unused days are banked.",
-    cta: "Get 6 months",
-    ctaMain: true,
-    disclosure: `Charged today. ${renewalPhrase("pro_6month")} until cancelled`,
-    badge: savingsBadge("pro_6month", "step"),
-    badgeInTitle: false,
-    glow: "step",
-    innerGap: 32,
-    choice: { sku: "pro_6month", trial: false },
-  },
-];
-
-const BAND_COLOR: Record<BandTone, string> = {
-  muted: "var(--color-text-secondary)",
-  popular: "var(--plan-band-popular)",
-  "best-value": "var(--plan-band-best-value)",
-};
+export type { PlanCardSpec };
+export { PRO_CARDS };
 
 /** Watch-only Monthly/Annual switch. Never a section-wide toggle. */
 function WatchPeriodSwitch({

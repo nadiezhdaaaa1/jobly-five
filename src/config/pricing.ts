@@ -24,6 +24,9 @@ export type Sku = {
 /** Canonical free-trial length. Never hardcode a trial length anywhere else. */
 export const TRIAL_DAYS = 3;
 
+/** How many days before a renewal the reminder email is sent. */
+export const RENEWAL_REMINDER_DAYS = 7;
+
 /** The only SKU that carries a trial. `start_trial` must refuse every other. */
 export const TRIAL_SKU: SkuId = "pro_monthly";
 
