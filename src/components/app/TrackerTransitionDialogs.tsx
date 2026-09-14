@@ -176,7 +176,7 @@ function ReminderInline({
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="z-[70] w-auto rounded-[16px] border bg-[color:var(--color-surface-1)] p-0"
+                className="z-[70] w-auto overflow-hidden rounded-[16px] border bg-[color:var(--color-surface-1)] p-0"
                 style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
               >
                 <Calendar
