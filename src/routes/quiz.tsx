@@ -53,6 +53,8 @@ import {
 } from "@/data/taxonomy";
 import rawTaxonomy from "@/data/jobly_taxonomy.json";
 import { Wordmark } from "@/components/site/Wordmark";
+import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
+import { savePlanIntent } from "@/lib/onboarding/planIntent";
 
 const ALL_TAX_ROLES = (rawTaxonomy as unknown as { roles: TaxRole[] }).roles;
 
@@ -99,6 +101,13 @@ const CHIP_TYPE_FOR_SECTION: Record<SkillSectionKey, ChipType> = {
 };
 
 export const Route = createFileRoute("/quiz")({
+  // `?sku=` is untrusted input: anything unrecognised, malformed or absent is
+  // ignored silently. A valid value only seeds the saved plan intent so the
+  // matches paywall opens on that card — a DISPLAY choice only. Prices, totals
+  // and intervals still come from @/config/pricing, and no URL param may ever
+  // start a checkout or write a subscription.
+  validateSearch: (search: Record<string, unknown>): { sku?: SkuId } =>
+    isSkuId(search["sku"]) ? { sku: search["sku"] } : {},
   head: () => ({
     meta: [
       { title: "Set up your Jobly profile — 2 minute quiz" },
@@ -136,6 +145,14 @@ function formatMoney(n: number) {
 
 function QuizPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  // Display-only preselection: seed the saved intent so /matches opens on that
+  // card. Nothing is purchased here; every checkout still needs a click.
+  useEffect(() => {
+    // Re-validated here too: the router hands back whatever the URL carried.
+    const sku = isSkuId(search.sku) ? search.sku : undefined;
+    if (sku) savePlanIntent({ sku, trial: sku === TRIAL_SKU });
+  }, [search.sku]);
   const [answers, setAnswers] = useState<QuizAnswers>({});
   const [hydrated, setHydrated] = useState(false);
   const [current, setCurrent] = useState<StepKey>("field");

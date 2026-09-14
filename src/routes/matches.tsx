@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   IconLoader2 as Loader2,
   IconChevronDown as ChevronDown,
@@ -16,14 +16,44 @@ import { MatchLine } from "@/components/app/MatchLine";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
-
+import { supabase } from "@/integrations/supabase/client";
+import { hasPlanStatus } from "@/lib/entitlements";
+import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
+import { readPlanIntent, savePlanIntent } from "@/lib/onboarding/planIntent";
 
 export const Route = createFileRoute("/matches")({
+  // `?sku=` is untrusted input: anything unrecognised, malformed or absent is
+  // ignored silently. A valid value only preselects which card is DISPLAYED —
+  // prices, totals and intervals still come from @/config/pricing, so the URL
+  // can never influence what anything costs, and it never starts a purchase.
+  validateSearch: (search: Record<string, unknown>): { sku?: SkuId } =>
+    isSkuId(search["sku"]) ? { sku: search["sku"] } : {},
   head: () => ({
     meta: [{ title: "Your top matches — Jobly" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: MatchesPage,
 });
+
+/**
+ * Whether the plan section shows the paywall or the Digest CTA.
+ * "unknown" holds the plan section only — never the matches list.
+ */
+type PlanAccess = "unknown" | "paywall" | "has-plan";
+
+/** Cheap synchronous hint that a Supabase session exists in this browser, so an
+ *  anonymous visitor never waits on any read before seeing the paywall. */
+function maybeSignedInSync(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith("sb-") && k.endsWith("-auth-token")) return true;
+    }
+  } catch {
+    /* blocked storage: treat as anonymous */
+  }
+  return false;
+}
 
 function ago(days: number) {
   if (days <= 0) return "Posted today";
@@ -84,13 +114,64 @@ function MatchesSearching() {
 
 function MatchesPage() {
   const [answers, setAnswers] = useState<QuizAnswers>({});
+  const search = Route.useSearch();
+  // Re-validated at the point of use as well as in validateSearch: the router
+  // hands back whatever the URL carried, and this is untrusted input.
+  const urlSku = isSkuId(search.sku) ? search.sku : undefined;
   // The plan decision after the quiz. Registration and checkout both live in
   // the flow hook, so this screen no longer creates accounts on its own.
   const flow = usePlanFlow("matches_plan_step");
+  // "unknown" holds the plan section empty. Server-rendered HTML must stay in
+  // this state: the server cannot know whether there is a session, and shipping
+  // the paywall in the SSR markup makes it flash for accounts that already pay.
+  // The decision is taken before the first paint below.
+  const [access, setAccess] = useState<PlanAccess>("unknown");
+  // Pre-paint, no network: a browser with no stored session gets the paywall
+  // straight away, and no entitlement request is ever made for it.
+  useLayoutEffect(() => {
+    if (!maybeSignedInSync()) setAccess("paywall");
+  }, []);
+  // A valid ?sku wins over any older saved intent (it is the more recent
+  // decision); otherwise the quiz -> matches handoff rides on the saved intent.
+  const [initialSku] = useState<SkuId | undefined>(() => {
+    if (urlSku) {
+      savePlanIntent({ sku: urlSku, trial: urlSku === TRIAL_SKU });
+      return urlSku;
+    }
+    return readPlanIntent()?.sku;
+  });
 
   useEffect(() => {
     setAnswers(loadQuiz());
     void loadJobs();
+  }, []);
+
+  // This page sells, so an unreadable entitlement renders the paywall — the
+  // opposite of OnboardingGate, which treats an unknown state as no access.
+  // Both are correct: that one guards the app, this one guards a sales page.
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!alive) return;
+      // Anonymous: no entitlements request at all.
+      if (!data.session) {
+        setAccess("paywall");
+        return;
+      }
+      try {
+        const { data: ent, error } = await supabase.rpc("get_entitlements");
+        if (error) throw error;
+        if (!alive) return;
+        const status = (ent as { status?: string } | null)?.status;
+        setAccess(hasPlanStatus(status) ? "has-plan" : "paywall");
+      } catch {
+        if (alive) setAccess("paywall");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const matched = useMatchedJobs(70);
@@ -132,14 +213,29 @@ function MatchesPage() {
           )}
         </ol>
 
-        <section className="mt-10">
-          <h2 className="text-2xl">Pick a plan to keep these matches</h2>
+        {access === "unknown" ? null : access === "has-plan" ? (
+          <section className="mt-10">
+            <Link
+              to="/dashboard"
+              className="main_accent_button main_accent_button--on-light main_accent_button--block h-[48px]"
+              style={{ width: 200 }}
+            >
+              Go to your Digest
+            </Link>
+          </section>
+        ) : (
+          <section className="mt-10">
+            <h2 className="text-2xl">Pick a plan to keep these matches</h2>
 
+            <div className="mt-6">
+              <PlanPaywall
+                initialSku={initialSku}
+                onSelect={(card) => void flow.selectPlan(card.choice)}
+              />
+            </div>
+          </section>
+        )}
 
-          <div className="mt-6">
-            <PlanPaywall onSelect={(card) => void flow.selectPlan(card.choice)} />
-          </div>
-        </section>
 
       </main>
 
