@@ -739,7 +739,7 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
-            className="inline-flex h-[30px] items-center rounded-[12px] bg-[color:var(--color-main-accent)] px-3 button-small text-[color:var(--on-main-accent)] hover:bg-[color:var(--main-accent-hover)]"
+            className="main_accent_button main_accent_button--on-light h-[30px] rounded-[8px] px-3 py-0 button-small"
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
