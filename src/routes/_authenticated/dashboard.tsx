@@ -20,6 +20,8 @@ import emptyStateAsset from "@/assets/empty-state.png.asset.json";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { ApplyModal } from "@/components/app/ApplyModal";
+import { ScoreRing as SharedScoreRing } from "@/components/app/ScoreRing";
+
 import { useJobs } from "@/lib/jobs-store";
 import { getDbJobById } from "@/lib/jobs-store";
 import { rolesOverlap } from "@/lib/match";
