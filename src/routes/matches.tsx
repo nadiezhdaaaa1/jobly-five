@@ -12,7 +12,7 @@ import { loadQuiz, type QuizAnswers } from "@/lib/quiz-store";
 import { useMatchedJobs, loadJobs } from "@/lib/jobs-store";
 import type { Job } from "@/lib/jobs-data";
 import { MatchLine } from "@/components/app/MatchLine";
-import { TRIAL_DAYS } from "@/config/pricing";
+
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
