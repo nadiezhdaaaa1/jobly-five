@@ -4,7 +4,8 @@
 // The param only seeds the display while that read is in flight.
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type confetti from "canvas-confetti";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 import { z } from "zod";
 
@@ -43,6 +44,57 @@ function ConfirmationPage() {
   const [isTrial, setIsTrial] = useState(false);
   const [sku, setSku] = useState<SkuId>(seed.sku);
   const [live, setLive] = useState(false);
+
+  // Decorative confetti: success state only, once per mount, never on reduced motion.
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (!ready || !live || firedRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const card = cardRef.current;
+    const canvas = canvasRef.current;
+    // No measurable origin means no burst — never guess a position.
+    if (!card || !canvas) return;
+    firedRef.current = true;
+
+    let cancelled = false;
+    let instance: confetti.CreateTypes | null = null;
+
+    void (async () => {
+      const mod = await import("canvas-confetti");
+      if (cancelled) return;
+      instance = mod.default.create(canvas, { resize: true, useWorker: true });
+      const rect = card.getBoundingClientRect();
+      const css = getComputedStyle(document.documentElement);
+      const token = (name: string) => css.getPropertyValue(name).trim();
+      instance({
+        particleCount: 90,
+        spread: 70,
+        startVelocity: 38,
+        scalar: 0.9,
+        ticks: 200,
+        disableForReducedMotion: true,
+        origin: {
+          x: (rect.left + rect.width / 2) / window.innerWidth,
+          y: (rect.top + rect.height / 2) / window.innerHeight,
+        },
+        colors: [
+          token("--color-main-accent"),
+          token("--color-step-accent"),
+          token("--color-green"),
+          "#FFFFFF",
+        ],
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+      instance?.reset();
+    };
+  }, [ready, live]);
+
 
   useEffect(() => {
     void (async () => {
@@ -114,6 +166,11 @@ function ConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-50 h-full w-full"
+      />
       <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20 pt-16 lg:pt-[171px]">
         <div className="flex flex-col items-center gap-3 px-4 text-center">
           <h1 className="font-[family-name:var(--font-display)] text-[48px] font-normal leading-[1.3] tracking-[-1.45px] text-[color:var(--color-foreground)]">
@@ -128,7 +185,7 @@ function ConfirmationPage() {
           </p>
         </div>
 
-        <div className="w-full rounded-[20px] bg-[color:var(--color-surface-2)] p-[4px]">
+        <div ref={cardRef} className="w-full rounded-[20px] bg-[color:var(--color-surface-2)] p-[4px]">
           <div
             className="flex items-center gap-10 rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-6 py-5"
             style={{ filter: "drop-shadow(0 1px 3px rgba(12,12,13,0.08))" }}
