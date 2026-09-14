@@ -723,11 +723,13 @@ function FullJobCard({ job, onOpen }: { job: EnrichedJob; onOpen: () => void }) 
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setApplyOpen(true); }}
-            className="main_accent_button main_accent_button--on-light h-[30px] px-3 py-0 button-small"
-            // The design-system class sets border-radius: 14px and
-            // font-size: 16px as plain CSS rules, which beat Tailwind
-            // utilities; the card's radius is 8 and its label is 14px.
-            style={{ borderRadius: 8, fontSize: 14 }}
+            className="main_accent_button main_accent_button--on-light h-[30px] button-small"
+            // The design-system class sets border-radius: 14px, font-size: 16px
+            // and padding: 12px 20px as plain CSS rules, and sets no
+            // justify-content, all of which beat Tailwind utilities; the card's
+            // radius is 8, its label is 14px and its padding is 0 12px.
+            // button-small stays: its letter-spacing (-0.07px) does apply.
+            style={{ borderRadius: 8, fontSize: 14, padding: "0 12px", justifyContent: "center" }}
           >
             <ExternalLink size={14} strokeWidth={1.8} className="mr-1" />
             Apply
