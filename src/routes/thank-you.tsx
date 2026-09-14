@@ -167,6 +167,11 @@ function ConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)]">
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-50 h-full w-full"
+      />
       <main className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-8 px-6 pb-20 pt-16 lg:pt-[171px]">
         <div className="flex flex-col items-center gap-3 px-4 text-center">
           <h1 className="font-[family-name:var(--font-display)] text-[48px] font-normal leading-[1.3] tracking-[-1.45px] text-[color:var(--color-foreground)]">
