@@ -148,7 +148,7 @@ function ConfirmationPage() {
             </h1>
             <p className="text-[18px] font-extralight leading-[1.6] text-[color:var(--color-text-secondary)]">
               We couldn't find an active plan on this account. Pick one and we'll get your matches
-              going.
+              going
             </p>
           </div>
           <button
