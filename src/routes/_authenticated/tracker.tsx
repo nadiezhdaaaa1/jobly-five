@@ -348,11 +348,10 @@ function KanbanCard({
               className="main_accent_button main_accent_button--on-light flex h-[30px] flex-1 items-center gap-1"
               /* .main_accent_button is an unlayered rule in styles.css, so it beats
                  Tailwind utilities on this element: radius, font-size, padding and
-                 centring have to be inline. These values reproduce exactly what the
-                 hand-rolled green button rendered before. */
+                 centring have to be inline. 14px matches the Digest card's Apply. */
               style={{
                 borderRadius: 8,
-                fontSize: 12,
+                fontSize: 14,
                 height: 30,
                 padding: "0 12px",
                 justifyContent: "center",
