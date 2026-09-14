@@ -1197,7 +1197,7 @@ function FiltersSidebar({
                   key={b}
                   type="button"
                   onClick={() => set({ sources: selected ? p.sources.filter((x) => x !== b) : [...p.sources, b] })}
-                  className="inline-flex h-[28px] items-center gap-1 rounded-[12px] px-2.5 text-[12px] font-medium"
+                  className="inline-flex h-[28px] items-center gap-1 rounded-[8px] px-2.5 text-[12px] font-medium"
                   style={selected ? { background: "var(--color-green)", color: "#fff" } : { background: "var(--color-surface-1)", color: "var(--color-text-secondary)", border: "1px solid var(--color-border)" }}
                 >
                   {b}
