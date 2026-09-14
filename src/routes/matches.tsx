@@ -203,14 +203,29 @@ function MatchesPage() {
           )}
         </ol>
 
-        <section className="mt-10">
-          <h2 className="text-2xl">Pick a plan to keep these matches</h2>
+        {access === "unknown" ? null : access === "has-plan" ? (
+          <section className="mt-10">
+            <Link
+              to="/dashboard"
+              className="main_accent_button main_accent_button--on-light main_accent_button--block h-[48px]"
+              style={{ width: 200 }}
+            >
+              Go to your Digest
+            </Link>
+          </section>
+        ) : (
+          <section className="mt-10">
+            <h2 className="text-2xl">Pick a plan to keep these matches</h2>
 
+            <div className="mt-6">
+              <PlanPaywall
+                initialSku={initialSku}
+                onSelect={(card) => void flow.selectPlan(card.choice)}
+              />
+            </div>
+          </section>
+        )}
 
-          <div className="mt-6">
-            <PlanPaywall onSelect={(card) => void flow.selectPlan(card.choice)} />
-          </div>
-        </section>
 
       </main>
 
