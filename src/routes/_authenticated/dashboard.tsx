@@ -937,7 +937,7 @@ function SelectChip({ label, selected, onClick, disabled }: { label: string; sel
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-[28px] items-center rounded-[12px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
+      className="inline-flex h-[28px] items-center rounded-[8px] px-2.5 text-[12px] font-medium transition-colors disabled:cursor-not-allowed"
       style={
         selected
           ? { background: "var(--color-green)", color: "#fff" }
