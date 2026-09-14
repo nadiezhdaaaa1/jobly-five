@@ -262,7 +262,9 @@ export function PlanCard({
     <div
       className="relative z-0 flex flex-1 min-w-0 flex-col max-lg:!h-auto transition-[transform,scale] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] motion-reduce:transition-none motion-reduce:hover:scale-100"
       style={{
-        border: "1px solid rgba(0,0,0,0.1)",
+        // Inset ring instead of a border so the design's 269x405 / 34 / 371
+        // geometry is not shifted inward by 1px on each edge.
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.1)",
         borderRadius: 24,
         background: card.tint,
         // Design fixes the wrapper at 269x405; the button block bottom-aligns so
@@ -294,7 +296,7 @@ export function PlanCard({
         className="relative flex w-full flex-col"
         style={{
           background: "var(--color-surface-1)",
-          border: "1px solid rgba(0,0,0,0.16)",
+          boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.16)",
           borderRadius: 20,
           padding: 20,
           gap: card.innerGap,
