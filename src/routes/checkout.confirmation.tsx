@@ -142,10 +142,7 @@ function ConfirmationPage() {
           </p>
         </div>
 
-        <div
-          className="w-full rounded-[20px] bg-[color:var(--color-surface-2)] p-1"
-          style={{ padding: 4 }}
-        >
+        <div className="w-full rounded-[20px] bg-[color:var(--color-surface-2)] p-[4px]">
           <div
             className="flex items-center gap-10 rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-6 py-5"
             style={{ filter: "drop-shadow(0 1px 3px rgba(12,12,13,0.08))" }}
