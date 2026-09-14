@@ -14,12 +14,12 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { useEntitlements } from "@/lib/entitlements-provider";
+import { hasPlanStatus } from "@/lib/entitlements";
 import { readPlanIntent } from "@/lib/onboarding/planIntent";
 import { CHECKOUT_PATH } from "@/lib/onboarding/usePlanFlow";
 import { getDraftToken } from "@/lib/quiz-draft-store";
 
-/** States that mean "this account is with us right now". */
-const SETTLED = ["trialing", "active", "past_due", "paused"];
+// "This account is with us right now" — the shared list in @/lib/entitlements.
 /** How many times we re-read entitlements while a draft is still being claimed. */
 const CLAIM_RETRIES = 6;
 /** Where an account with no access goes to pay. */

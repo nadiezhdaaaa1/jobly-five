@@ -62,6 +62,19 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   features: NO_FEATURES,
 };
 
+/**
+ * The one list meaning "this account has a plan with us right now".
+ * `paused` counts: a paused account still has a plan and must never be re-sold.
+ * Shared so the first-run gate and the /matches paywall check cannot drift.
+ * Note: /thank-you deliberately uses its own narrower list (no `paused`) —
+ * that divergence is intentional and left alone.
+ */
+export const PLAN_PRESENT_STATUSES = ["trialing", "active", "past_due", "paused"] as const;
+
+export function hasPlanStatus(status: string | null | undefined): boolean {
+  return !!status && (PLAN_PRESENT_STATUSES as readonly string[]).includes(status);
+}
+
 /** Legacy client-side plan keys. A browser value is not evidence of a subscription. */
 const LEGACY_PLAN_KEYS = ["jobly.plan", "jobly.subscription", "jobly.hasHadPro"];
 
