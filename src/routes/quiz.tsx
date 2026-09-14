@@ -99,6 +99,13 @@ const CHIP_TYPE_FOR_SECTION: Record<SkillSectionKey, ChipType> = {
 };
 
 export const Route = createFileRoute("/quiz")({
+  // `?sku=` is untrusted input: anything unrecognised, malformed or absent is
+  // ignored silently. A valid value only seeds the saved plan intent so the
+  // matches paywall opens on that card — a DISPLAY choice only. Prices, totals
+  // and intervals still come from @/config/pricing, and no URL param may ever
+  // start a checkout or write a subscription.
+  validateSearch: (search: Record<string, unknown>): { sku?: SkuId } =>
+    isSkuId(search["sku"]) ? { sku: search["sku"] } : {},
   head: () => ({
     meta: [
       { title: "Set up your Jobly profile — 2 minute quiz" },
