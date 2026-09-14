@@ -1925,15 +1925,8 @@ export function ExperienceStep({
   const isMgmt = level ? (MGMT_LEVELS as readonly string[]).includes(level) : false;
   const isExec = level ? (EXEC_LEVELS as readonly string[]).includes(level) : false;
   const baseSelected = isBase ? level : isIC || isMgmt || isExec ? "Senior" : undefined;
-  const showTrackFork = baseSelected === "Senior" && (hasMgmt || hasExec);
 
-  const track: "IC" | "Mgmt" | "Exec" | undefined = isIC
-    ? "IC"
-    : isExec
-    ? "Exec"
-    : isMgmt
-    ? "Mgmt"
-    : answers.track;
+
 
   // Initialize English level default on mount.
   useEffect(() => {
@@ -1958,57 +1951,8 @@ export function ExperienceStep({
     onChange(patch);
   };
 
-  const setTrack = (t: "IC" | "Mgmt" | "Exec") => {
-    // Switching tracks clears the fork-level so the user picks one from the new list.
-    onChange({ track: t, level: "Senior", years: LEVEL_DEFAULT_YEARS.Senior });
-  };
 
-  // Track switcher, matching the pricing switcher on the landing page: a white
-  // pill that slides between options rather than a filled active tab. The pill
-  // is measured off the buttons because the three labels have different widths.
-  const TRACK_TABS = useMemo(
-    () => [
-      { key: "IC" as const, label: "Individual contributor" },
-      { key: "Mgmt" as const, label: "Management" },
-      ...(hasExec ? [{ key: "Exec" as const, label: "Executive" }] : []),
-    ],
-    [hasExec]
-  );
-  const trackTabsRef = useRef<HTMLDivElement>(null);
-  const trackBtnRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const [trackIndicator, setTrackIndicator] = useState<{ left: number; width: number } | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    const measure = () => {
-      if (cancelled) return;
-      const container = trackTabsRef.current;
-      const idx = TRACK_TABS.findIndex((t) => t.key === track);
-      const btn = idx >= 0 ? trackBtnRefs.current[idx] : null;
-      // No track chosen yet (or the fork is hidden): no pill to draw.
-      if (!container || !btn) {
-        setTrackIndicator(null);
-        return;
-      }
-      setTrackIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
-    };
-
-    const container = trackTabsRef.current;
-    const observer =
-      container && typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
-    if (container) observer?.observe(container);
-    measure();
-    window.addEventListener("resize", measure);
-    if (document.fonts) {
-      void document.fonts.ready.then(measure);
-    }
-
-    return () => {
-      cancelled = true;
-      observer?.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [track, TRACK_TABS, showTrackFork]);
 
   const canContinue = !!level && !!primary;
 
@@ -2069,139 +2013,39 @@ export function ExperienceStep({
         })}
       </div>
 
-      {showTrackFork && (
-        <div className="mt-4">
-          <div className="text-sm font-light text-[#090B0C]">Track</div>
-          <div
-            ref={trackTabsRef}
-            role="group"
-            aria-label="Track"
-            className="relative mt-2 inline-flex items-center"
-            style={{ gap: 8, background: "#F1F3F3", borderRadius: 20, padding: 8 }}
-          >
-            {trackIndicator && (
-              <span
-                aria-hidden
-                className="absolute pointer-events-none"
-                style={{
-                  top: 8,
-                  bottom: 8,
-                  left: trackIndicator.left,
-                  width: trackIndicator.width,
-                  background: "rgba(255, 255, 255, 0.8)",
-                  border: "1px solid #FFFFFF",
-                  borderRadius: 12,
-                  boxShadow: "0 1px 2px rgba(12,12,13,0.05)",
-                  transition:
-                    "left 280ms cubic-bezier(0.4, 0, 0.2, 1), width 280ms cubic-bezier(0.4, 0, 0.2, 1)",
-                }}
-              />
-            )}
-            {TRACK_TABS.map((t, idx) => {
-              const active = track === t.key;
-              return (
-                <button
-                  key={t.key}
-                  ref={(el) => {
-                    trackBtnRefs.current[idx] = el;
-                  }}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setTrack(t.key)}
-                  className="relative inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-ring)] focus-visible:ring-offset-2"
-                  style={{
-                    borderRadius: 12,
-                    padding: "9px 13px",
-                    background: "transparent",
-                    border: "1px solid transparent",
-                    cursor: "pointer",
-                    transition: "background 200ms ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!active) e.currentTarget.style.background = "rgba(255,255,255,0.5)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                  }}
-                >
-                  <span
-                    style={{
-                      fontFamily: "var(--font-sans)",
-                      fontWeight: 400,
-                      fontSize: 14,
-                      lineHeight: "20px",
-                      color: active ? "#090B0C" : "#4B585B",
-                      transition: "color 200ms ease",
-                      position: "relative",
-                      zIndex: 1,
-                    }}
-                  >
-                    {t.label}
+      {baseSelected === "Senior" && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {[
+            ...IC_LEVELS,
+            ...(hasMgmt ? MGMT_LEVELS : []),
+            ...(hasExec ? EXEC_LEVELS : []),
+          ].map((l) => {
+            const selected = level === l;
+            return (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setLevel(l)}
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
+                  selected
+                    ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
+                    : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
+                )}
+                aria-pressed={selected}
+              >
+                {selected && (
+                  <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
+                    <Check className="h-3 w-3 text-white" strokeWidth={3} />
                   </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {track && track !== "Exec" && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {(track === "IC" ? IC_LEVELS : MGMT_LEVELS).map((l) => {
-                const selected = level === l;
-                return (
-                  <button
-                    key={l}
-                    type="button"
-                    onClick={() => setLevel(l)}
-                    className={cn(
-                      "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
-                      selected
-                        ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
-                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
-                    )}
-                    aria-pressed={selected}
-                  >
-                    {selected && (
-                      <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
-                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                      </span>
-                    )}
-                    {l}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {track === "Exec" && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {EXEC_LEVELS.map((l) => {
-                const selected = level === l;
-                return (
-                  <button
-                    key={l}
-                    type="button"
-                    onClick={() => setLevel(l)}
-                    className={cn(
-                      "inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-sm font-light transition-colors",
-                      selected
-                        ? "border-[color:var(--color-main-accent)] bg-[color:var(--color-main-accent)] text-[#090B0C]"
-                        : "border-[#E3E7E8] bg-white text-[#090B0C] hover:border-[color:var(--color-border-strong)]",
-                    )}
-                    aria-pressed={selected}
-                  >
-                    {selected && (
-                      <span className="grid h-4 w-4 place-items-center rounded-[4px] bg-[#0E735A]">
-                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                      </span>
-                    )}
-                    {l}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                )}
+                {l}
+              </button>
+            );
+          })}
         </div>
       )}
+
 
       {composedTitle(answers.field, level) && (
         <div className="mt-3 text-xs text-[#67787C]">
