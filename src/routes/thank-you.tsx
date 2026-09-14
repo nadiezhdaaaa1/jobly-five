@@ -44,6 +44,58 @@ function ConfirmationPage() {
   const [sku, setSku] = useState<SkuId>(seed.sku);
   const [live, setLive] = useState(false);
 
+  // Decorative confetti: success state only, once per mount, never on reduced motion.
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (!ready || !live || firedRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const card = cardRef.current;
+    const canvas = canvasRef.current;
+    // No measurable origin means no burst — never guess a position.
+    if (!card || !canvas) return;
+    firedRef.current = true;
+
+    let cancelled = false;
+    let instance: confetti.CreateTypes | null = null;
+
+    void (async () => {
+      const mod = await import("canvas-confetti");
+      if (cancelled) return;
+      const create = mod.default;
+      instance = create(canvas, { resize: true, useWorker: true });
+      const rect = card.getBoundingClientRect();
+      const css = getComputedStyle(document.documentElement);
+      const token = (name: string) => css.getPropertyValue(name).trim();
+      instance({
+        particleCount: 90,
+        spread: 70,
+        startVelocity: 38,
+        scalar: 0.9,
+        ticks: 200,
+        disableForReducedMotion: true,
+        origin: {
+          x: (rect.left + rect.width / 2) / window.innerWidth,
+          y: (rect.top + rect.height / 2) / window.innerHeight,
+        },
+        colors: [
+          token("--color-main-accent"),
+          token("--color-step-accent"),
+          token("--color-green"),
+          "#FFFFFF",
+        ],
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+      instance?.reset();
+    };
+  }, [ready, live]);
+
+
   useEffect(() => {
     void (async () => {
       const { data } = await supabase.auth.getSession();
