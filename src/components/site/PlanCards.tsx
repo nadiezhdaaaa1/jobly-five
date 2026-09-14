@@ -183,12 +183,12 @@ function WatchPeriodSwitch({
     >
       <span
         aria-hidden="true"
-        className="absolute transition-[left] duration-200 ease-out motion-reduce:transition-none"
+        className="absolute transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
         style={{
           top: 2,
-          left: value === "annual" ? 65 : 2,
+          left: value === "annual" ? 63 : 2,
           height: 24,
-          width: 63,
+          width: value === "annual" ? 56 : 63,
           borderRadius: 20,
           background: "#fff",
           boxShadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)",
@@ -334,7 +334,7 @@ export function PlanCard({
                     ? "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)"
                     : "radial-gradient(circle, rgba(103,120,124,0.5) 0%, rgba(103,120,124,0) 70%)",
               filter: "blur(40px)",
-              opacity: 0.5,
+              opacity: 0.28,
               zIndex: 1,
               pointerEvents: "none",
             }}
