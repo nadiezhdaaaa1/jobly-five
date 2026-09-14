@@ -213,7 +213,8 @@ export function ApplyModal({
               <button
                 type="button"
                 onClick={commitApplied}
-                className="inline-flex h-9 items-center rounded-[12px] bg-[color:var(--color-accent)] px-3 text-[13px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="main_accent_button main_accent_button--on-light inline-flex items-center"
+                style={{ borderRadius: 12, fontSize: 13, height: 36, padding: "0 12px", justifyContent: "center" }}
               >
                 Yes, applied
               </button>
@@ -252,7 +253,8 @@ export function ApplyModal({
             <button
               type="button"
               onClick={handleApplyOnSite}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-[12px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light inline-flex flex-1 items-center gap-1"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               <ExternalLink size={14} strokeWidth={1.8} />
               Apply
