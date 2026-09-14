@@ -13,5 +13,6 @@ Disallow: /tracker
 Disallow: /profile
 Disallow: /resume
 Disallow: /settings
+Disallow: /dev
 
 Sitemap: https://jobly-five.lovable.app/sitemap.xml

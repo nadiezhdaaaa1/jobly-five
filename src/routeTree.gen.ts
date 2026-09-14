@@ -16,6 +16,7 @@ import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DevRouteImport } from './routes/dev'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -83,6 +84,11 @@ const MatchesRoute = MatchesRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevRoute = DevRouteImport.update({
+  id: '/dev',
+  path: '/dev',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -260,6 +266,7 @@ const ApiPublicHooksConfirmEmailRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/preferences': typeof PreferencesRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
+  '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/preferences': typeof PreferencesRoute
@@ -344,6 +352,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/contact': typeof ContactRoute
+  '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
   '/preferences': typeof PreferencesRoute
@@ -387,6 +396,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/contact'
+    | '/dev'
     | '/login'
     | '/matches'
     | '/preferences'
@@ -428,6 +438,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/contact'
+    | '/dev'
     | '/login'
     | '/matches'
     | '/preferences'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/contact'
+    | '/dev'
     | '/login'
     | '/matches'
     | '/preferences'
@@ -513,6 +525,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ContactRoute: typeof ContactRoute
+  DevRoute: typeof DevRoute
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
   PreferencesRoute: typeof PreferencesRoute
@@ -596,6 +609,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dev': {
+      id: '/dev'
+      path: '/dev'
+      fullPath: '/dev'
+      preLoaderRoute: typeof DevRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -855,6 +875,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ContactRoute: ContactRoute,
+  DevRoute: DevRoute,
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
   PreferencesRoute: PreferencesRoute,
