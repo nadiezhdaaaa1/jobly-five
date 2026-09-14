@@ -77,7 +77,7 @@ export function watchCard(
     band: "FOR PASSIVE CANDIDATES",
     bandTone: "muted",
     tint: "var(--color-surface-2)",
-    name: annual ? "Watch · Annual" : "Watch · Monthly",
+    name: "Watch",
     price: usd(perMonth(sku)),
     suffix: "/month",
     subLine: annual
