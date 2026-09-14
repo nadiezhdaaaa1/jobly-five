@@ -47,7 +47,7 @@ export type PlanCardSpec = {
   /** Watch renders its badge in the title row: the switcher owns the top-right corner. */
   badgeInTitle: boolean;
   /** Corner glow hue, when the card carries one. */
-  glow: "accent" | "step" | "neutral";
+  glow: "accent" | "step" | "none";
   /** Column gap inside the white card. */
   innerGap: number;
   choice: SelectPlanInput;
@@ -80,7 +80,7 @@ function watchCard(sku: Extract<SkuId, "watch_monthly" | "watch_annual">): PlanC
     // the saving is already stated in the sub-line.
     badge: null,
     badgeInTitle: false,
-    glow: "neutral",
+    glow: "none",
     innerGap: 32,
     choice: { sku, trial: false },
   };
@@ -104,7 +104,7 @@ export const PRO_CARDS: PlanCardSpec[] = [
     disclosure: `${TRIAL_DAYS} days free, then ${renewalPhrase("pro_monthly")} until cancelled`,
     badge: null,
     badgeInTitle: false,
-    glow: "neutral",
+    glow: "none",
     innerGap: 24,
     choice: { sku: "pro_monthly", trial: true },
   },
@@ -317,7 +317,7 @@ export function PlanCard({
           isolation: "isolate",
         }}
       >
-        {(
+        {card.glow !== "none" ? (
           <span
             aria-hidden="true"
             className="pricing-paid-glow"
@@ -330,16 +330,14 @@ export function PlanCard({
               background:
                 card.glow === "accent"
                   ? "radial-gradient(circle, var(--main-accent) 0%, rgba(44,255,142,0) 70%)"
-                  : card.glow === "step"
-                    ? "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)"
-                    : "radial-gradient(circle, rgba(103,120,124,0.5) 0%, rgba(103,120,124,0) 70%)",
+                  : "radial-gradient(circle, var(--step-accent) 0%, rgba(130,81,225,0) 70%)",
               filter: "blur(40px)",
               opacity: 0.28,
               zIndex: 1,
               pointerEvents: "none",
             }}
           />
-        )}
+        ) : null}
 
         {switcher ?? null}
         {card.badge && !card.badgeInTitle ? <SavingsBadge badge={card.badge} /> : null}
