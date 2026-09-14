@@ -174,11 +174,6 @@ function ConfirmationPage() {
         >
           {setUp ? "Go to your Digest" : "Set up your matches"}
         </button>
-
-        <div className="flex flex-col items-center gap-2 text-center text-[12px] font-extralight leading-[1.6] text-[color:var(--color-text-muted)]">
-          <p>Auto-renews at {renewalPhrase(sku)} until cancelled.</p>
-          <p>{SHARED_PLAN_DISCLOSURE}</p>
-        </div>
       </main>
     </div>
   );
