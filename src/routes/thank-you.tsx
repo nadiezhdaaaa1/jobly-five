@@ -5,10 +5,10 @@
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { IconCheck as Check, IconLoader2 as Loader2 } from "@tabler/icons-react";
+import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 import { z } from "zod";
 
-import { Wordmark } from "@/components/site/Wordmark";
+import badgeAsset from "@/assets/thank-you-check-badge.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import {
   SHARED_PLAN_DISCLOSURE,
