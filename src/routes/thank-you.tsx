@@ -4,7 +4,8 @@
 // The param only seeds the display while that read is in flight.
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type confetti from "canvas-confetti";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 import { z } from "zod";
 
