@@ -208,7 +208,7 @@ function ConfirmationPage() {
         <p className="max-w-[488px] text-center text-[16px] font-extralight leading-[1.6] text-[color:var(--color-text-secondary)]">
           {setUp
             ? "Your digest is already set up from your quiz answers. Change roles, seniority, salary or location any time in Settings — every change re-scores your matches"
-            : "Next, answer a few questions about the role you want: stack, seniority, salary, location. Jobly turns that into a live search and scores new postings the moment they appear."}
+            : "Next, answer a few questions about the role you want: stack, seniority, salary, location. Jobly turns that into a live search and scores new postings the moment they appear"}
         </p>
 
         <p className="max-w-[420px] text-center text-[14px] font-extralight leading-[1.2] text-[color:var(--color-text-secondary)]">
