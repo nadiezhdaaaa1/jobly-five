@@ -1,4 +1,4 @@
-import { TRIAL_DAYS } from "@/config/pricing";
+import { TRIAL_DAYS, renewalPhrase, usd, skuTotal } from "@/config/pricing";
 
 export const CONTACT_FAQ: { q: string; a: string }[] = [
   {
@@ -11,7 +11,11 @@ export const CONTACT_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "Can I try Jobly before paying?",
-    a: `Yes. Pick the free-trial plan and you get ${TRIAL_DAYS} days at no charge — cancel before it ends and you are not billed. The monthly and yearly plans are direct purchases, so they start straight away.`,
+    a: `Yes — the Pro monthly plan starts with ${TRIAL_DAYS} days free. Cancel before it ends and you are not billed, otherwise it continues at ${renewalPhrase("pro_monthly")}. It is the only plan with a trial: Watch and the 3- and 6-month Pro plans are direct purchases, so they start straight away.`,
+  },
+  {
+    q: "What is the difference between Watch and Pro?",
+    a: `Watch (from ${usd(skuTotal("watch_monthly"))} a month) gives you match scores, ghost-listing filtering, a weekly digest and one saved search. Pro adds the daily digest, instant alerts for top matches, the application tracker, follow-up reminders and the "found a job" pause.`,
   },
   {
     q: "I did not get my digest — what should I do?",
