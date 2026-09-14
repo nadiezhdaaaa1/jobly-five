@@ -68,12 +68,13 @@ function SkuSwitcher({
       {pill ? (
         <span
           aria-hidden="true"
-          className="absolute transition-[left,width] duration-200 ease-out motion-reduce:transition-none"
+          className="absolute transition-[left,top,width,height] duration-200 ease-out motion-reduce:transition-none"
           style={{
-            top: 4,
+            top: pill.top,
             left: pill.left,
             width: pill.width,
-            height: 32,
+            height: pill.height,
+
             borderRadius: 20,
             background: "#fff",
             boxShadow: "0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.1)",
