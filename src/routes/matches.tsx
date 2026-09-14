@@ -132,7 +132,7 @@ function MatchesPage() {
           )}
         </ol>
 
-        <section className="mt-10 rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-6 sm:p-8">
+        <section className="mt-10">
           <h2 className="text-2xl">Pick a plan to keep these matches</h2>
           <p className="mt-2 text-[color:var(--color-text-secondary)]">
             Start with a {TRIAL_DAYS}-day free trial, or go straight to Pro. Cancel any time.
