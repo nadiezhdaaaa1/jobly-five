@@ -864,7 +864,7 @@ function FilterSection({ title, children }: { title: string; children: React.Rea
 
 function ProfileChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-[12px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
+    <span className="inline-flex items-center gap-1 rounded-[8px] bg-[color:var(--color-mint)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)]">
       {label}
       <button type="button" aria-label={`Remove ${label}`} onClick={onRemove} className="hover:opacity-70"><X size={12} strokeWidth={2} /></button>
     </span>
