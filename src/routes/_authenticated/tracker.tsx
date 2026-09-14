@@ -352,7 +352,7 @@ function KanbanCard({
                  hand-rolled green button rendered before. */
               style={{
                 borderRadius: 8,
-                fontSize: 12,
+                fontSize: 14,
                 height: 30,
                 padding: "0 12px",
                 justifyContent: "center",
