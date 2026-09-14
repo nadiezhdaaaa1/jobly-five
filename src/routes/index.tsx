@@ -333,7 +333,7 @@ function InboxToOffer() {
       id="offer"
     >
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[120px]">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[96px]">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <h2
               className="text-3xl leading-10 md:text-4xl"
@@ -426,7 +426,7 @@ function OfficialApis() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[120px]">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[104px]">
           <h2
             className="text-center text-3xl font-light leading-10 md:text-4xl"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
@@ -470,7 +470,7 @@ function KeyNumbers() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[106px]">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[72px]">
           <div className="flex flex-col items-center gap-12 md:flex-row md:justify-between md:gap-4">
             <Counter label="Jobs analysed today" value={14230} />
             <Counter label="New in 24h" value={892} />
@@ -565,7 +565,7 @@ function JobSearchBroken() {
       id="problem"
     >
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
-        <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-8 md:pt-[147px]">
+        <div className="mx-auto max-w-[1200px] px-5 pt-16 md:px-8 md:pt-[99px]">
           <h2
             className="text-3xl font-light leading-10 md:text-4xl"
             style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.36px" }}
@@ -706,7 +706,7 @@ function HowItWorks() {
       className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]"
     >
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[120px]">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-[96px]">
           <div className="max-w-2xl">
             <h2
               className="text-3xl font-light leading-10 md:text-4xl"
@@ -897,7 +897,7 @@ function FeatureCards() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-surface-1)]">
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
-        <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-[120px]">
+        <div className="mx-auto grid max-w-[1200px] gap-6 px-5 py-16 md:grid-cols-2 md:px-8 md:py-[96px]">
           <div className="group relative z-0 overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-background)] p-6 transition-[transform,scale,border-radius] duration-[800ms] ease-[cubic-bezier(0.165,0.84,0.44,1)] [will-change:transform] hover:z-10 hover:scale-[1.036] hover:rounded-[19.305px] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:rounded-[20px] md:p-10">
             <h3 className="text-2xl" style={{ fontFamily: "var(--font-display)" }}>
               Match score and why it fits
@@ -1022,7 +1022,7 @@ function QualityOverQuantity() {
   return (
     <section className="border-b border-[color:var(--color-border)] bg-[color:var(--color-background)]">
       <div className="lg:mx-12 lg:border-l lg:border-r lg:border-[color:var(--color-border)]">
-        <div className="mx-auto max-w-[1200px] px-5 pt-16 pb-16 md:px-8 md:pt-[116px] md:pb-[115px]">
+        <div className="mx-auto max-w-[1200px] px-5 pt-16 pb-16 md:px-8 md:pt-[96px] md:pb-[95px]">
           <div className="mx-auto flex max-w-[760px] flex-col items-center text-center">
             <h2
               className="text-3xl font-light leading-10 md:text-4xl"
@@ -1059,7 +1059,7 @@ function Pricing() {
       <div className="bg-[color:var(--color-surface-1)] border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
         <div
           className="mx-auto flex w-full flex-col items-center"
-          style={{ width: 1200, maxWidth: 1200, padding: "120px 32px", gap: 40 }}
+          style={{ width: 1200, maxWidth: 1200, padding: "104px 32px", gap: 40 }}
         >
           {/* Header */}
           <div className="text-center" style={{ maxWidth: 672 }}>
