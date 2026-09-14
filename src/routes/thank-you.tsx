@@ -1,5 +1,5 @@
 // Confirmation step of the mock checkout. What it reports is read back from the
-// account's own subscription row — never from the URL: /checkout/confirmation
+// account's own subscription row — never from the URL: /thank-you
 // with hand-typed search params must not be able to render a success page.
 // The param only seeds the display while that read is in flight.
 
@@ -26,7 +26,7 @@ const searchSchema = z.object({
   sku: z.enum(SKU_IDS as [SkuId, ...SkuId[]]).catch(TRIAL_SKU),
 });
 
-export const Route = createFileRoute("/checkout/confirmation")({
+export const Route = createFileRoute("/thank-you")({
   ssr: false,
   validateSearch: searchSchema,
   head: () => ({

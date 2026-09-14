@@ -1,6 +1,6 @@
 // Mock checkout. No payment provider is wired yet, so confirming writes the
 // subscription row through the existing server action and hands off to
-// /checkout/confirmation. Every price shown is derived from src/config/pricing.ts.
+// /thank-you. Every price shown is derived from src/config/pricing.ts.
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -84,7 +84,7 @@ function CheckoutPage() {
 
       // The decision has been acted on: it must not outlive this checkout.
       clearPlanIntent();
-      void navigate({ to: "/checkout/confirmation", search: { sku: intent.sku } });
+      void navigate({ to: "/thank-you", search: { sku: intent.sku } });
     } catch {
       setError("We couldn't confirm that just now. Please try again.");
       setPaying(false);

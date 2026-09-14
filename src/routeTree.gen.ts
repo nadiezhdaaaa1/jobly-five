@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ThankYouRouteImport } from './routes/thank-you'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -33,7 +34,6 @@ import { Route as LegalDmcaRouteImport } from './routes/legal.dmca'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
-import { Route as CheckoutConfirmationRouteImport } from './routes/checkout.confirmation'
 import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
@@ -51,6 +51,11 @@ import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes
 import { Route as ApiPublicHooksPostmarkWebhookRouteImport } from './routes/api/public/hooks/postmark-webhook'
 import { Route as ApiPublicHooksConfirmEmailRouteImport } from './routes/api/public/hooks/confirm-email'
 
+const ThankYouRoute = ThankYouRouteImport.update({
+  id: '/thank-you',
+  path: '/thank-you',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -170,11 +175,6 @@ const LegalBillingRoute = LegalBillingRouteImport.update({
   path: '/legal/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutConfirmationRoute = CheckoutConfirmationRouteImport.update({
-  id: '/checkout/confirmation',
-  path: '/checkout/confirmation',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BlogRssDotxmlRoute = BlogRssDotxmlRouteImport.update({
   id: '/blog/rss.xml',
   path: '/blog/rss.xml',
@@ -274,6 +274,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resume': typeof AuthenticatedResumeRoute
@@ -281,7 +282,6 @@ export interface FileRoutesByFullPath {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
-  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -316,6 +316,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/resume': typeof AuthenticatedResumeRoute
@@ -323,7 +324,6 @@ export interface FileRoutesByTo {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
-  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -360,6 +360,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/thank-you': typeof ThankYouRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/resume': typeof AuthenticatedResumeRoute
@@ -367,7 +368,6 @@ export interface FileRoutesById {
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
-  '/checkout/confirmation': typeof CheckoutConfirmationRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
@@ -404,6 +404,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/dashboard'
     | '/profile'
     | '/resume'
@@ -411,7 +412,6 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
-    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -446,6 +446,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/dashboard'
     | '/profile'
     | '/resume'
@@ -453,7 +454,6 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
-    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -489,6 +489,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/thank-you'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
     | '/_authenticated/resume'
@@ -496,7 +497,6 @@ export interface FileRouteTypes {
     | '/_authenticated/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
-    | '/checkout/confirmation'
     | '/legal/billing'
     | '/legal/cookies'
     | '/legal/disclaimer'
@@ -533,9 +533,9 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ThankYouRoute: typeof ThankYouRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogRssDotxmlRoute: typeof BlogRssDotxmlRoute
-  CheckoutConfirmationRoute: typeof CheckoutConfirmationRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
@@ -562,6 +562,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/thank-you': {
+      id: '/thank-you'
+      path: '/thank-you'
+      fullPath: '/thank-you'
+      preLoaderRoute: typeof ThankYouRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -730,13 +737,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalBillingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/confirmation': {
-      id: '/checkout/confirmation'
-      path: '/checkout/confirmation'
-      fullPath: '/checkout/confirmation'
-      preLoaderRoute: typeof CheckoutConfirmationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/blog/rss.xml': {
       id: '/blog/rss.xml'
       path: '/blog/rss.xml'
@@ -883,9 +883,9 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ThankYouRoute: ThankYouRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogRssDotxmlRoute: BlogRssDotxmlRoute,
-  CheckoutConfirmationRoute: CheckoutConfirmationRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
