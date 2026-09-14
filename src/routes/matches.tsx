@@ -16,14 +16,44 @@ import { MatchLine } from "@/components/app/MatchLine";
 import { RegistrationModal } from "@/components/auth/RegistrationModal";
 import { PlanPaywall } from "@/components/site/PlanPaywall";
 import { usePlanFlow } from "@/lib/onboarding/usePlanFlow";
-
+import { supabase } from "@/integrations/supabase/client";
+import { hasPlanStatus } from "@/lib/entitlements";
+import { TRIAL_SKU, isSkuId, type SkuId } from "@/config/pricing";
+import { readPlanIntent, savePlanIntent } from "@/lib/onboarding/planIntent";
 
 export const Route = createFileRoute("/matches")({
+  // `?sku=` is untrusted input: anything unrecognised, malformed or absent is
+  // ignored silently. A valid value only preselects which card is DISPLAYED —
+  // prices, totals and intervals still come from @/config/pricing, so the URL
+  // can never influence what anything costs, and it never starts a purchase.
+  validateSearch: (search: Record<string, unknown>): { sku?: SkuId } =>
+    isSkuId(search["sku"]) ? { sku: search["sku"] } : {},
   head: () => ({
     meta: [{ title: "Your top matches — Jobly" }, { name: "robots", content: "noindex, nofollow" }],
   }),
   component: MatchesPage,
 });
+
+/**
+ * Whether the plan section shows the paywall or the Digest CTA.
+ * "unknown" holds the plan section only — never the matches list.
+ */
+type PlanAccess = "unknown" | "paywall" | "has-plan";
+
+/** Cheap synchronous hint that a Supabase session exists in this browser, so an
+ *  anonymous visitor never waits on any read before seeing the paywall. */
+function maybeSignedInSync(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    for (let i = 0; i < window.localStorage.length; i += 1) {
+      const k = window.localStorage.key(i);
+      if (k && k.startsWith("sb-") && k.endsWith("-auth-token")) return true;
+    }
+  } catch {
+    /* blocked storage: treat as anonymous */
+  }
+  return false;
+}
 
 function ago(days: number) {
   if (days <= 0) return "Posted today";
