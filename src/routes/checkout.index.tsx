@@ -16,8 +16,14 @@ import {
   renewalPhrase,
   skuTotal,
   usd,
+  type SkuId,
 } from "@/config/pricing";
-import { applySubscriptionAction } from "@/lib/subscription.functions";
+import { SKU_SWITCHER_LABEL } from "@/components/site/planSpecs";
+import {
+  applySubscriptionAction,
+  getSubscriptionRow,
+  type SubscriptionRow,
+} from "@/lib/subscription.functions";
 import { clearPlanIntent, readPlanIntent, type PlanIntent } from "@/lib/onboarding/planIntent";
 
 export const Route = createFileRoute("/checkout/")({
@@ -39,6 +45,42 @@ const PLAN_NAMES = {
   pro_3month: "Jobly Pro — 3 months",
   pro_6month: "Jobly Pro — 6 months",
 } as const;
+
+const DAY = 86_400_000;
+
+/**
+ * What a SKU change costs this account, read from its own row. The server's
+ * `activate` starts a fresh period and zeroes banked days on any SKU change,
+ * so those facts are stated before the confirm button. Empty when nothing is
+ * given up (a lapsed plan, or the same SKU).
+ */
+function switchLosses(row: SubscriptionRow, next: SkuId): string[] {
+  const out: string[] = [];
+  if (row.status === "trialing") {
+    out.push(
+      `Your ${TRIAL_DAYS}-day free trial ends today. ${usd(skuTotal(next))} is charged now.`,
+    );
+  }
+  if (row.sku !== null && row.sku !== next) {
+    const left = row.currentPeriodEnd
+      ? Math.floor((new Date(row.currentPeriodEnd).getTime() - Date.now()) / DAY)
+      : 0;
+    if (left > 0) {
+      out.push(
+        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. Those days end today — the new plan starts a new period from today and they do not carry over.`,
+      );
+    }
+    const bankedLive =
+      !row.bankedDaysExpireAt || new Date(row.bankedDaysExpireAt).getTime() > Date.now();
+    const banked = row.bankedDays > 0 && bankedLive ? row.bankedDays : 0;
+    if (banked > 0) {
+      out.push(
+        `Your ${banked} banked day${banked === 1 ? "" : "s"} are cleared and are not added to the new plan.`,
+      );
+    }
+  }
+  return out;
+}
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -64,6 +106,19 @@ function CheckoutPage() {
       setReady(true);
     })();
   }, [navigate]);
+
+  // Only a Settings -> Plan decision can change a live SKU, so only that path
+  // reads the current row. A fresh purchase never fetches it and never shows a
+  // notice.
+  const managing = intent?.manage === true;
+  const [current, setCurrent] = useState<SubscriptionRow | null>(null);
+  useEffect(() => {
+    if (!managing) return;
+    void getSubscriptionRow()
+      .then(setCurrent)
+      .catch(() => undefined);
+  }, [managing]);
+
 
   async function pay() {
     if (!intent) return;
@@ -102,6 +157,8 @@ function CheckoutPage() {
   const sku = SKUS[intent.sku];
   const isTrial = intent.trial;
   const discount = discountPct(sku.id);
+  const losses = managing && current ? switchLosses(current, sku.id) : [];
+
 
   return (
     <div className="min-h-screen bg-[color:var(--color-surface-0)]">
@@ -133,6 +190,27 @@ function CheckoutPage() {
               Auto-renews at {renewalPhrase(sku.id)} until cancelled.
             </p>
           </div>
+          {losses.length > 0 ? (
+            <div
+              className="flex flex-col gap-2 rounded-[12px] border p-4"
+              style={{ borderColor: "var(--color-border)" }}
+            >
+              <p className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 500 }}>
+                What changes on this account today
+              </p>
+              <ul className="flex flex-col gap-1.5">
+                {losses.map((line) => (
+                  <li
+                    key={line}
+                    className="text-[13px] leading-[19.5px] text-[color:var(--color-text-secondary)]"
+                    style={{ fontWeight: 300 }}
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {error && <p className="text-sm text-[color:var(--color-danger)]">{error}</p>}
           <button
             type="button"
