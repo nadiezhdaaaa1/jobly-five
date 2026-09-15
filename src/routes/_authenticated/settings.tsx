@@ -275,10 +275,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)}
       />
 
-      <p className="mt-3 text-[11px] text-[color:var(--color-text-muted)]">
-        Payments aren't live in this preview — plan changes are simulated.
-      </p>
-
       {/* Cancel Step 1 (only from active Pro) */}
       {cancelStep === 1 ? (
         <Modal onClose={closeCancel} title="Found a job?">
