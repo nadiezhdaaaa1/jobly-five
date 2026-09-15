@@ -771,30 +771,21 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
       )}
 
       <div aria-disabled={blocked} style={{ opacity: blocked ? 0.6 : 1 }}>
-        <PlanCardsGrid onSelect={onSelect} />
+        {/* The same component the A-ha screen and the landing page use — the
+            five-way switcher above one expanded card. Settings only replaces
+            the CTA per SKU; nothing about the pricing is local. */}
+        <PlanPaywall
+          onSelect={onSelect}
+          {...(currentSku ? { initialSku: currentSku } : {})}
+          ctaOverride={ctaOverride}
+        />
       </div>
 
       {/* Not a tier you can buy: it is what the account falls back to after
           cancelling. */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
-        <div>
-          <p className="text-[14px] text-[color:var(--color-foreground)]">No plan — $0</p>
-          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
-            Weekly digest only. No match scores, tracker or reminders.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            if (isPlanFree) return;
-            onDowngrade();
-          }}
-          disabled={isPlanFree}
-          className="inline-flex h-10 items-center justify-center rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] disabled:opacity-60"
-        >
-          {isPlanFree ? "Current state" : "Cancel plan"}
-        </button>
-      </div>
+      <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]">
+        No plan — $0: weekly digest only. No match scores, tracker or reminders.
+      </p>
     </div>
   );
 }
