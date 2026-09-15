@@ -314,15 +314,16 @@ export const PLAN_FEATURES: Record<SkuId, string[]> = {
 
 /**
  * The bullets a given surface may show. On /settings a non-trialing Pro monthly
- * account must not be told its trial is running, and — with the switch CTA gone
- * — must not be promised a switch it cannot perform, so those two bullets are
- * replaced by the derived recurring line and the standard cancel/renewal notes.
+ * account must not be told its trial is running, so the two trial bullets are
+ * dropped in favour of the standard cancel/renewal notes. The switch bullet
+ * stays: /settings offers a switch CTA on every non-current card. The recurring
+ * price is not repeated here — the card's own disclosure line already states it.
  */
 export function planFeatures(sku: SkuId, options?: PlanCopyOptions): string[] {
   if (sku === TRIAL_SKU && isManage(options) && options?.trialing !== true) {
     return [
       "Everything in Pro, month to month",
-      `${renewalPhrase(sku)} until cancelled`,
+      "Switch to a longer plan whenever you like",
       cancelAnyTime,
       renewalNotice,
     ];
