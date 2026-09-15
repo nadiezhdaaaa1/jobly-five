@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IconCheck,
@@ -26,12 +25,9 @@ import {
   unpausePlan,
   cancelPlanNow,
   useHasHadPro,
-  setHasHadPro,
   useSubscription,
   scheduleCancelAtPeriodEnd,
   resumeSubscription,
-  devDowngradeNow,
-  devRestorePro,
   type Plan,
 } from "@/lib/plan-store";
 import { savePlanIntent } from "@/lib/onboarding/planIntent";
@@ -42,17 +38,22 @@ import {
   recordCancelFeedback,
   type CancelReason,
 } from "@/lib/cancel-feedback-store";
-import { BANKED_DAYS_TTL_MONTHS, SKUS, TRIAL_DAYS, renewalPhrase } from "@/config/pricing";
-import { PlanCardsGrid, type PlanCardSpec } from "@/components/site/PlanCards";
+import {
+  BANKED_DAYS_TTL_MONTHS,
+  SKUS,
+  TRIAL_DAYS,
+  isPrepaid,
+  renewalPhrase,
+  type SkuId,
+} from "@/config/pricing";
+import { PlanPaywall, type PaywallCta } from "@/components/site/PlanPaywall";
+import { SKU_SWITCHER_LABEL, type PlanCardSpec } from "@/components/site/planSpecs";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
 import {
   requestAccountDeletionServer,
   restoreAccountServer,
-  devSetPendingDeletion,
-  devFastForwardPastGrace,
-  useAccount,
 } from "@/lib/account-store";
 import { lovable } from "@/integrations/lovable/index";
 import {
