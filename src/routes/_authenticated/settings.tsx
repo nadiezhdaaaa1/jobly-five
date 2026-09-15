@@ -207,9 +207,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     );
   }
 
+  // Cancellation lives only on the current plan's card now — no header action.
   return (
-    {/* Cancellation lives only on the current plan's card now — there is no
-        header action. */}
     <Card title="Plan">
       {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
