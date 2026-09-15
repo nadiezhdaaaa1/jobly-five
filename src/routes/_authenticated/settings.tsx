@@ -284,10 +284,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </div>
       </div>
 
-      {/* Two plan cards — Pro (wide, left) + Free (narrow, right) */}
+      {/* The A-ha layout: five-way SKU switcher above one expanded plan card. */}
       <PlanCardsBlock
         plan={plan}
-        onFlash={onFlash}
         onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)}
       />
 
