@@ -112,12 +112,31 @@ function CheckoutPage() {
   // notice.
   const managing = intent?.manage === true;
   const [current, setCurrent] = useState<SubscriptionRow | null>(null);
+  // Fail closed: while managing, the confirm stays inert until this row is
+  // known. An unresolved or failed read must never let a charge through
+  // without the notice below.
+  const [rowState, setRowState] = useState<"loading" | "ready" | "error">("loading");
+  const [rowAttempt, setRowAttempt] = useState(0);
   useEffect(() => {
     if (!managing) return;
+    let live = true;
+    setRowState("loading");
     void getSubscriptionRow()
-      .then(setCurrent)
-      .catch(() => undefined);
-  }, [managing]);
+      .then((row) => {
+        if (!live) return;
+        setCurrent(row);
+        setRowState("ready");
+      })
+      .catch(() => {
+        if (!live) return;
+        setCurrent(null);
+        setRowState("error");
+      });
+    return () => {
+      live = false;
+    };
+  }, [managing, rowAttempt]);
+
 
 
   async function pay() {
