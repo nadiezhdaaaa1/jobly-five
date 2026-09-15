@@ -97,7 +97,7 @@ function SettingsScreen() {
           Plan, billing, notifications, hidden companies, security and account.
         </p>
         {flash ? (
-          <div className="mt-4 rounded-[6px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
+          <div className="mt-4 rounded-[12px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
             {flash}
           </div>
         ) : null}
@@ -125,7 +125,7 @@ function Card({
   actions?: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+    <section className="rounded-[20px] border bg-[color:var(--color-surface-1)] p-5">
       <div className="flex items-center justify-between gap-4">
         <h2
           className="text-[18px] text-[color:var(--color-foreground)]"
@@ -143,13 +143,13 @@ function Card({
 function PlanBadge({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
-      <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
+      <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
         No plan
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
+    <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
       {plan === "paused" ? "Paused" : "Pro"}
     </span>
   );
@@ -215,7 +215,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           <button
             type="button"
             onClick={() => setCancelStep(1)}
-            className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-9 items-center justify-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             Cancel subscription
           </button>
@@ -255,7 +255,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 resumeSubscription();
                 onFlash("Cancellation undone — your Pro subscription continues.");
               }}
-              className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="inline-flex h-10 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Resume subscription
             </button>
@@ -268,14 +268,14 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                   unpausePlan();
                   onFlash("Welcome back — your matches start arriving tomorrow morning.");
                 }}
-                className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="inline-flex h-10 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
               >
                 Restart my search
               </button>
               <button
                 type="button"
                 onClick={() => setCancelStep(2)}
-                className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex h-10 items-center justify-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Cancel subscription
               </button>
@@ -313,7 +313,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Your plan is paused — no charges while it's paused.");
               }}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Pause my plan
             </button>
@@ -348,7 +348,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Keep my pause
             </button>
@@ -361,7 +361,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Subscription canceled — you no longer have a plan.");
               }}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -398,7 +398,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
             >
               Keep Pro
             </button>
@@ -415,7 +415,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                     : "Pro canceled — access until the end of your current period.",
                 );
               }}
-              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
+              className="h-11 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -457,7 +457,7 @@ function CancelReasonPicker({
         {CANCEL_REASONS.map((r) => (
           <label
             key={r}
-            className="flex cursor-pointer items-center gap-2 rounded-[4px] px-2 py-1.5 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="flex cursor-pointer items-center gap-2 rounded-[12px] px-2 py-1.5 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             style={{ fontWeight: 300 }}
           >
             <input
@@ -480,7 +480,7 @@ function CancelReasonPicker({
           maxLength={500}
           placeholder="Tell us what happened"
           aria-label="Tell us why you're canceling"
-          className="mt-2 w-full resize-none rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 py-2 text-[13px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
+          className="mt-2 w-full resize-none rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 py-2 text-[13px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
           style={{ fontWeight: 300 }}
         />
       ) : null}
@@ -717,7 +717,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </p>
       {error ? (
         <div
-          className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]"
+          className="mb-4 flex items-center justify-between gap-3 rounded-[12px] px-3 py-2 text-[12px]"
           style={{ background: "#FFE2E2", color: "#D00D01" }}
         >
           <span>{error}</span>
@@ -743,7 +743,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             type="button"
             disabled={!pro || loading}
             onClick={() => pro && void setPreference("digest_frequency", "daily")}
-            className={`inline-flex h-10 items-center gap-1.5 rounded-[4px] border px-4 text-[14px] transition-colors ${
+            className={`inline-flex h-10 items-center gap-1.5 rounded-[12px] border px-4 text-[14px] transition-colors ${
               freq === "daily"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
@@ -762,7 +762,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             type="button"
             disabled={loading}
             onClick={() => void setPreference("digest_frequency", "weekly")}
-            className={`inline-flex h-10 items-center rounded-[4px] border px-4 text-[14px] transition-colors ${
+            className={`inline-flex h-10 items-center rounded-[12px] border px-4 text-[14px] transition-colors ${
               freq === "weekly"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
@@ -778,7 +778,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.quiet_hours_start}
               onChange={(e) => void setPreference("quiet_hours_start", Number(e.target.value))}
-              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[110px] rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -793,7 +793,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.quiet_hours_end}
               onChange={(e) => void setPreference("quiet_hours_end", Number(e.target.value))}
-              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[110px] rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -808,7 +808,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.timezone}
               onChange={(e) => void setPreference("timezone", e.target.value)}
-              className="h-10 w-[220px] max-w-full rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[220px] max-w-full rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {timezoneOptions(prefs.timezone).map((tz) => (
                 <option key={tz} value={tz}>
@@ -887,7 +887,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </div>
 
       <div
-        className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]"
+        className="mt-5 rounded-[12px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]"
         style={{ fontWeight: 300 }}
       >
         <span className="font-semibold">Always on:</span> account and security (verify, sign-in,
@@ -933,12 +933,12 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
             }
           }}
           placeholder="Add a company to hide from"
-          className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+          className="h-10 min-w-0 flex-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
         />
         <button
           type="button"
           onClick={submit}
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
           <IconPlus size={14} strokeWidth={1.8} />
           Add company
@@ -956,7 +956,7 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
           list.map((c) => (
             <span
               key={c}
-              className="inline-flex items-center gap-2 rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]"
+              className="inline-flex items-center gap-2 rounded-[8px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]"
             >
               {c}
               <IconTooltip label={`Show jobs from ${c} again`}>
@@ -995,7 +995,7 @@ function RadioRow({
 }) {
   return (
     <label
-      className={`flex items-start gap-3 rounded-[6px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+      className={`flex items-start gap-3 rounded-[12px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <input
         type="radio"
@@ -1162,7 +1162,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           <button
             type="button"
             onClick={() => setSettingPw(true)}
-            className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             Set a password
           </button>
@@ -1208,7 +1208,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="submit"
               disabled={!valid || busy}
-              className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+              className="inline-flex h-10 items-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
             >
               {busy ? "Saving…" : needsCurrent ? "Update password" : "Save password"}
             </button>
@@ -1221,7 +1221,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   setConfirm("");
                   setFormError(null);
                 }}
-                className="inline-flex h-10 items-center rounded-[4px] px-3 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex h-10 items-center rounded-[12px] px-3 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Cancel
               </button>
@@ -1254,7 +1254,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         </div>
         <div className="mt-3 flex items-center gap-3">
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] border bg-white"
             aria-hidden
           >
             <GoogleMark size={18} />
@@ -1383,7 +1383,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   setIdentityBusy(false);
                 }
               }}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
               {identityBusy ? "Removing…" : "Remove Google sign-in"}
@@ -1392,7 +1392,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
               type="button"
               disabled={identityBusy}
               onClick={() => setGConfirm(false)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
               Cancel
             </button>
@@ -1428,14 +1428,14 @@ function PasswordField({
           type={show ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-10 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)] ${error ? "border-[color:var(--color-danger)]" : ""}`}
+          className={`h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 pr-10 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)] ${error ? "border-[color:var(--color-danger)]" : ""}`}
         />
         <IconTooltip label={show ? "Hide password" : "Show password"}>
           <button
             type="button"
             onClick={onToggle}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             {show ? (
               <IconEyeOff size={15} strokeWidth={1.6} />
@@ -1568,7 +1568,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               setReauthOk(false);
               setReauthError(null);
             }}
-            className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
             style={{ borderColor: "#D00D01" }}
           >
             Delete account
@@ -1590,7 +1590,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder="DELETE"
             aria-label="Type DELETE to confirm"
-            className="mt-4 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="mt-4 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
           {reauthOk ? (
             <p
@@ -1614,7 +1614,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                   onChange={(e) => setPassword(e.target.value)}
                   aria-label="Confirm your password"
                   autoComplete="current-password"
-                  className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  className="h-10 min-w-0 flex-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
                 />
                 <button
                   type="button"
@@ -1622,7 +1622,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                   onClick={() => {
                     void verifyPassword();
                   }}
-                  className="h-10 shrink-0 rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+                  className="h-10 shrink-0 rounded-[12px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
                 >
                   Confirm
                 </button>
@@ -1641,7 +1641,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                 onClick={() => {
                   void reauthWithGoogle();
                 }}
-                className="mt-2 h-10 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="mt-2 h-10 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 Confirm with Google
               </button>
@@ -1657,7 +1657,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               onClick={() => {
                 void confirmDeletion();
               }}
-              className="h-11 w-full rounded-[4px] px-4 button-small text-white"
+              className="h-11 w-full rounded-[12px] px-4 button-small text-white"
               style={{
                 background: canDelete ? "#D00D01" : "var(--color-surface-2)",
                 color: canDelete ? "#fff" : "var(--color-alt-light-mist)",
@@ -1669,7 +1669,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
             >
               Keep my account
             </button>
@@ -1714,7 +1714,7 @@ function Modal({
         aria-hidden
       />
       <div
-        className="relative z-10 w-full max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+        className="relative z-10 w-full max-w-[440px] rounded-[20px] border bg-[color:var(--color-surface-1)] p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <div className="flex items-start justify-between gap-4 pr-10">
@@ -1728,7 +1728,7 @@ function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconX size={16} strokeWidth={1.6} />
           </button>
