@@ -112,15 +112,23 @@ function SkuSwitcher({
   );
 }
 
+/** A per-SKU CTA replacement. Presentation only — never a price or a term. */
+export type PaywallCta = { label: string; main?: boolean; disabled?: boolean };
+
 function PaywallCard({
   sku,
   spec,
   onSelect,
+  cta,
 }: {
   sku: SkuId;
   spec: PlanCardSpec;
   onSelect: (card: PlanCardSpec) => void;
+  cta: PaywallCta | null;
 }) {
+  const ctaLabel = cta?.label ?? spec.cta;
+  const ctaMain = cta ? cta.main === true : spec.ctaMain;
+  const ctaDisabled = cta?.disabled === true;
   return (
     <div
       className="relative w-full"
