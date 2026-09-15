@@ -369,8 +369,8 @@ function ProfileScreen() {
                   <li className="flex items-center gap-2 text-[13px]">
                     {strength.hasPortfolio ? (
                       <>
-                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--main-accent)]">
+                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-on-accent)]" />
                         </span>
                         <span className="font-semibold text-[color:var(--color-foreground)]">Portfolio — optional</span>
                       </>
