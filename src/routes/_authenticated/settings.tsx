@@ -2,11 +2,6 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  devPurgeAccount,
-  DEV_PURGE_ALLOWLIST,
-  type DevPurgeResult,
-} from "@/lib/dev-purge.functions";
-import {
   IconCheck,
   IconEye,
   IconEyeOff,
