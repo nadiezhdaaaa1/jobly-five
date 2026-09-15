@@ -674,20 +674,13 @@ function DevHardPurgeRow() {
   );
 }
 
-function PlanCardsBlock({
-  plan,
-  onFlash,
-  onDowngrade,
-}: {
-  plan: Plan;
-  onFlash: (m: string) => void;
-  onDowngrade: () => void;
-}) {
+function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => void }) {
   const hasHadPro = useHasHadPro();
-  const isPlanFree = plan === "free";
   const isPaid = plan === "pro" || plan === "watch";
   const navigate = useNavigate();
   const currentSku = useEntitlements().entitlements.sku;
+  const sub = useSubscription();
+
 
   // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
   const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
