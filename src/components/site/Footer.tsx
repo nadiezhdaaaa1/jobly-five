@@ -71,17 +71,28 @@ export function Footer() {
             <ul className="mt-4 flex flex-wrap items-center gap-3">
               {SOCIALS.map((s) => (
                 <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={s.label}
-                    className="inline-flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-70"
-                  >
-                    <img src={s.icon} alt="" width={20} height={20} />
-                  </a>
+                  {s.href ? (
+                    <a
+                      href={s.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={s.label}
+                      className="inline-flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-70"
+                    >
+                      <img src={s.icon} alt="" width={20} height={20} />
+                    </a>
+                  ) : (
+                    <span
+                      role="img"
+                      aria-label={`${s.label} — coming soon`}
+                      className="inline-flex h-8 w-8 items-center justify-center opacity-60"
+                    >
+                      <img src={s.icon} alt="" width={20} height={20} />
+                    </span>
+                  )}
                 </li>
               ))}
+
             </ul>
             <p className="mt-4 max-w-xs text-xs text-[color:var(--color-text-muted)]">
               NORELIX LIMITED · trading as Jobly
