@@ -65,11 +65,14 @@ function switchLosses(row: SubscriptionRow, next: SkuId): string[] {
     const left = row.currentPeriodEnd
       ? Math.floor((new Date(row.currentPeriodEnd).getTime() - Date.now()) / DAY)
       : 0;
-    if (left > 0) {
+    // While trialing, currentPeriodEnd IS the trial end: the trial line above
+    // already accounts for those days.
+    if (left > 0 && row.status !== "trialing") {
       out.push(
-        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. Those days end today — the new plan starts a new period from today and they do not carry over.`,
+        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. They do not carry over — the new plan starts a fresh period today.`,
       );
     }
+
     const bankedLive =
       !row.bankedDaysExpireAt || new Date(row.bankedDaysExpireAt).getTime() > Date.now();
     const banked = row.bankedDays > 0 && bankedLive ? row.bankedDays : 0;
