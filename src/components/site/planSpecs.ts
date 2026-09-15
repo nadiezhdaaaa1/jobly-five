@@ -260,9 +260,14 @@ export const SKU_SWITCHER_LABEL: Record<SkuId, string> = {
   watch_monthly: "Watch · Monthly",
 };
 
-/** What the account is charged at signup, derived — never a literal. */
-export function billedTodayLine(sku: SkuId): string {
-  if (sku === "pro_monthly") return `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`;
+/**
+ * What the account is charged at signup ("purchase"), or what it is charged on
+ * every renewal ("manage" — /settings, where nothing is billed today). Derived
+ * from skuTotal / renewalPhrase; never a literal.
+ */
+export function billedTodayLine(sku: SkuId, options?: PlanCopyOptions): string {
+  if (showsTrial(sku, options)) return `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`;
+  if (isManage(options)) return renewalPhrase(sku);
   return `${usd(skuTotal(sku))} billed today`;
 }
 
