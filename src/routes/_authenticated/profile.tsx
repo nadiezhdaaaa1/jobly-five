@@ -535,7 +535,7 @@ function PrimaryBtn({
       onClick={onClick}
       disabled={disabled}
       className="main_accent_button main_accent_button--on-light inline-flex h-10 items-center justify-center gap-1.5"
-      style={{ borderRadius: 12, fontSize: 14, height: 40, paddingLeft: 16, paddingRight: 16, justifyContent: "center" }}
+      style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
     >
       {children}
     </button>
@@ -558,7 +558,7 @@ function SecondaryBtn({
       style={
         danger
           ? undefined
-          : { borderRadius: 12, fontSize: 13, height: 40, paddingLeft: 12, paddingRight: 12, justifyContent: "center" }
+          : { borderRadius: 12, fontSize: 13, height: 40, padding: "0 12px", justifyContent: "center" }
       }
     >
       {children}
