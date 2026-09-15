@@ -185,8 +185,45 @@ export const BAND_COLOR: Record<BandTone, string> = {
   "best-value": "var(--plan-band-best-value)",
 };
 
+/**
+ * Which surface the copy is written for.
+ *  - "purchase" (default): the landing grid, /matches and checkout. Nothing
+ *    about these strings may change — they are the pre-purchase disclosures.
+ *  - "manage": /settings, where the account is already subscribed. Nothing is
+ *    billed today, so every "charged/billed today" phrasing becomes the plain
+ *    recurring charge, and trial wording appears only while `trialing` is true.
+ */
+export type PlanCopyContext = "purchase" | "manage";
+
+export type PlanCopyOptions = {
+  context?: PlanCopyContext;
+  /** True only when the viewing account is genuinely inside its trial. */
+  trialing?: boolean;
+};
+
+const isManage = (o?: PlanCopyOptions) => o?.context === "manage";
+/** Trial copy is legal only on the one trial SKU, and only while trialing. */
+const showsTrial = (sku: SkuId, o?: PlanCopyOptions) =>
+  sku === TRIAL_SKU && (!isManage(o) || o?.trialing === true);
+
 /** One spec per flat SKU. The paywall renders exactly one of these at a time. */
-export function planSpec(sku: SkuId): PlanCardSpec {
+export function planSpec(sku: SkuId, options?: PlanCopyOptions): PlanCardSpec {
+  const base = baseSpec(sku);
+  if (!isManage(options)) return base;
+  // Manage context: no charge happens today, so restate the recurring charge.
+  // Every string is derived — renewalPhrase / skuTotal / perMonth only.
+  return {
+    ...base,
+    subLine: showsTrial(sku, options)
+      ? `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`
+      : renewalPhrase(sku),
+    disclosure: showsTrial(sku, options)
+      ? `${TRIAL_DAYS} days free, then ${renewalPhrase(sku)} until cancelled`
+      : `${renewalPhrase(sku)} until cancelled`,
+  };
+}
+
+function baseSpec(sku: SkuId): PlanCardSpec {
   switch (sku) {
     case "watch_monthly":
     case "watch_annual":
