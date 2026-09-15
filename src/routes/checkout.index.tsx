@@ -144,6 +144,9 @@ function CheckoutPage() {
 
   async function pay() {
     if (!intent) return;
+    // Fail closed against a fast click: never charge on an unresolved row.
+    if (intent.manage === true && rowState !== "ready") return;
+
     setPaying(true);
     setError(null);
     try {
