@@ -215,7 +215,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           <button
             type="button"
             onClick={() => setCancelStep(1)}
-            className="inline-flex h-9 items-center justify-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="secondary_button secondary_button--on-light inline-flex button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 36, padding: "0 12px", justifyContent: "center" }}
           >
             Cancel subscription
           </button>
@@ -255,7 +256,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 resumeSubscription();
                 onFlash("Cancellation undone — your Pro subscription continues.");
               }}
-              className="inline-flex h-10 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light inline-flex button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
             >
               Resume subscription
             </button>
@@ -268,14 +270,16 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                   unpausePlan();
                   onFlash("Welcome back — your matches start arriving tomorrow morning.");
                 }}
-                className="inline-flex h-10 items-center justify-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="main_accent_button main_accent_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Restart my search
               </button>
               <button
                 type="button"
                 onClick={() => setCancelStep(2)}
-                className="inline-flex h-10 items-center justify-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="secondary_button secondary_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Cancel subscription
               </button>
@@ -313,7 +317,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Your plan is paused — no charges while it's paused.");
               }}
-              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Pause my plan
             </button>
@@ -348,7 +353,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep my pause
             </button>
@@ -398,7 +404,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep Pro
             </button>
@@ -938,7 +945,8 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
         <button
           type="button"
           onClick={submit}
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="secondary_button secondary_button--on-light inline-flex shrink-0 gap-1.5 whitespace-nowrap button-small"
+          style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
         >
           <IconPlus size={14} strokeWidth={1.8} />
           Add company
@@ -1162,7 +1170,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           <button
             type="button"
             onClick={() => setSettingPw(true)}
-            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="secondary_button secondary_button--on-light inline-flex button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
           >
             Set a password
           </button>
@@ -1208,7 +1217,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="submit"
               disabled={!valid || busy}
-              className="inline-flex h-10 items-center rounded-[12px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+              className="main_accent_button main_accent_button--on-light inline-flex button-small disabled:cursor-not-allowed"
+              style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
             >
               {busy ? "Saving…" : needsCurrent ? "Update password" : "Save password"}
             </button>
@@ -1221,7 +1231,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   setConfirm("");
                   setFormError(null);
                 }}
-                className="inline-flex h-10 items-center rounded-[12px] px-3 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                className="secondary_button secondary_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 12px", justifyContent: "center" }}
               >
                 Cancel
               </button>
@@ -1392,7 +1403,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
               type="button"
               disabled={identityBusy}
               onClick={() => setGConfirm(false)}
-              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="secondary_button secondary_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Cancel
             </button>
@@ -1568,7 +1580,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               setReauthOk(false);
               setReauthError(null);
             }}
-            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+            className="secondary_button secondary_button--on-light inline-flex button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
             style={{ borderColor: "#D00D01" }}
           >
             Delete account
@@ -1622,7 +1635,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                   onClick={() => {
                     void verifyPassword();
                   }}
-                  className="h-10 shrink-0 rounded-[12px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+                  className="main_accent_button main_accent_button--on-light shrink-0 button-small disabled:cursor-not-allowed"
+                  style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 12px", justifyContent: "center" }}
                 >
                   Confirm
                 </button>
@@ -1641,7 +1655,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                 onClick={() => {
                   void reauthWithGoogle();
                 }}
-                className="mt-2 h-10 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="main_accent_button main_accent_button--on-light mt-2 w-full button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Confirm with Google
               </button>
@@ -1669,7 +1684,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
-              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="secondary_button secondary_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep my account
             </button>
