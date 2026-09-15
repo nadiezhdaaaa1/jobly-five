@@ -237,11 +237,27 @@ function CheckoutPage() {
               </ul>
             </div>
           ) : null}
+          {rowState === "error" && managing ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-[color:var(--color-danger)]">
+                We couldn't read your current plan just now, so we can't show what this change
+                does to it. Nothing has been charged.
+              </p>
+              <button
+                type="button"
+                onClick={() => setRowAttempt((n) => n + 1)}
+                className="secondary_button secondary_button--on-light secondary_button--sm self-start"
+              >
+                Try again
+              </button>
+            </div>
+          ) : null}
           {error && <p className="text-sm text-[color:var(--color-danger)]">{error}</p>}
           <button
             type="button"
             onClick={() => void pay()}
-            disabled={paying}
+            disabled={paying || rowBlocked}
+
             className="main_accent_button main_accent_button--on-light w-full justify-center gap-2"
           >
             {paying ? (
