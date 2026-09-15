@@ -338,9 +338,9 @@ function ProfileScreen() {
                   Profile strength
                 </h3>
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="h-1 flex-1 bg-[color:var(--color-surface-2)]">
+                  <div className="h-1 flex-1 rounded-[9999px] bg-[color:var(--color-surface-2)]">
                     <div
-                      className="h-1 bg-[color:var(--color-green)]"
+                      className="h-1 rounded-[9999px] bg-[color:var(--color-green)]"
                       style={{ width: `${strength.pct}%` }}
                     />
                   </div>
