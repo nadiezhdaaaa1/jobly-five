@@ -9,6 +9,7 @@
 import {
   RENEWAL_REMINDER_DAYS,
   TRIAL_DAYS,
+  TRIAL_SKU,
   WATCH_MONTHLY_ANNUALISED,
   discountPct,
   perMonth,
@@ -310,3 +311,21 @@ export const PLAN_FEATURES: Record<SkuId, string[]> = {
     renewalNotice,
   ],
 };
+
+/**
+ * The bullets a given surface may show. On /settings a non-trialing Pro monthly
+ * account must not be told its trial is running, and — with the switch CTA gone
+ * — must not be promised a switch it cannot perform, so those two bullets are
+ * replaced by the derived recurring line and the standard cancel/renewal notes.
+ */
+export function planFeatures(sku: SkuId, options?: PlanCopyOptions): string[] {
+  if (sku === TRIAL_SKU && isManage(options) && options?.trialing !== true) {
+    return [
+      "Everything in Pro, month to month",
+      `${renewalPhrase(sku)} until cancelled`,
+      cancelAnyTime,
+      renewalNotice,
+    ];
+  }
+  return PLAN_FEATURES[sku];
+}
