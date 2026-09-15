@@ -534,7 +534,8 @@ function PrimaryBtn({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[4px] bg-[color:var(--color-accent)] px-4 text-[14px] font-semibold text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+      className="main_accent_button main_accent_button--on-light inline-flex h-10 items-center justify-center gap-1.5"
+      style={{ borderRadius: 12, fontSize: 14, height: 40, paddingLeft: 16, paddingRight: 16, justifyContent: "center" }}
     >
       {children}
     </button>
