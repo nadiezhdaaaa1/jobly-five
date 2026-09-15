@@ -2261,13 +2261,13 @@ function AchievementsTab({
                     empty
                       ? ""
                       : selected
-                      ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                      ? "border-[color:var(--color-primary)] bg-[color:var(--main-accent)]"
                       : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                   }`}
                   style={{ padding: "6px 10px 6px 8px", gap: 8 }}
                 >
                   <span
-                    className={`grid h-4 w-4 shrink-0 place-items-center rounded-[2px] border ${
+                    className={`grid h-4 w-4 shrink-0 place-items-center rounded-[4px] border ${
                       selected
                         ? "border-[#0E735A] bg-[#0E735A]"
                         : "border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-2)]"
