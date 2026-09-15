@@ -56,8 +56,8 @@ export function ScoreRing({
         <span
           style={{
             fontFamily: "var(--font-sans)",
-            fontWeight: 400,
-            fontSize,
+            fontWeight: labelWeight,
+            fontSize: labelSize,
             lineHeight: 1,
             color: "#090B0C",
           }}
