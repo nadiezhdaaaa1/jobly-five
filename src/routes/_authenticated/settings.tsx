@@ -1556,8 +1556,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               setReauthOk(false);
               setReauthError(null);
             }}
-            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
-            style={{ borderColor: "#D00D01" }}
+            className="danger_button--on-light button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
           >
             Delete account
           </button>
