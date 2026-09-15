@@ -56,6 +56,8 @@ import {
 import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { ScoreRing } from "@/components/app/ScoreRing";
+import { useEntitlements } from "@/lib/entitlements-provider";
 
 function useOutsideClose(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement | null>(null);
