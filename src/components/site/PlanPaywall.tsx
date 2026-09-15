@@ -12,11 +12,13 @@ import {
   BAND_COLOR,
   PAYWALL_DEFAULT_SKU,
   PAYWALL_SKU_ORDER,
-  PLAN_FEATURES,
   SKU_SWITCHER_LABEL,
   billedTodayLine,
+  planFeatures,
   planSpec,
   type PlanCardSpec,
+  type PlanCopyContext,
+  type PlanCopyOptions,
 } from "@/components/site/planSpecs";
 
 /** The pill tracks the active segment's measured box — never a fixed width. */
@@ -112,19 +114,28 @@ function SkuSwitcher({
   );
 }
 
-/** A per-SKU CTA replacement. Presentation only — never a price or a term. */
-export type PaywallCta = { label: string; main?: boolean; disabled?: boolean };
+/** A per-SKU CTA replacement. Presentation only — never a price or a term.
+ *  `hidden` renders no button at all; the footer row then holds only the
+ *  disclosure, so nothing collapses and no gap is left behind. */
+export type PaywallCta = {
+  label: string;
+  main?: boolean;
+  disabled?: boolean;
+  hidden?: boolean;
+};
 
 function PaywallCard({
   sku,
   spec,
   onSelect,
   cta,
+  copy,
 }: {
   sku: SkuId;
   spec: PlanCardSpec;
   onSelect: (card: PlanCardSpec) => void;
   cta: PaywallCta | null;
+  copy: PlanCopyOptions;
 }) {
   const ctaLabel = cta?.label ?? spec.cta;
   const ctaMain = cta ? cta.main === true : spec.ctaMain;
@@ -251,7 +262,7 @@ function PaywallCard({
               {spec.description}
             </p>
             <ul className="flex flex-col" style={{ gap: 8, marginTop: 8 }}>
-              {PLAN_FEATURES[sku].map((f) => (
+              {planFeatures(sku, copy).map((f) => (
                 <li key={f} className="flex items-start" style={{ gap: 8 }}>
                   <IconCheck
                     size={16}
@@ -318,7 +329,7 @@ function PaywallCard({
                 color: "var(--color-text-secondary)",
               }}
             >
-              {billedTodayLine(sku)}
+              {billedTodayLine(sku, copy)}
             </div>
           </div>
         </div>
@@ -337,6 +348,7 @@ function PaywallCard({
           >
             {spec.disclosure}
           </p>
+          {cta?.hidden === true ? null : (
           <button
             type="button"
             disabled={ctaDisabled}
@@ -352,6 +364,7 @@ function PaywallCard({
           >
             {ctaLabel}
           </button>
+          )}
         </div>
       </div>
     </div>
@@ -362,6 +375,9 @@ export function PlanPaywall({
   onSelect,
   initialSku,
   ctaOverride,
+  context = "purchase",
+  trialing = false,
+  showSharedDisclosure = true,
 }: {
   onSelect: (card: PlanCardSpec) => void;
   /** Which card opens selected. This is a DISPLAY choice only — every price,
@@ -372,9 +388,19 @@ export function PlanPaywall({
    *  null to keep the SKU's own purchase CTA. Settings uses this to turn the
    *  current plan's CTA into a cancel button. */
   ctaOverride?: (sku: SkuId) => PaywallCta | null;
+  /** Which surface this is. Defaults to the purchase surfaces (landing,
+   *  /matches), whose copy must never change. "manage" is opt-in from Settings,
+   *  where nothing is billed today. */
+  context?: PlanCopyContext;
+  /** Only meaningful with context="manage": whether the viewing account really
+   *  is inside its trial. Defaults to false, so trial copy never appears. */
+  trialing?: boolean;
+  /** The shared auto-renewal line. On by default for the purchase surfaces. */
+  showSharedDisclosure?: boolean;
 }) {
   const [sku, setSku] = useState<SkuId>(initialSku ?? PAYWALL_DEFAULT_SKU);
-  const spec = planSpec(sku);
+  const copy: PlanCopyOptions = { context, trialing };
+  const spec = planSpec(sku, copy);
 
   return (
     <div className="flex w-full flex-col items-center gap-6">
@@ -385,11 +411,13 @@ export function PlanPaywall({
           spec={spec}
           onSelect={onSelect}
           cta={ctaOverride?.(sku) ?? null}
+          copy={copy}
         />
       </div>
 
       {/* The one shared line: cancellation path, pre-charge email promise and
           currency. It never replaces a SKU's own disclosure. */}
+      {showSharedDisclosure ? (
       <p
         className="text-center"
         style={{
@@ -403,6 +431,7 @@ export function PlanPaywall({
       >
         {SHARED_PLAN_DISCLOSURE}
       </p>
+      ) : null}
     </div>
   );
 }
