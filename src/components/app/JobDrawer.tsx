@@ -444,7 +444,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 {job.company.charAt(0)}
               </div>
             )}
-            {pro ? <BigRing score={job.score} /> : null}
+            <ScoreRing
+              score={job.score}
+              size={64}
+              stroke={4}
+              trackColor="#E3E7E8"
+              accentColor="#0E735A"
+              fontSize={16}
+              ariaLabel={`${job.score} percent match`}
+              loading={entLoading}
+              locked={!pro}
+            />
           </div>
           <h2 id={titleId} className="mt-4 text-[20px] font-semibold leading-snug text-[color:var(--color-foreground)]">
             {job.title}
