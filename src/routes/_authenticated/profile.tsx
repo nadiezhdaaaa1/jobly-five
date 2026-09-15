@@ -550,11 +550,16 @@ function SecondaryBtn({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex h-10 items-center justify-center gap-1.5 rounded-[4px] border px-3 text-[13px] font-semibold hover:bg-[color:var(--color-surface-2)] disabled:opacity-50 ${
+      className={
         danger
-          ? "border-[color:var(--color-danger)] text-[color:var(--color-danger)]"
-          : "border-[color:var(--color-border-strong)] text-[color:var(--color-foreground)]"
-      }`}
+          ? "inline-flex h-10 items-center justify-center gap-1.5 rounded-[12px] border border-[color:var(--color-danger)] px-3 text-[13px] font-semibold text-[color:var(--color-danger)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+          : "secondary_button secondary_button--on-light inline-flex h-10 items-center justify-center gap-1.5"
+      }
+      style={
+        danger
+          ? undefined
+          : { borderRadius: 12, fontSize: 13, height: 40, paddingLeft: 12, paddingRight: 12, justifyContent: "center" }
+      }
     >
       {children}
     </button>
