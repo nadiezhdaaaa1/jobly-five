@@ -56,6 +56,8 @@ import {
 import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { Link } from "@tanstack/react-router";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { ScoreRing } from "@/components/app/ScoreRing";
+import { useEntitlements } from "@/lib/entitlements-provider";
 
 function useOutsideClose(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -77,24 +79,6 @@ function useOutsideClose(open: boolean, onClose: () => void) {
   return ref;
 }
 
-function BigRing({ score }: { score: number }) {
-  const size = 64;
-  const stroke = 4;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
-  return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
-      </svg>
-      <span className="absolute text-[16px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
-        {score}%
-      </span>
-    </div>
-  );
-}
 
 function formatDateLabel(daysAgo: number): string {
   const d = new Date();
@@ -235,6 +219,8 @@ function JobDescriptionBlock({ job }: { job: Job }) {
 export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const plan = usePlan();
   const pro = isPro(plan);
+  // Same entitlement read the Digest uses — no extra request, no new gating rule.
+  const { loading: entLoading } = useEntitlements();
   const record = useJobRecord(job.id);
   const status = record.status as JobStatus;
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -458,7 +444,17 @@ export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
                 {job.company.charAt(0)}
               </div>
             )}
-            {pro ? <BigRing score={job.score} /> : null}
+            <ScoreRing
+              score={job.score}
+              size={64}
+              stroke={4}
+              trackColor="#E3E7E8"
+              accentColor="#0E735A"
+              fontSize={16}
+              ariaLabel={`${job.score} percent match`}
+              loading={entLoading}
+              locked={!pro}
+            />
           </div>
           <h2 id={titleId} className="mt-4 text-[20px] font-semibold leading-snug text-[color:var(--color-foreground)]">
             {job.title}

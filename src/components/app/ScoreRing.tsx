@@ -19,6 +19,7 @@ export function ScoreRing({
   ariaLabel,
   loading = false,
   locked = false,
+  fontSize = 14,
 }: {
   score: number;
   size?: number;
@@ -26,6 +27,8 @@ export function ScoreRing({
   trackColor?: string;
   accentColor?: string;
   ariaLabel?: string;
+  /** Label size. Defaults to the Digest/A-ha 14px so existing callers are untouched. */
+  fontSize?: number;
   /** Entitlements still resolving: render the skeleton, never a score. */
   loading?: boolean;
   /** No match_score entitlement: render --%, never a score. */
@@ -51,7 +54,7 @@ export function ScoreRing({
           style={{
             fontFamily: "var(--font-sans)",
             fontWeight: 400,
-            fontSize: 14,
+            fontSize,
             lineHeight: 1,
             color: "#090B0C",
           }}
@@ -91,10 +94,11 @@ export function ScoreRing({
         />
       </svg>
       <span
-        className="absolute text-[14px]"
+        className="absolute"
         style={{
           fontFamily: "var(--font-sans)",
           fontWeight: 400,
+          fontSize,
           lineHeight: 1,
           color: perfect ? "#FFFFFF" : "#090B0C",
         }}
