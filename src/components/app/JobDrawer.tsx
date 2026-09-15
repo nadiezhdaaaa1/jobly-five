@@ -77,24 +77,6 @@ function useOutsideClose(open: boolean, onClose: () => void) {
   return ref;
 }
 
-function BigRing({ score }: { score: number }) {
-  const size = 64;
-  const stroke = 4;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (score / 100) * c;
-  return (
-    <div className="relative flex shrink-0 items-center justify-center" style={{ width: size, height: size }} role="img" aria-label={`${score} percent match`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#E3E7E8" strokeWidth={stroke} fill="none" />
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#0E735A" strokeWidth={stroke} fill="none" strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="butt" />
-      </svg>
-      <span className="absolute text-[16px]" style={{ fontFamily: "var(--font-sans)", fontWeight: 400, color: "#090B0C" }}>
-        {score}%
-      </span>
-    </div>
-  );
-}
 
 function formatDateLabel(daysAgo: number): string {
   const d = new Date();
