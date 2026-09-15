@@ -339,17 +339,18 @@ function PaywallCard({
           </p>
           <button
             type="button"
+            disabled={ctaDisabled}
             onClick={() => onSelect(spec)}
             className={
-              (spec.ctaMain
+              (ctaMain
                 ? "main_accent_button main_accent_button--on-light main_accent_button--block"
                 : "secondary_button secondary_button--on-light secondary_button--block") +
-              " h-[48px] shrink-0"
+              " h-[48px] shrink-0 disabled:cursor-not-allowed"
             }
 
             style={{ width: 200 }}
           >
-            {spec.cta}
+            {ctaLabel}
           </button>
         </div>
       </div>
