@@ -219,6 +219,8 @@ function JobDescriptionBlock({ job }: { job: Job }) {
 export function JobDrawer({ job, onClose }: { job: Job; onClose: () => void }) {
   const plan = usePlan();
   const pro = isPro(plan);
+  // Same entitlement read the Digest uses — no extra request, no new gating rule.
+  const { loading: entLoading } = useEntitlements();
   const record = useJobRecord(job.id);
   const status = record.status as JobStatus;
   const panelRef = useRef<HTMLDivElement | null>(null);
