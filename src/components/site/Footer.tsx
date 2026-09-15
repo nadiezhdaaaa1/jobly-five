@@ -3,23 +3,19 @@ import { Wordmark } from "./Header";
 import { VS_PAGES } from "@/lib/vs-data";
 import fbIcon from "@/assets/social/fb.svg";
 import inIcon from "@/assets/social/in.svg";
-import xIcon from "@/assets/social/twitter-x.svg";
 import instaIcon from "@/assets/social/insta.svg";
 import ytIcon from "@/assets/social/yt.svg";
 import tikIcon from "@/assets/social/tik.svg";
-import redditIcon from "@/assets/social/reddit.svg";
-import pinterestIcon from "@/assets/social/pinterest.svg";
 
-const SOCIALS: { label: string; href: string; icon: string }[] = [
-  { label: "LinkedIn", href: "https://linkedin.com", icon: inIcon },
-  { label: "X (Twitter)", href: "https://x.com", icon: xIcon },
-  { label: "Instagram", href: "https://instagram.com", icon: instaIcon },
-  { label: "Facebook", href: "https://facebook.com", icon: fbIcon },
-  { label: "YouTube", href: "https://youtube.com", icon: ytIcon },
-  { label: "TikTok", href: "https://tiktok.com", icon: tikIcon },
-  { label: "Reddit", href: "https://reddit.com", icon: redditIcon },
-  { label: "Pinterest", href: "https://pinterest.com", icon: pinterestIcon },
+// href null = profile not live yet: icon renders without an anchor.
+const SOCIALS: { label: string; href: string | null; icon: string }[] = [
+  { label: "Instagram", href: "https://www.instagram.com/jobly_careers", icon: instaIcon },
+  { label: "TikTok", href: "https://www.tiktok.com/@jobly.careers", icon: tikIcon },
+  { label: "YouTube", href: "https://www.youtube.com/@jobly.careers", icon: ytIcon },
+  { label: "Facebook", href: null, icon: fbIcon },
+  { label: "LinkedIn", href: null, icon: inIcon },
 ];
+
 
 type FooterLink = { label: string; to?: string; href?: string };
 
