@@ -503,7 +503,7 @@ function NameModal({
   useEffect(() => { if (open) setVal(initial); }, [open, initial]);
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[420px] rounded-[20px] p-5">
+      <DialogContent className="max-w-[420px] rounded-[20px] sm:rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit name
         </DialogTitle>
@@ -608,7 +608,7 @@ function ConfirmModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[420px] rounded-[20px] p-5">
+      <DialogContent className="max-w-[420px] rounded-[20px] sm:rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {title}
         </DialogTitle>
@@ -752,7 +752,7 @@ function PreferencesTab({
 
       {/* Edit modal — reuses quiz Step components */}
       <Dialog open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="flex max-h-[90vh] max-w-[640px] flex-col rounded-[20px] p-0">
+        <DialogContent className="flex max-h-[90vh] max-w-[640px] flex-col rounded-[20px] sm:rounded-[20px] p-0">
           <DialogTitle className="sr-only">
             Edit {rows.find((r) => r.key === editing)?.label ?? ""}
           </DialogTitle>
@@ -1141,7 +1141,7 @@ function ResumeUploadModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && !busy && onClose()}>
-      <DialogContent className="max-w-[480px] rounded-[20px] p-5">
+      <DialogContent className="max-w-[480px] rounded-[20px] sm:rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Upload resume
         </DialogTitle>
@@ -1360,7 +1360,7 @@ function UploadModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[480px] rounded-[20px] p-5">
+      <DialogContent className="max-w-[480px] rounded-[20px] sm:rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {title}
         </DialogTitle>
@@ -1679,7 +1679,7 @@ function CoverEditor({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[640px] rounded-[20px] p-5">
+      <DialogContent className="max-w-[640px] rounded-[20px] sm:rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {letter ? "Edit template" : "New template"}
         </DialogTitle>
