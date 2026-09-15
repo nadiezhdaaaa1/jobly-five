@@ -2261,7 +2261,7 @@ function AchievementsTab({
                     empty
                       ? ""
                       : selected
-                      ? "border-[color:var(--color-primary)] bg-[color:var(--color-primary)]"
+                      ? "border-[color:var(--color-primary)] bg-[color:var(--main-accent)]"
                       : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] hover:border-[color:var(--color-border-strong)]"
                   }`}
                   style={{ padding: "6px 10px 6px 8px", gap: 8 }}
