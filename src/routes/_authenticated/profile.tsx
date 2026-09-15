@@ -338,9 +338,9 @@ function ProfileScreen() {
                   Profile strength
                 </h3>
                 <div className="mt-3 flex items-center gap-3">
-                  <div className="h-1 flex-1 bg-[color:var(--color-surface-2)]">
+                  <div className="h-1 flex-1 rounded-[9999px] bg-[color:var(--color-surface-2)]">
                     <div
-                      className="h-1 bg-[color:var(--color-green)]"
+                      className="h-1 rounded-[9999px] bg-[color:var(--color-green)]"
                       style={{ width: `${strength.pct}%` }}
                     />
                   </div>
@@ -353,8 +353,8 @@ function ProfileScreen() {
                     <li key={i.key} className="flex items-center gap-2 text-[13px]">
                       {i.done ? (
                         <>
-                          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                            <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                          <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--main-accent)]">
+                            <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-on-accent)]" />
                           </span>
                           <span className="font-semibold text-[color:var(--color-foreground)]">{i.label}</span>
                         </>
@@ -369,8 +369,8 @@ function ProfileScreen() {
                   <li className="flex items-center gap-2 text-[13px]">
                     {strength.hasPortfolio ? (
                       <>
-                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--color-accent)]">
-                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-foreground)]" />
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-[color:var(--main-accent)]">
+                          <Check size={11} strokeWidth={2.5} className="text-[color:var(--color-on-accent)]" />
                         </span>
                         <span className="font-semibold text-[color:var(--color-foreground)]">Portfolio — optional</span>
                       </>
