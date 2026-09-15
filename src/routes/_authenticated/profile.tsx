@@ -149,7 +149,7 @@ function useToast() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-[4px] bg-[#090B0C] px-4 py-2 text-[13px] font-medium text-white md:bottom-8"
+      className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-[12px] bg-[#090B0C] px-4 py-2 text-[13px] font-medium text-white md:bottom-8"
     >
       {msg}
     </div>
@@ -249,7 +249,7 @@ function ProfileScreen() {
                   type="button"
                   onClick={() => setNameOpen(true)}
                   aria-label="Edit name"
-                  className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+                  className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
                 >
                   <Pencil size={15} strokeWidth={1.6} />
                 </button>
@@ -333,7 +333,7 @@ function ProfileScreen() {
           {/* Right sidebar */}
           <aside className="hidden lg:block">
             <div className="sticky top-20 flex flex-col gap-4">
-              <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
+              <div className="rounded-[16px] border bg-[color:var(--color-surface-1)] p-4">
                 <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
                   Profile strength
                 </h3>
@@ -386,7 +386,7 @@ function ProfileScreen() {
                   A fuller profile means sharper match scores.
                 </p>
               </div>
-              <div className="rounded-[6px] border bg-[color:var(--color-surface-1)] p-4">
+              <div className="rounded-[16px] border bg-[color:var(--color-surface-1)] p-4">
                 <h3 className="text-[14px] font-semibold text-[color:var(--color-foreground)]">
                   How matching works
                 </h3>
@@ -462,7 +462,7 @@ function Avatar({
         onClick={() => inputRef.current?.click()}
         disabled={busy}
         aria-label="Change avatar"
-        className="group relative flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-[6px] text-[22px] font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
+        className="group relative flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-[12px] text-[22px] font-semibold text-white outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-accent)]"
         style={{ background: "linear-gradient(135deg, #00F1A9, #0E735A)" }}
       >
         {url ? (
@@ -503,7 +503,7 @@ function NameModal({
   useEffect(() => { if (open) setVal(initial); }, [open, initial]);
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[420px] rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Edit name
         </DialogTitle>
@@ -511,7 +511,7 @@ function NameModal({
           autoFocus
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          className="mt-3 h-10 w-full rounded-[4px] border px-3 text-[14px]"
+          className="mt-3 h-10 w-full rounded-[12px] border px-3 text-[14px]"
         />
         <div className="mt-4 flex justify-end gap-2">
           <SecondaryBtn onClick={onClose}>Cancel</SecondaryBtn>
@@ -562,7 +562,7 @@ function SecondaryBtn({
 
 function CardBig({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={`rounded-[8px] border bg-[color:var(--color-surface-1)] p-5 ${className}`}>
+    <section className={`rounded-[20px] border bg-[color:var(--color-surface-1)] p-5 ${className}`}>
       {children}
     </section>
   );
@@ -570,7 +570,7 @@ function CardBig({ children, className = "" }: { children: React.ReactNode; clas
 
 function CardSmall({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-[6px] border bg-[color:var(--color-surface-1)] p-4 ${className}`}>
+    <div className={`rounded-[16px] border bg-[color:var(--color-surface-1)] p-4 ${className}`}>
       {children}
     </div>
   );
@@ -584,7 +584,7 @@ function Tag({ children, tone = "gray" }: { children: React.ReactNode; tone?: "g
       ? "bg-[color:var(--color-green)] text-white"
       : "bg-[color:var(--color-surface-2)] text-[color:var(--color-text-muted)]";
   return (
-    <span className={`inline-flex items-center rounded-[4px] px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${styles}`}>
+    <span className={`inline-flex items-center rounded-[8px] px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${styles}`}>
       {children}
     </span>
   );
@@ -602,7 +602,7 @@ function ConfirmModal({
 }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[420px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[420px] rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {title}
         </DialogTitle>
@@ -614,7 +614,7 @@ function ConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-danger)] px-4 text-[14px] font-semibold text-white hover:opacity-90"
+            className="inline-flex h-10 items-center justify-center rounded-[12px] bg-[color:var(--color-danger)] px-4 text-[14px] font-semibold text-white hover:opacity-90"
           >
             {confirmLabel}
           </button>
@@ -686,7 +686,7 @@ function PreferencesTab({
 
   return (
     <>
-      <div className="overflow-hidden rounded-[8px] border bg-[color:var(--color-surface-1)]">
+      <div className="overflow-hidden rounded-[20px] border bg-[color:var(--color-surface-1)]">
         {rows
           .filter((r) => !r.hidden)
           .map((row, idx, arr) => (
@@ -734,7 +734,7 @@ function PreferencesTab({
               )}
               <span
                 aria-hidden="true"
-                className={`pointer-events-none inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[4px] text-[color:var(--color-foreground)] lg:opacity-0 lg:transition-opacity ${
+                className={`pointer-events-none inline-flex size-8 shrink-0 items-center justify-center self-start rounded-[8px] text-[color:var(--color-foreground)] lg:opacity-0 lg:transition-opacity ${
                   loading ? "" : "lg:group-hover/row:opacity-100"
                 }`}
               >
@@ -746,7 +746,7 @@ function PreferencesTab({
 
       {/* Edit modal — reuses quiz Step components */}
       <Dialog open={editing !== null} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="flex max-h-[90vh] max-w-[640px] flex-col rounded-[8px] p-0">
+        <DialogContent className="flex max-h-[90vh] max-w-[640px] flex-col rounded-[20px] p-0">
           <DialogTitle className="sr-only">
             Edit {rows.find((r) => r.key === editing)?.label ?? ""}
           </DialogTitle>
@@ -865,7 +865,7 @@ function DocumentsTab({
         </p>
 
         {notice && (
-          <div className="mt-3 flex items-start gap-2 rounded-[6px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
+          <div className="mt-3 flex items-start gap-2 rounded-[16px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-3">
             <p className="min-w-0 flex-1 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
               Resumes are now stored securely on your account. Files added before this update were only kept in
               your browser, so please upload them again.
@@ -877,7 +877,7 @@ function DocumentsTab({
                 dismissLegacyResumeNotice();
                 setNotice(false);
               }}
-              className="inline-flex size-6 shrink-0 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+              className="inline-flex size-6 shrink-0 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
             >
               <X size={14} strokeWidth={1.8} />
             </button>
@@ -886,10 +886,10 @@ function DocumentsTab({
 
         <div className="mt-3 flex flex-col gap-2">
           {loading ? (
-            <div className="h-[64px] animate-pulse rounded-[6px] bg-[color:var(--color-surface-2)]" />
+            <div className="h-[64px] animate-pulse rounded-[16px] bg-[color:var(--color-surface-2)]" />
           ) : files.length === 0 ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+            <div className="flex flex-wrap items-center gap-3 rounded-[16px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)]" aria-hidden>
                 <FileText size={20} strokeWidth={1.6} />
               </div>
               <div className="min-w-0 flex-1">
@@ -950,10 +950,10 @@ function DocumentsTab({
                 </div>
               )}
               {!pro && (
-                <div className="mt-1 rounded-[12px] bg-[#F1F3F3] p-[4px]">
+                <div className="mt-1 rounded-[20px] bg-[#F1F3F3] p-[4px]">
                 <div
                   data-resume-upsell
-                  className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
+                  className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[16px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
                   style={{
                     boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
                     padding: "20px",
@@ -995,7 +995,7 @@ function DocumentsTab({
                   </div>
                   <Link
                     to="/settings"
-                    className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
+                    className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
                     style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
                   >
                     Upgrade to Pro
@@ -1135,12 +1135,12 @@ function ResumeUploadModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && !busy && onClose()}>
-      <DialogContent className="max-w-[480px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[480px] rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           Upload resume
         </DialogTitle>
         <div
-          className={`mt-4 flex flex-col items-center justify-center rounded-[6px] border border-dashed px-4 py-10 text-center transition-colors ${
+          className={`mt-4 flex flex-col items-center justify-center rounded-[16px] border border-dashed px-4 py-10 text-center transition-colors ${
             drag ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-2)]" : "border-[color:var(--color-border-strong)]"
           } ${busy ? "pointer-events-none opacity-60" : ""}`}
           onClick={() => inputRef.current?.click()}
@@ -1222,9 +1222,9 @@ function FileRow({
   busy?: boolean;
 }) {
   return (
-    <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
+    <div className={`group/row flex items-center gap-3 rounded-[16px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
         aria-hidden
       >
@@ -1236,7 +1236,7 @@ function FileRow({
           {isPrimary && <Tag tone="mint">Primary</Tag>}
           {locked && (
             <IconTooltip label="Available on Pro">
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+              <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
                 Locked
               </span>
             </IconTooltip>
@@ -1274,7 +1274,7 @@ function RowIconBtn({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={`inline-flex size-8 items-center justify-center rounded-[4px] hover:bg-[color:var(--color-surface-2)] ${
+        className={`inline-flex size-8 items-center justify-center rounded-[8px] hover:bg-[color:var(--color-surface-2)] ${
           danger ? "text-[color:var(--color-danger)]" : "text-[color:var(--color-foreground)]"
         }`}
       >
@@ -1292,7 +1292,7 @@ function GhostBtn({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[4px] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-[12px] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
     >
       {children}
     </button>
@@ -1301,8 +1301,8 @@ function GhostBtn({
 
 function DropzoneRow({ hint, label, onClick }: { hint: string; label: string; onClick: () => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
-      <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+    <div className="flex flex-wrap items-center gap-3 rounded-[16px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)]" aria-hidden>
         <FileText size={20} strokeWidth={1.6} />
       </div>
       <div className="min-w-0 flex-1">
@@ -1316,7 +1316,7 @@ function DropzoneRow({ hint, label, onClick }: { hint: string; label: string; on
 
 function ComingSoonMini({ title, body }: { title: string; body: string }) {
   return (
-    <div className="pointer-events-none rounded-[8px] border bg-[color:var(--color-surface-1)] p-4 opacity-55">
+    <div className="pointer-events-none rounded-[16px] border bg-[color:var(--color-surface-1)] p-4 opacity-55">
       <Tag>Coming soon</Tag>
       <h3 className="mt-2 text-[14px] font-semibold text-[color:var(--color-foreground)]">{title}</h3>
       <p className="mt-1 text-[12px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
@@ -1354,12 +1354,12 @@ function UploadModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[480px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[480px] rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {title}
         </DialogTitle>
         <div
-          className={`mt-4 flex flex-col items-center justify-center rounded-[6px] border border-dashed px-4 py-10 text-center transition-colors ${
+          className={`mt-4 flex flex-col items-center justify-center rounded-[16px] border border-dashed px-4 py-10 text-center transition-colors ${
             drag ? "border-[color:var(--color-accent)] bg-[color:var(--color-surface-2)]" : "border-[color:var(--color-border-strong)]"
           }`}
           onClick={() => inputRef.current?.click()}
@@ -1437,8 +1437,8 @@ function CoverLettersTab({
         </p>
         <div className="mt-3 flex flex-col gap-2">
           {letters.length === 0 ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)]" aria-hidden>
+            <div className="flex flex-wrap items-center gap-3 rounded-[16px] border border-dashed border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)]" aria-hidden>
                 <FileText size={20} strokeWidth={1.6} />
               </div>
               <div className="min-w-0 flex-1">
@@ -1488,10 +1488,10 @@ function CoverLettersTab({
                 </div>
               )}
               {!pro && (
-                <div className="mt-1 rounded-[12px] bg-[#F1F3F3] p-[4px]">
+                <div className="mt-1 rounded-[20px] bg-[#F1F3F3] p-[4px]">
                   <div
                     data-letters-upsell
-                    className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[8px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
+                    className="relative isolate flex flex-col items-start gap-4 overflow-hidden rounded-[16px] border border-white bg-white/80 md:flex-row md:items-center md:gap-7"
                     style={{
                       boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
                       padding: "20px",
@@ -1533,7 +1533,7 @@ function CoverLettersTab({
                     </div>
                     <Link
                       to="/settings"
-                      className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[4px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
+                      className="relative z-[2] inline-flex w-full shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)] md:w-auto"
                       style={{ padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
                     >
                       Upgrade to Pro
@@ -1602,9 +1602,9 @@ function LetterRow({
   locked?: boolean;
 }) {
   return (
-    <div className={`group/row flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
+    <div className={`group/row flex items-center gap-3 rounded-[16px] border bg-[color:var(--color-surface-1)] p-3 ${locked ? "opacity-60" : ""}`}>
       <div
-        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px]"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px]"
         style={{ background: "var(--color-mint)", color: "var(--color-green)" }}
         aria-hidden
       >
@@ -1616,7 +1616,7 @@ function LetterRow({
           {isActive && <Tag tone="mint">Active</Tag>}
           {locked && (
             <IconTooltip label="Available on Pro">
-              <span className="inline-flex items-center rounded-[4px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
+              <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[11px] font-semibold text-[color:var(--color-text-muted)]">
                 Locked
               </span>
             </IconTooltip>
@@ -1673,7 +1673,7 @@ function CoverEditor({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-[640px] rounded-[8px] p-5">
+      <DialogContent className="max-w-[640px] rounded-[20px] p-5">
         <DialogTitle className="text-[16px] font-semibold" style={{ fontFamily: "var(--font-display)" }}>
           {letter ? "Edit template" : "New template"}
         </DialogTitle>
@@ -1683,7 +1683,7 @@ function CoverEditor({
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-2 h-10 w-full rounded-[4px] border px-3 text-[14px]"
+          className="mt-2 h-10 w-full rounded-[12px] border px-3 text-[14px]"
           placeholder="e.g. General — product roles"
         />
         <p className="mt-3 text-[12px] text-[color:var(--color-text-muted)]" style={{ fontWeight: 300 }}>
@@ -1695,7 +1695,7 @@ function CoverEditor({
               <button
                 type="button"
                 onClick={() => insertToken(t.token)}
-                className="inline-flex h-7 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="inline-flex h-7 items-center rounded-[8px] border bg-[color:var(--color-surface-1)] px-2 text-[12px] font-medium text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
               >
                 {t.token}
               </button>
@@ -1710,19 +1710,19 @@ function CoverEditor({
             const Icon = I as typeof Bold;
             return (
               <IconTooltip key={cmd as string} label={label as string}>
-                <button type="button" aria-label={label as string} onClick={() => exec(cmd as string)} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+                <button type="button" aria-label={label as string} onClick={() => exec(cmd as string)} className="flex h-[34px] w-[34px] items-center justify-center rounded-[8px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
                   <Icon size={15} strokeWidth={1.8} />
                 </button>
               </IconTooltip>
             );
           })}
           <IconTooltip label="Link">
-            <button type="button" aria-label="Link" onClick={() => { const raw = window.prompt("Link URL"); if (raw === null) return; const url = normalizeUrl(raw); if (!url) { sonnerToast("That doesn't look like a valid link."); return; } exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+            <button type="button" aria-label="Link" onClick={() => { const raw = window.prompt("Link URL"); if (raw === null) return; const url = normalizeUrl(raw); if (!url) { sonnerToast("That doesn't look like a valid link."); return; } exec("createLink", url); }} className="flex h-[34px] w-[34px] items-center justify-center rounded-[8px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
               <LinkIcon size={15} strokeWidth={1.8} />
             </button>
           </IconTooltip>
           <IconTooltip label="Clear formatting">
-            <button type="button" aria-label="Clear formatting" onClick={() => exec("removeFormat")} className="flex h-[34px] w-[34px] items-center justify-center rounded-[4px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
+            <button type="button" aria-label="Clear formatting" onClick={() => exec("removeFormat")} className="flex h-[34px] w-[34px] items-center justify-center rounded-[8px] border text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]">
               <ClearFmt size={15} strokeWidth={1.8} />
             </button>
           </IconTooltip>
@@ -1731,7 +1731,7 @@ function CoverEditor({
           ref={ref}
           contentEditable
           suppressContentEditableWarning
-          className="mt-2 min-h-[220px] rounded-[4px] border p-3 text-[13px] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[color:var(--color-accent)]"
+          className="mt-2 min-h-[220px] rounded-[12px] border p-3 text-[13px] leading-relaxed focus:outline-none focus:ring-2 focus:ring-[color:var(--color-accent)]"
         />
         <div className="mt-4 flex justify-end gap-2">
           <SecondaryBtn onClick={onClose}>Cancel</SecondaryBtn>
@@ -1785,12 +1785,12 @@ function LinkDraftRow({
   }
 
   return (
-    <div className="rounded-[6px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
+    <div className="rounded-[16px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[180px_1fr]">
         <select
           value={draft.type}
           onChange={(e) => onChange({ type: e.target.value })}
-          className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
+          className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]"
           aria-label={typeLabel}
         >
           {types.map((t) => (
@@ -1803,7 +1803,7 @@ function LinkDraftRow({
               placeholder="Label"
               value={draft.label}
               onChange={(e) => onChange({ label: e.target.value })}
-              className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
+              className="h-10 flex-1 rounded-[12px] border px-3 text-[13px]"
             />
             <input
               autoFocus
@@ -1811,7 +1811,7 @@ function LinkDraftRow({
               value={draft.url}
               onChange={(e) => onChange({ url: e.target.value })}
               onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-              className="h-10 flex-1 rounded-[4px] border px-3 text-[13px]"
+              className="h-10 flex-1 rounded-[12px] border px-3 text-[13px]"
             />
           </div>
         ) : (
@@ -1821,7 +1821,7 @@ function LinkDraftRow({
             value={draft.url}
             onChange={(e) => onChange({ url: e.target.value })}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-            className="h-10 rounded-[4px] border px-3 text-[13px]"
+            className="h-10 rounded-[12px] border px-3 text-[13px]"
           />
         )}
       </div>
@@ -1848,7 +1848,7 @@ function SavedLinkRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-3 py-2">
+    <div className="flex items-center gap-3 rounded-[16px] border bg-[color:var(--color-surface-1)] px-3 py-2">
       <div className="min-w-0 flex-1">
         <div className="text-[13px] font-semibold text-[color:var(--color-foreground)]">{title}</div>
         <a
@@ -1865,7 +1865,7 @@ function SavedLinkRow({
           type="button"
           onClick={onEdit}
           aria-label="Edit"
-          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="flex h-9 w-9 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Pencil size={16} strokeWidth={1.6} />
         </button>
@@ -1875,7 +1875,7 @@ function SavedLinkRow({
           type="button"
           onClick={onDelete}
           aria-label="Delete"
-          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="flex h-9 w-9 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Trash size={16} strokeWidth={1.6} />
         </button>
@@ -1998,7 +1998,7 @@ function PortfolioTab({
               type="button"
               disabled={atLinkLimit}
               onClick={() => startLink(t)}
-              className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)] disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-[8px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)] disabled:opacity-50"
             >
               <Plus size={12} strokeWidth={2.2} />
               {t}
@@ -2052,7 +2052,7 @@ function PortfolioTab({
           <button
             type="button"
             onClick={() => startLink(cfg.portfolioTypes[0] ?? "Other")}
-            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[12px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             <Plus size={16} stroke={2} />
             Add link
@@ -2102,7 +2102,7 @@ function PortfolioTab({
               key={s}
               type="button"
               onClick={() => setSocialDraft({ mode: "new", type: s, label: "", url: "" })}
-              className="inline-flex items-center gap-1 rounded-[4px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)]"
+              className="inline-flex items-center gap-1 rounded-[8px] border border-dashed border-[color:var(--color-green)] px-2 py-1 text-[12px] font-semibold text-[color:var(--color-green)] hover:bg-[color:var(--color-mint)]"
             >
               <Plus size={12} strokeWidth={2.2} />
               {s}
@@ -2150,7 +2150,7 @@ function PortfolioTab({
           <button
             type="button"
             onClick={() => setSocialDraft({ mode: "new", type: "LinkedIn", label: "", url: "" })}
-            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[12px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
           >
             <Plus size={16} stroke={2} />
             Add profile
@@ -2247,7 +2247,7 @@ function AchievementsTab({
                   disabled={empty}
                   title={empty ? `No entries in ${ACHIEVEMENT_LABELS[b]} yet` : undefined}
                   onClick={() => toggleApplyBlock(b)}
-                  className={`inline-flex items-center rounded-[4px] border text-sm transition-colors ${
+                  className={`inline-flex items-center rounded-[12px] border text-sm transition-colors ${
                     empty
                       ? "cursor-not-allowed border-[color:var(--color-border)] bg-[color:var(--color-surface-2)] text-[color:var(--color-text-secondary)] opacity-60"
                       : "text-[color:var(--color-foreground)]"
@@ -2384,13 +2384,13 @@ function AchievementForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   return (
-    <div className="rounded-[6px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
+    <div className="rounded-[16px] border border-[color:var(--color-border-strong)] bg-[color:var(--color-surface-1)] p-3">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_200px]">
         <select
           aria-label="Achievement type"
           value={draft.type}
           onChange={(e) => onChange({ type: e.target.value as AchievementBlockKey })}
-          className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]"
+          className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]"
         >
           {blocks.map((b) => (
             <option key={b} value={b}>
@@ -2404,7 +2404,7 @@ function AchievementForm({
           placeholder="Dates (optional) — e.g. Jun 2025"
           value={draft.dates}
           onChange={(e) => onChange({ dates: e.target.value })}
-          className="h-10 rounded-[4px] border px-3 text-[13px]"
+          className="h-10 rounded-[12px] border px-3 text-[13px]"
         />
       </div>
       <textarea
@@ -2414,14 +2414,14 @@ function AchievementForm({
         placeholder={placeholder ?? "What it was and why it matters"}
         value={draft.description}
         onChange={(e) => onChange({ description: e.target.value })}
-        className="mt-2 w-full rounded-[4px] border p-3 text-[13px]"
+        className="mt-2 w-full rounded-[12px] border p-3 text-[13px]"
       />
       <input
         aria-label="Link (optional)"
         placeholder="Link (optional) — https://"
         value={draft.url}
         onChange={(e) => onChange({ url: e.target.value })}
-        className="mt-2 h-10 w-full rounded-[4px] border px-3 text-[13px]"
+        className="mt-2 h-10 w-full rounded-[12px] border px-3 text-[13px]"
       />
       {error ? <p className="mt-2 text-[12px] text-[color:var(--color-danger)]">{error}</p> : null}
       <div className="mt-3 flex items-center gap-2">
@@ -2442,7 +2442,7 @@ function AchievementRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-[6px] border bg-[color:var(--color-surface-1)] px-3 py-2">
+    <div className="flex items-start gap-3 rounded-[16px] border bg-[color:var(--color-surface-1)] px-3 py-2">
       <div className="min-w-0 flex-1">
         {entry.dates ? (
           <div className="text-[12px] text-[color:var(--color-text-muted)]">{entry.dates}</div>
@@ -2464,7 +2464,7 @@ function AchievementRow({
           type="button"
           onClick={onEdit}
           aria-label="Edit"
-          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="flex h-9 w-9 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Pencil size={16} strokeWidth={1.6} />
         </button>
@@ -2474,7 +2474,7 @@ function AchievementRow({
           type="button"
           onClick={onDelete}
           aria-label="Delete"
-          className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+          className="flex h-9 w-9 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Trash size={16} strokeWidth={1.6} />
         </button>
@@ -2541,11 +2541,11 @@ function ExperienceTab({
               disabled
               aria-disabled="true"
               title="Coming soon"
-              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-[color:var(--color-border-strong)] px-2.5 text-[12px] font-medium text-[color:var(--color-text-muted)] opacity-60 cursor-not-allowed"
+              className="inline-flex h-8 items-center gap-1.5 rounded-[12px] border border-[color:var(--color-border-strong)] px-2.5 text-[12px] font-medium text-[color:var(--color-text-muted)] opacity-60 cursor-not-allowed"
             >
               <Refresh size={12} strokeWidth={1.8} />
               Re-import from resume
-              <span className="ml-1 rounded-[3px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
+              <span className="ml-1 rounded-[8px] bg-[color:var(--color-surface-2)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
                 Coming soon
               </span>
             </button>
@@ -2573,7 +2573,7 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingExp(addExperience())}
-          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[12px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Plus size={16} stroke={2} />
           Add previous job
@@ -2600,7 +2600,7 @@ function ExperienceTab({
         <button
           type="button"
           onClick={() => setEditingEdu(addEducation())}
-          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[4px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="mt-3 inline-flex h-8 items-center gap-1.5 self-start rounded-[12px] border border-[color:var(--color-border-strong)] px-3 text-[13px] font-semibold text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
         >
           <Plus size={16} stroke={2} />
           Add education
@@ -2676,7 +2676,7 @@ function JobEntry({
             type="button"
             aria-label="Edit"
             onClick={onEdit}
-            className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             <Pencil size={15} strokeWidth={1.6} />
           </button>
@@ -2696,26 +2696,26 @@ function JobEntry({
       className="flex flex-col gap-2 py-4"
     >
       <div className="grid gap-2 sm:grid-cols-2">
-        <input autoFocus aria-label="Position" placeholder="e.g. Senior Frontend Engineer" value={role} onChange={(e) => setRole(e.target.value)} className="h-10 rounded-[4px] border px-3 text-[13px]" />
-        <input aria-label="Company" placeholder="e.g. Nimbus Corp" value={company} onChange={(e) => setCompany(e.target.value)} className="h-10 rounded-[4px] border px-3 text-[13px]" />
+        <input autoFocus aria-label="Position" placeholder="e.g. Senior Frontend Engineer" value={role} onChange={(e) => setRole(e.target.value)} className="h-10 rounded-[12px] border px-3 text-[13px]" />
+        <input aria-label="Company" placeholder="e.g. Nimbus Corp" value={company} onChange={(e) => setCompany(e.target.value)} className="h-10 rounded-[12px] border px-3 text-[13px]" />
       </div>
       <div className="flex items-center gap-2">
-        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="From year">
+        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]" aria-label="From year">
           <option value="">From</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <span className="text-[13px] text-[color:var(--color-text-muted)]">to</span>
-        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="To year">
+        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]" aria-label="To year">
           <option value="">To</option>
           <option value="Present">Present</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <div className="ml-auto flex items-center gap-1">
-          <IconTooltip label="Move up"><button type="button" aria-label="Move up" disabled={index === 0} onClick={() => reorderExperience(entry.id, -1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowUp size={14} /></button></IconTooltip>
-          <IconTooltip label="Move down"><button type="button" aria-label="Move down" disabled={index === total - 1} onClick={() => reorderExperience(entry.id, 1)} className="rounded-[4px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowDown size={14} /></button></IconTooltip>
+          <IconTooltip label="Move up"><button type="button" aria-label="Move up" disabled={index === 0} onClick={() => reorderExperience(entry.id, -1)} className="rounded-[8px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowUp size={14} /></button></IconTooltip>
+          <IconTooltip label="Move down"><button type="button" aria-label="Move down" disabled={index === total - 1} onClick={() => reorderExperience(entry.id, 1)} className="rounded-[8px] p-1 text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-30"><ArrowDown size={14} /></button></IconTooltip>
         </div>
       </div>
-      <textarea aria-label="Responsibilities and achievements" placeholder="What you did and what it changed" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} className="w-full rounded-[4px] border p-3 text-[13px]" />
+      <textarea aria-label="Responsibilities and achievements" placeholder="What you did and what it changed" value={desc} onChange={(e) => setDesc(e.target.value)} rows={4} className="w-full rounded-[12px] border p-3 text-[13px]" />
       <div className="flex flex-wrap items-center gap-2">
         <PrimaryBtn type="submit">Save</PrimaryBtn>
         <SecondaryBtn onClick={onDone}>Cancel</SecondaryBtn>
@@ -2723,8 +2723,8 @@ function JobEntry({
           {confirming ? (
             <span className="inline-flex flex-wrap items-center gap-2 text-[12px]">
               Remove this job?
-              <button type="button" onClick={() => { removeExperience(entry.id); onDone(); }} className="rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]">Remove</button>
-              <button type="button" onClick={() => setConfirming(false)} className="rounded-[4px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">Keep</button>
+              <button type="button" onClick={() => { removeExperience(entry.id); onDone(); }} className="rounded-[8px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]">Remove</button>
+              <button type="button" onClick={() => setConfirming(false)} className="rounded-[8px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">Keep</button>
             </span>
           ) : (
             <button type="button" onClick={() => setConfirming(true)} className="text-[12px] text-[color:var(--color-text-secondary)] hover:underline">Remove</button>
@@ -2768,7 +2768,7 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
           </div>
         </div>
         <IconTooltip label="Edit">
-          <button type="button" aria-label="Edit" onClick={onEdit} className="flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
+          <button type="button" aria-label="Edit" onClick={onEdit} className="flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]">
             <Pencil size={15} strokeWidth={1.6} />
           </button>
         </IconTooltip>
@@ -2788,20 +2788,20 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
       className="flex flex-col gap-2 py-4"
     >
       <div className="grid gap-2 sm:grid-cols-2">
-        <select autoFocus value={degreeType} onChange={(e) => setDegreeType(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="Degree">
+        <select autoFocus value={degreeType} onChange={(e) => setDegreeType(e.target.value)} className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]" aria-label="Degree">
           <option value="">Degree</option>
           {DEGREE_TYPES.map((d) => <option key={d} value={d}>{d}</option>)}
         </select>
-        <input aria-label="Field" placeholder="e.g. Computer Science" value={field} onChange={(e) => setField(e.target.value)} className="h-10 rounded-[4px] border px-3 text-[13px]" />
+        <input aria-label="Field" placeholder="e.g. Computer Science" value={field} onChange={(e) => setField(e.target.value)} className="h-10 rounded-[12px] border px-3 text-[13px]" />
       </div>
-      <input aria-label="School" placeholder="School" value={school} onChange={(e) => setSchool(e.target.value)} className="h-10 rounded-[4px] border px-3 text-[13px]" />
+      <input aria-label="School" placeholder="School" value={school} onChange={(e) => setSchool(e.target.value)} className="h-10 rounded-[12px] border px-3 text-[13px]" />
       <div className="flex items-center gap-2">
-        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="From year">
+        <select value={fromYear} onChange={(e) => setFromYear(e.target.value)} className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]" aria-label="From year">
           <option value="">From</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <span className="text-[13px] text-[color:var(--color-text-muted)]">to</span>
-        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[4px] border pl-2 pr-8 text-[13px]" aria-label="To year">
+        <select value={toYear} onChange={(e) => setToYear(e.target.value)} className="h-10 rounded-[12px] border pl-2 pr-8 text-[13px]" aria-label="To year">
           <option value="">To</option>
           <option value="Present">Present</option>
           {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
@@ -2814,8 +2814,8 @@ function EduEntry({ entry, editing, onEdit, onDone }: { entry: ResumeEducation; 
           {confirming ? (
             <span className="inline-flex flex-wrap items-center gap-2 text-[12px]">
               Remove this education?
-              <button type="button" onClick={() => { removeEducation(entry.id); onDone(); }} className="rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]">Remove</button>
-              <button type="button" onClick={() => setConfirming(false)} className="rounded-[4px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">Keep</button>
+              <button type="button" onClick={() => { removeEducation(entry.id); onDone(); }} className="rounded-[8px] bg-[color:var(--color-danger-subtle)] px-2 py-1 text-[color:var(--color-danger)]">Remove</button>
+              <button type="button" onClick={() => setConfirming(false)} className="rounded-[8px] px-2 py-1 text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]">Keep</button>
             </span>
           ) : (
             <button type="button" onClick={() => setConfirming(true)} className="text-[12px] text-[color:var(--color-text-secondary)] hover:underline">Remove</button>
