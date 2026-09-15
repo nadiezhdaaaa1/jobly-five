@@ -698,12 +698,34 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
 
   const blocked = needsBillingTerms && !billingTermsTicked;
 
+  // A live prepaid SKU still holds days the account has paid for, and the
+  // server's `activate` discards both the remaining period and the banked days
+  // when the SKU changes. So a switch is offered only where nothing can be
+  // forfeited; on a live prepaid plan the other tabs are read-only.
+  const prepaidRemaining =
+    currentSku !== null &&
+    isPrepaid(currentSku) &&
+    sub.currentPeriodEnd !== null &&
+    new Date(sub.currentPeriodEnd).getTime() > Date.now();
+
+  function ctaOverride(sku: SkuId): PaywallCta | null {
+    // No plan at all: every card keeps its own purchase CTA.
+    if (currentSku === null) return null;
+    if (sku === currentSku) return { label: "Cancel plan", main: false };
+    if (prepaidRemaining) {
+      return { label: "Available after this period", main: false, disabled: true };
+    }
+    return { label: `Switch to ${SKU_SWITCHER_LABEL[sku]}`, main: true };
+  }
+
   function onSelect(card: PlanCardSpec) {
-    // Already on this exact plan: nothing to buy.
+    // The current plan's CTA is the cancel button: it enters the existing
+    // two-step flow (pause offer, then confirm with a reason) unchanged.
     if (card.choice.sku === currentSku) {
-      onFlash("That's the plan you're already on.");
+      onDowngrade();
       return;
     }
+    if (prepaidRemaining) return;
     if (blocked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
