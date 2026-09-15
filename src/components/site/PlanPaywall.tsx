@@ -112,15 +112,23 @@ function SkuSwitcher({
   );
 }
 
+/** A per-SKU CTA replacement. Presentation only — never a price or a term. */
+export type PaywallCta = { label: string; main?: boolean; disabled?: boolean };
+
 function PaywallCard({
   sku,
   spec,
   onSelect,
+  cta,
 }: {
   sku: SkuId;
   spec: PlanCardSpec;
   onSelect: (card: PlanCardSpec) => void;
+  cta: PaywallCta | null;
 }) {
+  const ctaLabel = cta?.label ?? spec.cta;
+  const ctaMain = cta ? cta.main === true : spec.ctaMain;
+  const ctaDisabled = cta?.disabled === true;
   return (
     <div
       className="relative w-full"
@@ -331,17 +339,18 @@ function PaywallCard({
           </p>
           <button
             type="button"
+            disabled={ctaDisabled}
             onClick={() => onSelect(spec)}
             className={
-              (spec.ctaMain
+              (ctaMain
                 ? "main_accent_button main_accent_button--on-light main_accent_button--block"
                 : "secondary_button secondary_button--on-light secondary_button--block") +
-              " h-[48px] shrink-0"
+              " h-[48px] shrink-0 disabled:cursor-not-allowed"
             }
 
             style={{ width: 200 }}
           >
-            {spec.cta}
+            {ctaLabel}
           </button>
         </div>
       </div>
@@ -352,12 +361,17 @@ function PaywallCard({
 export function PlanPaywall({
   onSelect,
   initialSku,
+  ctaOverride,
 }: {
   onSelect: (card: PlanCardSpec) => void;
   /** Which card opens selected. This is a DISPLAY choice only — every price,
    *  total and interval still comes from @/config/pricing, so a caller (or a
    *  URL param upstream) can never influence what anything costs. */
   initialSku?: SkuId;
+  /** Replace the CTA label/variant for a given SKU. Presentation only: return
+   *  null to keep the SKU's own purchase CTA. Settings uses this to turn the
+   *  current plan's CTA into a cancel button. */
+  ctaOverride?: (sku: SkuId) => PaywallCta | null;
 }) {
   const [sku, setSku] = useState<SkuId>(initialSku ?? PAYWALL_DEFAULT_SKU);
   const spec = planSpec(sku);
@@ -366,7 +380,12 @@ export function PlanPaywall({
     <div className="flex w-full flex-col items-center gap-6">
       <div className="flex w-full flex-col items-start gap-4">
         <SkuSwitcher value={sku} onChange={setSku} />
-        <PaywallCard sku={sku} spec={spec} onSelect={onSelect} />
+        <PaywallCard
+          sku={sku}
+          spec={spec}
+          onSelect={onSelect}
+          cta={ctaOverride?.(sku) ?? null}
+        />
       </div>
 
       {/* The one shared line: cancellation path, pre-charge email promise and

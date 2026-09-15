@@ -1,11 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  devPurgeAccount,
-  DEV_PURGE_ALLOWLIST,
-  type DevPurgeResult,
-} from "@/lib/dev-purge.functions";
 import {
   IconCheck,
   IconEye,
@@ -31,12 +25,9 @@ import {
   unpausePlan,
   cancelPlanNow,
   useHasHadPro,
-  setHasHadPro,
   useSubscription,
   scheduleCancelAtPeriodEnd,
   resumeSubscription,
-  devDowngradeNow,
-  devRestorePro,
   type Plan,
 } from "@/lib/plan-store";
 import { savePlanIntent } from "@/lib/onboarding/planIntent";
@@ -47,17 +38,22 @@ import {
   recordCancelFeedback,
   type CancelReason,
 } from "@/lib/cancel-feedback-store";
-import { BANKED_DAYS_TTL_MONTHS, SKUS, TRIAL_DAYS, renewalPhrase } from "@/config/pricing";
-import { PlanCardsGrid, type PlanCardSpec } from "@/components/site/PlanCards";
+import {
+  BANKED_DAYS_TTL_MONTHS,
+  SKUS,
+  TRIAL_DAYS,
+  isPrepaid,
+  renewalPhrase,
+  type SkuId,
+} from "@/config/pricing";
+import { PlanPaywall, type PaywallCta } from "@/components/site/PlanPaywall";
+import { SKU_SWITCHER_LABEL, type PlanCardSpec } from "@/components/site/planSpecs";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
 import {
   requestAccountDeletionServer,
   restoreAccountServer,
-  devSetPendingDeletion,
-  devFastForwardPastGrace,
-  useAccount,
 } from "@/lib/account-store";
 import { lovable } from "@/integrations/lovable/index";
 import {
@@ -101,7 +97,7 @@ function SettingsScreen() {
           Plan, billing, notifications, hidden companies, security and account.
         </p>
         {flash ? (
-          <div className="mt-4 rounded-[6px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
+          <div className="mt-4 rounded-[12px] bg-[color:var(--color-mint)] px-4 py-3 text-[13px] text-[color:var(--color-green)]">
             {flash}
           </div>
         ) : null}
@@ -129,7 +125,7 @@ function Card({
   actions?: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[8px] border bg-[color:var(--color-surface-1)] p-5">
+    <section className="rounded-[20px] border bg-[color:var(--color-surface-1)] p-5">
       <div className="flex items-center justify-between gap-4">
         <h2
           className="text-[18px] text-[color:var(--color-foreground)]"
@@ -147,13 +143,13 @@ function Card({
 function PlanBadge({ plan }: { plan: Plan }) {
   if (plan === "free") {
     return (
-      <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
+      <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-surface-2)] px-3 py-2 button-large text-[color:var(--color-text-secondary)]">
         No plan
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center rounded-[8px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
+    <span className="inline-flex items-center rounded-[12px] bg-[color:var(--color-mint)] px-3 py-2 button-large text-[color:var(--color-green)]">
       {plan === "paused" ? "Paused" : "Pro"}
     </span>
   );
@@ -219,7 +215,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
           <button
             type="button"
             onClick={() => setCancelStep(1)}
-            className="inline-flex h-9 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="secondary_button secondary_button--on-light inline-flex button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 36, padding: "0 12px", justifyContent: "center" }}
           >
             Cancel subscription
           </button>
@@ -259,7 +256,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 resumeSubscription();
                 onFlash("Cancellation undone — your Pro subscription continues.");
               }}
-              className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light inline-flex button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
             >
               Resume subscription
             </button>
@@ -272,14 +270,16 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                   unpausePlan();
                   onFlash("Welcome back — your matches start arriving tomorrow morning.");
                 }}
-                className="inline-flex h-10 items-center justify-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+                className="main_accent_button main_accent_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Restart my search
               </button>
               <button
                 type="button"
                 onClick={() => setCancelStep(2)}
-                className="inline-flex h-10 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="secondary_button secondary_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Cancel subscription
               </button>
@@ -288,10 +288,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </div>
       </div>
 
-      {/* Two plan cards — Pro (wide, left) + Free (narrow, right) */}
+      {/* The A-ha layout: five-way SKU switcher above one expanded plan card. */}
       <PlanCardsBlock
         plan={plan}
-        onFlash={onFlash}
         onDowngrade={() => setCancelStep(plan === "paused" ? 2 : 1)}
       />
 
@@ -318,7 +317,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Your plan is paused — no charges while it's paused.");
               }}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Pause my plan
             </button>
@@ -353,7 +353,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep my pause
             </button>
@@ -366,7 +367,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Subscription canceled — you no longer have a plan.");
               }}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -403,7 +404,8 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
             <button
               type="button"
               onClick={closeCancel}
-              className="h-11 w-full rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)]"
+              className="main_accent_button main_accent_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep Pro
             </button>
@@ -420,7 +422,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                     : "Pro canceled — access until the end of your current period.",
                 );
               }}
-              className="h-11 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
+              className="h-11 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
               style={{ borderColor: "#D00D01" }}
             >
               Cancel subscription
@@ -429,7 +431,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
         </Modal>
       ) : null}
 
-      <DevPlanOverrideRow onFlash={onFlash} />
     </Card>
   );
 }
@@ -463,7 +464,7 @@ function CancelReasonPicker({
         {CANCEL_REASONS.map((r) => (
           <label
             key={r}
-            className="flex cursor-pointer items-center gap-2 rounded-[4px] px-2 py-1.5 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="flex cursor-pointer items-center gap-2 rounded-[12px] px-2 py-1.5 text-[13px] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
             style={{ fontWeight: 300 }}
           >
             <input
@@ -486,7 +487,7 @@ function CancelReasonPicker({
           maxLength={500}
           placeholder="Tell us what happened"
           aria-label="Tell us why you're canceling"
-          className="mt-2 w-full resize-none rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 py-2 text-[13px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
+          className="mt-2 w-full resize-none rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 py-2 text-[13px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
           style={{ fontWeight: 300 }}
         />
       ) : null}
@@ -494,200 +495,13 @@ function CancelReasonPicker({
   );
 }
 
-function DevPlanOverrideRow({ onFlash }: { onFlash: (m: string) => void }) {
-  if (!import.meta.env.DEV) return null;
-  return <DevPlanOverrideRowInner onFlash={onFlash} />;
-}
-
-function DevPlanOverrideRowInner({ onFlash }: { onFlash: (m: string) => void }) {
-  const plan = usePlan();
+function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => void }) {
   const hasHadPro = useHasHadPro();
-  const account = useAccount();
-  return (
-    <div className="mt-4 border-t pt-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-          Dev tools
-        </span>
-        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">
-          plan: {plan}
-        </span>
-        <span className="flex-1" />
-        <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
-          <input
-            type="checkbox"
-            className="h-3.5 w-3.5"
-            checked={hasHadPro}
-            onChange={(e) => setHasHadPro(e.target.checked)}
-          />
-          <span>hasHadPro</span>
-        </label>
-        <button
-          type="button"
-          onClick={() => {
-            devDowngradeNow();
-            onFlash("DEV ONLY — plan removed instantly.");
-          }}
-          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Free now
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            devRestorePro();
-            onFlash("DEV ONLY — Pro restored.");
-          }}
-          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Restore Pro
-        </button>
-        <label className="inline-flex items-center gap-1.5 text-[11px] text-[color:var(--color-text-muted)]">
-          <input
-            type="checkbox"
-            className="h-3.5 w-3.5"
-            checked={account.accountStatus === "pending_deletion"}
-            onChange={(e) => {
-              devSetPendingDeletion(e.target.checked);
-              onFlash("DEV ONLY — account status changed.");
-            }}
-          />
-          <span>pending_deletion</span>
-        </label>
-        <button
-          type="button"
-          onClick={() => {
-            devFastForwardPastGrace();
-            onFlash("DEV ONLY — grace period moved into the past.");
-          }}
-          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Fast-forward past grace
-        </button>
-        <button
-          type="button"
-          onClick={async () => {
-            const res = await fetch("/api/public/hooks/purge-deleted-accounts", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
-              },
-              body: "{}",
-            });
-            const body = (await res.json()) as { purged?: number; due?: number };
-            onFlash(`DEV ONLY — purge run: ${body.purged ?? 0}/${body.due ?? 0} accounts deleted.`);
-          }}
-          className="inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-        >
-          Run purge now
-        </button>
-      </div>
-      <DevHardPurgeRow />
-    </div>
-  );
-}
-
-function DevHardPurgeRow() {
-  const target = DEV_PURGE_ALLOWLIST[0];
-  const purge = useServerFn(devPurgeAccount);
-  const [typed, setTyped] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<DevPurgeResult | null>(null);
-
-  const run = async () => {
-    setBusy(true);
-    try {
-      const res = await purge({ data: { email: target } });
-      setResult(res);
-      if (res.ok && res.status === "purged") {
-        // Tear down immediately so no draft token or plan intent survives into
-        // the next signup — but stay on the page so the counts stay readable.
-        clearUserStateForSignOut();
-        await supabase.auth.signOut();
-      }
-    } catch (e) {
-      setResult({
-        ok: false,
-        status: "error",
-        message: e instanceof Error ? e.message : "Purge failed.",
-      });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="mt-3 border-t pt-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--color-text-muted)]">
-          Hard purge test account
-        </span>
-        <span className="text-[11px] text-[color:var(--color-text-muted)] opacity-60">{target}</span>
-        <span className="flex-1" />
-        <input
-          type="email"
-          value={typed}
-          onChange={(e) => setTyped(e.target.value)}
-          placeholder={`Type ${target} to confirm`}
-          aria-label="Confirm the target email"
-          className="h-7 w-[240px] rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] text-[color:var(--color-foreground)] outline-none focus:border-[color:var(--color-accent)]"
-        />
-        <button
-          type="button"
-          disabled={typed.trim().toLowerCase() !== target || busy}
-          onClick={() => void run()}
-          className="danger_button danger_button--on-light h-7 px-2 text-[11px] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {busy ? "Purging…" : "Purge and sign out"}
-        </button>
-      </div>
-      {result ? (
-        <div className="mt-2 text-[11px] text-[color:var(--color-text-muted)]">
-          <div>{result.message}</div>
-          {result.counts ? (
-            <ul className="mt-1 space-y-0.5">
-              {Object.entries(result.counts).map(([table, count]) => (
-                <li key={table}>
-                  {table}: {count}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {typeof result.clean === "boolean" ? (
-            <div className="mt-1">clean: {String(result.clean)}</div>
-          ) : null}
-          {result.status === "purged" ? (
-            <button
-              type="button"
-              onClick={() => {
-                window.location.href = "/";
-              }}
-              className="mt-2 inline-flex h-7 items-center justify-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-2 text-[11px] font-medium text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
-            >
-              Done — reload
-            </button>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function PlanCardsBlock({
-  plan,
-  onFlash,
-  onDowngrade,
-}: {
-  plan: Plan;
-  onFlash: (m: string) => void;
-  onDowngrade: () => void;
-}) {
-  const hasHadPro = useHasHadPro();
-  const isPlanFree = plan === "free";
   const isPaid = plan === "pro" || plan === "watch";
   const navigate = useNavigate();
   const currentSku = useEntitlements().entitlements.sku;
+  const sub = useSubscription();
+
 
   // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
   const [needsBillingTerms, setNeedsBillingTerms] = useState(false);
@@ -705,12 +519,34 @@ function PlanCardsBlock({
 
   const blocked = needsBillingTerms && !billingTermsTicked;
 
+  // A live prepaid SKU still holds days the account has paid for, and the
+  // server's `activate` discards both the remaining period and the banked days
+  // when the SKU changes. So a switch is offered only where nothing can be
+  // forfeited; on a live prepaid plan the other tabs are read-only.
+  const prepaidRemaining =
+    currentSku !== null &&
+    isPrepaid(currentSku) &&
+    sub.currentPeriodEnd !== null &&
+    new Date(sub.currentPeriodEnd).getTime() > Date.now();
+
+  function ctaOverride(sku: SkuId): PaywallCta | null {
+    // No plan at all: every card keeps its own purchase CTA.
+    if (currentSku === null) return null;
+    if (sku === currentSku) return { label: "Cancel plan", main: false };
+    if (prepaidRemaining) {
+      return { label: "Available after this period", main: false, disabled: true };
+    }
+    return { label: `Switch to ${SKU_SWITCHER_LABEL[sku]}`, main: true };
+  }
+
   function onSelect(card: PlanCardSpec) {
-    // Already on this exact plan: nothing to buy.
+    // The current plan's CTA is the cancel button: it enters the existing
+    // two-step flow (pause offer, then confirm with a reason) unchanged.
     if (card.choice.sku === currentSku) {
-      onFlash("That's the plan you're already on.");
+      onDowngrade();
       return;
     }
+    if (prepaidRemaining) return;
     if (blocked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
@@ -756,30 +592,21 @@ function PlanCardsBlock({
       )}
 
       <div aria-disabled={blocked} style={{ opacity: blocked ? 0.6 : 1 }}>
-        <PlanCardsGrid onSelect={onSelect} />
+        {/* The same component the A-ha screen and the landing page use — the
+            five-way switcher above one expanded card. Settings only replaces
+            the CTA per SKU; nothing about the pricing is local. */}
+        <PlanPaywall
+          onSelect={onSelect}
+          {...(currentSku ? { initialSku: currentSku } : {})}
+          ctaOverride={ctaOverride}
+        />
       </div>
 
       {/* Not a tier you can buy: it is what the account falls back to after
           cancelling. */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-4">
-        <div>
-          <p className="text-[14px] text-[color:var(--color-foreground)]">No plan — $0</p>
-          <p className="mt-1 text-[12px] text-[color:var(--color-text-muted)]">
-            Weekly digest only. No match scores, tracker or reminders.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            if (isPlanFree) return;
-            onDowngrade();
-          }}
-          disabled={isPlanFree}
-          className="inline-flex h-10 items-center justify-center rounded-[4px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] disabled:opacity-60"
-        >
-          {isPlanFree ? "Current state" : "Cancel plan"}
-        </button>
-      </div>
+      <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]">
+        No plan — $0: weekly digest only. No match scores, tracker or reminders.
+      </p>
     </div>
   );
 }
@@ -897,7 +724,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </p>
       {error ? (
         <div
-          className="mb-4 flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-[12px]"
+          className="mb-4 flex items-center justify-between gap-3 rounded-[12px] px-3 py-2 text-[12px]"
           style={{ background: "#FFE2E2", color: "#D00D01" }}
         >
           <span>{error}</span>
@@ -923,7 +750,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             type="button"
             disabled={!pro || loading}
             onClick={() => pro && void setPreference("digest_frequency", "daily")}
-            className={`inline-flex h-10 items-center gap-1.5 rounded-[4px] border px-4 text-[14px] transition-colors ${
+            className={`inline-flex h-10 items-center gap-1.5 rounded-[12px] border px-4 text-[14px] transition-colors ${
               freq === "daily"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
@@ -942,7 +769,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
             type="button"
             disabled={loading}
             onClick={() => void setPreference("digest_frequency", "weekly")}
-            className={`inline-flex h-10 items-center rounded-[4px] border px-4 text-[14px] transition-colors ${
+            className={`inline-flex h-10 items-center rounded-[12px] border px-4 text-[14px] transition-colors ${
               freq === "weekly"
                 ? "border-[color:var(--color-green)] bg-[color:var(--color-green)] text-white"
                 : "border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
@@ -958,7 +785,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.quiet_hours_start}
               onChange={(e) => void setPreference("quiet_hours_start", Number(e.target.value))}
-              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[110px] rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -973,7 +800,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.quiet_hours_end}
               onChange={(e) => void setPreference("quiet_hours_end", Number(e.target.value))}
-              className="h-10 w-[110px] rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[110px] rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {HOUR_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -988,7 +815,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
               disabled={loading}
               value={prefs.timezone}
               onChange={(e) => void setPreference("timezone", e.target.value)}
-              className="h-10 w-[220px] max-w-full rounded-[4px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+              className="h-10 w-[220px] max-w-full rounded-[12px] border bg-[color:var(--color-surface-1)] pl-3 pr-7 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
             >
               {timezoneOptions(prefs.timezone).map((tz) => (
                 <option key={tz} value={tz}>
@@ -1067,7 +894,7 @@ function NotificationsCard({ plan }: { plan: Plan }) {
       </div>
 
       <div
-        className="mt-5 rounded-[6px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]"
+        className="mt-5 rounded-[12px] bg-[color:var(--color-surface-2)] px-3 py-2 text-[12px] text-[color:var(--color-text-secondary)]"
         style={{ fontWeight: 300 }}
       >
         <span className="font-semibold">Always on:</span> account and security (verify, sign-in,
@@ -1113,12 +940,13 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
             }
           }}
           placeholder="Add a company to hide from"
-          className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+          className="h-10 min-w-0 flex-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
         />
         <button
           type="button"
           onClick={submit}
-          className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+          className="secondary_button secondary_button--on-light inline-flex shrink-0 gap-1.5 whitespace-nowrap button-small"
+          style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
         >
           <IconPlus size={14} strokeWidth={1.8} />
           Add company
@@ -1136,7 +964,7 @@ function BlockedCompaniesCard({ onFlash }: { onFlash: (m: string) => void }) {
           list.map((c) => (
             <span
               key={c}
-              className="inline-flex items-center gap-2 rounded-[4px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]"
+              className="inline-flex items-center gap-2 rounded-[8px] bg-[color:var(--color-danger-subtle)] px-2.5 py-1 text-[13px] text-[color:var(--color-foreground)]"
             >
               {c}
               <IconTooltip label={`Show jobs from ${c} again`}>
@@ -1175,7 +1003,7 @@ function RadioRow({
 }) {
   return (
     <label
-      className={`flex items-start gap-3 rounded-[6px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+      className={`flex items-start gap-3 rounded-[12px] border px-3 py-2 text-[14px] ${checked ? "border-[color:var(--color-accent)] bg-[color:var(--color-mint)]/40" : ""} ${disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <input
         type="radio"
@@ -1342,7 +1170,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
           <button
             type="button"
             onClick={() => setSettingPw(true)}
-            className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+            className="secondary_button secondary_button--on-light inline-flex button-small"
+            style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
           >
             Set a password
           </button>
@@ -1388,7 +1217,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="submit"
               disabled={!valid || busy}
-              className="inline-flex h-10 items-center rounded-[4px] bg-[color:var(--color-accent)] px-4 button-small text-[color:var(--color-on-accent)] hover:bg-[color:var(--color-accent-hover)] disabled:opacity-50"
+              className="main_accent_button main_accent_button--on-light inline-flex button-small disabled:cursor-not-allowed"
+              style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
             >
               {busy ? "Saving…" : needsCurrent ? "Update password" : "Save password"}
             </button>
@@ -1401,7 +1231,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   setConfirm("");
                   setFormError(null);
                 }}
-                className="inline-flex h-10 items-center rounded-[4px] px-3 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+                className="secondary_button secondary_button--on-light inline-flex button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 12px", justifyContent: "center" }}
               >
                 Cancel
               </button>
@@ -1434,7 +1265,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
         </div>
         <div className="mt-3 flex items-center gap-3">
           <div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] border bg-white"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] border bg-white"
             aria-hidden
           >
             <GoogleMark size={18} />
@@ -1563,7 +1394,7 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
                   setIdentityBusy(false);
                 }
               }}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
               style={{ borderColor: "#D00D01" }}
             >
               {identityBusy ? "Removing…" : "Remove Google sign-in"}
@@ -1572,7 +1403,8 @@ function SecurityCard({ onFlash }: { onFlash: (m: string) => void }) {
               type="button"
               disabled={identityBusy}
               onClick={() => setGConfirm(false)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="secondary_button secondary_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Cancel
             </button>
@@ -1608,14 +1440,14 @@ function PasswordField({
           type={show ? "text" : "password"}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 pr-10 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)] ${error ? "border-[color:var(--color-danger)]" : ""}`}
+          className={`h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 pr-10 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)] ${error ? "border-[color:var(--color-danger)]" : ""}`}
         />
         <IconTooltip label={show ? "Hide password" : "Show password"}>
           <button
             type="button"
             onClick={onToggle}
             aria-label={show ? "Hide password" : "Show password"}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             {show ? (
               <IconEyeOff size={15} strokeWidth={1.6} />
@@ -1748,7 +1580,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               setReauthOk(false);
               setReauthError(null);
             }}
-            className="inline-flex h-10 items-center rounded-[4px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
+            className="inline-flex h-10 items-center rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)]"
             style={{ borderColor: "#D00D01" }}
           >
             Delete account
@@ -1770,7 +1602,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             onChange={(e) => setConfirmText(e.target.value)}
             placeholder="DELETE"
             aria-label="Type DELETE to confirm"
-            className="mt-4 h-10 w-full rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+            className="mt-4 h-10 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
           />
           {reauthOk ? (
             <p
@@ -1794,7 +1626,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                   onChange={(e) => setPassword(e.target.value)}
                   aria-label="Confirm your password"
                   autoComplete="current-password"
-                  className="h-10 min-w-0 flex-1 rounded-[4px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
+                  className="h-10 min-w-0 flex-1 rounded-[12px] border bg-[color:var(--color-surface-1)] px-3 text-[14px] text-[color:var(--color-foreground)] outline-none focus-visible:border-[color:var(--color-accent)]"
                 />
                 <button
                   type="button"
@@ -1802,7 +1634,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                   onClick={() => {
                     void verifyPassword();
                   }}
-                  className="h-10 shrink-0 rounded-[4px] border px-3 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)] disabled:opacity-50"
+                  className="main_accent_button main_accent_button--on-light shrink-0 button-small disabled:cursor-not-allowed"
+                  style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 12px", justifyContent: "center" }}
                 >
                   Confirm
                 </button>
@@ -1821,7 +1654,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
                 onClick={() => {
                   void reauthWithGoogle();
                 }}
-                className="mt-2 h-10 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-foreground)] hover:bg-[color:var(--color-surface-2)]"
+                className="main_accent_button main_accent_button--on-light mt-2 w-full button-small"
+                style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
               >
                 Confirm with Google
               </button>
@@ -1837,7 +1671,7 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
               onClick={() => {
                 void confirmDeletion();
               }}
-              className="h-11 w-full rounded-[4px] px-4 button-small text-white"
+              className="h-11 w-full rounded-[12px] px-4 button-small text-white"
               style={{
                 background: canDelete ? "#D00D01" : "var(--color-surface-2)",
                 color: canDelete ? "#fff" : "var(--color-alt-light-mist)",
@@ -1849,7 +1683,8 @@ function DangerZoneCard({ onFlash }: { onFlash: (m: string) => void }) {
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
-              className="h-11 w-full rounded-[4px] border px-4 button-small text-[color:var(--color-text-secondary)] hover:bg-[color:var(--color-surface-2)]"
+              className="secondary_button secondary_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
             >
               Keep my account
             </button>
@@ -1894,7 +1729,7 @@ function Modal({
         aria-hidden
       />
       <div
-        className="relative z-10 w-full max-w-[440px] rounded-[8px] border bg-[color:var(--color-surface-1)] p-6"
+        className="relative z-10 w-full max-w-[440px] rounded-[20px] border bg-[color:var(--color-surface-1)] p-6"
         style={{ boxShadow: "0 8px 24px rgba(0,0,0,.12)" }}
       >
         <div className="flex items-start justify-between gap-4 pr-10">
@@ -1908,7 +1743,7 @@ function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[4px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
+            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-[8px] text-[color:var(--color-text-muted)] hover:bg-[color:var(--color-surface-2)]"
           >
             <IconX size={16} strokeWidth={1.6} />
           </button>
