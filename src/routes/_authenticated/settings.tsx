@@ -266,8 +266,22 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               </button>
             </>
           ) : null}
+          {/* Safety net: a live paid row whose SKU never resolved has no card to
+              carry "Cancel plan", so the cancel path lives here instead. Same
+              two-step flow — Pro gets the pause offer first, Watch cannot pause. */}
+          {!scheduledEnd && plan !== "paused" && sub.sku === null && (plan === "pro" || plan === "watch") ? (
+            <button
+              type="button"
+              onClick={() => setCancelStep(plan === "pro" ? 1 : 2)}
+              className="secondary_button secondary_button--on-light inline-flex button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 40, padding: "0 16px", justifyContent: "center" }}
+            >
+              Cancel subscription
+            </button>
+          ) : null}
         </div>
       </div>
+
 
       {/* The A-ha layout: five-way SKU switcher above one expanded plan card. */}
       <PlanCardsBlock
@@ -500,10 +514,9 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
     // No plan at all: every card keeps its own purchase CTA.
     if (currentSku === null) return null;
     if (sku === currentSku) return { label: "Cancel plan", main: false };
-    // Every other tab is read-only: no button at all. Switching SKUs from a
-    // live subscription is not offered — the server's `activate` discards the
-    // remaining period and the banked days.
-    return { label: "", hidden: true };
+    // Switching is offered, and checkout states what the switch gives up
+    // before the charge — the server's `activate` starts a fresh period.
+    return { label: `Switch to ${SKU_SWITCHER_LABEL[sku]}`, main: true };
   }
 
   function onSelect(card: PlanCardSpec) {
@@ -513,8 +526,6 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
       onDowngrade();
       return;
     }
-    // No switch path exists from a live plan: those cards render no CTA.
-    if (currentSku !== null) return;
     if (blocked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
