@@ -265,11 +265,17 @@ function CheckoutPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Confirming…
               </>
+            ) : managing && rowState === "loading" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading…
+              </>
             ) : isTrial ? (
               "Start free trial"
             ) : (
               "Pay and activate"
             )}
+
           </button>
           <p className="text-center text-xs text-[color:var(--color-text-muted)]">
             {SHARED_PLAN_DISCLOSURE}
