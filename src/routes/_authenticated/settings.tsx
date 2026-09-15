@@ -40,9 +40,6 @@ import {
 } from "@/lib/cancel-feedback-store";
 import {
   BANKED_DAYS_TTL_MONTHS,
-  SKUS,
-  TRIAL_DAYS,
-  isPrepaid,
   renewalPhrase,
   type SkuId,
 } from "@/config/pricing";
