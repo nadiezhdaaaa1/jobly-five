@@ -100,8 +100,8 @@ export function ScoreRing({
         className="absolute"
         style={{
           fontFamily: "var(--font-sans)",
-          fontWeight: 400,
-          fontSize,
+          fontWeight: labelWeight,
+          fontSize: labelSize,
           lineHeight: 1,
           color: perfect ? "#FFFFFF" : "#090B0C",
         }}
