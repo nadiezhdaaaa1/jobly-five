@@ -267,12 +267,12 @@ function KanbanCard({
           <CompanyLogo name={job.company} logo={job.logo} />
           <div className="text-right leading-none">
             <span
-              className="text-[20px]"
-              style={{ fontFamily: "var(--font-display)", color: "#0E735A", lineHeight: "28px" }}
+              className="text-[18px]"
+              style={{ fontFamily: "var(--font-display)", fontWeight: 500, color: "#0E735A", lineHeight: "28px" }}
             >
               {job.score}
             </span>
-            <span className="text-[16px]" style={{ color: META_GREY, lineHeight: "24px" }}>%</span>
+            <span className="text-[14px]" style={{ fontWeight: 500, color: META_GREY, lineHeight: "24px" }}>%</span>
           </div>
         </div>
         {/* Row 2: title + meta */}

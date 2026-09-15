@@ -19,7 +19,8 @@ export function ScoreRing({
   ariaLabel,
   loading = false,
   locked = false,
-  fontSize = 14,
+  labelSize = 14,
+  labelWeight = 400,
 }: {
   score: number;
   size?: number;
@@ -28,7 +29,9 @@ export function ScoreRing({
   accentColor?: string;
   ariaLabel?: string;
   /** Label size. Defaults to the Digest/A-ha 14px so existing callers are untouched. */
-  fontSize?: number;
+  labelSize?: number;
+  /** Label weight. Defaults to the Digest/A-ha 400 so existing callers are untouched. */
+  labelWeight?: number;
   /** Entitlements still resolving: render the skeleton, never a score. */
   loading?: boolean;
   /** No match_score entitlement: render --%, never a score. */
@@ -53,8 +56,8 @@ export function ScoreRing({
         <span
           style={{
             fontFamily: "var(--font-sans)",
-            fontWeight: 400,
-            fontSize,
+            fontWeight: labelWeight,
+            fontSize: labelSize,
             lineHeight: 1,
             color: "#090B0C",
           }}
@@ -97,8 +100,8 @@ export function ScoreRing({
         className="absolute"
         style={{
           fontFamily: "var(--font-sans)",
-          fontWeight: 400,
-          fontSize,
+          fontWeight: labelWeight,
+          fontSize: labelSize,
           lineHeight: 1,
           color: perfect ? "#FFFFFF" : "#090B0C",
         }}
