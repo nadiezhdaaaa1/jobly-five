@@ -89,8 +89,14 @@ export const Route = createFileRoute("/")({
           "@type": "Organization",
           name: "Jobly",
           url: ORIGIN,
+          sameAs: [
+            "https://www.instagram.com/jobly_careers",
+            "https://www.tiktok.com/@jobly.careers",
+            "https://www.youtube.com/@jobly.careers",
+          ],
           description:
             "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily.",
+
         }),
       },
       {
