@@ -65,11 +65,14 @@ function switchLosses(row: SubscriptionRow, next: SkuId): string[] {
     const left = row.currentPeriodEnd
       ? Math.floor((new Date(row.currentPeriodEnd).getTime() - Date.now()) / DAY)
       : 0;
-    if (left > 0) {
+    // While trialing, currentPeriodEnd IS the trial end: the trial line above
+    // already accounts for those days.
+    if (left > 0 && row.status !== "trialing") {
       out.push(
-        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. Those days end today — the new plan starts a new period from today and they do not carry over.`,
+        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. They do not carry over — the new plan starts a fresh period today.`,
       );
     }
+
     const bankedLive =
       !row.bankedDaysExpireAt || new Date(row.bankedDaysExpireAt).getTime() > Date.now();
     const banked = row.bankedDays > 0 && bankedLive ? row.bankedDays : 0;
@@ -112,16 +115,38 @@ function CheckoutPage() {
   // notice.
   const managing = intent?.manage === true;
   const [current, setCurrent] = useState<SubscriptionRow | null>(null);
+  // Fail closed: while managing, the confirm stays inert until this row is
+  // known. An unresolved or failed read must never let a charge through
+  // without the notice below.
+  const [rowState, setRowState] = useState<"loading" | "ready" | "error">("loading");
+  const [rowAttempt, setRowAttempt] = useState(0);
   useEffect(() => {
     if (!managing) return;
+    let live = true;
+    setRowState("loading");
     void getSubscriptionRow()
-      .then(setCurrent)
-      .catch(() => undefined);
-  }, [managing]);
+      .then((row) => {
+        if (!live) return;
+        setCurrent(row);
+        setRowState("ready");
+      })
+      .catch(() => {
+        if (!live) return;
+        setCurrent(null);
+        setRowState("error");
+      });
+    return () => {
+      live = false;
+    };
+  }, [managing, rowAttempt]);
+
 
 
   async function pay() {
     if (!intent) return;
+    // Fail closed against a fast click: never charge on an unresolved row.
+    if (intent.manage === true && rowState !== "ready") return;
+
     setPaying(true);
     setError(null);
     try {
@@ -157,7 +182,11 @@ function CheckoutPage() {
   const sku = SKUS[intent.sku];
   const isTrial = intent.trial;
   const discount = discountPct(sku.id);
-  const losses = managing && current ? switchLosses(current, sku.id) : [];
+  const losses =
+    managing && rowState === "ready" && current ? switchLosses(current, sku.id) : [];
+  // Managing: nothing is actionable until the row resolves.
+  const rowBlocked = managing && rowState !== "ready";
+
 
 
   return (
@@ -211,11 +240,27 @@ function CheckoutPage() {
               </ul>
             </div>
           ) : null}
+          {rowState === "error" && managing ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-sm text-[color:var(--color-danger)]">
+                We couldn't read your current plan just now, so we can't show what this change
+                does to it. Nothing has been charged.
+              </p>
+              <button
+                type="button"
+                onClick={() => setRowAttempt((n) => n + 1)}
+                className="secondary_button secondary_button--on-light secondary_button--sm self-start"
+              >
+                Try again
+              </button>
+            </div>
+          ) : null}
           {error && <p className="text-sm text-[color:var(--color-danger)]">{error}</p>}
           <button
             type="button"
             onClick={() => void pay()}
-            disabled={paying}
+            disabled={paying || rowBlocked}
+
             className="main_accent_button main_accent_button--on-light w-full justify-center gap-2"
           >
             {paying ? (
@@ -223,11 +268,17 @@ function CheckoutPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Confirming…
               </>
+            ) : managing && rowState === "loading" ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Loading…
+              </>
             ) : isTrial ? (
               "Start free trial"
             ) : (
               "Pay and activate"
             )}
+
           </button>
           <p className="text-center text-xs text-[color:var(--color-text-muted)]">
             {SHARED_PLAN_DISCLOSURE}
