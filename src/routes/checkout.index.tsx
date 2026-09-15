@@ -176,7 +176,11 @@ function CheckoutPage() {
   const sku = SKUS[intent.sku];
   const isTrial = intent.trial;
   const discount = discountPct(sku.id);
-  const losses = managing && current ? switchLosses(current, sku.id) : [];
+  const losses =
+    managing && rowState === "ready" && current ? switchLosses(current, sku.id) : [];
+  // Managing: nothing is actionable until the row resolves.
+  const rowBlocked = managing && rowState !== "ready";
+
 
 
   return (
