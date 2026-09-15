@@ -40,9 +40,6 @@ import {
 } from "@/lib/cancel-feedback-store";
 import {
   BANKED_DAYS_TTL_MONTHS,
-  SKUS,
-  TRIAL_DAYS,
-  isPrepaid,
   renewalPhrase,
   type SkuId,
 } from "@/config/pricing";
@@ -177,8 +174,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   // No billing provider owns this row, so there is no real renewal date to show.
   const providerBilled = sub.activationSource === "provider";
 
-  const proSummary = "Daily digest · match scores · application tracker";
-  const watchSummary = "Weekly digest · match scores · ghost filtering · 1 saved search";
   // Renewal quotes the SKU actually purchased, never a list price for another one.
   const renewal = sub.sku ? renewalPhrase(sub.sku) : null;
   const proBilling = renewal
@@ -193,7 +188,6 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     ? `Paused until ${pauseEndLabel} · no charges while paused`
     : "Paused · no charges while paused";
   const freeSummary = "Weekly digest · no match scores, tracker or reminders";
-  const tier = sub.sku ? SKUS[sub.sku].tier : null;
 
   if (entLoading) {
     return (
@@ -207,22 +201,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
     );
   }
 
+  // Cancellation lives only on the current plan's card now — no header action.
   return (
-    <Card
-      title="Plan"
-      actions={
-        plan === "pro" && !scheduledEnd ? (
-          <button
-            type="button"
-            onClick={() => setCancelStep(1)}
-            className="secondary_button secondary_button--on-light inline-flex button-small"
-            style={{ borderRadius: 12, fontSize: 14, height: 36, padding: "0 12px", justifyContent: "center" }}
-          >
-            Cancel subscription
-          </button>
-        ) : null
-      }
-    >
+    <Card title="Plan">
       {/* Current-plan row */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
@@ -232,7 +213,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               className="text-[13px] text-[color:var(--color-foreground)]"
               style={{ fontWeight: 300 }}
             >
-              {plan === "free" ? freeSummary : tier === "watch" ? watchSummary : proSummary}
+              {sub.sku ? SKU_SWITCHER_LABEL[sub.sku] : freeSummary}
             </p>
             <p
               className="mt-1 text-[12px] text-[color:var(--color-text-muted)]"
@@ -519,24 +500,14 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
 
   const blocked = needsBillingTerms && !billingTermsTicked;
 
-  // A live prepaid SKU still holds days the account has paid for, and the
-  // server's `activate` discards both the remaining period and the banked days
-  // when the SKU changes. So a switch is offered only where nothing can be
-  // forfeited; on a live prepaid plan the other tabs are read-only.
-  const prepaidRemaining =
-    currentSku !== null &&
-    isPrepaid(currentSku) &&
-    sub.currentPeriodEnd !== null &&
-    new Date(sub.currentPeriodEnd).getTime() > Date.now();
-
   function ctaOverride(sku: SkuId): PaywallCta | null {
     // No plan at all: every card keeps its own purchase CTA.
     if (currentSku === null) return null;
     if (sku === currentSku) return { label: "Cancel plan", main: false };
-    if (prepaidRemaining) {
-      return { label: "Available after this period", main: false, disabled: true };
-    }
-    return { label: `Switch to ${SKU_SWITCHER_LABEL[sku]}`, main: true };
+    // Every other tab is read-only: no button at all. Switching SKUs from a
+    // live subscription is not offered — the server's `activate` discards the
+    // remaining period and the banked days.
+    return { label: "", hidden: true };
   }
 
   function onSelect(card: PlanCardSpec) {
@@ -546,7 +517,8 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
       onDowngrade();
       return;
     }
-    if (prepaidRemaining) return;
+    // No switch path exists from a live plan: those cards render no CTA.
+    if (currentSku !== null) return;
     if (blocked) return;
     if (needsBillingTerms) {
       void acceptPolicies({
@@ -599,14 +571,11 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
           onSelect={onSelect}
           {...(currentSku ? { initialSku: currentSku } : {})}
           ctaOverride={ctaOverride}
+          context={isPaid ? "manage" : "purchase"}
+          trialing={sub.status === "trialing"}
+          showSharedDisclosure={!isPaid}
         />
       </div>
-
-      {/* Not a tier you can buy: it is what the account falls back to after
-          cancelling. */}
-      <p className="mt-4 text-[12px] text-[color:var(--color-text-muted)]">
-        No plan — $0: weekly digest only. No match scores, tracker or reminders.
-      </p>
     </div>
   );
 }

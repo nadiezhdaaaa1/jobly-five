@@ -9,6 +9,7 @@
 import {
   RENEWAL_REMINDER_DAYS,
   TRIAL_DAYS,
+  TRIAL_SKU,
   WATCH_MONTHLY_ANNUALISED,
   discountPct,
   perMonth,
@@ -185,8 +186,45 @@ export const BAND_COLOR: Record<BandTone, string> = {
   "best-value": "var(--plan-band-best-value)",
 };
 
+/**
+ * Which surface the copy is written for.
+ *  - "purchase" (default): the landing grid, /matches and checkout. Nothing
+ *    about these strings may change — they are the pre-purchase disclosures.
+ *  - "manage": /settings, where the account is already subscribed. Nothing is
+ *    billed today, so every "charged/billed today" phrasing becomes the plain
+ *    recurring charge, and trial wording appears only while `trialing` is true.
+ */
+export type PlanCopyContext = "purchase" | "manage";
+
+export type PlanCopyOptions = {
+  context?: PlanCopyContext;
+  /** True only when the viewing account is genuinely inside its trial. */
+  trialing?: boolean;
+};
+
+const isManage = (o?: PlanCopyOptions) => o?.context === "manage";
+/** Trial copy is legal only on the one trial SKU, and only while trialing. */
+const showsTrial = (sku: SkuId, o?: PlanCopyOptions) =>
+  sku === TRIAL_SKU && (!isManage(o) || o?.trialing === true);
+
 /** One spec per flat SKU. The paywall renders exactly one of these at a time. */
-export function planSpec(sku: SkuId): PlanCardSpec {
+export function planSpec(sku: SkuId, options?: PlanCopyOptions): PlanCardSpec {
+  const base = baseSpec(sku);
+  if (!isManage(options)) return base;
+  // Manage context: no charge happens today, so restate the recurring charge.
+  // Every string is derived — renewalPhrase / skuTotal / perMonth only.
+  return {
+    ...base,
+    subLine: showsTrial(sku, options)
+      ? `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`
+      : renewalPhrase(sku),
+    disclosure: showsTrial(sku, options)
+      ? `${TRIAL_DAYS} days free, then ${renewalPhrase(sku)} until cancelled`
+      : `${renewalPhrase(sku)} until cancelled`,
+  };
+}
+
+function baseSpec(sku: SkuId): PlanCardSpec {
   switch (sku) {
     case "watch_monthly":
     case "watch_annual":
@@ -223,9 +261,14 @@ export const SKU_SWITCHER_LABEL: Record<SkuId, string> = {
   watch_monthly: "Watch · Monthly",
 };
 
-/** What the account is charged at signup, derived — never a literal. */
-export function billedTodayLine(sku: SkuId): string {
-  if (sku === "pro_monthly") return `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`;
+/**
+ * What the account is charged at signup ("purchase"), or what it is charged on
+ * every renewal ("manage" — /settings, where nothing is billed today). Derived
+ * from skuTotal / renewalPhrase; never a literal.
+ */
+export function billedTodayLine(sku: SkuId, options?: PlanCopyOptions): string {
+  if (showsTrial(sku, options)) return `${TRIAL_DAYS} days free, then ${usd(skuTotal(sku))}`;
+  if (isManage(options)) return renewalPhrase(sku);
   return `${usd(skuTotal(sku))} billed today`;
 }
 
@@ -268,3 +311,21 @@ export const PLAN_FEATURES: Record<SkuId, string[]> = {
     renewalNotice,
   ],
 };
+
+/**
+ * The bullets a given surface may show. On /settings a non-trialing Pro monthly
+ * account must not be told its trial is running, and — with the switch CTA gone
+ * — must not be promised a switch it cannot perform, so those two bullets are
+ * replaced by the derived recurring line and the standard cancel/renewal notes.
+ */
+export function planFeatures(sku: SkuId, options?: PlanCopyOptions): string[] {
+  if (sku === TRIAL_SKU && isManage(options) && options?.trialing !== true) {
+    return [
+      "Everything in Pro, month to month",
+      `${renewalPhrase(sku)} until cancelled`,
+      cancelAnyTime,
+      renewalNotice,
+    ];
+  }
+  return PLAN_FEATURES[sku];
+}
