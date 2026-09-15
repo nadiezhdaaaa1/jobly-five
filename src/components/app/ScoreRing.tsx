@@ -94,10 +94,11 @@ export function ScoreRing({
         />
       </svg>
       <span
-        className="absolute text-[14px]"
+        className="absolute"
         style={{
           fontFamily: "var(--font-sans)",
           fontWeight: 400,
+          fontSize,
           lineHeight: 1,
           color: perfect ? "#FFFFFF" : "#090B0C",
         }}
