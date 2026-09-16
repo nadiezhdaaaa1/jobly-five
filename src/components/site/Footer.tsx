@@ -13,7 +13,7 @@ const SOCIALS: { label: string; href: string | null; icon: string }[] = [
   { label: "TikTok", href: "https://www.tiktok.com/@jobly.careers", icon: tikIcon },
   { label: "YouTube", href: "https://www.youtube.com/@jobly.careers", icon: ytIcon },
   { label: "Facebook", href: null, icon: fbIcon },
-  { label: "LinkedIn", href: null, icon: inIcon },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/joblycareers/", icon: inIcon },
 ];
 
 

@@ -93,6 +93,7 @@ export const Route = createFileRoute("/")({
             "https://www.instagram.com/jobly_careers",
             "https://www.tiktok.com/@jobly.careers",
             "https://www.youtube.com/@jobly.careers",
+            "https://www.linkedin.com/company/joblycareers/",
           ],
           description:
             "Email-first job discovery for tech candidates. Five ranked matches in your inbox daily.",
