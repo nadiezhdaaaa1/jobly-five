@@ -236,6 +236,17 @@ function ProfileScreen() {
     return { items, pct: Math.round((done / items.length) * 100), hasPortfolio };
   }, [quiz.roles, resume, resumeDocs, extras.links, extras.portfolioFile]);
 
+  if (lockEntLoading) return <PlanLockedSkeleton active="profile" />;
+  if (lockPlan === "free") {
+    return (
+      <PlanLockedScreen
+        active="profile"
+        heading={PLAN_LOCKED_COPY.profile.heading}
+        body={PLAN_LOCKED_COPY.profile.body}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
       <AppHeader active="profile" />

@@ -1278,6 +1278,8 @@ function JobsScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const plan = usePlan();
   const pro = isPro(plan);
+  // Scored matches are the page; an account with no plan sees the locked screen.
+  const { loading: lockEntLoading } = useEntitlements();
   const { user } = useAuth();
   const quiz = useQuiz();
   const profileRoles = useMemo(() => {
