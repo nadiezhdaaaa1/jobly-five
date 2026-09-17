@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
 import { LEGAL_DOCS, LEGAL_ORDER } from "@/lib/legal-data";
-import { VS_PAGES } from "@/lib/vs-data";
+import { VS_INDEX, getVsPage } from "@/lib/vs-data";
 import { FEATURE_PAGES } from "@/lib/features-data";
 import { TOOL_PAGES } from "@/lib/tools-data";
 
@@ -11,7 +11,7 @@ import instaIcon from "@/assets/social/insta.svg";
 import ytIcon from "@/assets/social/yt.svg";
 import tikIcon from "@/assets/social/tik.svg";
 
-// href null = profile not live yet: icon renders without an anchor.
+// href null = profile not live yet: icon renders without an anchor, at 60% opacity.
 const SOCIALS: { label: string; href: string | null; icon: string }[] = [
   { label: "Instagram", href: "https://www.instagram.com/jobly_careers", icon: instaIcon },
   { label: "TikTok", href: "https://www.tiktok.com/@jobly.careers", icon: tikIcon },
@@ -20,129 +20,167 @@ const SOCIALS: { label: string; href: string | null; icon: string }[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/joblycareers/", icon: inIcon },
 ];
 
-
 type FooterLink = { label: string; to?: string; href?: string };
+type FooterGroup = { title: string; items: FooterLink[] };
 
-const COLS: { title: string; items: FooterLink[] }[] = [
-  {
+const COMPANY: FooterGroup = {
+  title: "Company",
+  items: [
+    { label: "Blog", to: "/blog" },
+    { label: "RSS feed", href: "/blog/rss.xml" },
+    { label: "Contact", to: "/contact" },
+  ],
+};
 
-    title: "Company",
-    items: [
-      { label: "Blog", to: "/blog" },
-      { label: "RSS feed", href: "/blog/rss.xml" },
-      { label: "Contact", to: "/contact" },
-    ],
-  },
-  {
-    title: "Legal",
-    // Link text is each document's own title, read straight from LEGAL_DOCS, so
-    // a policy can never be listed here under a name its page does not carry.
-    items: LEGAL_ORDER.map((slug) => ({
-      label: LEGAL_DOCS[slug].title,
-      to: `/legal/${slug}`,
-    })),
-  },
-  {
-    title: "Features",
-    // Same rule as the Legal column: link text comes from each page's own data,
-    // never hand-written here, so a page can't be listed under a name it doesn't carry.
-    items: FEATURE_PAGES.map((p) => ({ label: p.footerLabel, to: `/features/${p.slug}` })),
-  },
-  {
-    title: "Tools",
-    items: TOOL_PAGES.map((p) => ({ label: p.footerLabel, to: `/tools/${p.slug}` })),
-  },
-  {
-    title: "Guides",
-    items: [
-      { label: "Ghost jobs", to: "/guides/ghost-jobs" },
-      { label: "AI job matching", to: "/guides/ai-job-matching" },
-      { label: "Job alerts", to: "/guides/job-alerts" },
-      { label: "All guides", to: "/guides" },
-    ],
-  },
-  {
-    title: "Compare",
-    items: VS_PAGES.map((p) => ({ label: p.footerLabel, to: `/vs/${p.slug}` })),
-  },
-];
+const LEGAL: FooterGroup = {
+  title: "Legal",
+  // Link text is each document's own title, read straight from LEGAL_DOCS, so
+  // a policy can never be listed here under a name its page does not carry.
+  items: LEGAL_ORDER.map((slug) => ({
+    label: LEGAL_DOCS[slug].title,
+    to: `/legal/${slug}`,
+  })),
+};
 
+const GUIDES: FooterGroup = {
+  title: "Guides",
+  items: [
+    { label: "Ghost jobs", to: "/guides/ghost-jobs" },
+    { label: "AI job matching", to: "/guides/ai-job-matching" },
+    { label: "Job alerts", to: "/guides/job-alerts" },
+    { label: "All guides", to: "/guides" },
+  ],
+};
+
+const FEATURES: FooterGroup = {
+  title: "Features",
+  // Same rule as the Legal column: link text comes from each page's own data.
+  items: FEATURE_PAGES.map((p) => ({ label: p.footerLabel, to: `/features/${p.slug}` })),
+};
+
+const TOOLS: FooterGroup = {
+  title: "Tools",
+  items: TOOL_PAGES.map((p) => ({ label: p.footerLabel, to: `/tools/${p.slug}` })),
+};
+
+const COMPARE: FooterGroup = {
+  title: "Compare",
+  // Only the comparisons that carry written copy — i.e. the ones the /vs index
+  // links to. The five placeholder entries in VS_PAGES stay out of the footer.
+  items: VS_INDEX.items.flatMap((item) => {
+    const page = getVsPage(item.slug);
+    return page ? [{ label: page.footerLabel, to: `/vs/${page.slug}` }] : [];
+  }),
+};
+
+const HEADING_CLASS =
+  "text-[14px] font-semibold leading-[20px] text-[color:var(--color-foreground)]";
+const LINK_CLASS =
+  "text-[14px] font-extralight leading-[20px] text-[color:var(--color-text-secondary)] transition-colors hover:text-[color:var(--color-foreground)]";
+
+function LinkGroup({ group }: { group: FooterGroup }) {
+  return (
+    <div className="flex flex-col items-start">
+      <p className={HEADING_CLASS}>{group.title}</p>
+      <ul className="flex flex-col items-start pt-3">
+        {group.items.map((i, idx) => (
+          <li key={i.label} className={idx === 0 ? "" : "pt-2"}>
+            {i.to ? (
+              <Link to={i.to} className={LINK_CLASS}>
+                {i.label}
+              </Link>
+            ) : (
+              <a href={i.href} className={LINK_CLASS}>
+                {i.label}
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export function Footer() {
-  return (
-    <footer className="bg-[color:var(--color-background)]">
-      <div className="border-[color:var(--color-border)] lg:mx-12 lg:border-l lg:border-r">
-      <div className="mx-auto max-w-[1200px] px-5 pt-24 pb-14 md:pt-[100px] md:pb-[60px] md:px-8">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_minmax(0,3fr)]">
-          <div>
-            <Wordmark className="!text-[color:var(--color-text-muted)]" />
-            <p className="mt-3 max-w-xs text-sm text-[color:var(--color-text-secondary)]">
-              Email-first job discovery platform
-            </p>
-            <ul className="mt-4 flex flex-wrap items-center gap-3">
-              {SOCIALS.map((s) => (
-                <li key={s.label}>
-                  {s.href ? (
-                    <a
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={s.label}
-                      className="inline-flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-70"
-                    >
-                      <img src={s.icon} alt="" width={20} height={20} />
-                    </a>
-                  ) : (
-                    <span
-                      role="img"
-                      aria-label={`${s.label} — coming soon`}
-                      className="inline-flex h-8 w-8 items-center justify-center opacity-60"
-                    >
-                      <img src={s.icon} alt="" width={20} height={20} />
-                    </span>
-                  )}
-                </li>
-              ))}
+  const year = new Date().getFullYear();
 
-            </ul>
-            <p className="mt-4 max-w-xs text-xs text-[color:var(--color-text-muted)]">
-              NORELIX LIMITED · trading as Jobly
-              <br />
-              The Black Church, St Mary’s Place,
-              <br />
-              Dublin 7, D07 P4AX, Ireland
-              <br />
-              Company No. 817569
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-2 md:grid-cols-4 md:gap-8 xl:gap-12">
-            {COLS.map((c) => (
-              <div key={c.title}>
-                <div className="text-sm font-semibold">{c.title}</div>
-                <ul className="mt-3 space-y-2 text-sm text-[color:var(--color-text-secondary)]">
-                  {c.items.map((i) => (
-                    <li key={i.label}>
-                      {i.to ? (
-                        <Link to={i.to} className="hover:text-[color:var(--color-foreground)]">
-                          {i.label}
-                        </Link>
-                      ) : (
-                        <a href={i.href} className="hover:text-[color:var(--color-foreground)]">
-                          {i.label}
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+  return (
+    <footer className="bg-[color:var(--color-background)] px-0 md:px-12">
+      <div className="border-[color:var(--color-border)] md:border-l md:border-r">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start px-5 pt-24 pb-14 md:px-8 md:pt-26">
+          <div className="grid w-full gap-10 lg:grid-cols-[348.73px_747.27px]">
+            {/* Brand column */}
+            <div className="flex flex-col items-start">
+              <div className="flex h-[45px] items-center">
+                <Wordmark className="!text-[color:var(--color-text-muted)]" />
               </div>
-            ))}
+              <p className="max-w-[320px] pt-3 text-[14px] font-extralight leading-[20px] text-[color:var(--color-text-secondary)]">
+                Email-first job discovery platform
+              </p>
+              <ul className="flex items-center gap-3 pt-4">
+                {SOCIALS.map((s) => (
+                  <li key={s.label}>
+                    {s.href ? (
+                      <a
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        className="inline-flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-70"
+                      >
+                        <img src={s.icon} alt="" width={20} height={20} />
+                      </a>
+                    ) : (
+                      <span
+                        role="img"
+                        aria-label={`${s.label} — coming soon`}
+                        className="inline-flex h-8 w-8 items-center justify-center opacity-60"
+                      >
+                        <img src={s.icon} alt="" width={20} height={20} />
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <p className="max-w-[320px] pt-4 text-[12px] font-extralight leading-[16px] text-[color:var(--color-text-muted)]">
+                NORELIX LIMITED · trading as Jobly
+                <br />
+                The Black Church, St Mary’s Place,
+                <br />
+                Dublin 7, D07 P4AX, Ireland
+                <br />
+                Company No. 817569
+              </p>
+            </div>
+
+            {/* Links block: four sub-columns */}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-4 lg:flex lg:gap-4">
+              <div className="lg:flex-1 lg:min-w-0">
+                <LinkGroup group={COMPANY} />
+              </div>
+              <div className="lg:flex-1 lg:min-w-0">
+                <LinkGroup group={LEGAL} />
+              </div>
+              <div className="flex flex-col gap-6 lg:flex-1 lg:min-w-0">
+                <LinkGroup group={GUIDES} />
+                <LinkGroup group={FEATURES} />
+                <LinkGroup group={TOOLS} />
+              </div>
+              <div className="lg:flex-1 lg:min-w-0">
+                <LinkGroup group={COMPARE} />
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full pt-12">
+            <div className="flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-12 text-[12px] font-extralight leading-[16px] text-[color:var(--color-text-muted)] md:flex-row md:items-center">
+              <span>© {year} Jobly. All rights reserved.</span>
+              {/* Bottom-right line held pending replacement copy — the Email and
+                  Communications Consent doc says cadence follows the plan. */}
+              <span>You can adjust or turn off daily match frequencies anytime via your settings link.</span>
+            </div>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-[color:var(--color-border)] pt-12 text-xs text-[color:var(--color-text-muted)] md:flex-row md:items-center">
-          <span>© 2025 Jobly. All rights reserved.</span>
-          <span>You can adjust or turn off daily match frequencies anytime via your settings link.</span>
-        </div>
-      </div>
       </div>
     </footer>
   );
