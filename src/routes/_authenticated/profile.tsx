@@ -162,6 +162,10 @@ function useToast() {
 // ==========================================================================
 
 function ProfileScreen() {
+  // An account with no plan sees the locked screen here. Settings stays open,
+  // so data export and account deletion remain reachable.
+  const lockPlan = usePlan();
+  const { loading: lockEntLoading } = useEntitlements();
   const { user } = useAuth();
   const search = useSearch({ from: "/_authenticated/profile" });
   const navigate = useNavigate({ from: "/profile" });
