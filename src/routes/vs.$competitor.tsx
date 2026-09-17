@@ -23,7 +23,10 @@ export const Route = createFileRoute("/vs/$competitor")({
       return { meta: [{ title: "Comparison not found" }, { name: "robots", content: "noindex" }] };
     }
     const page = loaderData.page;
-    const title = `${page.title} — Jobly`;
+    // Supplied meta title/description are used verbatim when present.
+    const title = page.metaTitle ?? `${page.title} — Jobly`;
+    const description = page.metaDescription ?? page.deck;
+
     const scripts: { type: string; children: string }[] = [
       {
         type: "application/ld+json",
@@ -68,16 +71,17 @@ export const Route = createFileRoute("/vs/$competitor")({
     return {
       meta: [
         { title },
-        { name: "description", content: page.deck },
-        { property: "og:title", content: page.title },
-        { property: "og:description", content: page.deck },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: page.title },
-        { name: "twitter:description", content: page.deck },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
         ...(page.published ? [] : [{ name: "robots", content: "noindex, follow" }]),
       ],
+
       links: page.published ? [{ rel: "canonical", href: url }] : [],
       scripts,
     };
@@ -139,11 +143,22 @@ function VsPageRoute() {
             </header>
 
             <div className="mx-auto max-w-[820px] px-5 py-6 md:px-8 md:py-10">
-              <ComparisonTable rows={page.comparison} competitorName={page.competitorName} />
+              {page.intro && page.intro.length > 0 && (
+                <div className="mb-10">
+                  <ArticleBody blocks={page.intro} />
+                </div>
+              )}
+
+              <ComparisonTable
+                rows={page.comparison}
+                competitorName={page.competitorName}
+                heading={page.comparisonHeading}
+              />
 
               <div className={page.comparison.length > 0 ? "mt-12" : undefined}>
                 <ArticleBody blocks={page.body} />
               </div>
+
 
               <div className="mx-auto mt-10 max-w-[680px] rounded-lg border border-[color:var(--color-border)] bg-[color:var(--color-surface-1)] p-5">
                 <p className="text-sm text-[color:var(--color-text-secondary)]">
