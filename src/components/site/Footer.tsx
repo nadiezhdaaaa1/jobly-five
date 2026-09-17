@@ -42,15 +42,23 @@ const LEGAL: FooterGroup = {
   })),
 };
 
+// TEMPORARY (Sep 2026): three Guides entries are hidden from the footer, not
+// deleted. `hidden: true` is the only switch — flip it to `false` (or delete the
+// property) on a line below to bring that entry back, one line per entry.
+// Do NOT wire this column to `published`: every guide, Ghost jobs included, is
+// currently published: false, so that flag would empty the whole column.
 const GUIDES: FooterGroup = {
   title: "Guides",
-  items: [
-    { label: "Ghost jobs", to: "/guides/ghost-jobs" },
-    { label: "AI job matching", to: "/guides/ai-job-matching" },
-    { label: "Job alerts", to: "/guides/job-alerts" },
-    { label: "All guides", to: "/guides" },
-  ],
+  items: (
+    [
+      { label: "Ghost jobs", to: "/guides/ghost-jobs" },
+      { label: "AI job matching", to: "/guides/ai-job-matching", hidden: true }, // wave 2
+      { label: "Job alerts", to: "/guides/job-alerts", hidden: true }, // wave 3
+      { label: "All guides", to: "/guides", hidden: true }, // index exists; hidden by request
+    ] satisfies (FooterLink & { hidden?: boolean })[]
+  ).filter((i) => !i.hidden),
 };
+
 
 const FEATURES: FooterGroup = {
   title: "Features",
