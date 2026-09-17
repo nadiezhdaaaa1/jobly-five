@@ -14,7 +14,7 @@ import { GoogleMark } from "@/components/site/GoogleMark";
 import { IconTooltip } from "@/components/app/IconTooltip";
 import { logSecurityEvent } from "@/lib/security-events.functions";
 import { getLastPasswordChange } from "@/lib/security-events.functions";
-import { useDateLabel } from "@/lib/dates";
+import { formatDateLabel, useDateLabel } from "@/lib/dates";
 import { supabase } from "@/integrations/supabase/client";
 import { clearUserStateForSignOut } from "@/lib/sign-out";
 import { useAuth } from "@/hooks/use-auth";
@@ -28,6 +28,7 @@ import {
   useSubscription,
   scheduleCancelAtPeriodEnd,
   resumeSubscription,
+  clearPendingPlanChange,
   type Plan,
 } from "@/lib/plan-store";
 import { savePlanIntent } from "@/lib/onboarding/planIntent";
@@ -40,12 +41,12 @@ import {
 } from "@/lib/cancel-feedback-store";
 import {
   BANKED_DAYS_TTL_MONTHS,
+  isDowngrade,
   renewalPhrase,
   type SkuId,
 } from "@/config/pricing";
 import { PlanPaywall, type PaywallCta } from "@/components/site/PlanPaywall";
 import { SKU_SWITCHER_LABEL, type PlanCardSpec } from "@/components/site/planSpecs";
-import { isDowngrade } from "@/config/pricing";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
