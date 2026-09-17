@@ -12,12 +12,16 @@ import {
   SHARED_PLAN_DISCLOSURE,
   SKUS,
   TRIAL_DAYS,
+  creditDays,
   discountPct,
+  isDowngrade,
+  periodDays,
   renewalPhrase,
   skuTotal,
   usd,
   type SkuId,
 } from "@/config/pricing";
+import { formatDateLabel } from "@/lib/dates";
 import { SKU_SWITCHER_LABEL } from "@/components/site/planSpecs";
 import {
   applySubscriptionAction,
@@ -49,40 +53,88 @@ const PLAN_NAMES = {
 const DAY = 86_400_000;
 
 /**
- * What a SKU change costs this account, read from its own row. The server's
- * `activate` starts a fresh period and zeroes banked days on any SKU change,
- * so those facts are stated before the confirm button. Empty when nothing is
- * given up (a lapsed plan, or the same SKU).
+ * What a SKU change does to this account, read from its own row, per
+ * Cancellation Policy §5: an upgrade applies today and the unused part of the
+ * current period is credited to the new plan; a downgrade takes effect at the
+ * end of the period already paid for. §3 keeps banked days through both.
+ *
+ * `kind: "deferred"` is not a purchase moment: nothing is charged and the
+ * confirm button schedules rather than pays.
  */
-function switchLosses(row: SubscriptionRow, next: SkuId): string[] {
-  const out: string[] = [];
-  if (row.status === "trialing") {
-    out.push(
+type SwitchEffects = {
+  kind: "immediate" | "deferred";
+  /** ISO date a deferred change starts. */
+  effectiveAt: string | null;
+  /** False when the §5 credit covers the whole first period. */
+  chargeToday: boolean;
+  lines: string[];
+};
+
+function switchEffects(row: SubscriptionRow, next: SkuId): SwitchEffects {
+  const lines: string[] = [];
+  const trialing = row.status === "trialing";
+  const left = daysLeftOf(row.currentPeriodEnd);
+  const switching = row.sku !== null && row.sku !== next;
+
+  // A downgrade with a paid period still running is scheduled, not charged.
+  if (switching && !trialing && left > 0 && isDowngrade(row.sku!, next)) {
+    const when = formatDateLabel(row.currentPeriodEnd) ?? "the end of your current period";
+    lines.push(
+      `${SKU_SWITCHER_LABEL[next]} starts on ${when}, when the period you have already paid for ends. Nothing is charged today.`,
+    );
+    lines.push(`You keep ${SKU_SWITCHER_LABEL[row.sku!]} and everything it includes until then.`);
+    if (liveBankedDays(row) > 0) lines.push(bankedLine(liveBankedDays(row)));
+    return { kind: "deferred", effectiveAt: row.currentPeriodEnd, chargeToday: false, lines };
+  }
+
+  if (trialing) {
+    lines.push(
       `Your ${TRIAL_DAYS}-day free trial ends today. ${usd(skuTotal(next))} is charged now.`,
     );
   }
-  if (row.sku !== null && row.sku !== next) {
-    const left = row.currentPeriodEnd
-      ? Math.floor((new Date(row.currentPeriodEnd).getTime() - Date.now()) / DAY)
-      : 0;
-    // While trialing, currentPeriodEnd IS the trial end: the trial line above
-    // already accounts for those days.
-    if (left > 0 && row.status !== "trialing") {
-      out.push(
-        `You have ${left} day${left === 1 ? "" : "s"} left on ${SKU_SWITCHER_LABEL[row.sku]}. They do not carry over — the new plan starts a fresh period today.`,
-      );
-    }
 
-    const bankedLive =
-      !row.bankedDaysExpireAt || new Date(row.bankedDaysExpireAt).getTime() > Date.now();
-    const banked = row.bankedDays > 0 && bankedLive ? row.bankedDays : 0;
-    if (banked > 0) {
-      out.push(
-        `Your ${banked} banked day${banked === 1 ? "" : "s"} are cleared and are not added to the new plan.`,
+  let chargeToday = true;
+  if (switching && !trialing && left > 0) {
+    const credit = creditDays({
+      from: row.sku!,
+      to: next,
+      daysLeft: left,
+      paidTotal: row.purchasePrice,
+    });
+    const coversPeriod = credit >= periodDays(next);
+    const endMs = Date.now() + (coversPeriod ? credit : periodDays(next) + credit) * DAY;
+    const until = formatDateLabel(new Date(endMs).toISOString());
+    if (coversPeriod) {
+      chargeToday = false;
+      lines.push(
+        `Your ${left} remaining day${left === 1 ? "" : "s"} on ${SKU_SWITCHER_LABEL[row.sku!]} cover this plan in full: nothing is charged today${until ? `, and your next charge is ${until}` : ""}.`,
+      );
+    } else {
+      lines.push(
+        `Your ${left} remaining day${left === 1 ? "" : "s"} on ${SKU_SWITCHER_LABEL[row.sku!]} are credited to the new plan${credit > 0 ? ` — ${credit} extra day${credit === 1 ? "" : "s"}` : ""}${until ? `, so your first period runs to ${until}` : ""}.`,
       );
     }
   }
-  return out;
+
+  if (switching && liveBankedDays(row) > 0) lines.push(bankedLine(liveBankedDays(row)));
+
+  return { kind: "immediate", effectiveAt: null, chargeToday, lines };
+}
+
+function daysLeftOf(periodEnd: string | null): number {
+  if (!periodEnd) return 0;
+  const ms = new Date(periodEnd).getTime() - Date.now();
+  return ms > 0 ? Math.floor(ms / DAY) : 0;
+}
+
+/** Banked days survive a plan change (§3), so they are stated as kept. */
+function liveBankedDays(row: SubscriptionRow): number {
+  const live = !row.bankedDaysExpireAt || new Date(row.bankedDaysExpireAt).getTime() > Date.now();
+  return row.bankedDays > 0 && live ? row.bankedDays : 0;
+}
+
+function bankedLine(banked: number): string {
+  return `Your ${banked} banked day${banked === 1 ? "" : "s"} stay on your account.`;
 }
 
 function CheckoutPage() {
@@ -150,6 +202,17 @@ function CheckoutPage() {
     setPaying(true);
     setError(null);
     try {
+      // A downgrade is scheduled for the end of the paid period (§5), never
+      // charged today, so it takes its own action and its own destination.
+      if (isDeferred) {
+        await applySubscriptionAction({
+          data: { action: "schedule_plan_change", sku: intent.sku },
+        });
+        clearPlanIntent();
+        void navigate({ to: "/settings" });
+        return;
+      }
+
       await applySubscriptionAction({
         data: intent.trial
           ? { action: "start_trial", sku: intent.sku }
@@ -182,8 +245,10 @@ function CheckoutPage() {
   const sku = SKUS[intent.sku];
   const isTrial = intent.trial;
   const discount = discountPct(sku.id);
-  const losses =
-    managing && rowState === "ready" && current ? switchLosses(current, sku.id) : [];
+  const effects =
+    managing && rowState === "ready" && current ? switchEffects(current, sku.id) : null;
+  const deferred = effects?.kind === "deferred";
+  const lines = effects?.lines ?? [];
   // Managing: nothing is actionable until the row resolves.
   const rowBlocked = managing && rowState !== "ready";
 
