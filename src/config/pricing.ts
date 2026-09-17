@@ -55,6 +55,70 @@ export function isPrepaid(id: SkuId): boolean {
 }
 
 /**
+ * Total ordering over all five SKUs, used to decide upgrade vs downgrade for
+ * Cancellation Policy §5. Tier first, period length second: a tier change is
+ * what the account experiences, so `watch_annual -> pro_monthly` is an upgrade
+ * even though the period shortens, and `pro_6month -> watch_annual` is a
+ * downgrade even though the period lengthens.
+ *
+ * Deliberately NOT ranked by price or daily rate: pro_monthly costs more per
+ * month than pro_6month, so a money ordering would make dropping from a
+ * six-month plan to monthly an "upgrade" and charge for it immediately.
+ */
+const TIER_RANK: Record<Tier, number> = { watch: 0, pro: 1 };
+
+export function skuRank(id: SkuId): number {
+  return TIER_RANK[SKUS[id].tier] * 100 + SKUS[id].months;
+}
+
+/** Negative when `a` sits below `b`. Zero only for the same SKU. */
+export function compareSkus(a: SkuId, b: SkuId): number {
+  return skuRank(a) - skuRank(b);
+}
+
+/** §5: an upgrade applies immediately and credits the unused period. */
+export function isUpgrade(from: SkuId, to: SkuId): boolean {
+  return compareSkus(to, from) > 0;
+}
+
+/** §5: a downgrade takes effect at the end of the period already paid for. */
+export function isDowngrade(from: SkuId, to: SkuId): boolean {
+  return compareSkus(to, from) < 0;
+}
+
+/** What one day of a SKU costs, at its own purchase total. */
+export function dailyRate(id: SkuId): number {
+  return skuTotal(id) / periodDays(id);
+}
+
+/**
+ * §5 credit, expressed as time rather than cash: value the days left on the old
+ * plan at what was actually paid for them, then buy whole days of the new plan
+ * with that value.
+ *
+ * Always floored — a part-day is never granted, so repeated switching can only
+ * lose fractions, never inflate. Under one day left credits nothing. There is no
+ * ceiling: when the credit covers more than the new plan's first period, the
+ * caller grants the whole span and charges nothing today, because §5 forbids
+ * paying the credit out in cash and capping it would forfeit paid time.
+ */
+export function creditDays(args: {
+  from: SkuId;
+  to: SkuId;
+  daysLeft: number;
+  /** What the account actually paid for the old period; defaults to list. */
+  paidTotal?: number | null;
+}): number {
+  const { from, to, daysLeft } = args;
+  if (daysLeft <= 0) return 0;
+  const paid = args.paidTotal ?? skuTotal(from);
+  if (paid <= 0) return 0;
+  const value = (paid * Math.min(daysLeft, periodDays(from))) / periodDays(from);
+  return Math.max(0, Math.floor(value / dailyRate(to)));
+}
+
+
+/**
  * The SKU each tier's savings are measured against. Baselines differ per tier:
  * Watch measures against watch_monthly, Pro against pro_monthly.
  */

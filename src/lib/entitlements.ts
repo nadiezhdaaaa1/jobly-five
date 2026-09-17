@@ -33,6 +33,9 @@ export type Entitlements = {
   /** Days frozen by pausing a prepaid plan, and when they expire. */
   banked_days: number;
   banked_days_expire_at: string | null;
+  /** A downgrade scheduled for the end of the paid period (§5), if any. */
+  pending_sku: SkuId | null;
+  pending_sku_effective_at: string | null;
   features: Features;
 };
 
@@ -59,6 +62,8 @@ export const FREE_ENTITLEMENTS: Entitlements = {
   pause_ends_at: null,
   banked_days: 0,
   banked_days_expire_at: null,
+  pending_sku: null,
+  pending_sku_effective_at: null,
   features: NO_FEATURES,
 };
 
@@ -138,6 +143,8 @@ export async function fetchEntitlements(): Promise<Entitlements> {
     pause_ends_at: e.pause_ends_at ?? null,
     banked_days: Number(e.banked_days ?? 0) || 0,
     banked_days_expire_at: e.banked_days_expire_at ?? null,
+    pending_sku: isSkuId(e.pending_sku) ? e.pending_sku : null,
+    pending_sku_effective_at: e.pending_sku_effective_at ?? null,
     features: { ...NO_FEATURES, ...(e.features ?? {}) },
   };
 }
@@ -153,6 +160,8 @@ export function toSubscription(
     pauseEndsAt?: string | null;
     bankedDays?: number;
     bankedDaysExpireAt?: string | null;
+    pendingSku?: SkuId | null;
+    pendingSkuEffectiveAt?: string | null;
     activationSource?: string;
   } | null,
 ): Subscription {
@@ -165,6 +174,8 @@ export function toSubscription(
       pauseEndsAt: row.pauseEndsAt ?? e.pause_ends_at ?? null,
       bankedDays: row.bankedDays ?? e.banked_days,
       bankedDaysExpireAt: row.bankedDaysExpireAt ?? e.banked_days_expire_at,
+      pendingSku: row.pendingSku ?? e.pending_sku,
+      pendingSkuEffectiveAt: row.pendingSkuEffectiveAt ?? e.pending_sku_effective_at,
       activationSource: row.activationSource ?? "none",
     };
   }
@@ -176,6 +187,8 @@ export function toSubscription(
     pauseEndsAt: e.pause_ends_at ?? null,
     bankedDays: e.banked_days,
     bankedDaysExpireAt: e.banked_days_expire_at,
+    pendingSku: e.pending_sku,
+    pendingSkuEffectiveAt: e.pending_sku_effective_at,
     activationSource: "none",
   };
 }

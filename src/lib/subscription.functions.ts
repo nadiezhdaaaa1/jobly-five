@@ -4,6 +4,8 @@ import {
   SKUS,
   TRIAL_DAYS,
   TRIAL_SKU,
+  creditDays,
+  isDowngrade,
   isPrepaid,
   isSkuId,
   periodDays,
@@ -23,6 +25,8 @@ import {
 export type SubscriptionAction =
   | "start_trial"
   | "activate"
+  | "schedule_plan_change"
+  | "clear_pending_plan_change"
   | "pause"
   | "unpause"
   | "cancel_at_period_end"
@@ -43,6 +47,9 @@ export type SubscriptionRow = {
   /** Days frozen by pausing a prepaid plan, spent before the next charge. */
   bankedDays: number;
   bankedDaysExpireAt: string | null;
+  /** A downgrade scheduled for the end of the period already paid for (§5). */
+  pendingSku: SkuId | null;
+  pendingSkuEffectiveAt: string | null;
   everSubscribed: boolean;
   /** "provider" once a real billing provider owns the row; "manual_preview" today. */
   activationSource: string;
@@ -53,7 +60,8 @@ const DAY = 86_400_000;
 export const BANKED_DAYS_TTL_DAYS = 365;
 const isoIn = (ms: number) => new Date(Date.now() + ms).toISOString();
 const COLS =
-  "status, sku, purchase_price, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, banked_days, banked_days_expire_at, ever_subscribed, activation_source";
+  "status, sku, purchase_price, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, banked_days, banked_days_expire_at, pending_sku, pending_sku_effective_at, ever_subscribed, activation_source";
+
 
 function shape(row: Record<string, unknown> | null): SubscriptionRow {
   const sku = row?.["sku"];
@@ -68,6 +76,8 @@ function shape(row: Record<string, unknown> | null): SubscriptionRow {
     pauseEndsAt: (row?.["pause_ends_at"] as string | null) ?? null,
     bankedDays: Number(row?.["banked_days"] ?? 0) || 0,
     bankedDaysExpireAt: (row?.["banked_days_expire_at"] as string | null) ?? null,
+    pendingSku: isSkuId(row?.["pending_sku"]) ? (row["pending_sku"] as SkuId) : null,
+    pendingSkuEffectiveAt: (row?.["pending_sku_effective_at"] as string | null) ?? null,
     everSubscribed: Boolean(row?.["ever_subscribed"]),
     activationSource: (row?.["activation_source"] as string | null) ?? "none",
   };
@@ -87,10 +97,27 @@ function spendableBankedDays(row: SubscriptionRow): number {
   return row.bankedDays;
 }
 
+/**
+ * Apply anything that has come due before the row is read or written: a
+ * scheduled plan change on its date, a scheduled cancellation at period end, a
+ * finished trial, a renewal. Lazy on read keeps a returning account correct; the
+ * nightly sweep at /api/public/hooks/apply-plan-changes covers accounts that
+ * never open the app. Never throws — a failed reconcile must not block a read.
+ */
+async function reconcile(userId: string): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.rpc("apply_due_subscription_changes", { p_user_id: userId });
+  } catch {
+    // Leave the row as it stands; the sweep retries.
+  }
+}
+
 /** Read the caller's own subscription row (details `get_entitlements` omits). */
 export const getSubscriptionRow = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SubscriptionRow> => {
+    await reconcile(context.userId);
     const { data } = await context.supabase
       .from("subscriptions")
       .select(COLS)
@@ -112,6 +139,8 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       const allowed: SubscriptionAction[] = [
         "start_trial",
         "activate",
+        "schedule_plan_change",
+        "clear_pending_plan_change",
         "pause",
         "unpause",
         "cancel_at_period_end",
@@ -126,6 +155,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }): Promise<SubscriptionRow> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await reconcile(context.userId);
     const { data: existing } = await supabaseAdmin
       .from("subscriptions")
       .select(COLS)
@@ -136,6 +166,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       current.currentPeriodEnd && new Date(current.currentPeriodEnd).getTime() > Date.now()
         ? current.currentPeriodEnd
         : null;
+
 
     let patch: Record<string, unknown>;
     switch (data.action) {
@@ -176,13 +207,37 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           current.status === "trialing" ||
           current.status === "past_due";
         if (live && (!data.allowSkuChange || current.sku === sku)) return current;
+        // An explicit switch from one live SKU to another (Cancellation Policy §5).
+        const switching = live && current.sku !== null && current.sku !== sku;
+        // §5 defers a downgrade to the end of the paid period, so `activate` must
+        // never charge for one. `schedule_plan_change` is the only path.
+        if (switching && isDowngrade(current.sku!, sku) && current.status !== "trialing" && keepEnd) {
+          throw new Error("A downgrade takes effect at the end of the paid period");
+        }
+        // §5 credit: value the days left at what was paid for them and buy whole
+        // days of the new plan. A trial has no paid days, so it credits nothing.
+        const credit = switching
+          ? creditDays({
+              from: current.sku!,
+              to: sku,
+              daysLeft: current.status === "trialing" ? 0 : daysLeft(current.currentPeriodEnd),
+              paidTotal: current.purchasePrice,
+            })
+          : 0;
         // Keep the paid period when the SKU is unchanged. Rows written before
         // `sku` existed carry NULL and count as matching, so re-activating them
         // must not reset the period they already paid for.
         const keepSame = current.sku === null || current.sku === sku ? keepEnd : null;
-        // Banked days are spent before the next charge.
+        // Banked days are spent before the next charge — but only on the same
+        // SKU. A switch is not a resume, so §3 leaves them banked untouched.
         const banked = current.sku === sku || current.sku === null ? spendableBankedDays(current) : 0;
-        const base = keepSame ?? isoIn(span);
+        // When the credit covers more than the new plan's own period, the whole
+        // credit is granted as one first period and nothing is charged today:
+        // §5 forbids paying it out, and capping it would forfeit paid time.
+        const creditCoversPeriod = credit >= periodDays(sku);
+        const base =
+          keepSame ??
+          isoIn(creditCoversPeriod ? credit * DAY : span + credit * DAY);
         const end = banked > 0 ? new Date(new Date(base).getTime() + banked * DAY).toISOString() : base;
         patch = {
           status: "active",
@@ -201,11 +256,49 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           current_period_end: end,
           banked_days: banked > 0 ? 0 : current.bankedDays,
           banked_days_expire_at: banked > 0 ? null : current.bankedDaysExpireAt,
+          // An upgrade supersedes any downgrade the account had scheduled.
+          pending_sku: null,
+          pending_sku_effective_at: null,
           ever_subscribed: true,
           activation_source: "manual_preview",
         };
         break;
       }
+      case "schedule_plan_change": {
+        // §5: "when you downgrade, the change takes effect at the end of the
+        // period you have already paid for". Nothing is charged here.
+        const sku = data.sku;
+        if (!sku) throw new Error("No plan given");
+        const live =
+          current.status === "active" ||
+          current.status === "trialing" ||
+          current.status === "past_due";
+        if (!live || current.sku === null) throw new Error("There is no live plan to change");
+        if (current.sku === sku) return current;
+        if (!isDowngrade(current.sku, sku)) {
+          throw new Error("An upgrade takes effect immediately, not at period end");
+        }
+        if (current.status === "trialing" || !keepEnd) {
+          throw new Error("There is no paid period to defer to");
+        }
+        patch = {
+          // The account stays on what it paid for until the date arrives.
+          status: "active",
+          plan: SKUS[current.sku].tier,
+          sku: current.sku,
+          cancel_at_period_end: false,
+          canceled_at: null,
+          current_period_end: keepEnd,
+          pending_sku: sku,
+          pending_sku_effective_at: keepEnd,
+          ever_subscribed: true,
+        };
+        break;
+      }
+      case "clear_pending_plan_change":
+        patch = { pending_sku: null, pending_sku_effective_at: null };
+        break;
+
       case "pause": {
         // Already paused: no-op, so re-clicking can never extend a pause or
         // credit the same days twice.
@@ -230,6 +323,11 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           banked_days: carried + bankable,
           banked_days_expire_at:
             carried + bankable > 0 ? isoIn(BANKED_DAYS_TTL_DAYS * DAY) : null,
+          // The paid period ends here, so a change scheduled for its old end
+          // date has nothing left to defer to.
+          pending_sku: null,
+          pending_sku_effective_at: null,
+
           ever_subscribed: true,
           activation_source:
             current.activationSource === "none" ? "manual_preview" : current.activationSource,
@@ -278,6 +376,9 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           plan: current.sku ? SKUS[current.sku].tier : "pro",
           cancel_at_period_end: true,
           current_period_end: keepEnd ?? isoIn(periodDays(current.sku ?? TRIAL_SKU) * DAY),
+          // Cancelling wins over a scheduled plan change: the two cannot coexist.
+          pending_sku: null,
+          pending_sku_effective_at: null,
           ever_subscribed: true,
         };
         break;
@@ -290,8 +391,11 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           paused_at: null,
           pause_ends_at: null,
           current_period_end: new Date().toISOString(),
+          pending_sku: null,
+          pending_sku_effective_at: null,
         };
         break;
+
       case "set_ever_subscribed":
         patch = { ever_subscribed: Boolean(data.everSubscribed) };
         break;

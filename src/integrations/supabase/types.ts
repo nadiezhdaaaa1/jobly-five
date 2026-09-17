@@ -704,6 +704,8 @@ export type Database = {
           ever_subscribed: boolean
           pause_ends_at: string | null
           paused_at: string | null
+          pending_sku: Database["public"]["Enums"]["subscription_sku"] | null
+          pending_sku_effective_at: string | null
           plan: string
           purchase_price: number | null
           sku: Database["public"]["Enums"]["subscription_sku"] | null
@@ -728,6 +730,8 @@ export type Database = {
           ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
+          pending_sku?: Database["public"]["Enums"]["subscription_sku"] | null
+          pending_sku_effective_at?: string | null
           plan?: string
           purchase_price?: number | null
           sku?: Database["public"]["Enums"]["subscription_sku"] | null
@@ -752,6 +756,8 @@ export type Database = {
           ever_subscribed?: boolean
           pause_ends_at?: string | null
           paused_at?: string | null
+          pending_sku?: Database["public"]["Enums"]["subscription_sku"] | null
+          pending_sku_effective_at?: string | null
           plan?: string
           purchase_price?: number | null
           sku?: Database["public"]["Enums"]["subscription_sku"] | null
@@ -909,6 +915,11 @@ export type Database = {
     }
     Functions: {
       active_tier: { Args: { p_user_id: string }; Returns: string }
+      apply_all_due_subscription_changes: { Args: never; Returns: number }
+      apply_due_subscription_changes: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       can_send: {
         Args: {
           p_channel: Database["public"]["Enums"]["consent_channel"]
@@ -932,6 +943,18 @@ export type Database = {
         Returns: undefined
       }
       purge_auth_attempts: { Args: never; Returns: number }
+      sku_period_days: {
+        Args: { p_sku: Database["public"]["Enums"]["subscription_sku"] }
+        Returns: number
+      }
+      sku_tier: {
+        Args: { p_sku: Database["public"]["Enums"]["subscription_sku"] }
+        Returns: string
+      }
+      sku_total: {
+        Args: { p_sku: Database["public"]["Enums"]["subscription_sku"] }
+        Returns: number
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
