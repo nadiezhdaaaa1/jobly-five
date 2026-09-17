@@ -1806,6 +1806,30 @@ export const VS_INDEX = {
       blurb:
         "Sonara auto-applies to jobs on your behalf, aiming for volume — Jobly gives you a small daily shortlist and leaves the decision to apply with you.",
     },
+    {
+      slug: "glassdoor",
+      label: "Jobly vs. Glassdoor",
+      blurb:
+        "Glassdoor is a research tool with a job board attached — you go there to decide whether a company is worth working for, while Jobly decides which roles reach you in the first place.",
+    },
+    {
+      slug: "teal",
+      label: "Jobly vs. Teal",
+      blurb:
+        "Teal is a tracker with a resume builder attached, built for what happens after you've found something worth applying to — Jobly's centre of gravity is the finding.",
+    },
+    {
+      slug: "welcome-to-the-jungle",
+      label: "Jobly vs. Welcome to the Jungle",
+      blurb:
+        "Welcome to the Jungle curates tech and startup roles on a platform you browse, built around rich company profiles — Jobly is a single daily email with no culture content and no industry focus.",
+    },
+    {
+      slug: "injobs",
+      label: "Jobly vs. inJobs",
+      blurb:
+        "inJobs scores roles against your profile and can submit the applications on your behalf — Jobly scores them too, and leaves the applying with you.",
+    },
   ],
   closing:
     "Pick whichever one you're already using. Each comparison covers where the two overlap and where they don't — an autofill extension and a matching tool aren't competing for the same job.",
