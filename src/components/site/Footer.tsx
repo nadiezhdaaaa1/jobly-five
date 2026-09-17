@@ -107,8 +107,11 @@ export function Footer() {
   return (
     <footer className="bg-[color:var(--color-background)] px-0 md:px-12">
       <div className="border-[color:var(--color-border)] md:border-l md:border-r">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start px-5 pt-24 pb-14 md:px-8 md:pt-26">
-          <div className="grid w-full gap-10 lg:grid-cols-[348.73px_747.27px]">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start px-5 pt-14 pb-14 md:px-8 md:pt-24 lg:pt-26">
+          {/* Proportional track (~348.73 : 747.27 of the 1200px frame) so the
+              block shrinks instead of clipping; collapses below lg. */}
+          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,29.06fr)_minmax(0,62.27fr)]">
+
             {/* Brand column */}
             <div className="flex flex-col items-start">
               <div className="flex h-[45px] items-center">
@@ -154,22 +157,24 @@ export function Footer() {
             </div>
 
             {/* Links block: four sub-columns */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-4 lg:flex lg:gap-4">
-              <div className="lg:flex-1 lg:min-w-0">
+            {/* One column on mobile, 2x2 at tablet, four across at desktop. */}
+            <div className="grid w-full min-w-0 grid-cols-1 gap-x-4 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
+              <div className="min-w-0">
                 <LinkGroup group={COMPANY} />
               </div>
-              <div className="lg:flex-1 lg:min-w-0">
+              <div className="min-w-0">
                 <LinkGroup group={LEGAL} />
               </div>
-              <div className="flex flex-col gap-6 lg:flex-1 lg:min-w-0">
+              <div className="flex min-w-0 flex-col gap-6">
                 <LinkGroup group={GUIDES} />
                 <LinkGroup group={FEATURES} />
                 <LinkGroup group={TOOLS} />
               </div>
-              <div className="lg:flex-1 lg:min-w-0">
+              <div className="min-w-0">
                 <LinkGroup group={COMPARE} />
               </div>
             </div>
+
           </div>
 
           <div className="w-full pt-12">
