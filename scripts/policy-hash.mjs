@@ -16,6 +16,12 @@ export function hashDoc(doc) {
   for (const block of doc.body) {
     if (block.type === "table") {
       parts.push("table", block.headers.join("|"), ...block.rows.map((r) => r.join("|")));
+    } else if (block.type === "ul") {
+      // Bullets carry text in `items`, not `text`: hashing block.text here made
+      // every list invisible to drift detection.
+      parts.push("ul", block.items.join("|"));
+    } else if (block.type === "address") {
+      parts.push("address", block.lines.join("|"));
     } else {
       parts.push(block.type, block.text);
     }
@@ -24,7 +30,7 @@ export function hashDoc(doc) {
 }
 
 if (process.argv[1]?.endsWith("policy-hash.mjs")) {
-  for (const key of ["terms", "privacy", "cookies", "billing"]) {
+  for (const key of ["terms", "privacy", "cookies", "billing", "cancellation", "email", "disclaimer", "dmca"]) {
     console.log(key, LEGAL_DOCS[key].lastUpdated, hashDoc(LEGAL_DOCS[key]));
   }
 }
