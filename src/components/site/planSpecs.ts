@@ -316,13 +316,19 @@ export const PLAN_FEATURES: Record<SkuId, string[]> = {
  * The bullets a given surface may show. On /settings a non-trialing Pro monthly
  * account must not be told its trial is running, so the two trial bullets are
  * dropped in favour of the standard cancel/renewal notes. The switch bullet is
- * dropped too: with no switch CTA on a live plan, the account must not be
- * promised a switch it cannot perform. The recurring price is not repeated here
- * — the card's own disclosure line already states it.
+ * kept: Cancellation Policy §5 is implemented, so a live plan really can change
+ * — an upgrade credits the unused period, a downgrade waits for period end. The
+ * recurring price is not repeated here — the card's own disclosure line already
+ * states it.
  */
 export function planFeatures(sku: SkuId, options?: PlanCopyOptions): string[] {
   if (sku === TRIAL_SKU && isManage(options) && options?.trialing !== true) {
-    return ["Everything in Pro, month to month", cancelAnyTime, renewalNotice];
+    return [
+      "Everything in Pro, month to month",
+      "Switch to a longer plan whenever you like",
+      cancelAnyTime,
+      renewalNotice,
+    ];
   }
 
   return PLAN_FEATURES[sku];

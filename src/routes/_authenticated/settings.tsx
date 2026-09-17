@@ -45,6 +45,7 @@ import {
 } from "@/config/pricing";
 import { PlanPaywall, type PaywallCta } from "@/components/site/PlanPaywall";
 import { SKU_SWITCHER_LABEL, type PlanCardSpec } from "@/components/site/planSpecs";
+import { isDowngrade } from "@/config/pricing";
 import { toast } from "sonner";
 import { acceptPolicies, billingTermsAccepted } from "@/lib/policy-consent.functions";
 import { DELETION_COPY, deletionDateFrom, formatDeletionDate } from "@/config/account";
