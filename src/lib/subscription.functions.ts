@@ -323,6 +323,11 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           banked_days: carried + bankable,
           banked_days_expire_at:
             carried + bankable > 0 ? isoIn(BANKED_DAYS_TTL_DAYS * DAY) : null,
+          // The paid period ends here, so a change scheduled for its old end
+          // date has nothing left to defer to.
+          pending_sku: null,
+          pending_sku_effective_at: null,
+
           ever_subscribed: true,
           activation_source:
             current.activationSource === "none" ? "manual_preview" : current.activationSource,
