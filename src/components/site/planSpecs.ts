@@ -200,17 +200,41 @@ export type PlanCopyOptions = {
   context?: PlanCopyContext;
   /** True only when the viewing account is genuinely inside its trial. */
   trialing?: boolean;
+  /**
+   * Whether a free trial can actually be granted to this viewer. Defaults to
+   * true, so the purchase surfaces (landing, /matches, anonymous visitors) are
+   * unchanged. A caller that knows the account has already had Pro passes
+   * false: `start_trial` refuses a second trial, so the offer is unhonourable.
+   */
+  trialEligible?: boolean;
 };
 
 const isManage = (o?: PlanCopyOptions) => o?.context === "manage";
-/** Trial copy is legal only on the one trial SKU, and only while trialing. */
+/**
+ * Trial copy is legal only on the one trial SKU, only while trialing on a
+ * manage surface, and never for an account the server would charge at once.
+ */
 const showsTrial = (sku: SkuId, o?: PlanCopyOptions) =>
-  sku === TRIAL_SKU && (!isManage(o) || o?.trialing === true);
+  sku === TRIAL_SKU &&
+  o?.trialEligible !== false &&
+  (!isManage(o) || o?.trialing === true);
 
 /** One spec per flat SKU. The paywall renders exactly one of these at a time. */
 export function planSpec(sku: SkuId, options?: PlanCopyOptions): PlanCardSpec {
   const base = baseSpec(sku);
-  if (!isManage(options)) return base;
+  if (!isManage(options)) {
+    // A purchase surface showing the trial SKU to an ineligible account states
+    // the plain charge instead — same price, no promise we cannot keep.
+    if (sku === TRIAL_SKU && !showsTrial(sku, options)) {
+      return {
+        ...base,
+        subLine: `${usd(skuTotal(sku))} billed today`,
+        cta: "Get Pro monthly",
+        disclosure: `Charged today. ${renewalPhrase(sku)} until cancelled`,
+      };
+    }
+    return base;
+  }
   // Manage context: no charge happens today, so restate the recurring charge.
   // Every string is derived — renewalPhrase / skuTotal / perMonth only.
   return {
@@ -322,7 +346,9 @@ export const PLAN_FEATURES: Record<SkuId, string[]> = {
  * states it.
  */
 export function planFeatures(sku: SkuId, options?: PlanCopyOptions): string[] {
-  if (sku === TRIAL_SKU && isManage(options) && options?.trialing !== true) {
+  // The two trial bullets are dropped wherever the trial cannot be granted:
+  // a non-trialing account on /settings, and any account that has had Pro.
+  if (sku === TRIAL_SKU && !showsTrial(sku, options)) {
     return [
       "Everything in Pro, month to month",
       "Switch to a longer plan whenever you like",

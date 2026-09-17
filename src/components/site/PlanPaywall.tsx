@@ -377,6 +377,7 @@ export function PlanPaywall({
   ctaOverride,
   context = "purchase",
   trialing = false,
+  trialEligible = true,
   showSharedDisclosure = true,
 }: {
   onSelect: (card: PlanCardSpec) => void;
@@ -395,11 +396,15 @@ export function PlanPaywall({
   /** Only meaningful with context="manage": whether the viewing account really
    *  is inside its trial. Defaults to false, so trial copy never appears. */
   trialing?: boolean;
+  /** Whether a trial can still be granted. Defaults to true, so the purchase
+   *  surfaces are unchanged; a caller that knows the account has already had
+   *  Pro passes false and the card states the plain charge instead. */
+  trialEligible?: boolean;
   /** The shared auto-renewal line. On by default for the purchase surfaces. */
   showSharedDisclosure?: boolean;
 }) {
   const [sku, setSku] = useState<SkuId>(initialSku ?? PAYWALL_DEFAULT_SKU);
-  const copy: PlanCopyOptions = { context, trialing };
+  const copy: PlanCopyOptions = { context, trialing, trialEligible };
   const spec = planSpec(sku, copy);
 
   return (

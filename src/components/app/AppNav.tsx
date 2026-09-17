@@ -39,7 +39,11 @@ export function AppHeader({ active, hasNewDigest = true }: { active: AppTab; has
         {planReady && !badge ? (
           <Link
             to="/settings"
-            className="group hidden md:inline-flex relative h-9 w-[120px] items-center overflow-hidden rounded-[14px] bg-[color:var(--color-main-accent)] pl-4 pr-14 text-[14px] font-medium text-[color:var(--on-main-accent)] hover:bg-[color:var(--main-accent-hover)]"
+            /* Design-system accent button. The class ships radius 14; at a
+               measured 36px height the ladder says 12, so it is overridden
+               inline (the class is unlayered, so inline wins). */
+            className="group hidden md:inline-flex relative w-[132px] items-center overflow-hidden main_accent_button main_accent_button--on-light button-small"
+            style={{ borderRadius: 12, height: 36, fontSize: 14, padding: "0 52px 0 16px" }}
           >
             <span>Go Pro</span>
             <img

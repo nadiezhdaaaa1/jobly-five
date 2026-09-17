@@ -914,8 +914,10 @@ function TrackerScreen() {
               <Link
                 data-tu-btn
                 to="/settings"
-                className="relative inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-[12px] border border-[#00F1A9] bg-[#00F1A9] text-[#090B0C] hover:bg-[color:var(--color-accent-hover)]"
-                style={{ zIndex: 2, padding: "13px 17px", fontSize: 14, lineHeight: "20px", fontWeight: 400 }}
+                /* Design-system accent button; 46px rendered height sits at
+                   radius 12 on the ladder, overridden inline over the class. */
+                className="relative shrink-0 inline-flex items-center justify-center whitespace-nowrap main_accent_button main_accent_button--on-light button-small"
+                style={{ zIndex: 2, borderRadius: 12, height: 46, padding: "0 17px", fontSize: 14, justifyContent: "center" }}
               >
                 Upgrade to Pro
               </Link>

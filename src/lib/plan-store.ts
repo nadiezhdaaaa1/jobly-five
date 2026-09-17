@@ -59,6 +59,18 @@ export function resolvePlan(sub: Subscription, now: number = Date.now()): Plan {
   return tier === "none" ? "free" : tier;
 }
 
+/**
+ * Which SKU the account is on RIGHT NOW, or null when it is on none.
+ * `sku` on the row is history: it survives cancellation, so it must never be
+ * read directly to answer "which plan am I on". A pause keeps the plan (it
+ * grants nothing but is still owned), so a paused account still has its SKU.
+ */
+export function resolveCurrentSku(sub: Subscription, now: number = Date.now()): SkuId | null {
+  if (!sub.sku) return null;
+  if (sub.status === "paused") return sub.sku;
+  return resolveIsLive(sub, now) ? sub.sku : null;
+}
+
 function defaultSub(): Subscription {
   // Unknown state must resolve to Free — never a paid tier.
   return {

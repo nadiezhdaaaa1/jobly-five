@@ -1,28 +1,27 @@
-// First-run gate for the signed-in app. Both paid plans include everything, so
-// an account without a subscription has nothing to see behind here yet.
+// First-run gate for the signed-in app. This gate has ONE job: making sure the
+// account has answered the quiz, because the app is meaningless without those
+// answers. It is deliberately NOT a paywall.
 //
-// Order matters: preferences first (the app is meaningless without them), then
-// the plan. The server still decides what the account may read — this only
-// stops a signed-in user landing on an empty app.
+// Having no plan is not a reason to be bounced out of a page. An account without
+// a subscription still gets the weekly digest under our published Subscription
+// and Billing Terms, so each page decides for itself what it withholds and
+// shows its own in-page upsell where an entitlement really says no
+// (see /tracker). Keep the two concerns apart: someone mid-onboarding must see
+// the quiz, never a paywall.
 //
-// Nothing renders until the decision resolves, and an unreadable entitlement is
-// treated as no access: showing the app shell first and redirecting after would
-// leave an unpaid account inside it whenever that read fails.
+// The server still decides what the account may read; this only stops a signed-in
+// user landing on an app with no preferences behind it.
 
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { IconLoader2 as Loader2 } from "@tabler/icons-react";
 
 import { useEntitlements } from "@/lib/entitlements-provider";
-import { hasPlanStatus } from "@/lib/entitlements";
-import { readPlanIntent } from "@/lib/onboarding/planIntent";
-import { CHECKOUT_PATH } from "@/lib/onboarding/usePlanFlow";
 import { getDraftToken } from "@/lib/quiz-draft-store";
 
-// "This account is with us right now" — the shared list in @/lib/entitlements.
 /** How many times we re-read entitlements while a draft is still being claimed. */
 const CLAIM_RETRIES = 6;
-/** Where an account with no access goes to pay. */
+/** Settings is always reachable: it is where a plan is bought or fixed. */
 const PLAN_PATH = "/settings";
 
 export function OnboardingGate({ children }: { children: React.ReactNode }) {
@@ -31,8 +30,6 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
   const claimWaits = useRef(0);
 
-  // Settings stays reachable so a paused, past-due or unpaid account can fix
-  // itself — it is where the plan is bought.
   const onPlanPage = pathname.startsWith(PLAN_PATH);
   const claiming =
     !loading &&
@@ -40,16 +37,14 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
     !entitlements.onboarded &&
     Boolean(getDraftToken()) &&
     claimWaits.current < CLAIM_RETRIES;
-  const settled =
-    !loading && !error && entitlements.onboarded && hasPlanStatus(entitlements.status);
+  // Onboarding only. Plan status is deliberately absent from this condition.
+  const settled = !loading && (error || entitlements.onboarded);
 
   useEffect(() => {
     if (loading) return;
-    if (error) {
-      // Unknown state is no access, never access.
-      if (!onPlanPage) void navigate({ to: PLAN_PATH, replace: true });
-      return;
-    }
+    // An unreadable entitlement resolves to Free everywhere, so the pages
+    // themselves withhold what they must. Nothing to redirect for.
+    if (error) return;
     if (onPlanPage) return;
 
     if (!entitlements.onboarded) {
@@ -64,16 +59,12 @@ export function OnboardingGate({ children }: { children: React.ReactNode }) {
       void navigate({ to: "/quiz", replace: true });
       return;
     }
-    if (!hasPlanStatus(entitlements.status)) {
-      // A saved decision resumes at checkout; otherwise the plan card in
-      // Settings is where they pay.
-      void navigate({ to: readPlanIntent() ? CHECKOUT_PATH : PLAN_PATH, replace: true });
-    }
     return;
   }, [entitlements, loading, error, navigate, onPlanPage, refetch]);
 
   if (onPlanPage && !loading) return <>{children}</>;
   if (settled && !claiming) return <>{children}</>;
+
 
   return (
     <main className="grid min-h-screen place-items-center" aria-busy="true">
