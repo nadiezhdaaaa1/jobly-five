@@ -1759,10 +1759,12 @@ export function getVsPage(slug: string): VsPage | undefined {
  */
 export const VS_INDEX = {
   published: false,
-  // Supplied meta title (54 chars) and meta description (151 chars) — used verbatim.
+  // Supplied meta title (51 chars) and meta description (153 chars) — used verbatim.
+  // The description's count ("five more") is coupled to `items` below: if the entry
+  // list changes length, this line must be rewritten to match.
   metaTitle: "Jobly vs. Other Job Search Tools — Compared | Jobly",
   metaDescription:
-    "Job search tools compared: how Jobly's daily match digest differs from LinkedIn, Indeed, ZipRecruiter, Jobright and the autofill tools people use with it.",
+    "Job search tools compared: how Jobly's daily digest differs from LinkedIn, Indeed, Glassdoor, Jobright, Teal and five more, and which ones stack with it.",
   h1: "Job search tools compared",
   intro: [
     "Most job search tools cover one stage: finding roles, applying faster, or looking better to recruiters. They overlap less than the category name suggests, which is why most people run two or three at once rather than picking a winner.",
