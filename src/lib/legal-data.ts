@@ -3,7 +3,9 @@ export type LegalBlock =
   | { type: "h3"; text: string }
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "table"; headers: string[]; rows: string[][] };
+  | { type: "table"; headers: string[]; rows: string[][] }
+  // Same words, laid out as an address: one line per line of the company block.
+  | { type: "address"; lines: string[] };
 
 export type LegalDoc = {
   slug: "terms" | "privacy" | "billing" | "cancellation" | "cookies" | "email" | "disclaimer" | "dmca";
@@ -64,7 +66,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "17. Miscellaneous" },
       { type: "p", text: "These Terms, together with the incorporated policies, are the entire agreement between you and us regarding the Service. If any provision is held unenforceable, the remaining provisions remain in effect. Our failure to enforce a provision is not a waiver. Section headings are for convenience only and do not affect the interpretation of these Terms. You may not assign these Terms without our consent; we may assign them in connection with a merger, acquisition, or sale of assets." },
       { type: "h2", text: "18. Contact" },
-      { type: "p", text: "NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569. Questions: hello@jobly.careers." },
+      { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569", "Questions: hello@jobly.careers."] },
     ],
   },
   privacy: {
@@ -128,7 +130,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "11. Changes to this Policy" },
       { type: "p", text: "We may update this Policy. We will post the new version with an updated date and, for material changes, provide additional notice and ask you to accept it. We treat only your affirmative acceptance as agreement — continued use alone is not acceptance." },
       { type: "h2", text: "12. Contact" },
-      { type: "p", text: "NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569. Privacy contact: privacy@jobly.careers." },
+      { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569", "Privacy contact: privacy@jobly.careers."] },
     ],
   },
   billing: {
@@ -171,7 +173,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "9. Refunds" },
       { type: "p", text: "Subscription fees are not refundable. See the Cancellation Policy for the full position, including the statutory rights that are not affected by it." },
       { type: "h2", text: "10. Contact" },
-      { type: "p", text: "Billing questions: hello@jobly.careers. NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569." },
+      { type: "address", lines: ["Billing questions: hello@jobly.careers.", "NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569"] },
     ],
   },
   cancellation: {
@@ -214,7 +216,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "9. Chargebacks" },
       { type: "p", text: "If you think a charge is wrong, contact us first at hello@jobly.careers and we will review the issue promptly. We may suspend access to paid features while a payment dispute is being investigated." },
       { type: "h2", text: "10. Contact" },
-      { type: "p", text: "NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569. Billing: hello@jobly.careers." },
+      { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569", "Billing: hello@jobly.careers."] },
     ],
   },
   cookies: {
@@ -228,12 +230,17 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "p", text: "Jobly does not set cookies, and we do not use analytics tools, session recording, heatmaps, advertising pixels, or attribution SDKs. There is therefore no consent banner and nothing to switch off." },
       { type: "h2", text: "2. Strictly necessary browser storage we do use" },
       { type: "p", text: "Instead of cookies, the Service stores a small amount of data in your browser’s local and session storage. This storage is strictly necessary: without it you could not stay signed in or keep your progress." },
-      { type: "ul", items: [
-        "Sign-in session (Supabase auth) — keeps you signed in and refreshes your session securely. Kept until you sign out or the session expires.",
-        "Onboarding quiz draft token — lets you leave and return to the onboarding quiz without losing your answers. Kept until the quiz is completed or you clear your browser storage.",
-        "Cached profile, plan, and tracker data — shows your own saved data instantly on page load instead of a blank screen; cleared when you sign out or switch accounts.",
-        "Interface state — remembers small view preferences such as scroll position and expanded panels. Kept until you clear your browser storage.",
-      ] },
+      // The source supplies these four entries as prose bullets. The wording of
+      // every cell is the source's own, split at its existing punctuation only;
+      // a storage disclosure reads as a table, so that is how it is laid out.
+      { type: "table",
+        headers: ["What is stored", "Why", "How long"],
+        rows: [
+          ["Sign-in session (Supabase auth)", "keeps you signed in and refreshes your session securely.", "Kept until you sign out or the session expires."],
+          ["Onboarding quiz draft token", "lets you leave and return to the onboarding quiz without losing your answers.", "Kept until the quiz is completed or you clear your browser storage."],
+          ["Cached profile, plan, and tracker data", "shows your own saved data instantly on page load instead of a blank screen;", "cleared when you sign out or switch accounts."],
+          ["Interface state", "remembers small view preferences such as scroll position and expanded panels.", "Kept until you clear your browser storage."],
+        ] },
       { type: "h2", text: "3. Third-party requests" },
       { type: "p", text: "Our pages load typefaces from Google Fonts, which means your browser makes a request to Google’s servers. That request does not set cookies on our behalf and we receive no analytics from it. Everything else is served from our own infrastructure." },
       { type: "h2", text: "4. Managing this storage" },
@@ -241,7 +248,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "5. If this changes" },
       { type: "p", text: "If we introduce analytics, advertising, or any other non-essential cookies or similar technologies, we will ask for your consent first where consent is required, update this Policy with a new date, and add controls for managing your choices." },
       { type: "h2", text: "6. Contact" },
-      { type: "p", text: "NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569. Questions: privacy@jobly.careers." },
+      { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569", "Questions: privacy@jobly.careers."] },
     ],
   },
   email: {
@@ -268,7 +275,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "7. Deliverability providers" },
       { type: "p", text: "Emails are sent through Postmark, acting as our processor, as described in the Privacy Policy. Digest and transactional email is sent from alerts@jobly.careers and no-reply@jobly.careers." },
       { type: "h2", text: "8. Contact" },
-      { type: "p", text: "Questions about communications: privacy@jobly.careers or hello@jobly.careers. Sender: NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569." },
+      { type: "p", text: "Questions about communications: privacy@jobly.careers or hello@jobly.careers." }, { type: "address", lines: ["Sender:", "NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569"] },
     ],
   },
   disclaimer: {
@@ -292,7 +299,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "7. Limitation of liability" },
       { type: "p", text: "To the maximum extent permitted by law, Jobly is not liable for any loss or damage arising from your reliance on any Output or listing, from fraudulent or inaccurate listings, or from any employer’s conduct. This Disclaimer supplements, and is subject to, the limitation of liability in our Terms of Service." },
       { type: "h2", text: "8. Contact" },
-      { type: "p", text: "NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569. Questions: hello@jobly.careers." },
+      { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569", "Questions: hello@jobly.careers."] },
     ],
   },
   dmca: {
@@ -305,7 +312,11 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "1. Our policy" },
       { type: "p", text: "We respond to claims of copyright infringement in accordance with the Digital Millennium Copyright Act (DMCA), 17 U.S.C. § 512. This policy describes how to report alleged infringement, how we respond, how to file a counter-notice, and our policy for repeat infringers. Users should upload only content that they own or are otherwise authorised to use." },
       { type: "h2", text: "2. Designated agent" },
-      { type: "p", text: "If you believe content on the Service infringes your copyright, send a notice to dmca@jobly.careers. Your notice must contain the information required by 17 U.S.C. § 512(c)(3)." },
+      { type: "p", text: "If you believe content on the Service infringes your copyright, send a notice to:" },
+      // The takedown address must be findable at a glance, so it stands on its
+      // own line. Same words as the source; only the sentence break moves.
+      { type: "address", lines: ["dmca@jobly.careers"] },
+      { type: "p", text: "Your notice must contain the information required by 17 U.S.C. § 512(c)(3)." },
       { type: "h2", text: "3. Filing a notice of infringement" },
       { type: "p", text: "To be effective, your notice must include all of the following:" },
       { type: "ul", items: [
@@ -341,7 +352,7 @@ export const LEGAL_DOCS: Record<LegalDoc["slug"], LegalDoc> = {
       { type: "h2", text: "10. Changes to this Policy" },
       { type: "p", text: "We may update this DMCA Policy from time to time. We will post updates on this page and update the “Last updated” date." },
       { type: "h2", text: "11. Contact" },
-      { type: "p", text: "DMCA notices: dmca@jobly.careers. Other IP matters: legal@jobly.careers. General: hello@jobly.careers. NORELIX LIMITED · trading as Jobly, The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland. Company No. 817569." },
+      { type: "p", text: "DMCA notices: dmca@jobly.careers. Other IP matters: legal@jobly.careers. General: hello@jobly.careers." }, { type: "address", lines: ["NORELIX LIMITED · trading as Jobly", "The Black Church, St Mary’s Place, Dublin 7, D07 P4AX, Ireland", "Company No. 817569"] },
     ],
   },
 };
