@@ -33,6 +33,7 @@ import { Route as LegalEmailRouteImport } from './routes/legal.email'
 import { Route as LegalDmcaRouteImport } from './routes/legal.dmca'
 import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
+import { Route as LegalCancellationRouteImport } from './routes/legal.cancellation'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
 import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -170,6 +171,11 @@ const LegalCookiesRoute = LegalCookiesRouteImport.update({
   path: '/legal/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalCancellationRoute = LegalCancellationRouteImport.update({
+  id: '/legal/cancellation',
+  path: '/legal/cancellation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalBillingRoute = LegalBillingRouteImport.update({
   id: '/legal/billing',
   path: '/legal/billing',
@@ -283,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
+  '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/dmca': typeof LegalDmcaRoute
@@ -325,6 +332,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
+  '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/dmca': typeof LegalDmcaRoute
@@ -369,6 +377,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
   '/legal/billing': typeof LegalBillingRoute
+  '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/disclaimer': typeof LegalDisclaimerRoute
   '/legal/dmca': typeof LegalDmcaRoute
@@ -413,6 +422,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/rss.xml'
     | '/legal/billing'
+    | '/legal/cancellation'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/dmca'
@@ -455,6 +465,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/rss.xml'
     | '/legal/billing'
+    | '/legal/cancellation'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/dmca'
@@ -498,6 +509,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/blog/rss.xml'
     | '/legal/billing'
+    | '/legal/cancellation'
     | '/legal/cookies'
     | '/legal/disclaimer'
     | '/legal/dmca'
@@ -537,6 +549,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   BlogRssDotxmlRoute: typeof BlogRssDotxmlRoute
   LegalBillingRoute: typeof LegalBillingRoute
+  LegalCancellationRoute: typeof LegalCancellationRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
   LegalDisclaimerRoute: typeof LegalDisclaimerRoute
   LegalDmcaRoute: typeof LegalDmcaRoute
@@ -730,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalCookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/cancellation': {
+      id: '/legal/cancellation'
+      path: '/legal/cancellation'
+      fullPath: '/legal/cancellation'
+      preLoaderRoute: typeof LegalCancellationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/billing': {
       id: '/legal/billing'
       path: '/legal/billing'
@@ -887,6 +907,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BlogRssDotxmlRoute: BlogRssDotxmlRoute,
   LegalBillingRoute: LegalBillingRoute,
+  LegalCancellationRoute: LegalCancellationRoute,
   LegalCookiesRoute: LegalCookiesRoute,
   LegalDisclaimerRoute: LegalDisclaimerRoute,
   LegalDmcaRoute: LegalDmcaRoute,

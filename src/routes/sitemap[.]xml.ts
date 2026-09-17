@@ -40,7 +40,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/legal/privacy", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/cookies", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/billing", changefreq: "yearly", priority: "0.3" },
-          { path: "/legal/refund", changefreq: "yearly", priority: "0.3" },
+          { path: "/legal/cancellation", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/email", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/dmca", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/disclaimer", changefreq: "yearly", priority: "0.3" },
