@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 /** Only these policy documents map onto a consent channel we can record. */
-export const RECONSENT_CHANNELS = ["terms", "privacy", "billing_terms"] as const;
+export const RECONSENT_CHANNELS = ["terms", "privacy", "billing_terms", "cancellation"] as const;
 export type ReconsentChannel = (typeof RECONSENT_CHANNELS)[number];
 
 export type ReconsentItem = {
