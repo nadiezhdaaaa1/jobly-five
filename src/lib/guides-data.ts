@@ -231,10 +231,11 @@ export const GUIDES: Guide[] = [
   {
     slug: "ai-job-matching",
     title: "What Is AI Job Matching, and How Does It Work?",
-    // Supplied meta title (56 chars) and meta description (157 chars) — used verbatim.
+    // Supplied meta title and meta description — used verbatim. Description replaced 2026-09-17
+    // (measured 160 chars, no margin) with this measured 151-char string. Deck unchanged.
     metaTitle: "What Is AI Job Matching and How Does It Work? | Jobly",
     metaDescription:
-      "How AI job matching works, how it differs from keyword search, what a match score actually measures, and how to tell a real matching app from a marketing label.",
+      "How AI job matching works, how it differs from keyword search, what a match score measures, and how to tell a real matching app from a marketing label.",
     deck: "How AI job matching works, how it differs from keyword search, what a match score actually measures, and how to tell a real matching app from a marketing label.",
     published: false,
     lastUpdated: "2026-09-17",

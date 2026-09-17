@@ -47,10 +47,11 @@ const DAILY_DIGEST: FeaturePage = {
   slug: "daily-job-digest-email",
   title: "Your Daily Job Digest Email, Curated by AI",
   footerLabel: "Daily job digest email",
-  // Supplied meta title (56 chars) and meta description (156 chars) — used verbatim.
+  // Supplied meta title and meta description — used verbatim. Description replaced 2026-09-17
+  // (measured 164 chars, over the ~160 render limit) with this measured 158-char string.
   metaTitle: "Daily Job Digest Email — AI-Curated Matches | Jobly",
   metaDescription:
-    "Five matched tech roles in your inbox every morning, scored against your profile, with dormant listings filtered out. No daily job-board checking. 3-day free trial.",
+    "Five matched tech roles in your inbox every morning, scored against your profile, with dormant listings filtered out. No job-board checking. 3-day free trial.",
   deck: "Roles that fit, first — with a match score. Five of them, in your inbox, every morning.",
   published: false,
   lastUpdated: LAST_UPDATED,
