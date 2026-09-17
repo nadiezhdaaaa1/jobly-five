@@ -61,6 +61,8 @@ import {
   type UploadErrorCode,
 } from "@/lib/resume-documents-store";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { useEntitlements } from "@/lib/entitlements-provider";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 import { quizSummary, updateQuiz, useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
