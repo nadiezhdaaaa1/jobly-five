@@ -9,16 +9,34 @@
  *
  * Prose is published verbatim from the supplied documents.
  *
- * `status: "coming-soon"` is a second, independent switch: the form renders
- * disabled with `comingSoon` copy in place of any result. It exists because the
- * supplied microcopy describes three signals (post age, repost pattern,
- * description detail) and the data to compute the first two does not exist —
- * `public.jobs` carries a single static `posted_days_ago` integer, no
- * first-seen timestamp, no posting URL and no listing history table, so neither
- * posting age nor repost history is derivable for a pasted listing. Rather than
- * invent a low/medium/high verdict, the page ships with the input disabled.
- * `resultStates` and `postResultCta` below are the supplied strings, held
- * unrendered until the signals behind them exist.
+ * `status` is a second, independent switch describing the tool's backend:
+ *   "awaiting-backend" → the whole front end is live (field, helper, button and
+ *                        its working state, all three result states styled), but
+ *                        submitting resolves into `pendingResult` instead of a
+ *                        verdict. No scoring logic exists client-side, by design.
+ *   "live"             → submit calls the real backend check.
+ *
+ * DEV HANDOVER NOTES (the checker itself is being built server-side against
+ * third-party APIs by the dev team):
+ *  1. Signals. The three advertised signals are post age, repost pattern and
+ *     description detail. Nothing in this app can compute the first two today:
+ *     `public.jobs` carries one static `posted_days_ago` integer, with no
+ *     first-seen timestamp, no posting URL and no listing history table, and a
+ *     pasted description cannot be matched back to a row. Post age and repost
+ *     pattern have to come from the third-party source, not from our schema.
+ *  2. SSRF — applies to the URL branch of this input. The field accepts a link,
+ *     so whoever wires the fetch inherits a server-side request forgery surface.
+ *     Required on that path: allowlist only the hiring-system domains we already
+ *     sync (Greenhouse, Lever, Ashby, Workable) plus known job boards; resolve
+ *     DNS and reject private, loopback, link-local and metadata ranges
+ *     (169.254.169.254 included) after resolution, not before; refuse redirects
+ *     rather than following them; cap response size and time; and run the fetch
+ *     on a separate egress path from the app's own outbound calls. Never echo
+ *     the fetched body back to the client.
+ *  3. Abuse. This is an unauthenticated public endpoint. Today only quiz-draft
+ *     save is rate-limited (429 per IP) and cron hooks use a shared secret.
+ *     The checker needs per-IP limits on a short window plus a payload cap at
+ *     minimum; add a captcha only if abuse actually appears.
  */
 
 export type ToolFaq = { question: string; answer: string };
