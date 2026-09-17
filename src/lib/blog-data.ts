@@ -14,6 +14,8 @@ import ghostJobsCover from "../assets/why-companies-post-ghost-jobs-1600.webp.as
 import matchScoreCover from "../assets/ai-match-score-explained-1600.webp.asset.json";
 import keywordSearchCover from "../assets/ai-matching-vs-keyword-search-1600.webp.asset.json";
 import linkedinAlertsCover from "../assets/linkedin-job-alerts-not-working-1600.webp.asset.json";
+import spotGhostJobsCover from "../assets/how-to-spot-ghost-jobs-1600.webp.asset.json";
+
 
 
 export const BLOG_CATEGORIES = [
@@ -1097,7 +1099,119 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "how-to-spot-ghost-jobs",
+    title: "How to Avoid Ghost Job Postings: 7 Signals to Check Before You Apply",
+    // Supplied meta title (57 chars) and meta description (152 chars) — used verbatim.
+    metaTitle: "How to Avoid Ghost Job Postings: 7 Signals to Check",
+    metaDescription:
+      "Seven checks that tell you whether a listing is a ghost job before you apply — post age, repost patterns, careers-page absence and what each one is worth.",
+    deck: "Seven checks that tell you whether a listing is a ghost job before you apply — post age, repost patterns, careers-page absence and what each one is worth.",
+    // Batch 6, pillar /guides/ghost-jobs.
+    published: true,
+    category: "Ghost jobs",
+    coverImage: spotGhostJobsCover.url,
+    coverWidth: 1600,
+    coverHeight: 897,
+    coverAlt:
+      "A bearded man in glasses and a teal shirt smiles as he types on a laptop at a café table, a mug and potted plants beside him against a mossy green wall.",
+    author: "Marcus Vale",
+    date: "2026-09-17",
+    readTime: "5 min read",
+    body: [
+      {
+        type: "p",
+        text: "A ghost job is a listing for a role that doesn't exist, has already been filled, or that the employer has no immediate plan to fill. They're common enough to matter: credible estimates put them somewhere between one in seven and one in three of all postings, depending on who's measuring and what they count. Our full guide to ghost jobs covers where those numbers come from and why they disagree.",
+      },
+      {
+        type: "p",
+        text: "This piece is narrower. It's the checklist — what to look at on a listing page, in what order, and how much weight each signal deserves. None of them is proof on its own. Two or three together is a reason to verify before you spend an evening on an application.",
+      },
+      { type: "h2", text: "The seven signals" },
+      {
+        type: "p",
+        text: "1. Post age over 30 days. The single most useful check, and the easiest. Most real hiring processes move faster than a month from posting to shortlist. A listing still open at 30 days with no changes is worth a second look; at 90 days with no changes, treat it as a strong signal. The caveat: senior and highly specialised searches genuinely do run long, so weight this less for staff-plus and executive roles.",
+      },
+      {
+        type: "p",
+        text: "2. Repeated reposting. A listing that vanishes and returns every few weeks — new posting date, identical text — is one of the clearest patterns there is. It's what a role being refreshed to look current looks like from outside. If you've seen the same job three times this quarter, it isn't a coincidence.",
+      },
+      {
+        type: "p",
+        text: "3. A description that could belong to anyone. Real openings usually name a team, a manager, a product or a project, because someone who needs the hire wrote them. Listings that describe a generic version of the role with no company-specific detail are more likely to be pipeline-building than budgeted hiring. This one is soft on its own — plenty of real roles have lazily written descriptions — but it compounds with the others.",
+      },
+      {
+        type: "p",
+        text: "4. Absent from the company's own careers page. Cross-check. If a role appears on an aggregator but not on the employer's site, one of two things is true: the listing is stale and the company already pulled it, or it exists mainly to generate traffic and applicant data for the board. Either way, the careers page is the authoritative source. Check the date there too — it's often different from the one on the aggregator.",
+      },
+      {
+        type: "p",
+        text: "5. Silence after a well-matched application. A live opening with an active recruiter usually produces at least an automated acknowledgment. Weeks of nothing on an application where you were an obvious fit is a common complaint in job-seeker surveys. This one arrives too late to help you avoid the application, but it should update how you read that company's other listings.",
+      },
+      {
+        type: "p",
+        text: "6. The sector's base rate. Rates vary sharply. Government, education, tech and wholesale postings show consistently higher gaps between openings and hires; construction and hospitality track much closer to actual hiring. Knowing your sector's base rate tells you how suspicious to be by default.",
+      },
+      {
+        type: "p",
+        text: "7. Unusually broad requirements or salary. A range spanning three seniority levels, or requirements written to include almost anyone, suggests a listing designed to catch the widest possible pool rather than fill a defined role. Note that pay-transparency laws have pushed some genuinely real listings toward wide ranges, so this signal has weakened — weight it lower than you would have two years ago.",
+      },
+      { type: "h2", text: "How to run the check in two minutes" },
+      {
+        type: "p",
+        text: "Order matters, because the cheap checks eliminate most cases.",
+      },
+      {
+        type: "p",
+        text: "Start with the post date — it's visible without leaving the page. If it's under two weeks, you're probably fine and can stop. If it's older, open the company's careers page and search the role there: that single cross-check resolves the majority of ambiguous cases, because it tells you both whether the role still exists and when the employer actually posted it.",
+      },
+      {
+        type: "p",
+        text: "Only then read the description properly, looking for a named team, a named manager or a specific project. If it's still ambiguous after those three, search the job title plus the company name and see whether the listing has been reposted across previous months.",
+      },
+      {
+        type: "p",
+        text: "Two minutes, in that order, before you spend an hour tailoring anything.",
+      },
+      { type: "h2", text: "What none of this can tell you" },
+      {
+        type: "p",
+        text: "There's a hard limit to outside inspection, and it's worth being honest about it: nothing on a listing page reveals whether a company intends to hire. A budget freeze, an internal candidate already chosen, a requisition kept open for appearances — none of that shows up in the text.",
+      },
+      {
+        type: "p",
+        text: "The signals above detect patterns associated with ghost jobs, not intent. A slow, real hiring process can trip several of them. A well-maintained ghost job can trip none.",
+      },
+      {
+        type: "p",
+        text: "The one signal that gets closer is whether the role is still moving inside the employer's applicant tracking system — and that isn't visible from a job page at all.",
+      },
+    ],
+    faq: [
+      {
+        question: "How long does a job posting stay up before it's suspicious?",
+        answer:
+          "Thirty days with no changes is the common threshold across multiple studies. Ninety days is a strong signal. Adjust upward for senior and specialised roles, which genuinely take longer to fill.",
+      },
+      {
+        question: "Should I apply anyway if a listing looks like a ghost job?",
+        answer:
+          "If it's a good fit and the application is quick, the expected cost is low — apply and move on. What's worth avoiding is investing an evening in a tailored application and cover letter for a listing tripping several signals. Match the effort to the confidence.",
+      },
+      {
+        question: "Can any tool guarantee a listing is real?",
+        answer:
+          "No. Any checker, including ours, reads patterns from outside — post age, repost frequency, description quality. Treat a clean result as a good sign, not a guarantee, and verify anything that matters before committing real time.",
+      },
+      {
+        question: "Do reposted jobs always mean a ghost job?",
+        answer:
+          "No. Companies legitimately repost when a search stalls, a candidate falls through, or a requisition is refreshed after a hiring freeze lifts. It's a signal, not a verdict — which is why the advice is to look for two or three signals together rather than acting on any one.",
+      },
+    ],
+  },
 ];
+
 
 /** A post counts as published unless it explicitly opts out with `published: false`. */
 export function isPublishedPost(post: BlogPost): boolean {
