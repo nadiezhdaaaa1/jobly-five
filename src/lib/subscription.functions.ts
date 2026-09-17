@@ -4,6 +4,8 @@ import {
   SKUS,
   TRIAL_DAYS,
   TRIAL_SKU,
+  creditDays,
+  isDowngrade,
   isPrepaid,
   isSkuId,
   periodDays,
@@ -23,6 +25,8 @@ import {
 export type SubscriptionAction =
   | "start_trial"
   | "activate"
+  | "schedule_plan_change"
+  | "clear_pending_plan_change"
   | "pause"
   | "unpause"
   | "cancel_at_period_end"
@@ -43,6 +47,9 @@ export type SubscriptionRow = {
   /** Days frozen by pausing a prepaid plan, spent before the next charge. */
   bankedDays: number;
   bankedDaysExpireAt: string | null;
+  /** A downgrade scheduled for the end of the period already paid for (§5). */
+  pendingSku: SkuId | null;
+  pendingSkuEffectiveAt: string | null;
   everSubscribed: boolean;
   /** "provider" once a real billing provider owns the row; "manual_preview" today. */
   activationSource: string;
@@ -53,7 +60,8 @@ const DAY = 86_400_000;
 export const BANKED_DAYS_TTL_DAYS = 365;
 const isoIn = (ms: number) => new Date(Date.now() + ms).toISOString();
 const COLS =
-  "status, sku, purchase_price, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, banked_days, banked_days_expire_at, ever_subscribed, activation_source";
+  "status, sku, purchase_price, cancel_at_period_end, current_period_end, trial_ends_at, pause_ends_at, banked_days, banked_days_expire_at, pending_sku, pending_sku_effective_at, ever_subscribed, activation_source";
+
 
 function shape(row: Record<string, unknown> | null): SubscriptionRow {
   const sku = row?.["sku"];
