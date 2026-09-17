@@ -514,9 +514,11 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
     // No plan at all: every card keeps its own purchase CTA.
     if (currentSku === null) return null;
     if (sku === currentSku) return { label: "Cancel plan", main: false };
-    // Switching is offered, and checkout states what the switch gives up
-    // before the charge — the server's `activate` starts a fresh period.
-    return { label: `Switch to ${SKU_SWITCHER_LABEL[sku]}`, main: true };
+    // No switch is offered from a live plan: the Cancellation Policy credits the
+    // unused portion of the current period against the new plan, and the server's
+    // `activate` does not — it starts a fresh period and zeroes banked days. The
+    // CTA stays closed until the server matches the policy.
+    return { label: "", hidden: true };
   }
 
   function onSelect(card: PlanCardSpec) {
@@ -526,7 +528,10 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
       onDowngrade();
       return;
     }
+    // No switch path exists from a live plan: those cards render no CTA.
+    if (currentSku !== null) return;
     if (blocked) return;
+
     if (needsBillingTerms) {
       void acceptPolicies({
         data: {
