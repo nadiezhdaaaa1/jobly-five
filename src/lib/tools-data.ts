@@ -51,7 +51,7 @@ export type ToolPage = {
   /** Short footer label — the full title is too long for a footer column. */
   footerLabel: string;
   published: boolean;
-  status: "live" | "coming-soon";
+  status: "live" | "awaiting-backend";
   lastUpdated: string;
   intro: string;
   input: {
@@ -61,11 +61,14 @@ export type ToolPage = {
     button: string;
     buttonWorking: string;
   };
-  /** Shown in place of the result while `status` is "coming-soon". */
-  comingSoon: { title: string; body: string };
-  /** Supplied verdict copy, held unrendered — see the note at the top of this file. */
+  /**
+   * Where a submit lands while `status` is "awaiting-backend": an explicitly
+   * marked placeholder, never a fabricated low/medium/high verdict.
+   */
+  pendingResult: { title: string; body: string };
+  /** Supplied verdict copy. Styled and reachable via the sample-result switcher. */
   resultStates: { level: "low" | "medium" | "high"; label: string; body: string }[];
-  /** Supplied post-result bridge copy, held unrendered alongside `resultStates`. */
+  /** Supplied post-result bridge copy, shown with each result state. */
   postResultCta: { afterLow: string; afterMediumOrHigh: string; button: string };
   faq: ToolFaq[];
 };
