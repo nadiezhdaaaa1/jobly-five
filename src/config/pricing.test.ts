@@ -102,6 +102,9 @@ describe("upgrade / downgrade ordering (Cancellation Policy §5)", () => {
     expect(skuRank("watch_annual")).toBeLessThan(skuRank("pro_monthly"));
     expect(skuRank("pro_monthly")).toBeLessThan(skuRank("pro_3month"));
     expect(skuRank("pro_3month")).toBeLessThan(skuRank("pro_6month"));
+    expect(compareSkus("watch_monthly", "pro_6month")).toBeLessThan(0);
+    expect(compareSkus("pro_6month", "watch_monthly")).toBeGreaterThan(0);
+    expect(compareSkus("pro_3month", "pro_3month")).toBe(0);
   });
   it("decides every pair, and the same SKU is neither", () => {
     const ids = SKU_IDS;
