@@ -288,7 +288,7 @@ function CheckoutPage() {
               Auto-renews at {renewalPhrase(sku.id)} until cancelled.
             </p>
           </div>
-          {losses.length > 0 ? (
+          {lines.length > 0 ? (
             <div
               className="flex flex-col gap-2 rounded-[12px] border p-4"
               style={{ borderColor: "var(--color-border)" }}
@@ -297,7 +297,7 @@ function CheckoutPage() {
                 {deferred ? "What happens to this account" : "What changes on this account today"}
               </p>
               <ul className="flex flex-col gap-1.5">
-                {losses.map((line) => (
+                {lines.map((line: string) => (
                   <li
                     key={line}
                     className="text-[13px] leading-[19.5px] text-[color:var(--color-text-secondary)]"
