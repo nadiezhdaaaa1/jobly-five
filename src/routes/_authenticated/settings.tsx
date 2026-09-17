@@ -69,6 +69,12 @@ export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [{ title: "Settings — Jobly" }, { name: "robots", content: "noindex, nofollow" }],
   }),
+  // `?cancel=1` opens the existing two-step cancel flow. The re-consent banner's
+  // decline route uses it; the flow itself is untouched.
+  validateSearch: (search: Record<string, unknown>): { cancel?: boolean } =>
+    search["cancel"] === true || search["cancel"] === "1" || search["cancel"] === "true"
+      ? { cancel: true }
+      : {},
   component: SettingsScreen,
 });
 
