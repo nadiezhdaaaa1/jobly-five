@@ -371,6 +371,9 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           plan: current.sku ? SKUS[current.sku].tier : "pro",
           cancel_at_period_end: true,
           current_period_end: keepEnd ?? isoIn(periodDays(current.sku ?? TRIAL_SKU) * DAY),
+          // Cancelling wins over a scheduled plan change: the two cannot coexist.
+          pending_sku: null,
+          pending_sku_effective_at: null,
           ever_subscribed: true,
         };
         break;
@@ -383,8 +386,11 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
           paused_at: null,
           pause_ends_at: null,
           current_period_end: new Date().toISOString(),
+          pending_sku: null,
+          pending_sku_effective_at: null,
         };
         break;
+
       case "set_ever_subscribed":
         patch = { ever_subscribed: Boolean(data.everSubscribed) };
         break;
