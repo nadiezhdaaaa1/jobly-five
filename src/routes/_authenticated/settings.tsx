@@ -162,6 +162,15 @@ function PlanBadge({ plan }: { plan: Plan }) {
 
 function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void }) {
   const [cancelStep, setCancelStep] = useState<0 | 1 | 2>(0);
+  // Arriving from the re-consent banner's decline route opens step 1 of the
+  // same flow the card's own Cancel button opens — nothing else differs.
+  const { cancel: cancelRequested } = Route.useSearch();
+  useEffect(() => {
+    if (!cancelRequested) return;
+    if (plan === "pro" || plan === "watch" || plan === "paused") {
+      setCancelStep(plan === "paused" || plan === "watch" ? 2 : 1);
+    }
+  }, [cancelRequested, plan]);
   const [reason, setReason] = useState<CancelReason | null>(null);
   const [reasonOther, setReasonOther] = useState("");
   const reasonReady = reason !== null && (reason !== "Other" || reasonOther.trim().length > 0);
