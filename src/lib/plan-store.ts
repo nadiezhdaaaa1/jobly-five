@@ -21,6 +21,9 @@ export type Subscription = {
   /** Days frozen by pausing a prepaid plan. */
   bankedDays?: number;
   bankedDaysExpireAt?: string | null;
+  /** A downgrade scheduled for the end of the paid period (Cancellation Policy §5). */
+  pendingSku?: SkuId | null;
+  pendingSkuEffectiveAt?: string | null;
   /** How the plan was turned on: "manual_preview" today, "provider" once billing is live. */
   activationSource?: string;
 };
@@ -66,6 +69,8 @@ function defaultSub(): Subscription {
     pauseEndsAt: null,
     bankedDays: 0,
     bankedDaysExpireAt: null,
+    pendingSku: null,
+    pendingSkuEffectiveAt: null,
     activationSource: "none",
   };
 }
@@ -110,6 +115,8 @@ function persist(
         pauseEndsAt: row.pauseEndsAt,
         bankedDays: row.bankedDays,
         bankedDaysExpireAt: row.bankedDaysExpireAt,
+        pendingSku: row.pendingSku,
+        pendingSkuEffectiveAt: row.pendingSkuEffectiveAt,
         activationSource: row.activationSource,
       };
       hadPro = row.everSubscribed || resolveIsLive(sub);
@@ -151,6 +158,7 @@ export function getPlan(): Plan {
 /** Turn a specific SKU on. The server still decides whether it may. */
 export function activateSku(skuId: SkuId, options?: { allowSkuChange?: boolean }) {
   const end = new Date(sub.currentPeriodEnd).getTime();
+  const switching = sub.sku !== null && sub.sku !== skuId && end > Date.now();
   persist("activate", { sku: skuId, allowSkuChange: options?.allowSkuChange });
   commit({
     ...sub,
@@ -158,11 +166,37 @@ export function activateSku(skuId: SkuId, options?: { allowSkuChange?: boolean }
     sku: skuId,
     cancelAtPeriodEnd: false,
     pauseEndsAt: null,
+    // An upgrade supersedes a scheduled downgrade.
+    pendingSku: null,
+    pendingSkuEffectiveAt: null,
+    // On a switch the new period also carries the §5 credit, which only the
+    // server computes; show the plain period until it answers.
     currentPeriodEnd:
       sub.sku === skuId && end > Date.now()
         ? sub.currentPeriodEnd
         : isoIn(periodDays(skuId) * DAY),
+    bankedDays: switching ? sub.bankedDays : sub.bankedDays,
   });
+}
+
+/**
+ * §5: a downgrade takes effect at the end of the period already paid for.
+ * Nothing is charged, and the account keeps its current plan until the date.
+ */
+export function schedulePlanChange(skuId: SkuId) {
+  persist("schedule_plan_change", { sku: skuId });
+  commit({
+    ...sub,
+    cancelAtPeriodEnd: false,
+    pendingSku: skuId,
+    pendingSkuEffectiveAt: sub.currentPeriodEnd,
+  });
+}
+
+/** Drop a scheduled downgrade and stay on the current plan. */
+export function clearPendingPlanChange() {
+  persist("clear_pending_plan_change");
+  commit({ ...sub, pendingSku: null, pendingSkuEffectiveAt: null });
 }
 
 /** Pause suspends access and banks prepaid days. Watch cannot pause. */
@@ -215,6 +249,9 @@ export function scheduleCancelAtPeriodEnd() {
     ...sub,
     status: "canceling",
     cancelAtPeriodEnd: true,
+    // Cancelling wins over a scheduled plan change.
+    pendingSku: null,
+    pendingSkuEffectiveAt: null,
     currentPeriodEnd:
       end > Date.now() ? sub.currentPeriodEnd : isoIn(periodDays(sub.sku ?? TRIAL_SKU) * DAY),
   });
