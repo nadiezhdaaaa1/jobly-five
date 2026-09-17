@@ -510,15 +510,24 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
 
   const blocked = needsBillingTerms && !billingTermsTicked;
 
+  const pendingSku = sub.pendingSku ?? null;
+  const pendingWhen = formatDateLabel(sub.pendingSkuEffectiveAt ?? null);
+
   function ctaOverride(sku: SkuId): PaywallCta | null {
     // No plan at all: every card keeps its own purchase CTA.
     if (currentSku === null) return null;
     if (sku === currentSku) return { label: "Cancel plan", main: false };
-    // No switch is offered from a live plan: the Cancellation Policy credits the
-    // unused portion of the current period against the new plan, and the server's
-    // `activate` does not — it starts a fresh period and zeroes banked days. The
-    // CTA stays closed until the server matches the policy.
-    return { label: "", hidden: true };
+    // A change already scheduled for this SKU is undone, not repeated.
+    if (sku === pendingSku) return { label: "Keep my current plan", main: false };
+    // Cancellation Policy §5: an upgrade applies now with the unused period
+    // credited to it; a downgrade takes effect at the end of the paid period.
+    // Checkout states which, and what happens to the account, before confirming.
+    return {
+      label: isDowngrade(currentSku, sku)
+        ? `Switch at period end to ${SKU_SWITCHER_LABEL[sku]}`
+        : `Switch to ${SKU_SWITCHER_LABEL[sku]}`,
+      main: true,
+    };
   }
 
   function onSelect(card: PlanCardSpec) {
@@ -528,8 +537,11 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
       onDowngrade();
       return;
     }
-    // No switch path exists from a live plan: those cards render no CTA.
-    if (currentSku !== null) return;
+    // Undoing a scheduled change needs no checkout and charges nothing.
+    if (card.choice.sku === pendingSku) {
+      clearPendingPlanChange();
+      return;
+    }
     if (blocked) return;
 
     if (needsBillingTerms) {
@@ -588,6 +600,13 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
           showSharedDisclosure={!isPaid}
         />
       </div>
+      {pendingSku ? (
+        <p className="mt-4 text-[13px] leading-[19.5px] text-[color:var(--color-text-secondary)]">
+          {SKU_SWITCHER_LABEL[pendingSku]} starts{" "}
+          {pendingWhen ?? "at the end of your current period"}. Until then you keep{" "}
+          {currentSku ? SKU_SWITCHER_LABEL[currentSku] : "your current plan"}.
+        </p>
+      ) : null}
     </div>
   );
 }
