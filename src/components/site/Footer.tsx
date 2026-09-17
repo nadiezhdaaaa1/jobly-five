@@ -2,6 +2,9 @@ import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
 import { LEGAL_DOCS, LEGAL_ORDER } from "@/lib/legal-data";
 import { VS_PAGES } from "@/lib/vs-data";
+import { FEATURE_PAGES } from "@/lib/features-data";
+import { TOOL_PAGES } from "@/lib/tools-data";
+
 import fbIcon from "@/assets/social/fb.svg";
 import inIcon from "@/assets/social/in.svg";
 import instaIcon from "@/assets/social/insta.svg";
@@ -40,6 +43,16 @@ const COLS: { title: string; items: FooterLink[] }[] = [
     })),
   },
   {
+    title: "Features",
+    // Same rule as the Legal column: link text comes from each page's own data,
+    // never hand-written here, so a page can't be listed under a name it doesn't carry.
+    items: FEATURE_PAGES.map((p) => ({ label: p.footerLabel, to: `/features/${p.slug}` })),
+  },
+  {
+    title: "Tools",
+    items: TOOL_PAGES.map((p) => ({ label: p.footerLabel, to: `/tools/${p.slug}` })),
+  },
+  {
     title: "Guides",
     items: [
       { label: "Ghost jobs", to: "/guides/ghost-jobs" },
@@ -53,6 +66,7 @@ const COLS: { title: string; items: FooterLink[] }[] = [
     items: VS_PAGES.map((p) => ({ label: p.footerLabel, to: `/vs/${p.slug}` })),
   },
 ];
+
 
 export function Footer() {
   return (

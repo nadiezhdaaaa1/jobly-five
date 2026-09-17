@@ -3,6 +3,9 @@ import type {} from "@tanstack/react-start";
 import { BLOG_POSTS } from "@/lib/blog-data";
 import { GUIDES, GUIDE_ARTICLES } from "@/lib/guides-data";
 import { VS_PAGES } from "@/lib/vs-data";
+import { FEATURE_PAGES } from "@/lib/features-data";
+import { TOOL_PAGES } from "@/lib/tools-data";
+
 
 const BASE_URL = "https://jobly-five.lovable.app";
 
@@ -75,6 +78,20 @@ export const Route = createFileRoute("/sitemap.xml")({
             changefreq: "monthly" as const,
             priority: "0.6",
           })),
+          // Features + tools follow the same `published` switch.
+          ...FEATURE_PAGES.filter((p) => p.published).map((p) => ({
+            path: `/features/${p.slug}`,
+            lastmod: p.lastUpdated,
+            changefreq: "monthly" as const,
+            priority: "0.7",
+          })),
+          ...TOOL_PAGES.filter((p) => p.published).map((p) => ({
+            path: `/tools/${p.slug}`,
+            lastmod: p.lastUpdated,
+            changefreq: "monthly" as const,
+            priority: "0.7",
+          })),
+
 
         ];
 

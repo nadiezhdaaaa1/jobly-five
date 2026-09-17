@@ -26,6 +26,7 @@ import { Route as GuidesIndexRouteImport } from './routes/guides.index'
 import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as VsCompetitorRouteImport } from './routes/vs.$competitor'
+import { Route as ToolsToolRouteImport } from './routes/tools.$tool'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRefundRouteImport } from './routes/legal.refund'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -35,6 +36,7 @@ import { Route as LegalDisclaimerRouteImport } from './routes/legal.disclaimer'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalCancellationRouteImport } from './routes/legal.cancellation'
 import { Route as LegalBillingRouteImport } from './routes/legal.billing'
+import { Route as FeaturesFeatureRouteImport } from './routes/features.$feature'
 import { Route as BlogRssDotxmlRouteImport } from './routes/blog.rss[.]xml'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AuthenticatedTrackerRouteImport } from './routes/_authenticated/tracker'
@@ -137,6 +139,11 @@ const VsCompetitorRoute = VsCompetitorRouteImport.update({
   path: '/vs/$competitor',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToolsToolRoute = ToolsToolRouteImport.update({
+  id: '/tools/$tool',
+  path: '/tools/$tool',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
   id: '/legal/terms',
   path: '/legal/terms',
@@ -180,6 +187,11 @@ const LegalCancellationRoute = LegalCancellationRouteImport.update({
 const LegalBillingRoute = LegalBillingRouteImport.update({
   id: '/legal/billing',
   path: '/legal/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeaturesFeatureRoute = FeaturesFeatureRouteImport.update({
+  id: '/features/$feature',
+  path: '/features/$feature',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRssDotxmlRoute = BlogRssDotxmlRouteImport.update({
@@ -295,6 +307,7 @@ export interface FileRoutesByFullPath {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/features/$feature': typeof FeaturesFeatureRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -304,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/tools/$tool': typeof ToolsToolRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
   '/checkout/': typeof CheckoutIndexRoute
@@ -339,6 +353,7 @@ export interface FileRoutesByTo {
   '/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/features/$feature': typeof FeaturesFeatureRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -348,6 +363,7 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/tools/$tool': typeof ToolsToolRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog': typeof BlogIndexRoute
   '/checkout': typeof CheckoutIndexRoute
@@ -385,6 +401,7 @@ export interface FileRoutesById {
   '/_authenticated/tracker': typeof AuthenticatedTrackerRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/rss.xml': typeof BlogRssDotxmlRoute
+  '/features/$feature': typeof FeaturesFeatureRoute
   '/legal/billing': typeof LegalBillingRoute
   '/legal/cancellation': typeof LegalCancellationRoute
   '/legal/cookies': typeof LegalCookiesRoute
@@ -394,6 +411,7 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/refund': typeof LegalRefundRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/tools/$tool': typeof ToolsToolRoute
   '/vs/$competitor': typeof VsCompetitorRoute
   '/blog/': typeof BlogIndexRoute
   '/checkout/': typeof CheckoutIndexRoute
@@ -431,6 +449,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/features/$feature'
     | '/legal/billing'
     | '/legal/cancellation'
     | '/legal/cookies'
@@ -440,6 +459,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/tools/$tool'
     | '/vs/$competitor'
     | '/blog/'
     | '/checkout/'
@@ -475,6 +495,7 @@ export interface FileRouteTypes {
     | '/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/features/$feature'
     | '/legal/billing'
     | '/legal/cancellation'
     | '/legal/cookies'
@@ -484,6 +505,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/tools/$tool'
     | '/vs/$competitor'
     | '/blog'
     | '/checkout'
@@ -520,6 +542,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tracker'
     | '/blog/$slug'
     | '/blog/rss.xml'
+    | '/features/$feature'
     | '/legal/billing'
     | '/legal/cancellation'
     | '/legal/cookies'
@@ -529,6 +552,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/refund'
     | '/legal/terms'
+    | '/tools/$tool'
     | '/vs/$competitor'
     | '/blog/'
     | '/checkout/'
@@ -561,6 +585,7 @@ export interface RootRouteChildren {
   ThankYouRoute: typeof ThankYouRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogRssDotxmlRoute: typeof BlogRssDotxmlRoute
+  FeaturesFeatureRoute: typeof FeaturesFeatureRoute
   LegalBillingRoute: typeof LegalBillingRoute
   LegalCancellationRoute: typeof LegalCancellationRoute
   LegalCookiesRoute: typeof LegalCookiesRoute
@@ -570,6 +595,7 @@ export interface RootRouteChildren {
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRefundRoute: typeof LegalRefundRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  ToolsToolRoute: typeof ToolsToolRoute
   VsCompetitorRoute: typeof VsCompetitorRoute
   BlogIndexRoute: typeof BlogIndexRoute
   CheckoutIndexRoute: typeof CheckoutIndexRoute
@@ -708,6 +734,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VsCompetitorRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tools/$tool': {
+      id: '/tools/$tool'
+      path: '/tools/$tool'
+      fullPath: '/tools/$tool'
+      preLoaderRoute: typeof ToolsToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/legal/terms': {
       id: '/legal/terms'
       path: '/legal/terms'
@@ -769,6 +802,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/billing'
       fullPath: '/legal/billing'
       preLoaderRoute: typeof LegalBillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/features/$feature': {
+      id: '/features/$feature'
+      path: '/features/$feature'
+      fullPath: '/features/$feature'
+      preLoaderRoute: typeof FeaturesFeatureRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/rss.xml': {
@@ -927,6 +967,7 @@ const rootRouteChildren: RootRouteChildren = {
   ThankYouRoute: ThankYouRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogRssDotxmlRoute: BlogRssDotxmlRoute,
+  FeaturesFeatureRoute: FeaturesFeatureRoute,
   LegalBillingRoute: LegalBillingRoute,
   LegalCancellationRoute: LegalCancellationRoute,
   LegalCookiesRoute: LegalCookiesRoute,
@@ -936,6 +977,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRefundRoute: LegalRefundRoute,
   LegalTermsRoute: LegalTermsRoute,
+  ToolsToolRoute: ToolsToolRoute,
   VsCompetitorRoute: VsCompetitorRoute,
   BlogIndexRoute: BlogIndexRoute,
   CheckoutIndexRoute: CheckoutIndexRoute,
