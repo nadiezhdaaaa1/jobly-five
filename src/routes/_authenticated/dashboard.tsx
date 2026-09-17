@@ -1341,6 +1341,17 @@ function JobsScreen() {
   const currentPage = Math.min(page, pageCount);
   const shown = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  if (lockEntLoading) return <PlanLockedSkeleton active="digest" />;
+  if (plan === "free") {
+    return (
+      <PlanLockedScreen
+        active="digest"
+        heading={PLAN_LOCKED_COPY.digest.heading}
+        body={PLAN_LOCKED_COPY.digest.body}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
       <AppHeader active="digest" />
