@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createHash, timingSafeEqual } from "node:crypto";
 
 /**
  * Applies everything that has come due on subscription rows: a plan change
@@ -10,8 +11,8 @@ import { createFileRoute } from "@tanstack/react-router";
  * would only take effect on the member's next visit, which is wrong once a real
  * charge depends on the date.
  *
- * Scheduled daily with Supabase `pg_cron` + `pg_net` against this route.
- * Caller must present the project's publishable/anon key in `apikey`.
+ * Scheduled daily with `pg_cron` + `pg_net` against this route.
+ * Caller must present PLAN_CRON_SECRET in `x-plan-cron-secret`.
  *
  * Banked days are never touched here: §3 loses them only on cancellation or
  * account deletion.
@@ -23,13 +24,21 @@ function json(body: unknown, status = 200) {
   });
 }
 
+function secretMatches(expected: string | undefined, presented: string | null) {
+  if (!expected || !presented) return false;
+
+  const expectedDigest = createHash("sha256").update(expected).digest();
+  const presentedDigest = createHash("sha256").update(presented).digest();
+  return timingSafeEqual(expectedDigest, presentedDigest);
+}
+
 export const Route = createFileRoute("/api/public/hooks/apply-plan-changes")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const expected = process.env["SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_ANON_KEY"];
-        const presented = request.headers.get("apikey") ?? "";
-        if (!expected || presented !== expected) {
+        const expected = process.env["PLAN_CRON_SECRET"];
+        const presented = request.headers.get("x-plan-cron-secret");
+        if (!secretMatches(expected, presented)) {
           return json({ ok: false, error: "Unauthorized" }, 401);
         }
 
