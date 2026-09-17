@@ -29,6 +29,7 @@ import {
   scheduleCancelAtPeriodEnd,
   resumeSubscription,
   clearPendingPlanChange,
+  resolveCurrentSku,
   type Plan,
 } from "@/lib/plan-store";
 import { savePlanIntent } from "@/lib/onboarding/planIntent";
@@ -190,9 +191,12 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
   const scheduledEnd = sub.cancelAtPeriodEnd && plan === "pro";
   // No billing provider owns this row, so there is no real renewal date to show.
   const providerBilled = sub.activationSource === "provider";
+  // `sub.sku` outlives the subscription, so the plan we NAME is derived from
+  // live plan status. A cancelled account is on no plan, whatever the row says.
+  const currentSku = resolveCurrentSku(sub);
 
   // Renewal quotes the SKU actually purchased, never a list price for another one.
-  const renewal = sub.sku ? renewalPhrase(sub.sku) : null;
+  const renewal = currentSku ? renewalPhrase(currentSku) : null;
   const proBilling = renewal
     ? providerBilled && periodEndLabel
       ? `${renewal} · renews ${periodEndLabel}`
@@ -230,7 +234,7 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
               className="text-[13px] text-[color:var(--color-foreground)]"
               style={{ fontWeight: 300 }}
             >
-              {sub.sku ? SKU_SWITCHER_LABEL[sub.sku] : freeSummary}
+              {currentSku ? SKU_SWITCHER_LABEL[currentSku] : freeSummary}
             </p>
             <p
               className="mt-1 text-[12px] text-[color:var(--color-text-muted)]"
@@ -509,8 +513,10 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
   const hasHadPro = useHasHadPro();
   const isPaid = plan === "pro" || plan === "watch";
   const navigate = useNavigate();
-  const currentSku = useEntitlements().entitlements.sku;
   const sub = useSubscription();
+  // Derived from live plan status — never the row's historical `sku`, which
+  // survives cancellation and would offer "Cancel plan" on a dead subscription.
+  const currentSku = resolveCurrentSku(sub);
 
 
   // Tier 3: the paid path requires an explicit tick on the current Billing Terms.
@@ -616,6 +622,7 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
           ctaOverride={ctaOverride}
           context={isPaid ? "manage" : "purchase"}
           trialing={sub.status === "trialing"}
+          trialEligible={!hasHadPro}
           showSharedDisclosure={!isPaid}
         />
       </div>

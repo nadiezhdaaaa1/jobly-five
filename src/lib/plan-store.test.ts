@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPlan, resolveIsPro, resolvePlan, type Subscription } from "./plan-store";
+import { getPlan, resolveCurrentSku, resolveIsPro, resolvePlan, type Subscription } from "./plan-store";
 
 const sub = (o: Partial<Subscription>): Subscription => ({
   status: "canceling",
@@ -47,5 +47,16 @@ describe("fail-closed entitlements", () => {
   });
   it("store starts Free before the server answers", () => {
     expect(getPlan()).toBe("free");
+  });
+});
+
+describe("current SKU is derived from live status", () => {
+  it("a cancelled account is on no SKU, whatever the row remembers", () => {
+    const s = sub({ status: "canceled", sku: "pro_monthly", cancelAtPeriodEnd: false, currentPeriodEnd: new Date(Date.now() - 86400000).toISOString() });
+    expect(resolveCurrentSku(s)).toBeNull();
+  });
+  it("a live or paused account keeps its SKU", () => {
+    expect(resolveCurrentSku(sub({ status: "active", cancelAtPeriodEnd: false }))).toBe("pro_monthly");
+    expect(resolveCurrentSku(sub({ status: "paused", cancelAtPeriodEnd: false }))).toBe("pro_monthly");
   });
 });
