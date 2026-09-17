@@ -830,22 +830,7 @@ function TrackerScreen() {
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
 
-  if (entLoading) {
-    return (
-      <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-        <AppHeader active="tracker" />
-        <main className="mx-auto max-w-[1200px] px-6 pt-6">
-          <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
-            <div
-              className="animate-pulse rounded-[16px] border border-white bg-white/80"
-              style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", height: 320 }}
-              aria-label="Loading your plan"
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
+  if (entLoading) return <PlanLockedSkeleton active="tracker" />;
 
   if (!isPro(plan)) {
     return (
