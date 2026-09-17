@@ -126,3 +126,22 @@ export const PLAN_LOCKED_COPY = {
     body: "Pick a plan to tailor resumes for different roles and sharpen how matches are scored.",
   },
 } as const;
+
+/** The same frame while entitlements are still loading — no locked/unlocked flash. */
+export function PlanLockedSkeleton({ active }: { active: AppTab }) {
+  return (
+    <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
+      <AppHeader active={active} />
+      <main className="mx-auto max-w-[1200px] px-6 pt-6">
+        <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
+          <div
+            className="animate-pulse rounded-[16px] border border-white bg-white/80"
+            style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", height: 320 }}
+            aria-label="Loading your plan"
+          />
+        </div>
+      </main>
+      <MobileTabBar active={active} />
+    </div>
+  );
+}
