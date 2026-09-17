@@ -158,7 +158,6 @@ export function getPlan(): Plan {
 /** Turn a specific SKU on. The server still decides whether it may. */
 export function activateSku(skuId: SkuId, options?: { allowSkuChange?: boolean }) {
   const end = new Date(sub.currentPeriodEnd).getTime();
-  const switching = sub.sku !== null && sub.sku !== skuId && end > Date.now();
   persist("activate", { sku: skuId, allowSkuChange: options?.allowSkuChange });
   commit({
     ...sub,
@@ -175,7 +174,10 @@ export function activateSku(skuId: SkuId, options?: { allowSkuChange?: boolean }
       sub.sku === skuId && end > Date.now()
         ? sub.currentPeriodEnd
         : isoIn(periodDays(skuId) * DAY),
-    bankedDays: switching ? sub.bankedDays : sub.bankedDays,
+    // §3: banked days survive a switch. They are lost only on cancellation or
+    // account deletion, so they are deliberately carried over untouched.
+    bankedDays: sub.bankedDays,
+    bankedDaysExpireAt: sub.bankedDaysExpireAt,
   });
 }
 
