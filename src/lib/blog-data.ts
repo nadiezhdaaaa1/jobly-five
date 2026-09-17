@@ -818,6 +818,256 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "why-companies-post-ghost-jobs",
+    title: "Why Do Companies Post Ghost Jobs? Six Reasons, and What the Data Says",
+    // Supplied meta title (56 chars) and meta description (155 chars) — used verbatim.
+    metaTitle: "Why Do Companies Post Ghost Jobs? Six Reasons and Data",
+    metaDescription:
+      "Companies post jobs they don't intend to fill for six recurring reasons — pipeline building, growth signalling, compliance and neglect. What the data shows.",
+    deck: "Companies post jobs they don't intend to fill for six recurring reasons — pipeline building, growth signalling, compliance and neglect. What the data shows.",
+    // Batch 5, pillar /guides/ghost-jobs. published: false → noindex, no canonical, out of the
+    // sitemap, the RSS feed, the blog index and the related-reads rail.
+    published: false,
+    category: "Ghost jobs",
+    // Reuses the ghost-jobs cover (blog-01) — no new artwork supplied.
+    coverImage: covers[0]!,
+    coverAlt: "Why Do Companies Post Ghost Jobs? Six Reasons, and What the Data Says — cover image",
+    author: "Marcus Vale",
+    date: "2026-09-17",
+    readTime: "6 min read",
+    body: [
+      { type: "p", text: "A ghost job is a posting for a role that doesn't exist, is already filled, or that the employer has no immediate plan to fill. If you've applied to a dozen well-matched roles and heard nothing, some of them probably were. Our guide to ghost jobs covers how common they are and how to spot one; this piece answers the question people actually want answered, which is why anyone does this on purpose." },
+      { type: "p", text: "The short version: mostly they aren't being malicious. Most of these are ordinary corporate incentives working exactly as designed, and one of them isn't a decision at all." },
+      { type: "h2", text: "What the numbers say first" },
+      { type: "p", text: "Estimates vary because researchers measure different things, and the honest summary is that nobody has a single trustworthy figure — the Congressional Research Service confirmed in an April 2025 brief that no government agency tracks this at all." },
+      { type: "p", text: "Greenhouse, measuring postings and outcomes inside its own platform, put ghost jobs at 18–22% of jobs advertised in 2024 — about one in five, and the most conservative credible number because it's based on how listings behaved rather than what anyone said about them. Clarify Capital's analysis of more than 175,000 US listings landed near 14%. An analysis of June 2025 BLS data found roughly 30% of postings produced no matching hire, though that measures the gap between openings and hires rather than intent." },
+      { type: "p", text: "And when you ask employers directly, it climbs: in Clarify Capital's survey of over a thousand hiring managers, nearly one in three admitted posting roles with no current intent to hire." },
+      { type: "p", text: "That last figure is the useful one for this question, because it's the only one measuring intent rather than outcome. Roughly a third of employers say they do this deliberately. Here's what they say they're doing it for." },
+      { type: "h2", text: "The six reasons" },
+      { type: "p", text: "Building a talent pipeline. The most commonly cited. Keeping a role open collects résumés for a position the company expects to need later. From the inside this feels responsible — you're ready when the requisition opens. From the outside it's indistinguishable from a real opening, which is the whole problem." },
+      { type: "p", text: "Signalling growth. An active-looking careers page is a signal to investors, competitors, the board and the press. A company hiring for twenty roles reads as a company doing well, whether or not any of those twenty get filled this quarter. This is the reason job seekers find most objectionable, and employers report it often enough that it can't be dismissed." },
+      { type: "p", text: "Pressure on current employees. Some surveys report employers keeping postings live partly as a message inward: this role could be filled externally. It's the least defensible item on the list and it does get reported." },
+      { type: "p", text: "Compliance and internal process. Some organisations are required to post publicly even when an internal candidate has effectively been chosen — public sector roles, union agreements, some regulated industries, some immigration processes. The posting is real in a procedural sense and the outcome is decided. This is a large part of why government postings show the widest openings-to-hires gaps of any sector." },
+      { type: "p", text: "Market and salary research. An open listing generates applications that tell a company what people at that level are asking for and what the local supply looks like. No hiring decision attached, useful data collected." },
+      { type: "p", text: "Simple neglect. Not a decision at all, and probably more common than anything above. The role got filled, or the search got shelved when a budget froze, and nobody took the listing down. Boards and aggregators keep serving it. This is the version where nobody meant anything by it and the effect on you is identical." },
+      { type: "h2", text: "Why it doesn't stop on its own" },
+      { type: "p", text: "Because posting a job costs almost nothing and taking it down has no upside for the person who'd have to do it." },
+      { type: "p", text: "The costs of a ghost job land on applicants, not on the employer. A candidate spends an evening tailoring a résumé; the company spends nothing. There's no mechanism converting that into pressure on the business — no metric a hiring manager is measured on that gets worse when a stale listing stays up." },
+      { type: "p", text: "That asymmetry is also why the fix is arriving as regulation rather than market correction. New York's S8877 passed both chambers in 2026 and, if signed, would require employers with 100 or more employees to state whether a posting is a current vacancy, a future opening or résumé collection, and to remove listings within two weeks of filling the role. Ontario has required employers with 25 or more employees to disclose whether a posting is for an existing vacancy since January 2026. Several US states have similar bills in progress." },
+    ],
+    faq: [
+      {
+        question: "Is posting a ghost job illegal?",
+        answer:
+          "Not under current US federal law. The FTC could in principle pursue clearly deceptive postings under its Section 5 authority, but enforcement has been rare. New York's disclosure bill was awaiting the governor's signature as of September 2026, and several states have similar bills pending. Ontario already requires vacancy-status disclosure.",
+      },
+      {
+        question: "What percentage of job postings are ghost jobs?",
+        answer:
+          "There's no agreed number. Credible estimates run from about 14% to roughly a third depending on the method. Platform data lands near one in five; employer self-reporting runs highest, because it measures intent rather than outcome.",
+      },
+      {
+        question: "Are ghost jobs the same as scam job postings?",
+        answer:
+          "No, and the distinction matters. A ghost job is posted by a real company for a role that isn't being filled. A scam listing is a criminal attempt to extract money or personal data from applicants. Different problems, different responses.",
+      },
+      {
+        question: "Do companies know they're doing this?",
+        answer:
+          "Often yes — roughly a third of surveyed hiring managers admit to posting without current hiring intent. But a meaningful share is neglect rather than strategy, which is why the same company can have both a deliberate pipeline posting and a listing nobody remembered to remove.",
+      },
+    ],
+  },
+  {
+    slug: "ai-match-score-explained",
+    title: "What an AI Match Score Actually Measures",
+    // Supplied meta title (52 chars) and meta description (150 chars) — used verbatim.
+    metaTitle: "What an AI Match Score Actually Measures | Jobly",
+    metaDescription:
+      "A match score isn't one number — it's several comparisons combined. What experience, skill and industry fit each measure, and what no score can tell you.",
+    deck: "A match score isn't one number — it's several comparisons combined. What experience, skill and industry fit each measure, and what no score can tell you.",
+    // Batch 5, pillar /guides/ai-job-matching. published: false → noindex, no canonical, out of
+    // the sitemap, the RSS feed, the blog index and the related-reads rail.
+    published: false,
+    category: "Career tips",
+    // Reuses the AI-matching cover (blog-05) — no new artwork supplied.
+    coverImage: covers[4]!,
+    coverAlt: "What an AI Match Score Actually Measures — cover image",
+    author: "Priya Shah",
+    date: "2026-09-17",
+    readTime: "6 min read",
+    body: [
+      { type: "p", text: "An AI match score is a single number summarising how well your background fits a specific role — but a well-built one isn't a single measurement. It's several separate comparisons run independently and combined at the end. Our guide to AI job matching covers the underlying technology; this piece is about what the number in front of you is actually made of, and what it can't see." },
+      { type: "p", text: "That matters practically, because two roles scoring 84% can mean completely different things." },
+      { type: "h2", text: "The three components" },
+      { type: "p", text: "Experience fit asks whether your seniority, years and career trajectory line up with what the role requires. Not a count of years — the kind of experience. Five years as an individual contributor and five years that included two years managing people are different qualifications for different jobs, and a model doing this well distinguishes them. It's also the component most likely to flag a role as a stretch in a useful way: \"you're one level below what they've asked for\" is actionable information." },
+      { type: "p", text: "Skill overlap compares the specific skills, tools and competencies in your background against what the role needs — including skills your background implies without naming. Someone who's built dashboards in a BI tool has skills adjacent to a data analyst role even if the phrase \"data analysis\" never appears in their profile. This component is usually where the interesting gaps show up: a role that wants everything you have plus one thing you don't." },
+      { type: "p", text: "Industry or domain relevance checks whether your background sits in a comparable domain, because skills often don't transfer cleanly across industries even when the job title is identical. A marketing manager at a healthcare company and one at a consumer app company share a title and need meaningfully different context. This is the component most likely to be low on a role that otherwise looks perfect, and it's frequently the one worth overriding — a deliberate industry switch will always score poorly here." },
+      { type: "h2", text: "Why the breakdown matters more than the total" },
+      { type: "p", text: "Take two roles that both score 84%." },
+      { type: "p", text: "The first is strong on skills and industry, weaker on experience: they want someone a level above you. That's a stretch role. Worth applying to, worth a cover letter that addresses the gap directly, and worth knowing the gap exists before you write it." },
+      { type: "p", text: "The second is strong on experience and skills, weak on industry: you can do the job, you've just never done it in that sector. That's a very different application — one where the case you're making is about transferable context, not readiness." },
+      { type: "p", text: "Same number, opposite arguments. A tool showing you 84% and nothing else has given you almost nothing to act on. A tool showing you the split has told you what to write." },
+      { type: "p", text: "This is also the practical test of whether a matching tool is doing real work. Producing a defensible breakdown requires actually evaluating three separate things. Producing a single confident-looking percentage requires no such thing." },
+      { type: "h2", text: "What a match score cannot measure" },
+      { type: "p", text: "Worth being blunt about, because the number invites more confidence than it earns." },
+      { type: "p", text: "No score can see team dynamics, a manager's style, whether the day-to-day resembles what the posting described, or compensation expectations nobody wrote down. It also can't see whether the role is real — a listing left open after a hiring freeze scores exactly as well as a live requisition, because the text is identical." },
+      { type: "p", text: "And it can't see what you want. A model reads what you've done, which is a decent proxy for what you can do and a poor one for what you'd like to do next. Anyone deliberately changing direction will find their scores optimising for their past." },
+      { type: "p", text: "A high match score means a role is worth a closer look. It is not a prediction that the job will work out, and any tool presenting it as one is overselling." },
+    ],
+    faq: [
+      {
+        question: "What's a good match score?",
+        answer:
+          "There's no universal threshold, because scoring is calibrated differently by every tool — 70% in one product can be stricter than 85% in another. What's more useful than the absolute number is the ranking within your own matches and the shape of the breakdown. A 78% with a clear, addressable gap often beats an 88% you can't explain.",
+      },
+      {
+        question: "Why did a role I'm clearly qualified for score low?",
+        answer:
+          "Usually industry fit, or a profile that undersells part of your background. Matching reads what's written; if a major part of your stack lives in a job you described in two lines, the model can't weight it. Reviewing what your profile actually says is the first thing to check.",
+      },
+      {
+        question: "Should I only apply to high-scoring roles?",
+        answer:
+          "No. Use the score to decide how much effort each application deserves rather than whether to apply at all. A strong score means a fast, confident application. A middling score with a specific identified gap means a slower application that addresses the gap directly — which is often the more winnable one, because fewer people bother.",
+      },
+      {
+        question: "Does a match score mean the employer will see me as a match?",
+        answer:
+          "No, and this is a common misreading. A candidate-side score compares a role to your profile for your benefit. It has no connection to how an employer's applicant tracking system will rank you, which runs on their criteria, their weighting and their pool.",
+      },
+    ],
+  },
+  {
+    slug: "ai-matching-vs-keyword-search",
+    title: "AI Matching vs. Keyword Search: What Actually Changes",
+    // Supplied meta title (54 chars) and meta description (151 chars) — used verbatim.
+    metaTitle: "AI Matching vs. Keyword Search: What Changes | Jobly",
+    metaDescription:
+      "Keyword search matches words; AI matching matches meaning. What that changes for job seekers, where keyword search still wins, and how to write for both.",
+    deck: "Keyword search matches words; AI matching matches meaning. What that changes for job seekers, where keyword search still wins, and how to write for both.",
+    // Batch 5, pillar /guides/ai-job-matching. published: false → noindex, no canonical, out of
+    // the sitemap, the RSS feed, the blog index and the related-reads rail.
+    published: false,
+    category: "Career tips",
+    // Reuses the AI-matching cover (blog-06) — no new artwork supplied.
+    coverImage: covers[5]!,
+    coverAlt: "AI Matching vs. Keyword Search: What Actually Changes — cover image",
+    author: "Priya Shah",
+    date: "2026-09-17",
+    readTime: "6 min read",
+    body: [
+      { type: "p", text: "Keyword search checks whether the same words appear on both sides. AI matching compares meaning, so it can connect a résumé saying \"led cross-functional product launches\" with a listing asking for \"product management experience\" — similar work, almost no shared vocabulary. Our guide to AI job matching explains the mechanics; this post is about what actually changes for you." },
+      { type: "h2", text: "The failure mode keyword search has" },
+      { type: "p", text: "The gap is well documented from the employer's side. Harvard Business School's Hidden Workers: Untapped Talent — Fuller and Raman with Accenture, 2021, surveying around 8,000 workers and 2,250 executives across the US, UK and Germany — found 88% of employers agreed that qualified high-skill candidates were being filtered out because they didn't match the exact criteria written into the job description. For middle-skill roles the figure was 94%." },
+      { type: "p", text: "Employers wrote those criteria, so it's a finding about how requirements get specified as much as about software. But the mechanism is the one you hit from the other direction: when matching depends on shared vocabulary, the people who describe their work differently disappear from the results." },
+      { type: "p", text: "That's the structural problem. Two people doing identical work, one writing \"stakeholder management\" and one writing \"worked with product and sales to align on roadmap,\" look completely different to a keyword system and identical to a semantic one." },
+      { type: "h2", text: "What changes in practice" },
+      { type: "p", text: "You stop losing roles to vocabulary. The most common invisible failure in keyword search is a role you'd have been perfect for that never appeared because the listing used different words. You never see it, so you never know. Semantic matching recovers a meaningful share of those." },
+      { type: "p", text: "You stop seeing roles that matched the words and not the job. The other half. A listing packed with your keywords in a role that's nothing like yours — a senior title that's actually a junior role, a \"Python\" mention that's incidental to the job — scores badly on meaning even while scoring well on text." },
+      { type: "p", text: "Synonym-hunting stops paying. With keyword search there's a real return to listing every variant of every skill: \"ML, machine learning, deep learning, neural networks.\" Semantic systems already treat those as related, so keyword-stuffing adds noise without adding reach." },
+      { type: "p", text: "Vagueness starts costing you. This is the trade. \"Responsible for various tasks\" gives a semantic model nothing to work with, whereas a keyword system at least matched on \"responsible.\" Specificity is now the thing that helps: \"managed a $2M budget across 3 product lines\" gives a model something to reason about." },
+      { type: "h2", text: "Where keyword search still wins" },
+      { type: "p", text: "It hasn't been made obsolete, and pretending otherwise would be wrong." },
+      { type: "p", text: "Hard, non-negotiable filters. Location, salary floor, security clearance, a specific certification, work authorisation. These are binary facts, not judgments, and you want exact matching on them. Most good matching tools handle these as filters before scoring, not as part of the score — worth checking that any tool you're using does." },
+      { type: "p", text: "Exact-string searches. Finding every listing mentioning a specific framework, tool or company name. Precision is the whole point and interpretation would only get in the way." },
+      { type: "p", text: "Auditability. A keyword filter's behaviour is inspectable — you can see exactly why something matched. A semantic score is harder to interrogate, which is why a tool that shows its reasoning is worth more than one that shows a number." },
+      { type: "p", text: "The practical shape most good systems land on: exact filters for the hard constraints, semantic scoring for everything requiring judgment." },
+      { type: "h2", text: "What this means for how you write a profile" },
+      { type: "p", text: "Write for a reader, not a parser. That's genuinely the whole guidance now, and it's a change from the résumé advice of five years ago." },
+      { type: "p", text: "Concretely: describe what you did and what happened, in normal language, with specifics. Name the tools you actually used rather than every adjacent one. Skip the keyword block at the bottom. Spend the effort on making two lines about your most relevant project properly specific instead of listing twelve technologies you touched once." },
+      { type: "p", text: "The one thing worth checking is whether the most important part of your background is described in enough detail for a model to weight it. A significant project summarised in six words will be underweighted, because there's nothing there to read." },
+    ],
+    faq: [
+      {
+        question: "Is AI matching more accurate than keyword search?",
+        answer:
+          "At finding relevant results, yes — that direction isn't seriously disputed. But there's no independent public benchmark for job-seeker-side matching accuracy, and most specific percentages circulating come from vendor or vendor-adjacent research. Treat any number you see as directional.",
+      },
+      {
+        question: "Do I need different résumés for AI matching and keyword search?",
+        answer:
+          "No. A clear, specific, well-written résumé works reasonably well for both. The old keyword-stuffing tactics are what's stopped paying off — they add noise for semantic systems and were always a marginal gain against keyword ones.",
+      },
+      {
+        question: "Does the employer's ATS use AI matching too?",
+        answer:
+          "Increasingly, though implementation varies enormously and you can't see which. Note that an employer-side system ranks you against other candidates for their benefit, which is a different question from a candidate-side score telling you how a role fits you. The two numbers aren't comparable and don't influence each other.",
+      },
+      {
+        question: "Can AI matching miss roles keyword search would have found?",
+        answer:
+          "Yes, occasionally — particularly exact-string cases like a specific niche tool. Which is why the sensible design uses hard filters for exact constraints and semantic scoring for judgment, rather than treating it as one replacing the other.",
+      },
+    ],
+  },
+  {
+    slug: "linkedin-job-alerts-not-working",
+    title: "LinkedIn Job Alerts Not Working? Here's What's Usually Going On",
+    // Supplied meta title (55 chars) and meta description (156 chars) — used verbatim.
+    metaTitle: "LinkedIn Job Alerts Not Working? What's Usually Wrong",
+    metaDescription:
+      "LinkedIn job alerts stopped arriving, or arriving useless? The six usual causes — delivery settings, filters, spam routing, alert caps — and how to fix each.",
+    deck: "LinkedIn job alerts stopped arriving, or arriving useless? The six usual causes — delivery settings, filters, spam routing, alert caps — and how to fix each.",
+    // Batch 5, pillar /vs/linkedin (as specified in the source doc). published: false → noindex,
+    // no canonical, out of the sitemap, the RSS feed, the blog index and the related-reads rail.
+    published: false,
+    category: "LinkedIn vs reality",
+    // Reuses the job-alerts cover (blog-03) — no new artwork supplied.
+    coverImage: covers[2]!,
+    coverAlt: "LinkedIn Job Alerts Not Working? Here's What's Usually Going On — cover image",
+    author: "Priya Shah",
+    date: "2026-09-17",
+    readTime: "6 min read",
+    body: [
+      { type: "p", text: "If your LinkedIn job alerts have stopped arriving — or they arrive and they're useless — it's almost always one of a handful of causes. Most are fixable in a few minutes. Some aren't fixable at all, because they're how the feature is designed to work." },
+      { type: "p", text: "Below: the six usual causes, in the order worth checking, then the part nobody tells you." },
+      { type: "h2", text: "The six usual causes" },
+      { type: "p", text: "1. The alert is set to notifications, not email. Each saved alert has its own delivery setting, and it isn't global. An alert delivering to in-app notifications will look \"on\" in your list while sending you no email at all. This is the most common cause and the fastest fix — open the alert, check where it's set to deliver, and change it." },
+      { type: "p", text: "2. The frequency is weekly. Alerts can be daily or weekly, and the default isn't always what you assumed. If you set one up months ago and it's on weekly, it's working exactly as configured while feeling broken." },
+      { type: "p", text: "3. The email is being filed elsewhere. Alert emails are bulk mail and routinely land in promotions, updates or spam depending on your provider. Search your whole mailbox rather than your inbox before concluding anything is wrong. If you find them filed away, mark one as important or add the sender to your contacts so future ones route correctly." },
+      { type: "p", text: "4. Global notification settings are overriding the alert. There's an account-level control for job-related email separate from any individual alert. If that's off — or if you unsubscribed from a LinkedIn email at some point, which can switch off more than you intended — individual alerts stay silent regardless of their own settings." },
+      { type: "p", text: "5. You've hit the saved-alert limit. There's a cap on how many job alerts one account can have. If you're at it, creating a new one can quietly replace or fail to save an old one. If alerts you're sure you created have vanished, check the count." },
+      { type: "p", text: "6. The filters are too narrow to produce results. An alert combining a specific title, a small location radius, a seniority level and a date filter can legitimately return nothing for weeks. It isn't broken; there's nothing matching. Widen one filter at a time and see when results appear — that tells you which constraint was doing the damage." },
+      { type: "h2", text: "If they're arriving but they're useless" },
+      { type: "p", text: "Different problem, and more common than total silence." },
+      { type: "p", text: "Alerts run on the keywords and filters you set, so they inherit the limits of keyword matching. A \"Senior Backend Engineer\" alert won't reliably surface \"Staff Software Engineer, Platform\" — a hiring manager would call those the same search; a string match calls them different. You end up with alerts that are simultaneously too broad (everything containing your keywords) and too narrow (nothing phrased differently)." },
+      { type: "p", text: "Three things help within LinkedIn: run several narrower alerts by title variant rather than one broad one, use the date filter aggressively since roles fill fast, and check the location radius, which is a frequent source of both silence and noise." },
+      { type: "p", text: "What doesn't help is adding more keywords to one alert. That widens the net without improving relevance, and you end up deleting the alert out of irritation." },
+      { type: "h2", text: "The part nobody tells you" },
+      { type: "p", text: "Alerts don't rank by fit. They send everything matching your filters, in the order it arrived. There's no scoring, no shortlist and no judgment about whether a role suits your background — that work is still yours, it's just been rescheduled into your inbox." },
+      { type: "p", text: "They also don't check whether a listing is real. An alert will forward you a posting that's been open for four months with nobody hiring behind it, because from the outside it looks identical to one posted this morning. Ghost jobs run somewhere between one in seven and one in three of all postings by credible estimates, and a keyword alert has no way to tell." },
+      { type: "p", text: "So the honest ceiling on fixing your alerts is this: at best, you get a faster, better-filtered version of the same unranked list. If the underlying problem is that you're doing the sorting, alert settings can't solve it. That's the difference between an alert and a scored digest — one forwards what matched, the other decides what's worth your morning." },
+    ],
+    faq: [
+      {
+        question: "Why did my LinkedIn job alerts suddenly stop?",
+        answer:
+          "Most often a delivery setting changed, an unsubscribe click switched off more than intended, or the emails started routing to promotions. Check those three before assuming anything is broken on LinkedIn's end.",
+      },
+      {
+        question: "How many job alerts can I have?",
+        answer:
+          "There's an account limit, and hitting it is a common reason new alerts don't save. If you're near it, delete the ones you stopped reading rather than adding more.",
+      },
+      {
+        question: "Are job alerts a Premium feature?",
+        answer:
+          "No. Job alerts work on free accounts. Premium adds applicant insights and filters, but alert delivery itself isn't gated behind it.",
+      },
+      {
+        question: "Why do I get the same job in multiple alerts?",
+        answer:
+          "Overlapping filters. If two alerts share keywords or locations, both will catch the same listing. Narrowing each alert to a distinct title variant reduces the duplication more effectively than deleting one of them.",
+      },
+      {
+        question: "Should I use alerts at all?",
+        answer:
+          "They're free and better than manual searching, so if they're working for you, keep them. What's worth being clear-eyed about is that alerts forward matches without ranking or vetting them — the sorting is still your job.",
+      },
+    ],
+  },
 ];
 
 /** A post counts as published unless it explicitly opts out with `published: false`. */
