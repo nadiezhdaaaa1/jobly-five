@@ -53,7 +53,7 @@ const DAILY_DIGEST: FeaturePage = {
   metaDescription:
     "Five matched tech roles in your inbox every morning, scored against your profile, with dormant listings filtered out. No job-board checking. 3-day free trial.",
   deck: "Roles that fit, first — with a match score. Five of them, in your inbox, every morning.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {

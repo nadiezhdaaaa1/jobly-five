@@ -704,7 +704,7 @@ export const BLOG_POSTS: BlogPost[] = [
     deck: "Step-by-step setup for job alerts on LinkedIn, Indeed, Glassdoor and company career pages — plus the settings people miss that make alerts go silent.",
     // Wave 3, pillar /guides/job-alerts. published: false → noindex, no canonical, out of the
     // sitemap, the RSS feed, the blog index and the related-reads rail.
-    published: false,
+    published: true,
     category: "Career tips",
     // Reuses the cover already assigned to the job-alerts article (blog-03) — no new artwork supplied.
     coverImage: covers[2]!,
@@ -828,7 +828,7 @@ export const BLOG_POSTS: BlogPost[] = [
     deck: "Companies post jobs they don't intend to fill for six recurring reasons — pipeline building, growth signalling, compliance and neglect. What the data shows.",
     // Batch 5, pillar /guides/ghost-jobs. published: false → noindex, no canonical, out of the
     // sitemap, the RSS feed, the blog index and the related-reads rail.
-    published: false,
+    published: true,
     category: "Ghost jobs",
     // Reuses the ghost-jobs cover (blog-01) — no new artwork supplied.
     coverImage: covers[0]!,
@@ -889,7 +889,7 @@ export const BLOG_POSTS: BlogPost[] = [
     deck: "A match score isn't one number — it's several comparisons combined. What experience, skill and industry fit each measure, and what no score can tell you.",
     // Batch 5, pillar /guides/ai-job-matching. published: false → noindex, no canonical, out of
     // the sitemap, the RSS feed, the blog index and the related-reads rail.
-    published: false,
+    published: true,
     category: "Career tips",
     // Reuses the AI-matching cover (blog-05) — no new artwork supplied.
     coverImage: covers[4]!,
@@ -949,7 +949,7 @@ export const BLOG_POSTS: BlogPost[] = [
     deck: "Keyword search matches words; AI matching matches meaning. What that changes for job seekers, where keyword search still wins, and how to write for both.",
     // Batch 5, pillar /guides/ai-job-matching. published: false → noindex, no canonical, out of
     // the sitemap, the RSS feed, the blog index and the related-reads rail.
-    published: false,
+    published: true,
     category: "Career tips",
     // Reuses the AI-matching cover (blog-06) — no new artwork supplied.
     coverImage: covers[5]!,
@@ -1012,7 +1012,7 @@ export const BLOG_POSTS: BlogPost[] = [
     deck: "LinkedIn job alerts stopped arriving, or arriving useless? The six usual causes — delivery settings, filters, spam routing, alert caps — and how to fix each.",
     // Batch 5, pillar /vs/linkedin (as specified in the source doc). published: false → noindex,
     // no canonical, out of the sitemap, the RSS feed, the blog index and the related-reads rail.
-    published: false,
+    published: true,
     category: "LinkedIn vs reality",
     // Reuses the job-alerts cover (blog-03) — no new artwork supplied.
     coverImage: covers[2]!,
