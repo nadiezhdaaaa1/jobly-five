@@ -22,7 +22,9 @@ export const Route = createFileRoute("/guides/$guide/")({
       return { meta: [{ title: "Guide not found" }, { name: "robots", content: "noindex" }] };
     }
     const guide = loaderData.guide;
-    const title = `${guide.title} — Jobly`;
+    // Supplied meta title/description win verbatim when present; they're written to length.
+    const title = guide.metaTitle ?? `${guide.title} — Jobly`;
+    const description = guide.metaDescription ?? guide.deck;
     const scripts: { type: string; children: string }[] = [
       {
         type: "application/ld+json",
