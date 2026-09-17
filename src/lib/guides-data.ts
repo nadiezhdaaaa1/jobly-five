@@ -19,6 +19,10 @@ export type Guide = {
   slug: string;
   title: string;
   deck: string;
+  /** Used verbatim as the <title> when present (bypasses the "{title} — Jobly" pattern). */
+  metaTitle?: string;
+  /** Used verbatim as the meta description when present (otherwise the deck is used). */
+  metaDescription?: string;
   published: boolean;
   lastUpdated: string;
   body: ContentBlock[];
