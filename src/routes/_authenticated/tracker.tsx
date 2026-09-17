@@ -18,7 +18,7 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
-import { PlanLockedScreen, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
