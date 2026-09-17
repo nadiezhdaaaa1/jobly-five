@@ -8,14 +8,18 @@ import type { VsComparisonRow } from "../../lib/vs-data";
 export function ComparisonTable({
   rows,
   competitorName,
+  heading,
 }: {
   rows: VsComparisonRow[];
   competitorName: string;
+  /** Verbatim heading from the source document; falls back to the templated one. */
+  heading?: string;
 }) {
   if (rows.length === 0) return null;
   return (
     <section className="mx-auto max-w-[820px] px-5 md:px-0">
-      <h2 className="text-2xl">Jobly vs {competitorName} at a glance</h2>
+      <h2 className="text-2xl">{heading ?? `Jobly vs ${competitorName} at a glance`}</h2>
+
       <div className="mt-6 overflow-x-auto rounded-lg border border-[color:var(--color-border)]">
         <table className="w-full min-w-[560px] border-collapse text-left text-sm">
           <caption className="sr-only">
