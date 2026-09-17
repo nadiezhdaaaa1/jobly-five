@@ -35,6 +35,17 @@ export type BlogPost = {
   slug: string;
   title: string;
   deck: string;
+  /**
+   * Omitted or true → live (indexable, listed, in the feed and sitemap).
+   * false → the route renders `<meta name="robots" content="noindex, follow">`, emits no
+   * canonical tag, and the post stays out of the blog index, the RSS feed, the sitemap and
+   * the related-reads rail. Same semantics as `published` on guides / vs / features / tools.
+   */
+  published?: boolean;
+  /** Used verbatim as the <title> when present (bypasses the "{title} — Jobly blog" pattern). */
+  metaTitle?: string;
+  /** Used verbatim as the meta description when present (otherwise the deck is used). */
+  metaDescription?: string;
   category: BlogCategory;
   coverImage: string;
   coverAlt: string;
