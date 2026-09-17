@@ -76,6 +76,8 @@ function shape(row: Record<string, unknown> | null): SubscriptionRow {
     pauseEndsAt: (row?.["pause_ends_at"] as string | null) ?? null,
     bankedDays: Number(row?.["banked_days"] ?? 0) || 0,
     bankedDaysExpireAt: (row?.["banked_days_expire_at"] as string | null) ?? null,
+    pendingSku: isSkuId(row?.["pending_sku"]) ? (row["pending_sku"] as SkuId) : null,
+    pendingSkuEffectiveAt: (row?.["pending_sku_effective_at"] as string | null) ?? null,
     everSubscribed: Boolean(row?.["ever_subscribed"]),
     activationSource: (row?.["activation_source"] as string | null) ?? "none",
   };
@@ -95,10 +97,27 @@ function spendableBankedDays(row: SubscriptionRow): number {
   return row.bankedDays;
 }
 
+/**
+ * Apply anything that has come due before the row is read or written: a
+ * scheduled plan change on its date, a scheduled cancellation at period end, a
+ * finished trial, a renewal. Lazy on read keeps a returning account correct; the
+ * nightly sweep at /api/public/hooks/apply-plan-changes covers accounts that
+ * never open the app. Never throws — a failed reconcile must not block a read.
+ */
+async function reconcile(userId: string): Promise<void> {
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.rpc("apply_due_subscription_changes", { p_user_id: userId });
+  } catch {
+    // Leave the row as it stands; the sweep retries.
+  }
+}
+
 /** Read the caller's own subscription row (details `get_entitlements` omits). */
 export const getSubscriptionRow = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SubscriptionRow> => {
+    await reconcile(context.userId);
     const { data } = await context.supabase
       .from("subscriptions")
       .select(COLS)
@@ -120,6 +139,8 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       const allowed: SubscriptionAction[] = [
         "start_trial",
         "activate",
+        "schedule_plan_change",
+        "clear_pending_plan_change",
         "pause",
         "unpause",
         "cancel_at_period_end",
@@ -134,6 +155,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }): Promise<SubscriptionRow> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await reconcile(context.userId);
     const { data: existing } = await supabaseAdmin
       .from("subscriptions")
       .select(COLS)
@@ -144,6 +166,7 @@ export const applySubscriptionAction = createServerFn({ method: "POST" })
       current.currentPeriodEnd && new Date(current.currentPeriodEnd).getTime() > Date.now()
         ? current.currentPeriodEnd
         : null;
+
 
     let patch: Record<string, unknown>;
     switch (data.action) {
