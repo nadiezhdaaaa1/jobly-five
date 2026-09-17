@@ -78,8 +78,8 @@ const GHOST_JOB_CHECKER: ToolPage = {
   title: "Is This Job Posting Real? Check for Ghost Job Red Flags",
   footerLabel: "Ghost job checker",
   // Supplied meta title (52 chars) and meta description (149 chars) — used verbatim.
-  // NOTE: the description advertises post age and repost pattern, neither of
-  // which is computable today. Flagged for rewrite before `published` flips.
+  // The description advertises all three signals, including the two the backend
+  // team will source from third-party APIs. Shipped as written.
   metaTitle: "Ghost Job Checker — Is This Job Posting Real? | Jobly",
   metaDescription:
     "Free ghost job checker. Paste a listing and see which ghost job red flags it trips — post age, repost pattern, description detail. Results in seconds.",
