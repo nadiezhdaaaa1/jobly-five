@@ -1,15 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
   SKUS,
+  SKU_IDS,
   TRIAL_DAYS,
   TRIAL_SKU,
   WATCH_MONTHLY_ANNUALISED,
+  compareSkus,
+  creditDays,
   discountPct,
+  isDowngrade,
   isPrepaid,
+  isUpgrade,
   perMonth,
   periodDays,
   renewalPhrase,
   savings,
+  skuRank,
   skuTotal,
 } from "./pricing";
 
@@ -87,5 +93,61 @@ describe("derived copy", () => {
     expect(renewalPhrase("watch_monthly")).toBe("$4.99/month");
     expect(renewalPhrase("watch_annual")).toBe("$34.99/year");
     expect(renewalPhrase("pro_3month")).toBe("$38.97 every 3 months");
+  });
+});
+
+describe("upgrade / downgrade ordering (Cancellation Policy §5)", () => {
+  it("orders tier first, period length second", () => {
+    expect(skuRank("watch_monthly")).toBeLessThan(skuRank("watch_annual"));
+    expect(skuRank("watch_annual")).toBeLessThan(skuRank("pro_monthly"));
+    expect(skuRank("pro_monthly")).toBeLessThan(skuRank("pro_3month"));
+    expect(skuRank("pro_3month")).toBeLessThan(skuRank("pro_6month"));
+  });
+  it("decides every pair, and the same SKU is neither", () => {
+    const ids = SKU_IDS;
+    const ranks = new Set(ids.map(skuRank));
+    expect(ranks.size).toBe(ids.length);
+    for (const id of ids) {
+      expect(isUpgrade(id, id)).toBe(false);
+      expect(isDowngrade(id, id)).toBe(false);
+    }
+  });
+  it("treats a tier gain as an upgrade even when the period shortens", () => {
+    expect(isUpgrade("watch_annual", "pro_monthly")).toBe(true);
+    expect(isDowngrade("watch_annual", "pro_monthly")).toBe(false);
+  });
+  it("treats a tier loss as a downgrade even when the period lengthens", () => {
+    expect(isDowngrade("pro_6month", "watch_annual")).toBe(true);
+    expect(isUpgrade("pro_6month", "watch_annual")).toBe(false);
+  });
+  it("does not rank by price: dropping to monthly is never an upgrade", () => {
+    expect(isUpgrade("pro_6month", "pro_monthly")).toBe(false);
+    expect(isDowngrade("pro_6month", "pro_monthly")).toBe(true);
+  });
+});
+
+describe("§5 credit for the unused period", () => {
+  it("values remaining days at what was paid, in whole days of the new plan", () => {
+    // 45 of 90 days left on pro_3month = $19.485; pro_6month costs $0.3663/day.
+    expect(creditDays({ from: "pro_3month", to: "pro_6month", daysLeft: 45 })).toBe(53);
+  });
+  it("credits nothing below one day", () => {
+    expect(creditDays({ from: "pro_3month", to: "pro_6month", daysLeft: 0 })).toBe(0);
+    expect(creditDays({ from: "pro_3month", to: "pro_6month", daysLeft: -3 })).toBe(0);
+  });
+  it("may exceed the new plan's own period rather than capping", () => {
+    const days = creditDays({ from: "pro_6month", to: "watch_monthly", daysLeft: 170 });
+    expect(days).toBeGreaterThan(periodDays("watch_monthly"));
+    expect(days).toBe(374);
+  });
+  it("uses the price actually paid, not the list price", () => {
+    const paid = creditDays({ from: "pro_3month", to: "pro_monthly", daysLeft: 45, paidTotal: 20 });
+    const list = creditDays({ from: "pro_3month", to: "pro_monthly", daysLeft: 45 });
+    expect(paid).toBeLessThan(list);
+  });
+  it("never inflates: a round trip cannot gain days", () => {
+    const out = creditDays({ from: "pro_6month", to: "pro_3month", daysLeft: 180 });
+    const back = creditDays({ from: "pro_3month", to: "pro_6month", daysLeft: out });
+    expect(back).toBeLessThanOrEqual(180);
   });
 });
