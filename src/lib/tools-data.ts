@@ -85,7 +85,7 @@ const GHOST_JOB_CHECKER: ToolPage = {
     "Free ghost job checker. Paste a listing and see which ghost job red flags it trips — post age, repost pattern, description detail. Results in seconds.",
   deck: "Paste a listing and see which ghost job red flags it trips.",
   published: false,
-  status: "coming-soon",
+  status: "awaiting-backend",
   lastUpdated: "2026-09-17",
   intro:
     "Paste a listing into the ghost job checker and we'll run it against the patterns that usually give away a stalled or abandoned posting. This won't tell you a company's real hiring plans — only what's visible on the page itself. That's still more than most people check before spending an evening on an application.",
@@ -96,9 +96,9 @@ const GHOST_JOB_CHECKER: ToolPage = {
     button: "Run the check",
     buttonWorking: "Checking the listing\u2026",
   },
-  comingSoon: {
-    title: "The checker isn't live yet",
-    body: "We're not shipping a risk verdict we can't stand behind. Two of the three signals this page describes — how long a posting has been live, and whether it has been reposted — can't be read from pasted text, so the check stays switched off until it can do what it says. In the meantime, the seven signals in our ghost jobs guide are the same ones the checker will use.",
+  pendingResult: {
+    title: "Not yet available",
+    body: "Your listing came through, but the check itself isn't running yet — it's being built, and we'd rather show you nothing than a risk level we made up. Nothing has been scored, and nothing here is a verdict on this posting. Until it's live, the seven signals in our ghost jobs guide are the same ones the checker will use, and you can read them in about two minutes.",
   },
   resultStates: [
     {
