@@ -22,7 +22,9 @@ export const Route = createFileRoute("/guides/$guide/")({
       return { meta: [{ title: "Guide not found" }, { name: "robots", content: "noindex" }] };
     }
     const guide = loaderData.guide;
-    const title = `${guide.title} — Jobly`;
+    // Supplied meta title/description win verbatim when present; they're written to length.
+    const title = guide.metaTitle ?? `${guide.title} — Jobly`;
+    const description = guide.metaDescription ?? guide.deck;
     const scripts: { type: string; children: string }[] = [
       {
         type: "application/ld+json",
@@ -67,14 +69,14 @@ export const Route = createFileRoute("/guides/$guide/")({
     return {
       meta: [
         { title },
-        { name: "description", content: guide.deck },
+        { name: "description", content: description },
         { property: "og:title", content: guide.title },
-        { property: "og:description", content: guide.deck },
+        { property: "og:description", content: description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: guide.title },
-        { name: "twitter:description", content: guide.deck },
+        { name: "twitter:description", content: description },
         ...(guide.published ? [] : [{ name: "robots", content: "noindex, follow" }]),
       ],
       links: guide.published ? [{ rel: "canonical", href: url }] : [],
