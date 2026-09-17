@@ -60,6 +60,17 @@ export function LegalLayout({ doc }: { doc: LegalDoc }) {
                   </p>
                 );
               }
+              if (b.type === "address") {
+                return (
+                  <address key={i} className="mt-4 not-italic leading-7 text-[color:var(--color-foreground)]">
+                    {b.lines.map((line, j) => (
+                      <span key={j} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </address>
+                );
+              }
               if (b.type === "ul") {
                 return (
                   <ul key={i} className="mt-4 list-disc space-y-2 pl-6">
