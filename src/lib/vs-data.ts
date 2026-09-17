@@ -1056,6 +1056,684 @@ const SONARA: VsPage = {
   ],
 };
 
+const GLASSDOOR: VsPage = {
+  slug: "glassdoor",
+  competitorName: "Glassdoor",
+  footerLabel: "Jobly vs Glassdoor",
+  title: "Jobly vs. Glassdoor: Research or Find Roles?",
+  // Supplied meta title (52 chars) and meta description (153 chars) — used verbatim.
+  metaTitle: "Jobly vs. Glassdoor: Research or Find Roles? | Jobly",
+  metaDescription:
+    "Glassdoor is where you research a company before applying. Jobly finds the roles and emails five a day. What each one is actually for, compared honestly.",
+  deck: "Glassdoor is where you research a company before applying. Jobly finds the roles and emails five a day. What each one is actually for, compared honestly.",
+  published: false,
+  lastUpdated: LAST_UPDATED,
+  intro: [
+    {
+      type: "p",
+      text: "Glassdoor is a research tool that also lists jobs. Jobly is a matching service that sends you five roles a morning. Most people who compare them aren't really choosing — they use Glassdoor to decide whether a company is worth working for, and something else to find the roles in the first place.",
+    },
+    { type: "p", text: "That's the honest shape of it, and it's worth saying plainly before the table." },
+  ],
+  comparisonHeading: "Side by side",
+  comparison: [
+    {
+      feature: "What it is",
+      competitor: "Company reviews, salary data and interview reports, with a job board attached",
+      jobly: "Email digest of matched roles",
+    },
+    {
+      feature: "Primary use",
+      competitor: "Researching a company you're already considering",
+      jobly: "Finding roles worth considering",
+    },
+    {
+      feature: "How it matches",
+      competitor: "Search and recommendations; no candidate-side fit score",
+      jobly:
+        "Match score per role — experience, skill and industry fit — with written reasoning",
+    },
+    {
+      feature: "What it knows that Jobly doesn't",
+      competitor: "Employee reviews, reported salaries, interview questions, ratings by department",
+      jobly: "—",
+    },
+    {
+      feature: "Delivery",
+      competitor: "You visit the site; email alerts by saved search",
+      jobly: "Five roles by email each morning",
+    },
+    {
+      feature: "Ghost-job filtering",
+      competitor: "Not a stated feature",
+      jobly: "Listings screened against activity in the employer's ATS feed (why)",
+    },
+    {
+      feature: "Cost to job seekers",
+      competitor: "Free — employers pay",
+      jobly: `${JOBLY_PRICING}. No free tier — 3-day free trial`,
+    },
+    {
+      feature: "Coverage",
+      competitor: "Global, every industry",
+      jobly: "US and remote tech",
+    },
+  ],
+  body: [
+    { type: "h2", text: "Who Glassdoor is better for" },
+    {
+      type: "p",
+      text: "Glassdoor holds a dataset nobody else has at that scale, and it answers questions Jobly can't touch.",
+    },
+    {
+      type: "p",
+      text: "If you want to know what it's like inside. Reviews from people who worked there, broken down by team and tenure, are the closest thing to a straight answer about management, workload and culture that you'll get before an offer. No match score measures any of that — a point worth remembering when a role scores 90% and still isn't right.",
+    },
+    {
+      type: "p",
+      text: "If you're negotiating. Reported salary ranges by title, level and location give you a number to anchor against. That's the single most valuable free thing on the site.",
+    },
+    {
+      type: "p",
+      text: "If you're preparing for an interview. Interview reports from candidates who went through the same process are practical prep material — often including the actual questions, the format and how many rounds to expect, which is information the company itself rarely publishes.",
+    },
+    {
+      type: "p",
+      text: "If you're researching one specific company. When you already know where you want to work, Glassdoor is the tool and Jobly isn't — Jobly sends you roles, not dossiers.",
+    },
+    {
+      type: "p",
+      text: "The usual caveat about reviews applies and it isn't Glassdoor's fault: people write reviews when something goes very well or very badly, so the middle is underrepresented. Read the volume and the pattern rather than the extremes, and check the dates — a company two years and one management change ago may not be the company you'd be joining.",
+    },
+    { type: "h2", text: "Who Jobly is better for" },
+    {
+      type: "p",
+      text: "If your problem is finding roles, not vetting them. Glassdoor is where you go once you have a name. It doesn't help you get the names. The digest does exactly that: five roles a morning, scored, with the reasoning attached.",
+    },
+    {
+      type: "p",
+      text: "If you want to know why a role fits you. Glassdoor tells you what other people think of the company. Jobly tells you how the role lines up with your experience, your stack and your industry background. Those are different questions, and you need both — but only one of them narrows a search.",
+    },
+    {
+      type: "p",
+      text: "If you keep opening dead listings. Ghost jobs run somewhere between one in seven and one in three of all postings by credible estimates. Glassdoor's board carries what employers publish. Jobly checks whether the role is still moving inside the employer's hiring system before it reaches your inbox.",
+    },
+    {
+      type: "p",
+      text: "If you're in US or remote tech. Engineering, product, design and data is Jobly's whole scope. Glassdoor covers everything, which is a genuine advantage outside that set.",
+    },
+    {
+      type: "p",
+      text: "One asymmetry worth naming. Glassdoor's data comes from people who already worked somewhere, which makes it retrospective by nature — excellent for evaluating a company, useless for finding one you'd never heard of. Discovery and diligence are separate jobs, and no product does both well.",
+    },
+    { type: "h2", text: "If you're switching" },
+    {
+      type: "p",
+      text: "You almost certainly shouldn't. These are complements, and the sensible workflow uses both in sequence.",
+    },
+    {
+      type: "p",
+      text: "Keep Glassdoor for the second step. A role arrives in your digest with an 84% and a reason. Before you spend an evening on the application, look the company up — reviews, salary range, interview reports. That's twenty minutes that saves a bad process.",
+    },
+    {
+      type: "p",
+      text: "Reconsider the job alerts. If you have saved searches emailing you listings, that's the piece a digest replaces. Two sources of unranked and ranked job email in the same inbox means the unranked one wins on volume and loses on attention.",
+    },
+    {
+      type: "p",
+      text: "Use the salary data on your Jobly profile. Jobly filters on the range you set. If your number is guesswork, Glassdoor's reported ranges for your title and location are the best free way to set it accurately — and an accurate range materially improves what reaches you.",
+    },
+    {
+      type: "p",
+      text: "Don't let a score override a review. If a role matches beautifully and everyone who worked there says the same specific bad thing, believe the reviews. A match score reads a job description; it can't read a management culture.",
+    },
+  ],
+  faq: [
+    {
+      question: "Is Jobly cheaper than Glassdoor?",
+      answer:
+        "Glassdoor is free for job seekers — employers pay for it — so on price it wins outright. Jobly Pro is $16.99 a month, or $10.99 a month on the six-month plan (Watch, the weekly digest, starts at $2.92 a month), with a 3-day free trial. What the paid plan buys isn't access to listings, it's the filtering and the delivery.",
+    },
+    {
+      question: "Can I use Jobly and Glassdoor together?",
+      answer:
+        "That's the intended combination. Jobly surfaces the roles, Glassdoor tells you whether the company behind one is worth your time. Neither replaces the other.",
+    },
+    {
+      question: "Does Jobly show company reviews or salary data?",
+      answer:
+        "No. Jobly matches roles to your profile and shows you why each one fits. Reviews, ratings and reported salaries aren't something it collects, and Glassdoor's dataset there is not something a matching tool can substitute for.",
+    },
+    {
+      question: "Does Glassdoor match jobs to my profile?",
+      answer:
+        "It offers search and recommendations, but not a candidate-side fit score explaining how a specific role lines up with your experience. The job board is a secondary product on a site whose centre of gravity is research.",
+    },
+    {
+      question: "Does Jobly check the companies it sends me?",
+      answer:
+        "It checks the listing, not the company. Jobly screens for whether a role is still active in the employer's hiring system — it doesn't assess culture, management or whether people there are happy. That's the part Glassdoor answers, and it's why the two belong in the same workflow rather than in competition.",
+    },
+    {
+      question: "Should I trust Glassdoor reviews?",
+      answer:
+        "Read them as a pattern rather than a verdict. Reviews skew toward strong feelings at both ends, so weigh recurring specifics — the same complaint about the same team, repeatedly — more heavily than any single review, and check how recent they are.",
+    },
+  ],
+};
+
+const TEAL: VsPage = {
+  slug: "teal",
+  competitorName: "Teal",
+  footerLabel: "Jobly vs Teal",
+  title: "Jobly vs. Teal: Track Applications or Find Them?",
+  // Supplied meta title (50 chars) and meta description (154 chars) — used verbatim.
+  metaTitle: "Jobly vs. Teal: Track Applications or Find Them?",
+  metaDescription:
+    "Teal is a job tracker and resume builder with a paywalled match score. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
+  deck: "Teal is a job tracker and resume builder with a paywalled match score. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
+  published: false,
+  lastUpdated: LAST_UPDATED,
+  intro: [
+    {
+      type: "p",
+      text: "Teal is a job tracker with a resume builder attached. You find the roles yourself, clip them into the tracker with a browser extension, tailor a resume against each one, and manage the pipeline from there. Jobly finds the roles and emails you five a morning with a score and the reasoning.",
+    },
+    {
+      type: "p",
+      text: "The overlap is narrower than it looks. Teal's centre of gravity is what happens after you've found something worth applying to. Jobly's is the finding.",
+    },
+  ],
+  comparisonHeading: "Side by side",
+  comparison: [
+    {
+      feature: "What it is",
+      competitor: "Job tracker, resume builder and Chrome clipper",
+      jobly: "Email digest of matched roles",
+    },
+    {
+      feature: "Who finds the roles",
+      competitor: "You, browsing job boards",
+      jobly: "Jobly, scored against your profile",
+    },
+    {
+      feature: "Match score",
+      competitor:
+        "Yes — resume against a job description, but the numeric score sits behind Teal+",
+      jobly:
+        "Yes, on every match, free tier included, split into experience, skill and industry fit",
+    },
+    { feature: "Delivery", competitor: "You open the app", jobly: "Email, every morning" },
+    {
+      feature: "Ghost-job filtering",
+      competitor: "Not a stated feature",
+      jobly: "Listings screened against activity in the employer's ATS feed",
+    },
+    {
+      feature: "Resume tools",
+      competitor: "Builder, unlimited versions, AI bullet rewrites, cover letters",
+      jobly: "None",
+    },
+    {
+      feature: "Application tracking",
+      competitor: "Unlimited on free — one of the most generous free trackers in the category",
+      jobly: "Yes, with statuses and follow-up reminders",
+    },
+    {
+      feature: "Free tier",
+      competitor:
+        "Unlimited resumes, unlimited tracking, Chrome extension across 40+ boards, contact manager",
+      jobly: "No free tier — 3-day free trial",
+    },
+    {
+      feature: "Paid",
+      competitor: "Teal+ reported at $13/week, $29/month, $79/quarter. No annual plan",
+      jobly: JOBLY_PRICING,
+    },
+    { feature: "Coverage", competitor: "Broad", jobly: "US and remote tech" },
+  ],
+  body: [
+    { type: "h2", text: "Who Teal is better for" },
+    {
+      type: "p",
+      text: "Teal's free tier is one of the genuinely good deals in this category, and that's worth saying before anything else.",
+    },
+    {
+      type: "p",
+      text: "If you're managing a lot of applications at once. Unlimited tracking, notes, contacts and follow-up timing, all free, all in one board. If you're running thirty live applications and losing track of who you spoke to when, that's the problem Teal was built for and it solves it well.",
+    },
+    {
+      type: "p",
+      text: "If your resume needs work per role. Teal's tailoring workflow — comparing your resume against a specific job description and flagging what's missing — is one of the cleaner implementations around. Jobly does nothing here.",
+    },
+    {
+      type: "p",
+      text: "If you clip roles from everywhere. The Chrome extension saves listings from across dozens of boards into one place. If your sources are scattered and you want them consolidated, that's real value at no cost.",
+    },
+    {
+      type: "p",
+      text: "Two things to know. The numeric match score — the feature closest to what Jobly does — is behind Teal+, so the free tier gives you the organiser without the optimiser. And Teal bills weekly, monthly or quarterly with no annual plan; reported at $13 a week, that annualises to roughly $676 if a search runs long and you forget to cancel. Prices have been reported inconsistently across review sites through 2026, so check tealhq.com rather than trusting any summary, this one included.",
+    },
+    { type: "h2", text: "Who Jobly is better for" },
+    {
+      type: "p",
+      text: "If finding roles is the part that's eating your evenings. Teal assumes you've already got a list. If you're the one browsing LinkedIn and Indeed to build that list, the tracker organises work you'd rather not be doing at all. The digestdoes the finding — five roles, ranked, with reasoning.",
+    },
+    {
+      type: "p",
+      text: "If you want the score without paying for it. Teal's match score is a Teal+ feature. Jobly's comes with every match, broken into experience, skill and industry fit rather than a single number. If scoring is what drew you to Teal, that's worth comparing directly.",
+    },
+    {
+      type: "p",
+      text: "If you'd rather not open another app. Teal is a workspace — it works when you're in it. The digest arrives whether or not you were planning to job-search that day, which matters most in the weeks when you weren't.",
+    },
+    {
+      type: "p",
+      text: "If you want stale listings filtered out. Clipping a role into a tracker doesn't tell you whether anyone's hiring behind it. Jobly checks whether the role is still moving in the employer's ATS feed before it reaches you. Teal will happily track a posting that's been dead for two months.",
+    },
+    {
+      type: "p",
+      text: "The clipping habit is the tell. If most of your Teal usage is the Chrome extension — saving roles you found somewhere else — then discovery, not organisation, is where your time is actually going. Teal makes that time tidier. It doesn't make it shorter.",
+    },
+    { type: "h2", text: "If you're switching" },
+    {
+      type: "p",
+      text: "Mostly you wouldn't — these sit at different stages, and running both is coherent.",
+    },
+    {
+      type: "p",
+      text: "Decide which tracker you'll actually update. Both have one, and two trackers means neither stays accurate. Teal's is unlimited and free with contacts and notes; Jobly's is tied to the same profile that generates your matches and carries follow-up reminders. Pick on which one you'll open, not which has more fields.",
+    },
+    {
+      type: "p",
+      text: "If you were about to buy Teal+ for the match score, pause. That's the overlap. Compare Jobly's free scoring against Teal+'s paid scoring before committing to a weekly subscription.",
+    },
+    {
+      type: "p",
+      text: "Keep the resume tooling. Jobly won't rewrite a bullet or generate a cover letter. If that's why you're on Teal, nothing here replaces it.",
+    },
+    {
+      type: "p",
+      text: "Expect the clipping habit to fade. If the digest is doing the discovery, the Chrome extension gets used less. That's the intended outcome, not a loss.",
+    },
+  ],
+  faq: [
+    {
+      question: "Is Jobly cheaper than Teal?",
+      answer:
+        "Jobly Pro is $16.99 a month, or $10.99 a month on the six-month plan (Watch, the weekly digest, starts at $2.92 a month), with a 3-day free trial, against Teal+ at a reported $29 a month or $13 a week (checked September 2026; see tealhq.com for the current figure). Teal has a free tier and Jobly has a free trial. The sharper comparison is what each one gives you: Teal's free tier covers tracking and resume storage but not the match score, while every Jobly match carries a score with the reasoning attached.",
+    },
+    {
+      question: "Can I use Jobly and Teal together?",
+      answer:
+        "Yes. Let the digest handle discovery and Teal handle resume tailoring. The only thing to settle is the tracker — running two guarantees both drift.",
+    },
+    {
+      question: "Does Teal send me job matches?",
+      answer:
+        "Not as a digest. Teal scores roles you've already saved against your resume; it doesn't go out and find new ones for you. That's the structural difference between the two products.",
+    },
+    {
+      question: "Does Jobly build or review my resume?",
+      answer:
+        "No. It reads your profile to match you to roles and doesn't rewrite anything. If resume work is your bottleneck, Teal is built for it and Jobly isn't.",
+    },
+    {
+      question: "Do I need both if I'm only applying to a few roles a week?",
+      answer:
+        "Probably not. Teal's tracker earns its place when you're juggling twenty or thirty live applications and losing track of follow-ups; at five a week a notes app would do. Jobly's value doesn't scale the same way — the discovery problem exists whether you're applying to three roles a week or thirty, because you still have to find those three.",
+    },
+    {
+      question: "Which one has a better match score?",
+      answer:
+        "They measure slightly different things. Teal compares your resume against one job description you chose. Jobly scores roles you haven't seen yet against a profile you maintain, and splits the result into experience, skill and industry fit — more on how that works. Teal answers \u201cshould I apply to this?\u201d Jobly answers \u201cwhich five should I look at today?\u201d",
+    },
+  ],
+};
+
+const WELCOME_TO_THE_JUNGLE: VsPage = {
+  slug: "welcome-to-the-jungle",
+  competitorName: "Welcome to the Jungle",
+  footerLabel: "Jobly vs Welcome to the Jungle",
+  title: "Jobly vs. Welcome to the Jungle (Otta) Compared",
+  // Supplied meta title (55 chars) and meta description (156 chars) — used verbatim.
+  metaTitle: "Jobly vs. Welcome to the Jungle (Otta) Compared | Jobly",
+  metaDescription:
+    "Welcome to the Jungle, formerly Otta, curates tech roles on a platform you browse. Jobly emails five scored matches daily. Compared on matching and delivery.",
+  deck: "Welcome to the Jungle, formerly Otta, curates tech roles on a platform you browse. Jobly emails five scored matches daily. Compared on matching and delivery.",
+  published: false,
+  lastUpdated: LAST_UPDATED,
+  intro: [
+    { type: "h2", text: "The real difference" },
+    {
+      type: "p",
+      text: "Welcome to the Jungle is a curated matching platform built around rich company profiles — culture, funding stage, salary transparency, team size — mostly focused on tech and startup roles. Jobly is an email-first AI matcher with no company-culture content and no industry focus at all. Both aim to reduce browsing rather than add to it, but they differ sharply on format and scope: one is an app built around a specific segment of the market, the other is a single daily email that isn't tied to any industry.",
+    },
+  ],
+  comparisonHeading: "Side by side",
+  comparison: [
+    {
+      feature: "What it is",
+      competitor: "Curated tech job platform (formerly Otta)",
+      jobly: "Email digest of matched roles",
+    },
+    {
+      feature: "How it matches",
+      competitor:
+        "Preferences you set — role, location, salary, company stage, values — refined by your activity",
+      jobly: "Match score per role: experience, skill and industry fit, with written reasoning",
+    },
+    {
+      feature: "Score shown",
+      competitor: "No numeric fit score with a breakdown",
+      jobly: "Yes, on every match",
+    },
+    {
+      feature: "Delivery",
+      competitor: "Web and mobile app you open; no daily shortlist by email",
+      jobly: "Five roles by email each morning",
+    },
+    {
+      feature: "Company depth",
+      competitor:
+        "Substantial — team size, funding stage, salary transparency, photos, video, editorial profiles",
+      jobly: "None",
+    },
+    {
+      feature: "Curation",
+      competitor: "Companies vetted by their team; won't show the same job twice",
+      jobly: "Roles screened for ATS activity; roles you've seen don't return",
+    },
+    {
+      feature: "Ghost-job filtering",
+      competitor: "Claims no outdated or duplicate listings; method not published",
+      jobly: "Screened against activity in the employer's ATS feed",
+    },
+    {
+      feature: "Application tracking",
+      competitor: "Saved and applied lists",
+      jobly: "Tracker with statuses and follow-up reminders",
+    },
+    {
+      feature: "Cost",
+      competitor: "Free for job seekers",
+      jobly: `${JOBLY_PRICING}. No free tier — 3-day free trial`,
+    },
+    {
+      feature: "Coverage",
+      competitor: "Tech and startups across US, UK and Europe, plus remote",
+      jobly: "US and remote tech",
+    },
+  ],
+  body: [
+    { type: "h2", text: "Who Welcome to the Jungle is better for" },
+    { type: "p", text: "It's a good product and pretending otherwise would be obvious." },
+    {
+      type: "p",
+      text: "If you're job-searching in Europe or the UK. This is the decisive one. Welcome to the Jungle came out of France, absorbed a British company, and covers London, Berlin, Paris and the rest properly. Jobly is US and remote. If your search is European, the comparison ends here.",
+    },
+    {
+      type: "p",
+      text: "If you want to see the company before the job. Rich profiles with photos, video and editorial coverage tell you what a place looks like from the inside before you apply. Jobly has nothing equivalent — a match card is a match card.",
+    },
+    {
+      type: "p",
+      text: "If you filter on company traits. Stage, size, values, funding — being able to say \u201cSeries A or earlier, under 200 people\u201d and have that respected is a genuinely different way to search, and it's built in.",
+    },
+    {
+      type: "p",
+      text: "If browsing is the part you enjoy. Some people like exploring. The card-based feed is well made for it, and it's free.",
+    },
+    {
+      type: "p",
+      text: "Two honest observations. The platform leans hard on employer branding since the acquisition, which is excellent for research and slower if you just want to apply and move on. And mobile app reviews through 2025 and 2026 include recurring complaints about bugs and login problems after updates — worth knowing if the app is how you'd use it.",
+    },
+    { type: "h2", text: "Who Jobly is better for" },
+    {
+      type: "p",
+      text: "If you don't want to open anything. This is the whole difference. Welcome to the Jungle curated the list, then put it somewhere you have to go. The digest arrives whether you were planning to job-search that day or not — which matters most in the fourth week, when you weren't.",
+    },
+    {
+      type: "p",
+      text: "If you want a score and a reason, not just a curated feed. Preference filtering answers \u201cdoes this match what I asked for.\u201d Scoring answers \u201cdoes my actual experience fit this role,\u201d which is a harder question and a more useful one. Jobly gives you the number and the split behind it — how that works.",
+    },
+    {
+      type: "p",
+      text: "If five is the right number. A curated feed is still a feed: better than a job board, but you decide when to stop scrolling. Five roles a morning has a defined end.",
+    },
+    {
+      type: "p",
+      text: "If you want listing activity checked, not asserted. Welcome to the Jungle says it doesn't show outdated listings, and their vetting is real. But the method isn't published, so you're taking it on trust. Jobly's check is specific and stateable: whether the role is still moving in the employer's ATS feed.",
+    },
+    {
+      type: "p",
+      text: "One thing both products agree on. Neither shows you everything. Both decided that filtering is the product's job rather than yours, which puts them on the same side of the argument against LinkedIn and Indeed. What's left to disagree about is how short the list should be and where it should land.",
+    },
+    { type: "h2", text: "If you're switching" },
+    {
+      type: "p",
+      text: "Check the geography first. If you're searching in Europe or the UK, don't switch. Jobly doesn't cover it and no amount of matching quality compensates for the wrong market.",
+    },
+    {
+      type: "p",
+      text: "Expect less company context. If you'd got used to reading a full company profile before applying, Jobly won't give you that. Look the company up separately — the twenty minutes is still worth spending, it just happens somewhere else now.",
+    },
+    {
+      type: "p",
+      text: "Set the salary range honestly. Both products filter on it. Welcome to the Jungle trained you to state a minimum; Jobly uses it the same way, and a vague range produces a vague five.",
+    },
+    {
+      type: "p",
+      text: "Keep the account. It's free. If your search runs long, there's no cost to letting it sit there for the weeks you want to browse.",
+    },
+  ],
+  faq: [
+    {
+      question: "Is Jobly cheaper than Welcome to the Jungle?",
+      answer:
+        "Welcome to the Jungle is free for job seekers, so no. Jobly Pro is $16.99 a month, or $10.99 a month on the six-month plan (Watch, the weekly digest, starts at $2.92 a month), with a 3-day free trial. The paid tier buys scoring, ghost-job filtering and email delivery rather than access to listings.",
+    },
+    {
+      question: "Is Welcome to the Jungle the same as Otta?",
+      answer:
+        "It's what Otta became. Welcome to the Jungle acquired Otta in 2024 and folded the brand in. The preference-based matching carried over; the surrounding product now emphasises company profiles and employer branding more than Otta did.",
+    },
+    {
+      question: "Can I use both?",
+      answer:
+        "Yes, and there's a clean split: let the digest handle daily discovery, and use Welcome to the Jungle when you want to research a company properly or browse by company traits Jobly doesn't filter on.",
+    },
+    {
+      question: "Does Welcome to the Jungle email me matches?",
+      answer:
+        "It has alerts, but not a scored daily shortlist — the product is built around browsing a curated feed on web or mobile. That's the structural difference.",
+    },
+    {
+      question: "Which one is closer to what Otta used to be?",
+      answer:
+        "Fairly asked, and there isn't a clean answer. Otta's appeal was a curated shortlist of tech roles with no noise and no recruiters — Welcome to the Jungle inherited the matching engine and the vetted company list directly, but wrapped it in a heavier employer-branding layer than Otta had. Jobly inherited nothing, but arrives at a similar place from a different direction: a short list, no feed, no scrolling. If what you missed was the curation, Welcome to the Jungle still has it. If what you missed was how little time it took, that's closer to the digest.",
+    },
+    {
+      question: "Does Jobly cover Europe?",
+      answer:
+        "No. US and remote tech roles only. If your search is in London, Berlin or Paris, Welcome to the Jungle is the better tool and this comparison doesn't change that.",
+    },
+  ],
+};
+
+const INJOBS: VsPage = {
+  slug: "injobs",
+  competitorName: "inJobs",
+  footerLabel: "Jobly vs inJobs",
+  title: "Jobly vs. inJobs: Auto-Apply or Curated Matches?",
+  // Supplied meta title (49 chars) and meta description (152 chars) — used verbatim.
+  metaTitle: "Jobly vs. inJobs: Auto-Apply or Curated Matches?",
+  metaDescription:
+    "inJobs scores roles and can submit applications for you. Jobly emails five scored matches daily and leaves the applying to you. An honest comparison.",
+  deck: "inJobs scores roles and can submit applications for you. Jobly emails five scored matches daily and leaves the applying to you. An honest comparison.",
+  published: false,
+  lastUpdated: LAST_UPDATED,
+  intro: [
+    {
+      type: "p",
+      text: "inJobs — the product also listed as InJob.AI — builds a profile from your resume and an interactive questionnaire, scans job boards and company career pages, scores what it finds against your profile, writes tailored cover letters and can submit applications on your behalf. Jobly scores roles against a profile you set and emails you five a morning, with the applying left to you.",
+    },
+    { type: "p", text: "Both score. Only one submits. That's the decision." },
+    { type: "h2", text: "A note on sources" },
+    {
+      type: "p",
+      text: "There's very little independent information about inJobs. Its G2 profile carries no reviews, no public pricing page was findable, and it doesn't appear in the 2026 AI job tool roundups we checked. Everything in the table below comes from the company's own product description, which means it reflects what inJobs says it does rather than what anyone has verified it does.",
+    },
+    {
+      type: "p",
+      text: "We're saying that rather than presenting it as established fact, and the same standard should apply to us: check anything that matters before paying for either product.",
+    },
+    {
+      type: "p",
+      text: "inJobs details from the company's own product description, September 2026. Not independently verified.",
+    },
+  ],
+  comparisonHeading: "Side by side",
+  comparison: [
+    {
+      feature: "What it is",
+      competitor: "AI job search and application automation",
+      jobly: "Email digest of matched roles",
+    },
+    {
+      feature: "Profile setup",
+      competitor: "Resume analysis plus an interactive dialogue",
+      jobly: "A profile you fill in: role, stack, seniority, location, salary range",
+    },
+    {
+      feature: "How it matches",
+      competitor: "Compatibility scores against listings from boards and career pages",
+      jobly: "Match score per role: experience, skill and industry fit, with written reasoning",
+    },
+    { feature: "Cover letters", competitor: "Generated per application", jobly: "Not offered" },
+    {
+      feature: "Who applies",
+      competitor: "The software, on your behalf, for high-scoring roles",
+      jobly: "You",
+    },
+    { feature: "Delivery", competitor: "Dashboard", jobly: "Email, every morning" },
+    {
+      feature: "Ghost-job filtering",
+      competitor: "Not a stated feature",
+      jobly: "Screened against activity in the employer's ATS feed (why)",
+    },
+    {
+      feature: "Tracking",
+      competitor: "Application dashboard with statuses and employer responses",
+      jobly: "Tracker with statuses and follow-up reminders",
+    },
+    {
+      feature: "Pricing",
+      competitor: "Not publicly listed",
+      jobly: `${JOBLY_PRICING}. No free tier — 3-day free trial`,
+    },
+    { feature: "Independent reviews", competitor: "None found", jobly: "—" },
+    { feature: "Coverage", competitor: "Not stated", jobly: "US and remote tech" },
+  ],
+  body: [
+    { type: "h2", text: "Who inJobs is better for" },
+    {
+      type: "p",
+      text: "If you want the whole process handled. inJobs covers more of the pipeline than Jobly does — discovery, scoring, cover letter, submission, tracking. If what you want is to hand over a resume and check a dashboard, that's a coherent product and Jobly isn't trying to be it.",
+    },
+    {
+      type: "p",
+      text: "If writing cover letters is your bottleneck. Per-application letter generation is real work removed. Jobly doesn't write anything.",
+    },
+    {
+      type: "p",
+      text: "If your search is high-volume by necessity. Some searches are a numbers game — early-career roles, saturated categories, markets where response rates are low enough that volume is the only lever. Submitting by hand in that situation is a poor use of a month.",
+    },
+    {
+      type: "p",
+      text: "If the interactive profile-building appeals. Building a profile through dialogue rather than a form is a genuinely different approach, and for someone whose resume undersells them it may capture more.",
+    },
+    {
+      type: "p",
+      text: "The honest limit: with no independent reviews and no public pricing, you'd be evaluating it entirely on the company's own description. That's not a criticism of the product — every product starts somewhere — but it's a real difference in what you can know before committing a job search to it.",
+    },
+    { type: "h2", text: "Who Jobly is better for" },
+    {
+      type: "p",
+      text: "If you'd rather software didn't apply in your name. Jobly doesn't auto-apply, by design rather than by omission. Applications submitted at volume go to real companies with your name attached, including the ones you'll care about later. Recruiters recognise generated cover letters. We'd rather cut the list short enough that applying by hand is easy.",
+    },
+    {
+      type: "p",
+      text: "If your problem is targeting, not throughput. For a mid-level engineer, PM or designer in the US market, sending more applications rarely fixes a search — sending better ones does. The digest is five roles with a score and the reasoning, so you can tell in ten seconds which deserve an evening.",
+    },
+    {
+      type: "p",
+      text: "If you want dead listings filtered first. Auto-applying to a role filled two months ago is a fast way to do nothing. Ghost jobs run between one in seven and one in three of all postings by credible estimates. Jobly checks whether the role is still moving in the employer's hiring system before it reaches you.",
+    },
+    { type: "p", text: "If you want to know the price before you sign up. Ours is on the pricing page." },
+    { type: "h2", text: "How to evaluate a tool you can't find reviews for" },
+    {
+      type: "p",
+      text: "This applies to inJobs and to plenty of others in this category, including products that turn out to be good.",
+    },
+    {
+      type: "p",
+      text: "Check whether pricing is public. Not because hidden pricing means a bad product, but because it tells you what the sales model is. A price behind a signup wall means you'll be evaluating the product after handing over your details.",
+    },
+    {
+      type: "p",
+      text: "Find the cancellation path before you subscribe. Billing and cancellation complaints dominate the negative reviews of nearly every paid tool in this space. Locate the cancel flow while you're still deciding, not when you want out.",
+    },
+    {
+      type: "p",
+      text: "Ask what happens to your data if it shuts down. Job searches run for months. Sonara shut down in 2024 and locked users out of their application queues mid-search with no export path. Whatever a tool holds — applications, history, contacts — assume you'll need to get it out one day.",
+    },
+    {
+      type: "p",
+      text: "Test on a search you don't care about first. Especially for anything that applies on your behalf. Auto-submitted applications can't be recalled, and the companies you most want to work for are the worst place to discover a tool's quality.",
+    },
+    { type: "h2", text: "If you're switching" },
+    {
+      type: "p",
+      text: "Your application count will drop sharply. From whatever volume automation was producing to a handful a week. If you've been measuring progress by submissions, that feels like going backwards. The number that matters is replies per application — the ratio automation suppresses.",
+    },
+    {
+      type: "p",
+      text: "Export your application history first. Whatever's in the dashboard, pull it out before you stop paying. This is standard advice for any tool holding months of your job search, and it applies to us too.",
+    },
+    {
+      type: "p",
+      text: "Expect to write again. Five roles a day with reasoning attached is a list you can act on deliberately, but that only pays off if you tailor what you send.",
+    },
+    {
+      type: "p",
+      text: "Set the profile precisely. Automation tools work off broad preferences because breadth is the strategy. Matching works the other way — a precise profile, including a salary range you'd actually accept, produces a better five than a wide one.",
+    },
+  ],
+  faq: [
+    {
+      question: "Is Jobly cheaper than inJobs?",
+      answer:
+        "Unknown — inJobs doesn't publish pricing publicly, so there's nothing to compare against. Jobly Pro is $16.99 a month, or $10.99 a month on the six-month plan (Watch, the weekly digest, starts at $2.92 a month), with a 3-day free trial, all listed on the pricing page.",
+    },
+    {
+      question: "Can I use Jobly and inJobs together?",
+      answer:
+        "Technically yes, but the strategies conflict. One narrows your list so each application can be deliberate; the other maximises submissions. Running both means auto-applying to roles you were about to consider carefully.",
+    },
+    {
+      question: "Does Jobly write cover letters?",
+      answer:
+        "No. It matches roles to your profile and explains why each one fits. The writing stays yours, which is the point — a generated letter is recognisable and it's attached to your name.",
+    },
+    {
+      question: "Is inJobs legitimate?",
+      answer:
+        "We've no reason to think otherwise; it's simply that there's very little independent information about it. Zero reviews isn't a red flag by itself — it's an absence of evidence. Do your own checks before paying, as you would with any tool you're handing a job search to.",
+    },
+  ],
+};
+
 export const VS_PAGES: VsPage[] = [
   LINKEDIN,
   INDEED,
@@ -1063,10 +1741,10 @@ export const VS_PAGES: VsPage[] = [
   SIMPLIFY,
   CAREERFLOW,
   SONARA,
-  placeholder("glassdoor", "Glassdoor"),
-  placeholder("teal", "Teal"),
-  placeholder("welcome-to-the-jungle", "Welcome to the Jungle"),
-  placeholder("injobs", "inJobs"),
+  GLASSDOOR,
+  TEAL,
+  WELCOME_TO_THE_JUNGLE,
+  INJOBS,
   placeholder("scarlett-ai", "Scarlett AI"),
 ];
 

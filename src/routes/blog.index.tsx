@@ -6,7 +6,7 @@ import { CtaBlock } from "../components/site/CtaBlock";
 import { FaqSection } from "../components/site/FaqSection";
 import { BlogCard } from "../components/blog/BlogCard";
 import { CategoryChip } from "../components/blog/CategoryChip";
-import { BLOG_CATEGORIES, BLOG_POSTS } from "../lib/blog-data";
+import { BLOG_CATEGORIES, PUBLISHED_BLOG_POSTS as BLOG_POSTS } from "../lib/blog-data";
 
 const PAGE_SIZE = 9;
 const ORIGIN = "https://jobly-five.lovable.app";

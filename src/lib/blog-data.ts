@@ -35,6 +35,17 @@ export type BlogPost = {
   slug: string;
   title: string;
   deck: string;
+  /**
+   * Omitted or true → live (indexable, listed, in the feed and sitemap).
+   * false → the route renders `<meta name="robots" content="noindex, follow">`, emits no
+   * canonical tag, and the post stays out of the blog index, the RSS feed, the sitemap and
+   * the related-reads rail. Same semantics as `published` on guides / vs / features / tools.
+   */
+  published?: boolean;
+  /** Used verbatim as the <title> when present (bypasses the "{title} — Jobly blog" pattern). */
+  metaTitle?: string;
+  /** Used verbatim as the meta description when present (otherwise the deck is used). */
+  metaDescription?: string;
   category: BlogCategory;
   coverImage: string;
   coverAlt: string;
@@ -683,15 +694,148 @@ export const BLOG_POSTS: BlogPost[] = [
       { question: "Is a stale posting always a ghost?", answer: "Not always. Some roles are genuinely hard to fill and stay open a long time. But a stale date combined with no salary, a vague description, and no other signs of active hiring is a strong warning. Treat the signals as cumulative, not individual." },
     ],
   },
+  {
+    slug: "set-up-job-alerts",
+    title: "How to Set Up Job Alerts on LinkedIn, Indeed, Glassdoor and Company Career Pages",
+    // Supplied meta title (55 chars) and meta description (153 chars) — used verbatim.
+    metaTitle: "How to Set Up Job Alerts: LinkedIn, Indeed, Glassdoor",
+    metaDescription:
+      "Step-by-step setup for job alerts on LinkedIn, Indeed, Glassdoor and company career pages — plus the settings people miss that make alerts go silent.",
+    deck: "Step-by-step setup for job alerts on LinkedIn, Indeed, Glassdoor and company career pages — plus the settings people miss that make alerts go silent.",
+    // Wave 3, pillar /guides/job-alerts. published: false → noindex, no canonical, out of the
+    // sitemap, the RSS feed, the blog index and the related-reads rail.
+    published: false,
+    category: "Career tips",
+    // Reuses the cover already assigned to the job-alerts article (blog-03) — no new artwork supplied.
+    coverImage: covers[2]!,
+    coverAlt:
+      "How to Set Up Job Alerts on LinkedIn, Indeed, Glassdoor and Company Career Pages — cover image",
+    author: "Priya Shah",
+    date: "2026-09-17",
+    readTime: "5 min read",
+    body: [
+      {
+        type: "p",
+        text: "Every job board builds alerts the same way underneath: you run a search, you save it, the platform emails you new listings that match. The differences are in where the setting lives and what it defaults to — and the defaults are where most people lose alerts without noticing.",
+      },
+      {
+        type: "p",
+        text: "Below, the setup on each platform, then the settings that silently break them. For how many alerts to run and how to scope them, the job alerts guide covers the strategy.",
+      },
+      { type: "h2", text: "LinkedIn" },
+      {
+        type: "p",
+        text: "Run the search first, with the filters you want — title, location, date posted, experience level, remote. Alerts are created from a search, so anything you didn't filter for won't be in the alert.",
+      },
+      {
+        type: "p",
+        text: "With results on screen, look for the toggle that turns the current search into an alert. That's the whole creation step. The part that matters comes next: open the alert's own settings and check two things — delivery frequency, which should be daily rather than weekly for an active search, and delivery method, which needs to be email rather than in-app notifications only.",
+      },
+      {
+        type: "p",
+        text: "That second setting is the most common reason LinkedIn alerts appear active and send nothing. It's per-alert, not global, so setting it once doesn't fix the others.",
+      },
+      {
+        type: "p",
+        text: "There's also a cap on how many alerts one account can hold. If you're near it, new alerts may fail to save quietly.",
+      },
+      { type: "h2", text: "Indeed" },
+      {
+        type: "p",
+        text: "Same pattern: search with your filters applied, then save the search as an alert. Indeed defaults to daily on most accounts, but confirm rather than assume.",
+      },
+      {
+        type: "p",
+        text: "The specific thing to watch on Indeed is the radius. Its default search radius is wide, and because Indeed aggregates from many sources, a wide radius plus a common job title produces a volume of email that people abandon within a week. Tighten the radius before saving, not after.",
+      },
+      {
+        type: "p",
+        text: "Indeed also serves the same role from multiple sources, so expect duplicates in the alert. That's structural to aggregation rather than a setting you can fix.",
+      },
+      { type: "h2", text: "Glassdoor" },
+      {
+        type: "p",
+        text: "Glassdoor's alerts work the same way from a search results page. Its job board is a secondary product on a site built around reviews and salary data, so the alert volume is usually lower than Indeed's for the same search.",
+      },
+      {
+        type: "p",
+        text: "The practical use is narrower and worth being deliberate about: if there are ten companies you'd genuinely like to work for, an alert scoped to those company names is more useful than a broad title search — and Glassdoor is where you'd research them anyway.",
+      },
+      { type: "h2", text: "Company career pages" },
+      { type: "p", text: "The most underused option, and often the highest quality." },
+      {
+        type: "p",
+        text: "Many companies let you register for notifications about new roles directly on their careers page, usually as a \u201cjob alert\u201d or \u201ctalent community\u201d signup near the top of the listings. It's slower and more manual — one signup per company — but there are two real advantages. You hear about roles at posting time rather than after they propagate to aggregators. And the careers page is the authoritative source: if a role is there, it exists, which isn't guaranteed anywhere else.",
+      },
+      {
+        type: "p",
+        text: "The trade-off: some of these signups route you into a marketing pipeline rather than a genuine alert, so expect a mix. Do it for ten companies you actually care about, not fifty.",
+      },
+      { type: "h2", text: "The settings that silently break alerts" },
+      { type: "p", text: "Four things account for most alerts that stop working." },
+      {
+        type: "p",
+        text: "Account-level email controls. Separate from any individual alert, there's a master setting for job-related email. If it's off, every alert stays quiet regardless of its own configuration. Clicking unsubscribe on any one email from a platform can switch off more than you intended.",
+      },
+      {
+        type: "p",
+        text: "Promotions and spam routing. Alert emails are bulk mail. Search your whole mailbox, not the inbox, before concluding an alert is broken. When you find them, mark one important or add the sender to contacts.",
+      },
+      {
+        type: "p",
+        text: "Filters too narrow to return anything. A specific title, small radius, seniority filter and date filter combined can legitimately return zero for weeks. Widen one constraint at a time so you learn which one was doing the damage.",
+      },
+      {
+        type: "p",
+        text: "Alert limits. Most platforms cap saved alerts. Old alerts you stopped reading are occupying slots — delete rather than accumulate.",
+      },
+    ],
+    faq: [
+      {
+        question: "How long does it take for job alerts to start working?",
+        answer:
+          "Usually within a day, since alerts fire on new listings rather than back-filling existing ones. If nothing arrives in 48 hours, it's a delivery setting or filters too narrow — not a delay.",
+      },
+      {
+        question: "Should I set up alerts on every job board?",
+        answer:
+          "No. Two or three platforms covering your market is enough, and past that you're mostly receiving the same listings from different senders. Aggregators overlap heavily with each other by design.",
+      },
+      {
+        question: "Can I set up job alerts without an account?",
+        answer:
+          "On most platforms, no — the alert is attached to your account. Some company career pages accept an email address alone, which is one reason they're worth doing.",
+      },
+      {
+        question: "Why do I get the same job in multiple alerts?",
+        answer:
+          "Overlapping filters, or aggregators pulling the same listing from different sources. Narrowing each alert to a distinct title variant reduces the overlap more than deleting one of them does.",
+      },
+      {
+        question: "Do alerts check whether the job is real?",
+        answer:
+          "No. An alert forwards what matched its filters, including listings that have been open for months with no hiring behind it. That check doesn't exist in any job board's alert system.",
+      },
+    ],
+  },
 ];
+
+/** A post counts as published unless it explicitly opts out with `published: false`. */
+export function isPublishedPost(post: BlogPost): boolean {
+  return post.published !== false;
+}
+
+/** Posts eligible for the index, the RSS feed, the sitemap and the related rail. */
+export const PUBLISHED_BLOG_POSTS: BlogPost[] = BLOG_POSTS.filter(isPublishedPost);
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);
 }
 
 export function getRelated(post: BlogPost, count = 3): BlogPost[] {
-  const same = BLOG_POSTS.filter((p) => p.slug !== post.slug && p.category === post.category);
-  const others = BLOG_POSTS.filter((p) => p.slug !== post.slug && p.category !== post.category);
+  const pool = PUBLISHED_BLOG_POSTS;
+  const same = pool.filter((p) => p.slug !== post.slug && p.category === post.category);
+  const others = pool.filter((p) => p.slug !== post.slug && p.category !== post.category);
   return [...same, ...others].slice(0, count);
 }
 

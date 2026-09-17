@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { BLOG_POSTS } from "@/lib/blog-data";
+import { PUBLISHED_BLOG_POSTS } from "@/lib/blog-data";
 
 const BASE_URL = "https://jobly-five.lovable.app";
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/blog/rss.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const posts = [...BLOG_POSTS].sort(
+        const posts = [...PUBLISHED_BLOG_POSTS].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
 

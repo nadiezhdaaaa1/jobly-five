@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { BLOG_POSTS } from "@/lib/blog-data";
+import { PUBLISHED_BLOG_POSTS } from "@/lib/blog-data";
 import { GUIDES, GUIDE_ARTICLES } from "@/lib/guides-data";
 import { VS_PAGES } from "@/lib/vs-data";
 import { FEATURE_PAGES } from "@/lib/features-data";
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/legal/email", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/dmca", changefreq: "yearly", priority: "0.3" },
           { path: "/legal/disclaimer", changefreq: "yearly", priority: "0.3" },
-          ...BLOG_POSTS.map((p) => ({
+          ...PUBLISHED_BLOG_POSTS.map((p) => ({
             path: `/blog/${p.slug}`,
             lastmod: p.date,
             changefreq: "monthly" as const,

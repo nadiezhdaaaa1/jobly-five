@@ -70,20 +70,25 @@ export const Route = createFileRoute("/blog/$slug")({
         }),
       });
     }
+    // Supplied meta title/description win verbatim when present; they're written to length.
+    const title = post.metaTitle ?? `${post.title} — Jobly blog`;
+    const description = post.metaDescription ?? post.deck;
+    const published = post.published !== false;
     return {
       meta: [
-        { title: `${post.title} — Jobly blog` },
-        { name: "description", content: post.deck },
+        { title },
+        { name: "description", content: description },
         { property: "og:title", content: post.title },
-        { property: "og:description", content: post.deck },
+        { property: "og:description", content: description },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         { property: "og:image", content: abs },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: post.title },
-        { name: "twitter:description", content: post.deck },
+        { name: "twitter:description", content: description },
+        ...(published ? [] : [{ name: "robots", content: "noindex, follow" }]),
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: published ? [{ rel: "canonical", href: url }] : [],
       scripts,
     };
   },
