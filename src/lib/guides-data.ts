@@ -51,7 +51,7 @@ export const GUIDES: Guide[] = [
     metaDescription:
       "Between 1 in 7 and 1 in 3 job postings may be ghost jobs. What the real data says, why companies post them, and seven signals to check before you apply.",
     deck: "Between 1 in 7 and 1 in 3 job postings may be ghost jobs. What the real data says, why companies post them, and seven signals to check before you apply.",
-    published: false,
+    published: true,
     lastUpdated: "2026-09-17",
     body: [
       {
@@ -237,7 +237,7 @@ export const GUIDES: Guide[] = [
     metaDescription:
       "How AI job matching works, how it differs from keyword search, what a match score measures, and how to tell a real matching app from a marketing label.",
     deck: "How AI job matching works, how it differs from keyword search, what a match score actually measures, and how to tell a real matching app from a marketing label.",
-    published: false,
+    published: true,
     lastUpdated: "2026-09-17",
     body: [
       {
@@ -372,7 +372,7 @@ export const GUIDES: Guide[] = [
     metaDescription:
       "How to set up job alerts that surface real matches instead of noise — how many to run, how to scope them, why they go irrelevant, and what alerts can't do.",
     deck: "How to set up job alerts that surface real matches instead of noise — how many to run, how to scope them, why they go irrelevant, and what alerts can't do.",
-    published: false,
+    published: true,
     lastUpdated: "2026-09-17",
     body: [
       {

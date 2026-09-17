@@ -84,7 +84,7 @@ const GHOST_JOB_CHECKER: ToolPage = {
   metaDescription:
     "Free ghost job checker. Paste a listing and see which ghost job red flags it trips — post age, repost pattern, description detail. Results in seconds.",
   deck: "Paste a listing and see which ghost job red flags it trips.",
-  published: false,
+  published: true,
   status: "awaiting-backend",
   lastUpdated: "2026-09-17",
   intro:

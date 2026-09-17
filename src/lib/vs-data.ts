@@ -77,7 +77,7 @@ const LINKEDIN: VsPage = {
   metaDescription:
     "LinkedIn is a network with a job board attached. Jobly emails five scored matches a day. Compared on matching, price, ghost-job filtering and delivery.",
   deck: "LinkedIn is a network with a job board attached. Jobly emails five scored matches a day. Compared on matching, price, ghost-job filtering and delivery.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     { type: "h2", text: "The real difference" },
@@ -235,7 +235,7 @@ const INDEED: VsPage = {
   metaDescription:
     "Indeed aggregates almost every listing on the internet. Jobly sends five scored matches a day. Compared on matching, price, stale listings and delivery.",
   deck: "Indeed aggregates almost every listing on the internet. Jobly sends five scored matches a day. Compared on matching, price, stale listings and delivery.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -401,7 +401,7 @@ const JOBRIGHT: VsPage = {
   metaDescription:
     "Jobright is an AI matching platform with autofill and an apply agent. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
   deck: "Jobright is an AI matching platform with autofill and an apply agent. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -559,7 +559,7 @@ const SIMPLIFY: VsPage = {
   metaDescription:
     "Simplify autofills applications you've already found. Jobly emails five scored matches a day. Different stages of the search — compared, and paired.",
   deck: "Simplify autofills applications you've already found. Jobly emails five scored matches a day. Different stages of the search — compared, and paired.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -731,7 +731,7 @@ const CAREERFLOW: VsPage = {
   metaDescription:
     "Careerflow improves how you look to employers. Jobly decides which roles reach you. Compared on matching, tracking, pricing and what each is actually for.",
   deck: "Careerflow improves how you look to employers. Jobly decides which roles reach you. Compared on matching, tracking, pricing and what each is actually for.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -917,7 +917,7 @@ const SONARA: VsPage = {
   metaDescription:
     "Sonara auto-applies to jobs for you. Jobly sends five scored matches a day and leaves the applying to you.",
   deck: "Sonara auto-applies to jobs for you. Jobly sends five scored matches a day and leaves the applying to you.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -1066,7 +1066,7 @@ const GLASSDOOR: VsPage = {
   metaDescription:
     "Glassdoor is where you research a company before applying. Jobly finds the roles and emails five a day. What each one is actually for, compared honestly.",
   deck: "Glassdoor is where you research a company before applying. Jobly finds the roles and emails five a day. What each one is actually for, compared honestly.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -1232,7 +1232,7 @@ const TEAL: VsPage = {
   metaDescription:
     "Teal is a job tracker and resume builder with a paywalled match score. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
   deck: "Teal is a job tracker and resume builder with a paywalled match score. Jobly emails five scored matches daily. Compared on matching, pricing and delivery.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -1401,7 +1401,7 @@ const WELCOME_TO_THE_JUNGLE: VsPage = {
   metaDescription:
     "Welcome to the Jungle, formerly Otta, curates tech roles on a platform you browse. Jobly emails five scored matches daily. Compared on matching and delivery.",
   deck: "Welcome to the Jungle, formerly Otta, curates tech roles on a platform you browse. Jobly emails five scored matches daily. Compared on matching and delivery.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     { type: "h2", text: "The real difference" },
@@ -1571,7 +1571,7 @@ const INJOBS: VsPage = {
   metaDescription:
     "inJobs scores roles and can submit applications for you. Jobly emails five scored matches daily and leaves the applying to you. An honest comparison.",
   deck: "inJobs scores roles and can submit applications for you. Jobly emails five scored matches daily and leaves the applying to you. An honest comparison.",
-  published: false,
+  published: true,
   lastUpdated: LAST_UPDATED,
   intro: [
     {
@@ -1758,7 +1758,7 @@ export function getVsPage(slug: string): VsPage | undefined {
  * Prose is published verbatim — do not rewrite, tighten or reorder.
  */
 export const VS_INDEX = {
-  published: false,
+  published: true,
   // Supplied meta title (51 chars) and meta description (153 chars) — used verbatim.
   // The description's count ("five more") is coupled to `items` below: if the entry
   // list changes length, this line must be rewritten to match.
