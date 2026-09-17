@@ -1,30 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Header } from "../components/site/Header";
-import { Footer } from "../components/site/Footer";
-import { LegalLayout } from "../components/legal/LegalLayout";
-import { LEGAL_DOCS } from "../lib/legal-data";
 
-const CANONICAL = "https://jobly-five.lovable.app/legal/refund";
-
+/**
+ * The Refund Policy was replaced by the Cancellation Policy (September 2026 legal
+ * package). The old URL is in the sitemap and in sent email, so it must keep
+ * working as a real server-side 301 rather than a client-side bounce.
+ */
 export const Route = createFileRoute("/legal/refund")({
-  head: () => ({
-    meta: [
-      { title: "Refund Policy — Jobly" },
-      { name: "description", content: "How refunds and auto-renewal cancellations work on Jobly." },
-      { property: "og:title", content: "Refund Policy — Jobly" },
-      { property: "og:description", content: "How refunds and auto-renewal cancellations work on Jobly." },
-      { property: "og:url", content: CANONICAL },
-      { property: "og:type", content: "website" },
-    ],
-    links: [{ rel: "canonical", href: CANONICAL }],
-  }),
-  component: () => (
-    <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-      <Header />
-      <main>
-        <LegalLayout doc={LEGAL_DOCS.refund} />
-      </main>
-      <Footer />
-    </div>
-  ),
+  server: {
+    handlers: {
+      GET: async () =>
+        new Response(null, {
+          status: 301,
+          headers: { Location: "/legal/cancellation", "Cache-Control": "public, max-age=3600" },
+        }),
+    },
+  },
 });

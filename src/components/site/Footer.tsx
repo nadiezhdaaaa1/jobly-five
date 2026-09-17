@@ -36,7 +36,7 @@ const COLS: { title: string; items: FooterLink[] }[] = [
       { label: "Privacy Policy", to: "/legal/privacy" },
       { label: "Subscription and Billing", to: "/legal/billing" },
       { label: "Cookie Policy", to: "/legal/cookies" },
-      { label: "Refund Policy", to: "/legal/refund" },
+      { label: "Cancellation Policy", to: "/legal/cancellation" },
       { label: "Email Consent", to: "/legal/email" },
       { label: "Disclaimer", to: "/legal/disclaimer" },
      { label: "DMCA Policy", to: "/legal/dmca" },
