@@ -867,7 +867,7 @@ function DocumentsTab({
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           {pro
             ? `Upload up to ${MAX_FILES} resumes (PDF or DOCX, up to ${MAX_MB} MB each). Your primary resume is used for match scoring and applications.`
-            : `Free plan includes 1 resume (PDF or DOCX, up to ${MAX_MB} MB). Upgrade to Pro to keep up to 5.`}
+            : `Without a plan you can keep 1 resume (PDF or DOCX, up to ${MAX_MB} MB). Upgrade to Pro to keep up to 5.`}
         </p>
 
         {notice && (
@@ -996,7 +996,7 @@ function DocumentsTab({
                       Store up to 5 resumes with Pro
                     </div>
                     <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
-                      Free plan is limited to 1 resume. Upgrade to Pro to tailor separate resumes for different roles.
+                      Without a plan you can keep 1 resume. Upgrade to Pro to tailor separate resumes for different roles.
                     </div>
                   </div>
                   <Link
@@ -1439,7 +1439,7 @@ function CoverLettersTab({
         <p className="mt-1 text-[13px] text-[color:var(--color-text-secondary)]" style={{ fontWeight: 300 }}>
           {pro
             ? `Up to ${COVER_LETTER_LIMIT} reusable templates. Pick one when you apply. Your achievements can be appended automatically — set that up under Achievements → When you apply.`
-            : `Free plan includes 1 cover letter template. Upgrade to Pro to keep up to ${COVER_LETTER_LIMIT}.`}
+            : `Without a plan you can keep 1 cover letter template. Upgrade to Pro to keep up to ${COVER_LETTER_LIMIT}.`}
         </p>
         <div className="mt-3 flex flex-col gap-2">
           {letters.length === 0 ? (
@@ -1534,7 +1534,7 @@ function CoverLettersTab({
                         Store up to {COVER_LETTER_LIMIT} cover letters with Pro
                       </div>
                       <div className="text-[14px] leading-[20px] text-[#67787C]" style={{ fontWeight: 300 }}>
-                        Free plan is limited to 1 template. Upgrade to Pro to tailor cover letters for different roles.
+                        Without a plan you can keep 1 template. Upgrade to Pro to tailor cover letters for different roles.
                       </div>
                     </div>
                     <Link

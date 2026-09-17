@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
+import { LEGAL_DOCS, LEGAL_ORDER } from "@/lib/legal-data";
 import { VS_PAGES } from "@/lib/vs-data";
 import fbIcon from "@/assets/social/fb.svg";
 import inIcon from "@/assets/social/in.svg";
@@ -31,16 +32,12 @@ const COLS: { title: string; items: FooterLink[] }[] = [
   },
   {
     title: "Legal",
-    items: [
-      { label: "Terms of Service", to: "/legal/terms" },
-      { label: "Privacy Policy", to: "/legal/privacy" },
-      { label: "Subscription and Billing", to: "/legal/billing" },
-      { label: "Cookie Policy", to: "/legal/cookies" },
-      { label: "Cancellation Policy", to: "/legal/cancellation" },
-      { label: "Email Consent", to: "/legal/email" },
-      { label: "Disclaimer", to: "/legal/disclaimer" },
-     { label: "DMCA Policy", to: "/legal/dmca" },
-    ],
+    // Link text is each document's own title, read straight from LEGAL_DOCS, so
+    // a policy can never be listed here under a name its page does not carry.
+    items: LEGAL_ORDER.map((slug) => ({
+      label: LEGAL_DOCS[slug].title,
+      to: `/legal/${slug}`,
+    })),
   },
   {
     title: "Guides",
