@@ -43,6 +43,7 @@ import {
 import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -1278,6 +1279,8 @@ function JobsScreen() {
   const [openJob, setOpenJob] = useState<Job | null>(null);
   const plan = usePlan();
   const pro = isPro(plan);
+  // Scored matches are the page; an account with no plan sees the locked screen.
+  const { loading: lockEntLoading } = useEntitlements();
   const { user } = useAuth();
   const quiz = useQuiz();
   const profileRoles = useMemo(() => {
@@ -1338,6 +1341,17 @@ function JobsScreen() {
   const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
   const shown = visible.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  if (lockEntLoading) return <PlanLockedSkeleton active="digest" />;
+  if (plan === "free") {
+    return (
+      <PlanLockedScreen
+        active="digest"
+        heading={PLAN_LOCKED_COPY.digest.heading}
+        body={PLAN_LOCKED_COPY.digest.body}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">

@@ -18,7 +18,7 @@ import {
 import { AppHeader, MobileTabBar } from "@/components/app/AppNav";
 import { JobDrawer } from "@/components/app/JobDrawer";
 import { IconTooltip } from "@/components/app/IconTooltip";
-import proCube from "@/assets/pro-cube.png.asset.json";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 import { FollowUpDialog, ApplyModal } from "@/components/app/ApplyModal";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -830,102 +830,15 @@ function TrackerScreen() {
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
 
-  if (entLoading) {
-    return (
-      <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-        <AppHeader active="tracker" />
-        <main className="mx-auto max-w-[1200px] px-6 pt-6">
-          <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
-            <div
-              className="animate-pulse rounded-[16px] border border-white bg-white/80"
-              style={{ boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)", height: 320 }}
-              aria-label="Loading your plan"
-            />
-          </div>
-        </main>
-      </div>
-    );
-  }
+  if (entLoading) return <PlanLockedSkeleton active="tracker" />;
 
   if (!isPro(plan)) {
     return (
-      <div className="min-h-screen bg-[color:var(--color-background)] text-[color:var(--color-foreground)]">
-        <AppHeader active="tracker" />
-        <main className="mx-auto max-w-[1200px] px-6 pt-6">
-          <div className="mx-auto w-full max-w-[672px] rounded-[24px] bg-[#F1F3F3] p-[16px]">
-            <div
-              data-tracker-upsell
-              className="relative isolate flex flex-col items-center justify-center overflow-hidden rounded-[16px] border border-white bg-white/80"
-              style={{
-                boxShadow: "0 1px 4px rgba(12, 12, 13, 0.05)",
-                gap: 32,
-                padding: "49px 33px",
-              }}
-            >
-              <style>{`
-                @media (max-width: 767px) {
-                  [data-tracker-upsell] { padding: 40px 24px !important; gap: 24px !important; }
-                  [data-tracker-upsell] [data-tu-illus] { width: 96px !important; height: 96px !important; }
-                  [data-tracker-upsell] [data-tu-text] { padding-left: 0 !important; padding-right: 0 !important; }
-                  [data-tracker-upsell] [data-tu-headline] { font-size: 20px !important; line-height: 28px !important; }
-                  [data-tracker-upsell] [data-tu-glow] { width: 200px !important; height: 200px !important; bottom: -132px !important; }
-                  [data-tracker-upsell] [data-tu-btn] { width: 100% !important; }
-                }
-              `}</style>
-              <div
-                data-tu-glow
-                aria-hidden
-                className="pointer-events-none absolute"
-                style={{
-                  zIndex: 1,
-                  left: "50%",
-                  bottom: "-184.5px",
-                  transform: "translateX(-50%)",
-                  width: 280,
-                  height: 280,
-                  background: "radial-gradient(circle, #00F1A9 0%, rgba(0,241,169,0) 70%)",
-                  filter: "blur(56px)",
-                  opacity: 0.45,
-                }}
-              />
-              <img
-                data-tu-illus
-                src={proCube.url}
-                alt=""
-                aria-hidden
-                className="pointer-events-none object-contain"
-                style={{ position: "relative", zIndex: 4, width: 128, height: 128 }}
-              />
-              <div
-                data-tu-text
-                className="relative flex flex-col items-center text-center"
-                style={{ zIndex: 3, gap: 8, paddingLeft: 40, paddingRight: 40 }}
-              >
-                <div
-                  data-tu-headline
-                  style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 24, lineHeight: "32px", color: "#090B0C" }}
-                >
-                  Track every application in one place
-                </div>
-                <div style={{ fontWeight: 300, fontSize: 14, lineHeight: "20px", color: "#67787C" }}>
-                  Move every job through Saved, Applied, Interview, and Offer — with follow-up reminders so nothing slips.
-                </div>
-              </div>
-              <Link
-                data-tu-btn
-                to="/settings"
-                /* Design-system accent button; 46px rendered height sits at
-                   radius 12 on the ladder, overridden inline over the class. */
-                className="relative shrink-0 inline-flex items-center justify-center whitespace-nowrap main_accent_button main_accent_button--on-light button-small"
-                style={{ zIndex: 2, borderRadius: 12, height: 46, padding: "0 17px", fontSize: 14, justifyContent: "center" }}
-              >
-                Upgrade to Pro
-              </Link>
-            </div>
-          </div>
-        </main>
-        <MobileTabBar active="tracker" />
-      </div>
+      <PlanLockedScreen
+        active="tracker"
+        heading={PLAN_LOCKED_COPY.tracker.heading}
+        body={PLAN_LOCKED_COPY.tracker.body}
+      />
     );
   }
 

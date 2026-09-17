@@ -61,6 +61,8 @@ import {
   type UploadErrorCode,
 } from "@/lib/resume-documents-store";
 import { usePlan, isPro } from "@/lib/plan-store";
+import { useEntitlements } from "@/lib/entitlements-provider";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 import { quizSummary, updateQuiz, useQuiz, useQuizHydrated, type QuizAnswers } from "@/lib/quiz-store";
 import { FIELD_ROLES, skillsForRoles, SOFT_SKILLS } from "@/lib/quiz-data";
 import {
@@ -162,6 +164,10 @@ function useToast() {
 // ==========================================================================
 
 function ProfileScreen() {
+  // An account with no plan sees the locked screen here. Settings stays open,
+  // so data export and account deletion remain reachable.
+  const lockPlan = usePlan();
+  const { loading: lockEntLoading } = useEntitlements();
   const { user } = useAuth();
   const search = useSearch({ from: "/_authenticated/profile" });
   const navigate = useNavigate({ from: "/profile" });
@@ -229,6 +235,17 @@ function ProfileScreen() {
     const done = items.filter((i) => i.done).length;
     return { items, pct: Math.round((done / items.length) * 100), hasPortfolio };
   }, [quiz.roles, resume, resumeDocs, extras.links, extras.portfolioFile]);
+
+  if (lockEntLoading) return <PlanLockedSkeleton active="profile" />;
+  if (lockPlan === "free") {
+    return (
+      <PlanLockedScreen
+        active="profile"
+        heading={PLAN_LOCKED_COPY.profile.heading}
+        body={PLAN_LOCKED_COPY.profile.body}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen overflow-x-clip bg-[color:var(--color-background)] pb-24 md:pb-8">
