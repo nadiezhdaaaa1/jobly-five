@@ -192,7 +192,11 @@ function CheckoutPage() {
     };
   }, [managing, rowAttempt]);
 
-
+  const effects = managing && rowState === "ready" && current
+    ? switchEffects(current, intent!.sku)
+    : null;
+  const deferred = effects?.kind === "deferred";
+  const lines = effects?.lines ?? [];
 
   async function pay() {
     if (!intent) return;
@@ -204,7 +208,7 @@ function CheckoutPage() {
     try {
       // A downgrade is scheduled for the end of the paid period (§5), never
       // charged today, so it takes its own action and its own destination.
-      if (isDeferred) {
+      if (deferred) {
         await applySubscriptionAction({
           data: { action: "schedule_plan_change", sku: intent.sku },
         });
@@ -245,10 +249,6 @@ function CheckoutPage() {
   const sku = SKUS[intent.sku];
   const isTrial = intent.trial;
   const discount = discountPct(sku.id);
-  const effects =
-    managing && rowState === "ready" && current ? switchEffects(current, sku.id) : null;
-  const deferred = effects?.kind === "deferred";
-  const lines = effects?.lines ?? [];
   // Managing: nothing is actionable until the row resolves.
   const rowBlocked = managing && rowState !== "ready";
 
@@ -270,11 +270,15 @@ function CheckoutPage() {
                 {isTrial ? `${PLAN_NAMES[sku.id]} — ${TRIAL_DAYS}-day free trial` : PLAN_NAMES[sku.id]}
               </span>
               <span className="text-[15px] font-light text-[color:var(--color-foreground)]">
-                {isTrial ? usd(0) : usd(skuTotal(sku.id))}
+                {isTrial || deferred || effects?.chargeToday === false
+                  ? usd(0)
+                  : usd(skuTotal(sku.id))}
               </span>
             </div>
             <p className="text-sm text-[color:var(--color-text-secondary)]">
-              {isTrial
+              {deferred
+                ? `Starts ${formatDateLabel(effects?.effectiveAt ?? null) ?? "at the end of your current period"}, then ${renewalPhrase(sku.id)}.`
+                : isTrial
                 ? `Free for ${TRIAL_DAYS} days, then ${renewalPhrase(sku.id)}. Cancel any time before it ends.`
                 : discount > 0
                   ? `${renewalPhrase(sku.id)} — ${discount}% off the monthly rate.`
@@ -290,7 +294,7 @@ function CheckoutPage() {
               style={{ borderColor: "var(--color-border)" }}
             >
               <p className="text-[13px] text-[color:var(--color-foreground)]" style={{ fontWeight: 500 }}>
-                What changes on this account today
+                {deferred ? "What happens to this account" : "What changes on this account today"}
               </p>
               <ul className="flex flex-col gap-1.5">
                 {losses.map((line) => (
@@ -338,8 +342,12 @@ function CheckoutPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Loading…
               </>
+            ) : deferred ? (
+              "Schedule the change"
             ) : isTrial ? (
               "Start free trial"
+            ) : effects?.chargeToday === false ? (
+              "Confirm the change"
             ) : (
               "Pay and activate"
             )}
