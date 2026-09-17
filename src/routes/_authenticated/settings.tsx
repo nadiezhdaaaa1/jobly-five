@@ -360,8 +360,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                 closeCancel();
                 onFlash("Subscription canceled — you no longer have a plan.");
               }}
-              className="h-11 w-full rounded-[12px] border px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent"
-              style={{ borderColor: "#D00D01" }}
+              className="danger_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
+
             >
               Cancel subscription
             </button>
@@ -415,8 +416,9 @@ function PlanCard({ plan, onFlash }: { plan: Plan; onFlash: (m: string) => void 
                     : "Pro canceled — access until the end of your current period.",
                 );
               }}
-              className="h-11 w-full rounded-[12px] border bg-[color:var(--color-surface-1)] px-4 button-small text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-subtle)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[color:var(--color-surface-1)]"
-              style={{ borderColor: "#D00D01" }}
+              className="danger_button--on-light w-full button-small"
+              style={{ borderRadius: 12, fontSize: 14, height: 44, padding: "0 16px", justifyContent: "center" }}
+
             >
               Cancel subscription
             </button>
