@@ -42,6 +42,7 @@ import {
 import { HideJobDialog } from "@/components/app/HideJobDialog";
 import { formatDigestArrival, useLatestDigestAt } from "@/lib/digest-delivery-store";
 import { US_CITY_DATA, ALL_CITY_LABELS } from "@/lib/us-cities";
+import { PlanLockedScreen, PlanLockedSkeleton, PLAN_LOCKED_COPY } from "@/components/app/PlanLockedScreen";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
