@@ -9,16 +9,34 @@
  *
  * Prose is published verbatim from the supplied documents.
  *
- * `status: "coming-soon"` is a second, independent switch: the form renders
- * disabled with `comingSoon` copy in place of any result. It exists because the
- * supplied microcopy describes three signals (post age, repost pattern,
- * description detail) and the data to compute the first two does not exist —
- * `public.jobs` carries a single static `posted_days_ago` integer, no
- * first-seen timestamp, no posting URL and no listing history table, so neither
- * posting age nor repost history is derivable for a pasted listing. Rather than
- * invent a low/medium/high verdict, the page ships with the input disabled.
- * `resultStates` and `postResultCta` below are the supplied strings, held
- * unrendered until the signals behind them exist.
+ * `status` is a second, independent switch describing the tool's backend:
+ *   "awaiting-backend" → the whole front end is live (field, helper, button and
+ *                        its working state, all three result states styled), but
+ *                        submitting resolves into `pendingResult` instead of a
+ *                        verdict. No scoring logic exists client-side, by design.
+ *   "live"             → submit calls the real backend check.
+ *
+ * DEV HANDOVER NOTES (the checker itself is being built server-side against
+ * third-party APIs by the dev team):
+ *  1. Signals. The three advertised signals are post age, repost pattern and
+ *     description detail. Nothing in this app can compute the first two today:
+ *     `public.jobs` carries one static `posted_days_ago` integer, with no
+ *     first-seen timestamp, no posting URL and no listing history table, and a
+ *     pasted description cannot be matched back to a row. Post age and repost
+ *     pattern have to come from the third-party source, not from our schema.
+ *  2. SSRF — applies to the URL branch of this input. The field accepts a link,
+ *     so whoever wires the fetch inherits a server-side request forgery surface.
+ *     Required on that path: allowlist only the hiring-system domains we already
+ *     sync (Greenhouse, Lever, Ashby, Workable) plus known job boards; resolve
+ *     DNS and reject private, loopback, link-local and metadata ranges
+ *     (169.254.169.254 included) after resolution, not before; refuse redirects
+ *     rather than following them; cap response size and time; and run the fetch
+ *     on a separate egress path from the app's own outbound calls. Never echo
+ *     the fetched body back to the client.
+ *  3. Abuse. This is an unauthenticated public endpoint. Today only quiz-draft
+ *     save is rate-limited (429 per IP) and cron hooks use a shared secret.
+ *     The checker needs per-IP limits on a short window plus a payload cap at
+ *     minimum; add a captcha only if abuse actually appears.
  */
 
 export type ToolFaq = { question: string; answer: string };
@@ -33,7 +51,7 @@ export type ToolPage = {
   /** Short footer label — the full title is too long for a footer column. */
   footerLabel: string;
   published: boolean;
-  status: "live" | "coming-soon";
+  status: "live" | "awaiting-backend";
   lastUpdated: string;
   intro: string;
   input: {
@@ -43,11 +61,14 @@ export type ToolPage = {
     button: string;
     buttonWorking: string;
   };
-  /** Shown in place of the result while `status` is "coming-soon". */
-  comingSoon: { title: string; body: string };
-  /** Supplied verdict copy, held unrendered — see the note at the top of this file. */
+  /**
+   * Where a submit lands while `status` is "awaiting-backend": an explicitly
+   * marked placeholder, never a fabricated low/medium/high verdict.
+   */
+  pendingResult: { title: string; body: string };
+  /** Supplied verdict copy. Styled and reachable via the sample-result switcher. */
   resultStates: { level: "low" | "medium" | "high"; label: string; body: string }[];
-  /** Supplied post-result bridge copy, held unrendered alongside `resultStates`. */
+  /** Supplied post-result bridge copy, shown with each result state. */
   postResultCta: { afterLow: string; afterMediumOrHigh: string; button: string };
   faq: ToolFaq[];
 };
@@ -57,14 +78,14 @@ const GHOST_JOB_CHECKER: ToolPage = {
   title: "Is This Job Posting Real? Check for Ghost Job Red Flags",
   footerLabel: "Ghost job checker",
   // Supplied meta title (52 chars) and meta description (149 chars) — used verbatim.
-  // NOTE: the description advertises post age and repost pattern, neither of
-  // which is computable today. Flagged for rewrite before `published` flips.
+  // The description advertises all three signals, including the two the backend
+  // team will source from third-party APIs. Shipped as written.
   metaTitle: "Ghost Job Checker — Is This Job Posting Real? | Jobly",
   metaDescription:
     "Free ghost job checker. Paste a listing and see which ghost job red flags it trips — post age, repost pattern, description detail. Results in seconds.",
   deck: "Paste a listing and see which ghost job red flags it trips.",
   published: false,
-  status: "coming-soon",
+  status: "awaiting-backend",
   lastUpdated: "2026-09-17",
   intro:
     "Paste a listing into the ghost job checker and we'll run it against the patterns that usually give away a stalled or abandoned posting. This won't tell you a company's real hiring plans — only what's visible on the page itself. That's still more than most people check before spending an evening on an application.",
@@ -75,9 +96,9 @@ const GHOST_JOB_CHECKER: ToolPage = {
     button: "Run the check",
     buttonWorking: "Checking the listing\u2026",
   },
-  comingSoon: {
-    title: "The checker isn't live yet",
-    body: "We're not shipping a risk verdict we can't stand behind. Two of the three signals this page describes — how long a posting has been live, and whether it has been reposted — can't be read from pasted text, so the check stays switched off until it can do what it says. In the meantime, the seven signals in our ghost jobs guide are the same ones the checker will use.",
+  pendingResult: {
+    title: "Not yet available",
+    body: "Your listing came through, but the check itself isn't running yet — it's being built, and we'd rather show you nothing than a risk level we made up. Nothing has been scored, and nothing here is a verdict on this posting. Until it's live, the seven signals in our ghost jobs guide are the same ones the checker will use, and you can read them in about two minutes.",
   },
   resultStates: [
     {
