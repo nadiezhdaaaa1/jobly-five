@@ -9,8 +9,17 @@
 import { execFileSync } from "node:child_process";
 import { hashDoc, LEGAL_DOCS } from "./policy-hash.mjs";
 
-// document_key in policy_versions -> key in LEGAL_DOCS
-const MAP = { terms: "terms", privacy: "privacy", cookies: "cookies", billing_terms: "billing" };
+// document_key in policy_versions -> key in LEGAL_DOCS (all eight are watched)
+const MAP = {
+  terms: "terms",
+  privacy: "privacy",
+  cookies: "cookies",
+  billing_terms: "billing",
+  cancellation: "cancellation",
+  email: "email",
+  disclaimer: "disclaimer",
+  dmca: "dmca",
+};
 
 const rows = JSON.parse(
   execFileSync("psql", [
