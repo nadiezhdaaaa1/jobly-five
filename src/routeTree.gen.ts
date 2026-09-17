@@ -51,6 +51,7 @@ import { Route as ApiPublicHooksPurgeQuizDraftsRouteImport } from './routes/api/
 import { Route as ApiPublicHooksPurgeDeletedAccountsRouteImport } from './routes/api/public/hooks/purge-deleted-accounts'
 import { Route as ApiPublicHooksPostmarkWebhookRouteImport } from './routes/api/public/hooks/postmark-webhook'
 import { Route as ApiPublicHooksConfirmEmailRouteImport } from './routes/api/public/hooks/confirm-email'
+import { Route as ApiPublicHooksApplyPlanChangesRouteImport } from './routes/api/public/hooks/apply-plan-changes'
 
 const ThankYouRoute = ThankYouRouteImport.update({
   id: '/thank-you',
@@ -268,6 +269,12 @@ const ApiPublicHooksConfirmEmailRoute =
     path: '/api/public/hooks/confirm-email',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksApplyPlanChangesRoute =
+  ApiPublicHooksApplyPlanChangesRouteImport.update({
+    id: '/api/public/hooks/apply-plan-changes',
+    path: '/api/public/hooks/apply-plan-changes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -304,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
+  '/api/public/hooks/apply-plan-changes': typeof ApiPublicHooksApplyPlanChangesRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByTo {
   '/vs': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide': typeof GuidesGuideIndexRoute
+  '/api/public/hooks/apply-plan-changes': typeof ApiPublicHooksApplyPlanChangesRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -392,6 +401,7 @@ export interface FileRoutesById {
   '/vs/': typeof VsIndexRoute
   '/guides/$guide/$slug': typeof GuidesGuideSlugRoute
   '/guides/$guide/': typeof GuidesGuideIndexRoute
+  '/api/public/hooks/apply-plan-changes': typeof ApiPublicHooksApplyPlanChangesRoute
   '/api/public/hooks/confirm-email': typeof ApiPublicHooksConfirmEmailRoute
   '/api/public/hooks/postmark-webhook': typeof ApiPublicHooksPostmarkWebhookRoute
   '/api/public/hooks/purge-deleted-accounts': typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
+    | '/api/public/hooks/apply-plan-changes'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -480,6 +491,7 @@ export interface FileRouteTypes {
     | '/vs'
     | '/guides/$guide/$slug'
     | '/guides/$guide'
+    | '/api/public/hooks/apply-plan-changes'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -524,6 +536,7 @@ export interface FileRouteTypes {
     | '/vs/'
     | '/guides/$guide/$slug'
     | '/guides/$guide/'
+    | '/api/public/hooks/apply-plan-changes'
     | '/api/public/hooks/confirm-email'
     | '/api/public/hooks/postmark-webhook'
     | '/api/public/hooks/purge-deleted-accounts'
@@ -564,6 +577,7 @@ export interface RootRouteChildren {
   VsIndexRoute: typeof VsIndexRoute
   GuidesGuideSlugRoute: typeof GuidesGuideSlugRoute
   GuidesGuideIndexRoute: typeof GuidesGuideIndexRoute
+  ApiPublicHooksApplyPlanChangesRoute: typeof ApiPublicHooksApplyPlanChangesRoute
   ApiPublicHooksConfirmEmailRoute: typeof ApiPublicHooksConfirmEmailRoute
   ApiPublicHooksPostmarkWebhookRoute: typeof ApiPublicHooksPostmarkWebhookRoute
   ApiPublicHooksPurgeDeletedAccountsRoute: typeof ApiPublicHooksPurgeDeletedAccountsRoute
@@ -869,6 +883,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksConfirmEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/apply-plan-changes': {
+      id: '/api/public/hooks/apply-plan-changes'
+      path: '/api/public/hooks/apply-plan-changes'
+      fullPath: '/api/public/hooks/apply-plan-changes'
+      preLoaderRoute: typeof ApiPublicHooksApplyPlanChangesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -922,6 +943,7 @@ const rootRouteChildren: RootRouteChildren = {
   VsIndexRoute: VsIndexRoute,
   GuidesGuideSlugRoute: GuidesGuideSlugRoute,
   GuidesGuideIndexRoute: GuidesGuideIndexRoute,
+  ApiPublicHooksApplyPlanChangesRoute: ApiPublicHooksApplyPlanChangesRoute,
   ApiPublicHooksConfirmEmailRoute: ApiPublicHooksConfirmEmailRoute,
   ApiPublicHooksPostmarkWebhookRoute: ApiPublicHooksPostmarkWebhookRoute,
   ApiPublicHooksPurgeDeletedAccountsRoute:
