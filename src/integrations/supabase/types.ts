@@ -970,6 +970,7 @@ export type Database = {
         | "terms"
         | "privacy"
         | "renewal_reminders"
+        | "cancellation"
       job_status:
         | "default"
         | "saved"
@@ -1135,6 +1136,7 @@ export const Constants = {
         "terms",
         "privacy",
         "renewal_reminders",
+        "cancellation",
       ],
       job_status: [
         "default",
