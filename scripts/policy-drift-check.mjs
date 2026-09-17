@@ -45,6 +45,17 @@ for (const row of rows) {
   if (!hashMatches) console.log(`      recorded hash ${row.content_hash}\n      actual hash   ${actual}`);
 }
 
+// A page with no current version row is unwatched, which is its own failure:
+// silence from the checker would otherwise read as "no drift".
+const seen = new Set(rows.map((r) => r.document_key));
+for (const [registryKey, docKey] of Object.entries(MAP)) {
+  if (seen.has(registryKey)) continue;
+  drift += 1;
+  console.log(`UNWATCHED ${registryKey}: no current version row for ${LEGAL_DOCS[docKey].title}`);
+}
+
+
+
 if (drift > 0) {
   console.log(`\n${drift} document(s) drifted. Publish a version (see src/routes/LEGAL-README.md) instead of editing the page alone.`);
   process.exit(1);
