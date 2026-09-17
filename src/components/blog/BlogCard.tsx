@@ -13,9 +13,13 @@ export function BlogCard({ post }: { post: BlogPost }) {
         <img
           src={post.coverImage}
           alt={post.coverAlt}
+          width={post.coverWidth}
+          height={post.coverHeight}
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           loading="lazy"
+          decoding="async"
         />
+
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <span className="inline-flex w-fit items-center rounded-[12px] bg-[color:var(--color-mint)] px-2.5 py-1 text-xs text-[color:var(--color-green)]">

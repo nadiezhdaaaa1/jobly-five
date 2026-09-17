@@ -162,7 +162,18 @@ function ArticlePage() {
 
             <div className="mx-auto max-w-[820px] px-5 md:px-8">
               <div className="overflow-hidden rounded-[20px] border border-[color:var(--color-border)] bg-[color:var(--color-surface-2)]">
-                <img src={post.coverImage} alt={post.coverAlt} className="h-auto w-full" />
+                {/* Hero is the likely LCP element: eager, high priority, never lazy. */}
+                <img
+                  src={post.coverImage}
+                  alt={post.coverAlt}
+                  width={post.coverWidth}
+                  height={post.coverHeight}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="h-auto w-full"
+                />
+
               </div>
             </div>
 

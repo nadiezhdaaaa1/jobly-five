@@ -8,6 +8,13 @@ import blog07 from "../assets/blog-07.jpg.asset.json";
 import blog08 from "../assets/blog-08.jpg.asset.json";
 import blog09 from "../assets/blog-09.jpg.asset.json";
 import blog10 from "../assets/blog-10.jpg.asset.json";
+// Wave 2–3 post heroes: supplied pre-optimised at 1600px wide, WebP q80 — do not re-encode.
+import setUpAlertsCover from "../assets/set-up-job-alerts-1600.webp.asset.json";
+import ghostJobsCover from "../assets/why-companies-post-ghost-jobs-1600.webp.asset.json";
+import matchScoreCover from "../assets/ai-match-score-explained-1600.webp.asset.json";
+import keywordSearchCover from "../assets/ai-matching-vs-keyword-search-1600.webp.asset.json";
+import linkedinAlertsCover from "../assets/linkedin-job-alerts-not-working-1600.webp.asset.json";
+
 
 export const BLOG_CATEGORIES = [
   "Job market data",
@@ -48,7 +55,11 @@ export type BlogPost = {
   metaDescription?: string;
   category: BlogCategory;
   coverImage: string;
+  /** Intrinsic pixel size of coverImage, when known — rendered as width/height to prevent reflow. */
+  coverWidth?: number;
+  coverHeight?: number;
   coverAlt: string;
+
   author: string;
   date: string;
   readTime: string;
@@ -706,10 +717,12 @@ export const BLOG_POSTS: BlogPost[] = [
     // sitemap, the RSS feed, the blog index and the related-reads rail.
     published: true,
     category: "Career tips",
-    // Reuses the cover already assigned to the job-alerts article (blog-03) — no new artwork supplied.
-    coverImage: covers[2]!,
+    coverImage: setUpAlertsCover.url,
+    coverWidth: 1600,
+    coverHeight: 1067,
     coverAlt:
-      "How to Set Up Job Alerts on LinkedIn, Indeed, Glassdoor and Company Career Pages — cover image",
+      "A smiling man in an olive shirt stands with his arms folded in a bright open-plan office, three colleagues working at desks and screens behind him.",
+
     author: "Priya Shah",
     date: "2026-09-17",
     readTime: "5 min read",
@@ -831,8 +844,12 @@ export const BLOG_POSTS: BlogPost[] = [
     published: true,
     category: "Ghost jobs",
     // Reuses the ghost-jobs cover (blog-01) — no new artwork supplied.
-    coverImage: covers[0]!,
-    coverAlt: "Why Do Companies Post Ghost Jobs? Six Reasons, and What the Data Says — cover image",
+    coverImage: ghostJobsCover.url,
+    coverWidth: 1600,
+    coverHeight: 1067,
+    coverAlt:
+      "An empty white desk with a keyboard, a pot of pencils and a switched-off monitor, beside a floor-to-ceiling window looking onto autumn trees.",
+
     author: "Marcus Vale",
     date: "2026-09-17",
     readTime: "6 min read",
@@ -892,8 +909,12 @@ export const BLOG_POSTS: BlogPost[] = [
     published: true,
     category: "Career tips",
     // Reuses the AI-matching cover (blog-05) — no new artwork supplied.
-    coverImage: covers[4]!,
-    coverAlt: "What an AI Match Score Actually Measures — cover image",
+    coverImage: matchScoreCover.url,
+    coverWidth: 1600,
+    coverHeight: 923,
+    coverAlt:
+      "Close-up of a dark circuit board with a chip marked AI at its centre, pink and blue light tracing outwards along the connections.",
+
     author: "Priya Shah",
     date: "2026-09-17",
     readTime: "6 min read",
@@ -952,8 +973,12 @@ export const BLOG_POSTS: BlogPost[] = [
     published: true,
     category: "Career tips",
     // Reuses the AI-matching cover (blog-06) — no new artwork supplied.
-    coverImage: covers[5]!,
-    coverAlt: "AI Matching vs. Keyword Search: What Actually Changes — cover image",
+    coverImage: keywordSearchCover.url,
+    coverWidth: 1600,
+    coverHeight: 1068,
+    coverAlt:
+      "Two people work side by side on laptops at a shared desk, with printed bar charts, an open notebook and takeaway coffee between them.",
+
     author: "Priya Shah",
     date: "2026-09-17",
     readTime: "6 min read",
@@ -1015,8 +1040,12 @@ export const BLOG_POSTS: BlogPost[] = [
     published: true,
     category: "LinkedIn vs reality",
     // Reuses the job-alerts cover (blog-03) — no new artwork supplied.
-    coverImage: covers[2]!,
-    coverAlt: "LinkedIn Job Alerts Not Working? Here's What's Usually Going On — cover image",
+    coverImage: linkedinAlertsCover.url,
+    coverWidth: 1600,
+    coverHeight: 1066,
+    coverAlt:
+      "A woman in a purple jumper rests her chin on both hands and looks flatly at her laptop screen in a sunlit bedroom.",
+
     author: "Priya Shah",
     date: "2026-09-17",
     readTime: "6 min read",
