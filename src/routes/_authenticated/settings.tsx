@@ -633,7 +633,7 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
         />
       </div>
       {pendingSku ? (
-        <p className="mt-4 text-[13px] leading-[19.5px] text-[color:var(--color-text-secondary)]">
+        <p className="mt-4 text-[13px] leading-[19.5px] text-[color:var(--color-danger)]">
           {SKU_SWITCHER_LABEL[pendingSku]} starts{" "}
           {pendingWhen ?? "at the end of your current period"}. Until then you keep{" "}
           {currentSku ? SKU_SWITCHER_LABEL[currentSku] : "your current plan"}.
