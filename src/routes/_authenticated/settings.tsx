@@ -547,10 +547,16 @@ function PlanCardsBlock({ plan, onDowngrade }: { plan: Plan; onDowngrade: () => 
     // Cancellation Policy §5: an upgrade applies now with the unused period
     // credited to it; a downgrade takes effect at the end of the paid period.
     // Checkout states which, and what happens to the account, before confirming.
+    // The visible label carries only the timing — the one fact the card does
+    // not already state. The plan name is on the card three times (tab, heading,
+    // above the price), so repeating it here only bought truncation. The
+    // accessible name keeps the destination for anyone navigating by a button
+    // list; both are built from the same SKU_SWITCHER_LABEL so they cannot drift.
+    const down = isDowngrade(currentSku, sku);
+    const visible = down ? "Switch at period end" : "Switch now";
     return {
-      label: isDowngrade(currentSku, sku)
-        ? `Switch at period end to ${SKU_SWITCHER_LABEL[sku]}`
-        : `Switch to ${SKU_SWITCHER_LABEL[sku]}`,
+      label: visible,
+      ariaLabel: `${visible} to ${SKU_SWITCHER_LABEL[sku]}`,
       main: true,
     };
   }
