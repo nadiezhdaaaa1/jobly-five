@@ -56,7 +56,7 @@ const LINKEDIN: VsPage = {
   slug: "linkedin",
   competitorName: "LinkedIn",
   footerLabel: "Jobly vs LinkedIn",
-  title: "Jobly vs. LinkedIn: Which One Should You Actually Use?",
+  title: "Jobly vs. LinkedIn: Which Finds Better Jobs?",
   // Supplied meta title (51 chars) and meta description (155 chars) — used verbatim.
   metaTitle: "Jobly vs. LinkedIn: Which Finds Better Jobs? | Jobly",
   metaDescription:
@@ -214,7 +214,7 @@ const INDEED: VsPage = {
   slug: "indeed",
   competitorName: "Indeed",
   footerLabel: "Jobly vs Indeed",
-  title: "Jobly vs. Indeed: Which One Should You Actually Use?",
+  title: "Jobly vs. Indeed: Volume or a Shortlist?",
   // Supplied meta title (53 chars) and meta description (152 chars) — used verbatim.
   metaTitle: "Jobly vs. Indeed: Volume or a Shortlist? | Jobly",
   metaDescription:
@@ -380,7 +380,7 @@ const JOBRIGHT: VsPage = {
   slug: "jobright",
   competitorName: "Jobright",
   footerLabel: "Jobly vs Jobright",
-  title: "Jobly vs. Jobright: Which One Should You Actually Use?",
+  title: "Jobly vs. Jobright: Email Digest or Platform?",
   // Supplied meta title (54 chars) and meta description (156 chars) — used verbatim.
   metaTitle: "Jobly vs. Jobright: Email Digest or Platform? | Jobly",
   metaDescription:
@@ -538,7 +538,7 @@ const SIMPLIFY: VsPage = {
   slug: "simplify",
   competitorName: "Simplify",
   footerLabel: "Jobly vs Simplify",
-  title: "Jobly vs. Simplify: Which One Should You Actually Use?",
+  title: "Jobly vs. Simplify: Find Roles or Apply Faster?",
   // Supplied meta title (55 chars) and meta description (154 chars) — used verbatim.
   metaTitle: "Jobly vs. Simplify: Find Roles or Apply Faster? | Jobly",
   metaDescription:
@@ -710,7 +710,7 @@ const CAREERFLOW: VsPage = {
   slug: "careerflow",
   competitorName: "Careerflow",
   footerLabel: "Jobly vs Careerflow",
-  title: "Jobly vs. Careerflow: Which One Should You Actually Use?",
+  title: "Jobly vs. Careerflow: Get Found or Get Matched?",
   // Supplied meta title (53 chars) and meta description (153 chars) — used verbatim.
   metaTitle: "Jobly vs. Careerflow: Get Found or Get Matched? | Jobly",
   metaDescription:
@@ -896,7 +896,7 @@ const SONARA: VsPage = {
   slug: "sonara",
   competitorName: "Sonara",
   footerLabel: "Jobly vs Sonara",
-  title: "Jobly vs. Sonara: Which One Should You Actually Use?",
+  title: "Jobly vs. Sonara: Auto-Apply or Curated Matches?",
   // Supplied meta title (52 chars) and meta description (157 chars) — used verbatim.
   metaTitle: "Jobly vs. Sonara: Auto-Apply or Curated Matches? | Jobly",
   metaDescription:
