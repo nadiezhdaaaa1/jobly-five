@@ -49,21 +49,6 @@ export type VsPage = {
 
 const LAST_UPDATED = "2026-09-17";
 
-function placeholder(slug: string, competitorName: string): VsPage {
-  return {
-    slug,
-    competitorName,
-    footerLabel: `Jobly vs ${competitorName}`,
-    title: `Jobly vs ${competitorName}`,
-    deck: `Placeholder deck — the full Jobly vs ${competitorName} comparison is being written.`,
-    published: false,
-    lastUpdated: "2026-08-26",
-    body: [],
-    faq: [],
-    comparison: [],
-  };
-}
-
 const JOBLY_PRICING =
   "Pro: $16.99/month, or $10.99/month on the six-month plan. Watch (weekly digest) from $2.92/month";
 
@@ -1745,7 +1730,6 @@ export const VS_PAGES: VsPage[] = [
   TEAL,
   WELCOME_TO_THE_JUNGLE,
   INJOBS,
-  placeholder("scarlett-ai", "Scarlett AI"),
 ];
 
 export function getVsPage(slug: string): VsPage | undefined {
@@ -1836,3 +1820,18 @@ export const VS_INDEX = {
   closing:
     "Pick whichever one you're already using. Each comparison covers where the two overlap and where they don't — an autofill extension and a matching tool aren't competing for the same job.",
 } as const;
+
+/**
+ * THE single source for "which comparisons exist and are linkable".
+ *
+ * Derived from `VS_INDEX.items` (the written entry list) and filtered to pages
+ * that exist in `VS_PAGES` *and* are published. Every internal list of
+ * comparisons — the footer's Compare column and the end-of-article rail on
+ * `/vs/{slug}` — must read this, so an unwritten or unpublished slug cannot be
+ * linked from anywhere. Do not rebuild a second list from `VS_PAGES`: that is
+ * exactly how `Jobly vs Scarlett AI` reached the live site.
+ */
+export const LINKED_VS_PAGES: VsPage[] = VS_INDEX.items.flatMap((item) => {
+  const page = getVsPage(item.slug);
+  return page && page.published ? [page] : [];
+});
