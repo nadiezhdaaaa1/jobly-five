@@ -372,7 +372,16 @@ function PaywallCard({
             // name or a translation wraps inside the button instead of
             // overflowing the card and clipping mid-word. Height grows with the
             // wrap (min-height, not height) so text is never cut off either.
-            style={{ flex: "0 1 200px", maxWidth: "100%", height: "auto" }}
+            style={{
+              flex: "0 1 200px",
+              maxWidth: "100%",
+              height: "auto",
+              minWidth: 0,
+              // The button class sets nowrap; a label too long for the column
+              // must wrap rather than run past the card edge and clip.
+              whiteSpace: "normal",
+              overflowWrap: "anywhere",
+            }}
           >
             {ctaLabel}
           </button>
