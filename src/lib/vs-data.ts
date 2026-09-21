@@ -1835,3 +1835,20 @@ export const LINKED_VS_PAGES: VsPage[] = VS_INDEX.items.flatMap((item) => {
   const page = getVsPage(item.slug);
   return page && page.published ? [page] : [];
 });
+
+/**
+ * The label to use whenever a comparison is listed from another page (the
+ * end-of-article rail today).
+ *
+ * Derived from the page's own supplied `metaTitle` with the " | Jobly" site
+ * suffix stripped — a per-page field, so a new comparison picks up its own
+ * distinctive title automatically. Falls back to `title` if a page has no
+ * metaTitle. Never build a label from a pattern: the six wave-1 pages share an
+ * identical `title` ("… Which One Should You Actually Use?"), which is what put
+ * five identical subtitles in a row on the live site.
+ */
+export function vsLinkLabel(page: VsPage): string {
+  const meta = page.metaTitle?.trim();
+  if (!meta) return page.title;
+  return meta.replace(/\s*\|\s*Jobly$/, "").trim();
+}
