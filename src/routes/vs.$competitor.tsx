@@ -178,7 +178,7 @@ function VsPageRoute() {
                         params={{ competitor: o.slug }}
                         className="text-[color:var(--color-green)] hover:underline"
                       >
-                        {o.title}
+                        {vsLinkLabel(o)}
                       </Link>
                     </li>
                   ))}
