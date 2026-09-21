@@ -6,7 +6,7 @@ import { ArticleBody } from "../components/blog/ArticleBody";
 import { ShareRow } from "../components/blog/ShareRow";
 import { GuideFaqSection } from "../components/guides/GuideFaqSection";
 import { ComparisonTable } from "../components/vs/ComparisonTable";
-import { getVsPage, VS_PAGES } from "../lib/vs-data";
+import { getVsPage, LINKED_VS_PAGES } from "../lib/vs-data";
 import { formatDate } from "../lib/blog-data";
 
 const ORIGIN = "https://jobly-five.lovable.app";
@@ -15,7 +15,9 @@ export const Route = createFileRoute("/vs/$competitor")({
   loader: ({ params }) => {
     const page = getVsPage(params.competitor);
     if (!page) throw notFound();
-    return { page, others: VS_PAGES.filter((p) => p.slug !== page.slug) };
+    // Same single source as the footer's Compare column: written, existing,
+    // published pages only. Never rebuild this list from VS_PAGES.
+    return { page, others: LINKED_VS_PAGES.filter((p) => p.slug !== page.slug) };
   },
   head: ({ params, loaderData }) => {
     const url = `${ORIGIN}/vs/${params.competitor}`;

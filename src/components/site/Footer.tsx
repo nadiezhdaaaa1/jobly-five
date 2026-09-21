@@ -73,12 +73,12 @@ const TOOLS: FooterGroup = {
 
 const COMPARE: FooterGroup = {
   title: "Compare",
-  // Only the comparisons that carry written copy — i.e. the ones the /vs index
-  // links to. The five placeholder entries in VS_PAGES stay out of the footer.
-  items: VS_INDEX.items.flatMap((item) => {
-    const page = getVsPage(item.slug);
-    return page ? [{ label: page.footerLabel, to: `/vs/${page.slug}` }] : [];
-  }),
+  // LINKED_VS_PAGES is the single source for "which comparisons are linkable":
+  // written, existing and published. The article rail reads the same list.
+  items: LINKED_VS_PAGES.map((page) => ({
+    label: page.footerLabel,
+    to: `/vs/${page.slug}`,
+  })),
 };
 
 const HEADING_CLASS =
