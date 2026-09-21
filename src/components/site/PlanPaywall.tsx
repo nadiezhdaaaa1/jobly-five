@@ -358,15 +358,21 @@ function PaywallCard({
           <button
             type="button"
             disabled={ctaDisabled}
+            aria-label={cta?.ariaLabel}
             onClick={() => onSelect(spec)}
             className={
               (ctaMain
                 ? "main_accent_button main_accent_button--on-light main_accent_button--block"
                 : "secondary_button secondary_button--on-light secondary_button--block") +
-              " h-[48px] shrink-0 disabled:cursor-not-allowed"
+              " min-h-[48px] disabled:cursor-not-allowed"
             }
-
-            style={{ width: 200 }}
+            // 200px is the design width, but as a preference rather than a
+            // promise: `max-width: 100%` and a 0 flex-basis let the column take
+            // it back when the label is too long for the card, so a longer plan
+            // name or a translation wraps inside the button instead of
+            // overflowing the card and clipping mid-word. Height grows with the
+            // wrap (min-height, not height) so text is never cut off either.
+            style={{ flex: "0 1 200px", maxWidth: "100%", height: "auto" }}
           >
             {ctaLabel}
           </button>
