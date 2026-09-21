@@ -184,7 +184,7 @@ function ProfileScreen() {
   const toast = useToast();
 
   // Identity
-  const email = user?.email ?? "serhii@example.com";
+  const email = user?.email ?? null;
   const [name, setName] = useState("");
   const [nameOpen, setNameOpen] = useState(false);
   useEffect(() => {
@@ -272,7 +272,14 @@ function ProfileScreen() {
                 </button>
               </IconTooltip>
             </div>
-            <div className="truncate text-[13px] text-[color:var(--color-text-muted)]">{email}</div>
+            <div className="truncate text-[13px] text-[color:var(--color-text-muted)]">
+              {email ?? (
+                <>
+                  <span aria-hidden="true">—</span>
+                  <span className="sr-only">No email on file</span>
+                </>
+              )}
+            </div>
           </div>
         </section>
 
