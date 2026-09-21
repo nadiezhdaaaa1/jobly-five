@@ -18,7 +18,6 @@ import { Route as PreferencesRouteImport } from './routes/preferences'
 import { Route as MatchesRouteImport } from './routes/matches'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DevRouteImport } from './routes/dev'
-import { Route as CtaProbeRouteImport } from './routes/cta-probe'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -99,11 +98,6 @@ const LoginRoute = LoginRouteImport.update({
 const DevRoute = DevRouteImport.update({
   id: '/dev',
   path: '/dev',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CtaProbeRoute = CtaProbeRouteImport.update({
-  id: '/cta-probe',
-  path: '/cta-probe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -297,7 +291,6 @@ const ApiPublicHooksApplyPlanChangesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/cta-probe': typeof CtaProbeRoute
   '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -344,7 +337,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
-  '/cta-probe': typeof CtaProbeRoute
   '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -393,7 +385,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/contact': typeof ContactRoute
-  '/cta-probe': typeof CtaProbeRoute
   '/dev': typeof DevRoute
   '/login': typeof LoginRoute
   '/matches': typeof MatchesRoute
@@ -442,7 +433,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/contact'
-    | '/cta-probe'
     | '/dev'
     | '/login'
     | '/matches'
@@ -489,7 +479,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/contact'
-    | '/cta-probe'
     | '/dev'
     | '/login'
     | '/matches'
@@ -537,7 +526,6 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/contact'
-    | '/cta-probe'
     | '/dev'
     | '/login'
     | '/matches'
@@ -586,7 +574,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ContactRoute: typeof ContactRoute
-  CtaProbeRoute: typeof CtaProbeRoute
   DevRoute: typeof DevRoute
   LoginRoute: typeof LoginRoute
   MatchesRoute: typeof MatchesRoute
@@ -689,13 +676,6 @@ declare module '@tanstack/react-router' {
       path: '/dev'
       fullPath: '/dev'
       preLoaderRoute: typeof DevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cta-probe': {
-      id: '/cta-probe'
-      path: '/cta-probe'
-      fullPath: '/cta-probe'
-      preLoaderRoute: typeof CtaProbeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -976,7 +956,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ContactRoute: ContactRoute,
-  CtaProbeRoute: CtaProbeRoute,
   DevRoute: DevRoute,
   LoginRoute: LoginRoute,
   MatchesRoute: MatchesRoute,
