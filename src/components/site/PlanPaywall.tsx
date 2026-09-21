@@ -119,6 +119,12 @@ function SkuSwitcher({
  *  disclosure, so nothing collapses and no gap is left behind. */
 export type PaywallCta = {
   label: string;
+  /** Accessible name, when the visible label is deliberately shorter than the
+   *  full phrase. The plan-switch buttons show only the timing ("Switch now")
+   *  because the card names the plan three times over, but someone navigating
+   *  by a list of buttons has no card in front of them, so the destination
+   *  stays in the accessible name. Omit to let the visible label stand. */
+  ariaLabel?: string;
   main?: boolean;
   disabled?: boolean;
   hidden?: boolean;
