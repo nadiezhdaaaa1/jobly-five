@@ -19,7 +19,7 @@ export const CONTACT_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "I did not get my digest — what should I do?",
-    a: "Check the Promotions tab or your spam folder first, then whitelist digest@jobly.example. If it still does not arrive, contact us here and we will investigate.",
+    a: "Check the Promotions tab or your spam folder first, then whitelist alerts@jobly.careers. If it still does not arrive, contact us here and we will investigate.",
   },
   {
     q: "Can I edit my preferences after onboarding?",
