@@ -896,9 +896,9 @@ const SONARA: VsPage = {
   slug: "sonara",
   competitorName: "Sonara",
   footerLabel: "Jobly vs Sonara",
-  title: "Jobly vs. Sonara: Auto-Apply or Curated Matches?",
-  // Supplied meta title (52 chars) and meta description (157 chars) — used verbatim.
-  metaTitle: "Jobly vs. Sonara: Auto-Apply or Curated Matches? | Jobly",
+  title: "Jobly vs. Sonara: How Do Their Job Searches Compare?",
+  // Supplied meta title (60 chars) and meta description (106 chars) — used verbatim.
+  metaTitle: "Jobly vs. Sonara: How Do Their Job Searches Compare? | Jobly",
   metaDescription:
     "Sonara auto-applies to jobs for you. Jobly sends five scored matches a day and leaves the applying to you.",
   deck: "Sonara auto-applies to jobs for you. Jobly sends five scored matches a day and leaves the applying to you.",
