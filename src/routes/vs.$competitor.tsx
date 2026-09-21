@@ -6,7 +6,7 @@ import { ArticleBody } from "../components/blog/ArticleBody";
 import { ShareRow } from "../components/blog/ShareRow";
 import { GuideFaqSection } from "../components/guides/GuideFaqSection";
 import { ComparisonTable } from "../components/vs/ComparisonTable";
-import { getVsPage, LINKED_VS_PAGES } from "../lib/vs-data";
+import { getVsPage, LINKED_VS_PAGES, vsLinkLabel } from "../lib/vs-data";
 import { formatDate } from "../lib/blog-data";
 
 const ORIGIN = "https://jobly-five.lovable.app";
@@ -178,7 +178,7 @@ function VsPageRoute() {
                         params={{ competitor: o.slug }}
                         className="text-[color:var(--color-green)] hover:underline"
                       >
-                        {o.title}
+                        {vsLinkLabel(o)}
                       </Link>
                     </li>
                   ))}
