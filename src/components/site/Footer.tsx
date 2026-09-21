@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Header";
 import { LEGAL_DOCS, LEGAL_ORDER } from "@/lib/legal-data";
-import { VS_INDEX, getVsPage } from "@/lib/vs-data";
+import { LINKED_VS_PAGES } from "@/lib/vs-data";
 import { FEATURE_PAGES } from "@/lib/features-data";
 import { TOOL_PAGES } from "@/lib/tools-data";
 
